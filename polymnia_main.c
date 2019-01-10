@@ -1,5 +1,5 @@
 /*============================----beg-of-source---============================*/
-#include   "htags.h"
+#include   "polymnia.h"
 
 
 
@@ -25,12 +25,16 @@ main (int argc, char *argv[])
    for (i = 0; i < s_nfile; ++i) {
       htags_tags_inventory (i);
       htags_tags_review    (i);
-      printf ("   file= %25.25s %3d %3d %3d %3d %3d %3d\n",
+      printf ("   file= %-25.25s %3d %3d %3d %3d %3d %3d\n",
             s_files [i].name ,
             s_files [i].lines, s_files [i].empty, 
             s_files [i].docs , s_files [i].debug, 
             s_files [i].code , s_files [i].slocl);
    }
+   printf ("full= %3d %3d %3d %3d %3d %3d\n",
+         s_totals.lines, s_totals.empty, 
+         s_totals.docs , s_totals.debug, 
+         s_totals.code , s_totals.slocl);
    /*---(wrap-up)------------------------*/
    PROG_end     ();
    /*---(complete)-----------------------*/

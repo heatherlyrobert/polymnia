@@ -1,5 +1,5 @@
 /*============================----beg-of-source---============================*/
-#include  "htags.h"
+#include  "polymnia.h"
 
 
 
@@ -19,8 +19,9 @@ PROG_init          (int a_argc, char *a_argv[])
 {
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   htags_file_init  ();
+   poly_files_init ();
    htags_tags_init  ();
+   poly_extern_init ();
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -74,6 +75,7 @@ PROG_begin         (void)
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
    /*---(prepare files)------------------*/
    char        rc          =    0;
+   rc = poly_extern_load ();
    /*---(complete)-----------------------*/
    DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
    return rc;
@@ -87,7 +89,7 @@ PROG_final         (void)
    /*---(header)-------------------------*/
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
    /*---(produce global files)-----------*/
-   rc = htags_file_review ();
+   rc = poly_files_review ();
    /*---(complete)-----------------------*/
    DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
    return 0;

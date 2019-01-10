@@ -13,8 +13,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.5a"
-#define   VER_TXT       "decent working copy to replace part of HTAGS.vim"
+#define   VER_NUM       "0.5b"
+#define   VER_TXT       "stunning updates and now has c-std lib use ability"
 
 
 
@@ -40,21 +40,21 @@
  *     j indent (maximum indentation)          in threes
  *     k memory (memory management)            y/-
  *     ----
- *  5) interaction (15 chars long)                 [abc.defgh.ijk]
+ *  5) interaction (15 chars long)                 [abc.def.ghijk]
  *     ----
  *     a local  (local/file references count)
  *     b global (global references count)
  *     c extern (extern references count)
- *     d depth  (call depth inside flow)
  *     ----
- *     e funcs  (function call count)
- *     f cstd   (function call count, just c-std)
- *     g ylib   (function call count, just my-libs)
- *     h extern (function calls to unknown)
+ *     d funcs  (function call count)
+ *     e cstd   (function call count, just c-std)
+ *     f ylib   (function call count, just my-libs)
  *     ----
- *     i input  (std library input function count)
- *     j output (std library output function count)
- *     k ncures/opengl/both (ncurses function count)
+ *     g input  (std library input function count)
+ *     h output (std library output function count)
+ *     i ncures/opengl/both (ncurses function count)
+ *     j process
+ *     k system
  *     ----
  *  6) group three                                 [ab.cdefg.hijk]
  *     a gproto (global protopyte)                    
@@ -88,6 +88,7 @@
 #define      LEN_LABEL          20
 
 
+#define      FILE_EXTERN     "/var/lib/polymnia/external.txt"
 
 typedef struct dirent    tDIRENT;
 
@@ -110,6 +111,7 @@ struct cFILE {
 };
 extern   tFILE    s_files [MAX_FILE];
 extern   int      s_nfile;
+extern   tFILE    s_totals;
 
 
 
@@ -167,6 +169,8 @@ struct cTAG {
    char        Rsize;
    char        Wsize;
    char        Vsize;
+   char        Psize;
+   char        Ssize;
    /*---(group two working)-----------*/
    int         lcalls;
    int         gcalls;
@@ -180,6 +184,8 @@ struct cTAG {
    int         writes;
    int         opengl;
    int         ncurses;
+   int         process;
+   int         scalls;
    /*---(done)--------------*/
 };
 extern   tTAG     s_tags [MAX_TAG];
@@ -196,13 +202,13 @@ extern char      unit_answer [LEN_RECD];
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 char        htags_readline          (int a_file, int *l, int *n);
 char        htags_scope             (int n, int l);
-char        htags_tagend            (int n);
+char        poly_cats_tagsumm       (int n);
 char        htags_calls             (char *a_file, int  n, int *a_dst);
 
-char        htags_file_init         (void);
-char        htags_file_add          (char *a_name);
-char        htags_file_review       (void);
-char*       htags_file__unit        (char *a_question, int n);
+char        poly_files_init         (void);
+char        poly_files_add          (char *a_name);
+char        poly_files_review       (void);
+char*       poly_files__unit        (char *a_question, int n);
 
 char        htags_tags_wipe         (int n);
 char        htags_tags_init         (void);
@@ -212,16 +218,22 @@ char        htags_tags_inventory    (int n);
 char        htags_tags_review       (int a_file);
 char*       htags_tags__unit        (char *a_question, int n);
 
-char        htags_exists            (char *a_label, int a_src, char *a_dst, char a_zero);
-char        htags_exact             (char *a_label, int a_src, char *a_dst, char a_zero);
-char        htags_scaled            (char *a_label, int a_src, char *a_dst, char a_zero);
-char        htags_addline           (int a_file, int a_tag, char a_type);
-char        htags_addlogic          (int a_tag, char a_type);
-char        htags_cats_depth        (int n);
+char        poly_cats_flag          (char *a_label, int a_src, char *a_dst, char a_zero);
+char        poly_cats_exists        (char *a_label, int a_src, char *a_dst, char a_zero);
+char        poly_cats_exact         (char *a_label, int a_src, char *a_dst, char a_zero);
+char        poly_cats_scaled        (char *a_label, int a_src, char *a_dst, char a_zero);
+char        poly_cats_logic         (int a_tag, char a_type);
+char        poly_cats_lines         (int a_file, int a_tag, char a_type);
+char        poly_cats_depth         (int n);
 char*       htags_cats__unit        (char *a_question, int n);
 
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);
+
+char        poly_extern_init        (void);
+char        poly_extern_load        (void);
+char        poly_extern_check       (char *a_name);
+char        poly_extern_review      (int n);
 
 

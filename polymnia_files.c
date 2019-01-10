@@ -1,5 +1,5 @@
 /*============================----beg-of-source---============================*/
-#include  "htags.h"
+#include  "polymnia.h"
 
 
 
@@ -7,30 +7,26 @@ char      s_pprev     [LEN_RECD] = "";
 char      s_prev      [LEN_RECD] = "";
 char      s_curr      [LEN_RECD] = "";
 
+tFILE     s_totals;
+
+
 
 char
-htags_file_init    (void)
+poly_files__wipe   (tFILE *a_dst)
 {
-   /*---(locals)-----------+-----+-----+-*/
-   int         i           =    0;          /* generic return code            */
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   for (i = 0; i < MAX_FILE; ++i) {
-      strlcpy (s_files [i].name, "", LEN_RECD);
-      s_files [i].lines    = 0;
-      s_files [i].empty    = 0;
-      s_files [i].docs     = 0;
-      s_files [i].debug    = 0;
-      s_files [i].code     = 0;
-      s_files [i].slocl    = 0;
-   }
-   s_nfile = 0;
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   if (a_dst == NULL)  return -1;
+   strlcpy (a_dst->name, "", LEN_RECD);
+   a_dst->lines    = 0;
+   a_dst->empty    = 0;
+   a_dst->docs     = 0;
+   a_dst->debug    = 0;
+   a_dst->code     = 0;
+   a_dst->slocl    = 0;
    return 0;
 }
 
 char
-htags_files__copy  (tFILE *a_dst, tFILE *a_src)
+poly_files__copy  (tFILE *a_dst, tFILE *a_src)
 {
    strlcpy (a_dst->name, a_src->name, LEN_RECD);
    a_dst->lines  = a_src->lines;
@@ -42,7 +38,21 @@ htags_files__copy  (tFILE *a_dst, tFILE *a_src)
 }
 
 char
-htags_files__gnome (void)
+poly_files_init         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;          /* generic return code            */
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   for (i = 0; i < MAX_FILE; ++i)   poly_files__wipe (&s_files [i]);
+   poly_files__wipe (&s_totals);
+   s_nfile = 0;
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_files__gnome (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;          /* generic return code            */
@@ -66,9 +76,9 @@ htags_files__gnome (void)
       }
       /*---(swap)------------------------*/
       ++s;
-      htags_files__copy  (&x_tmp          , &s_files [i]    );
-      htags_files__copy  (&s_files [i]    , &s_files [i - 1]);
-      htags_files__copy  (&s_files [i - 1], &x_tmp         );
+      poly_files__copy  (&x_tmp          , &s_files [i]    );
+      poly_files__copy  (&s_files [i]    , &s_files [i - 1]);
+      poly_files__copy  (&s_files [i - 1], &x_tmp         );
       DEBUG_SORT   yLOG_complex ("swapped"   , "%2d %-20.20s v %2d %-20.20s   %4d %4d", i, s_files [i].name, i - 1, s_files [i - 1].name, c, s);
       /*---(next)------------------------*/
       --i;
@@ -79,7 +89,7 @@ htags_files__gnome (void)
 }
 
 char
-htags_file_add     (char *a_name)
+poly_files_add    (char *a_name)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
@@ -106,7 +116,7 @@ htags_file_add     (char *a_name)
 
 
 char         /*--> make a list of input files --------------------------------*/
-htags_file_review  (void)
+poly_files_review  (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         rc          =    0;          /* generic return code            */
@@ -175,7 +185,7 @@ htags_file_review  (void)
          continue;
       }
       /*---(record)----------------------*/
-      htags_file_add (x_name);
+      poly_files_add (x_name);
       ++x_good;
       /*> printf ("   %3d %s\n", s_nfile, s_files [s_nfile].name);                    <*/
       DEBUG_INPT   yLOG_note    ("added to inventory");
@@ -195,7 +205,7 @@ htags_file_review  (void)
       return  rce;
    }
    /*---(sort files)---------------------*/
-   htags_files__gnome ();
+   poly_files__gnome ();
    /*---(build analysis files)------------------*/
    /*> system ("cflow -r -d 2 *.c 2> /dev/null > htags.gcalls");                      <*/
    system ("cflow -r -d 2 $(ls -1 *.c | grep -v unit) 2> /dev/null > htags.gcalls");
@@ -213,7 +223,7 @@ htags_file_review  (void)
 static void  o___UNITTEST________o () { return; }
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-htags_file__unit     (char *a_question, int n)
+poly_files__unit     (char *a_question, int n)
 {
    /*---(locals)-----------+-----------+-*/
    int         len         = 0;

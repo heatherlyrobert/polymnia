@@ -1,5 +1,5 @@
 /*============================----beg-of-source---============================*/
-#include  "htags.h"
+#include  "polymnia.h"
 
 
 char
@@ -337,7 +337,7 @@ htags_tags_find    (int a_file, int *l, int *n)
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return  rce;
       }
-      htags_tagend   (*n);
+      poly_cats_tagsumm   (*n);
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 1;
    }
@@ -372,7 +372,7 @@ htags_tags_find    (int a_file, int *l, int *n)
          }
          DEBUG_INPT   yLOG_note    ("function end");
          DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-         htags_tagend   (p);
+         poly_cats_tagsumm   (p);
          return 0;
       }
    }
@@ -423,25 +423,6 @@ htags_tags_review       (int a_file)
       s_curr [--x_len] = '\0';
       DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
       rc = htags_tags_find (a_file, &x_line, &n);
-      if (rc > 0 && n >= 0) {
-         /*> htags_scope    (n);                                                      <*/
-         p = n - 1;
-         if (p >= 0) {
-            /*> htags_tagend   (p);                                                   <*/
-            /*> printf ("   tag (%3d) %-25.25s %c [%c%c%c.%c%c%c.%c%c%c%c%c] [%c%c.%c%c.%c%c%c%c.%c%c]\n",   <* 
-             *>       p, s_tags [p].name, s_tags [p].oneline,                                                <* 
-             *>       s_tags [p].scope, s_tags [p].rtype, s_tags [p].psize,                                  <* 
-             *>       s_tags [p].tsize, s_tags [p].dsize, s_tags [p].ssize,                                  <* 
-             *>       s_tags [p].lsize, s_tags [p].csize,                                                    <* 
-             *>       s_tags [p].rsize, s_tags [p].isize, s_tags [p].msize,                                  <* 
-             *>       s_tags [p].Fsize,                                                                      <* 
-             *>       s_tags [p].Lsize, s_tags [p].Gsize,                                                    <* 
-             *>       s_tags [p].Rsize, s_tags [p].Wsize,                                                    <* 
-             *>       s_tags [p].Osize, s_tags [p].Vsize,                                                    <* 
-             *>       '-'             , '-',                                                                 <* 
-             *>       '-'             , '-');                                                                <*/
-         }
-      }
    }
    /*---(close)--------------------------*/
    rc = fclose (f);
