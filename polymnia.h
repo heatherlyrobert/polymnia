@@ -13,8 +13,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.5b"
-#define   VER_TXT       "stunning updates and now has c-std lib use ability"
+#define   VER_NUM       "0.5c"
+#define   VER_TXT       "externs sorting and search tree building complete"
 
 
 
@@ -73,6 +73,7 @@
 #include    <stdlib.h>       /* CLIBC   standard general purpose              */
 #include    <string.h>       /* CLIBC   standard string handling              */
 #include    <unistd.h>       /* CLIBC   standard unix system handling         */
+#include    <math.h>         /* CLIBC   standard expanded mathematics         */
 
 #include  <dirent.h>
 
@@ -85,6 +86,7 @@
 
 
 #define      LEN_RECD         2000
+#define      LEN_NAME           50
 #define      LEN_LABEL          20
 
 
@@ -101,13 +103,15 @@ extern FILE *c;
 typedef struct cFILE tFILE;
 struct cFILE {
    char        type;
-   char        name        [LEN_RECD];
+   char        name        [LEN_NAME];
    int         lines;
    int         empty;
    int         docs;
    int         debug;
    int         code;
    int         slocl;
+   int         btag;
+   int         etag;
 };
 extern   tFILE    s_files [MAX_FILE];
 extern   int      s_nfile;
@@ -119,9 +123,9 @@ extern   tFILE    s_totals;
 typedef struct cTAG tTAG;
 struct cTAG {
    /*---(master)-------------------------*/
-   char        name        [LEN_RECD];
+   char        name        [LEN_NAME];
    int         file;
-   char        type        [LEN_RECD];
+   char        type        [LEN_NAME];
    int         line;
    char        source      [LEN_RECD];
    char        hint        [5];
@@ -210,7 +214,7 @@ char        poly_files_add          (char *a_name);
 char        poly_files_review       (void);
 char*       poly_files__unit        (char *a_question, int n);
 
-char        htags_tags_wipe         (int n);
+char        htags_tags_wipe         (tTAG *a_dst);
 char        htags_tags_init         (void);
 char        htags_tags_hint         (int n, char *a_label);
 char        htags_tags_add          (int a_file, char *a_name, char *a_type, int a_line, char *a_source);
@@ -235,5 +239,11 @@ char        poly_extern_init        (void);
 char        poly_extern_load        (void);
 char        poly_extern_check       (char *a_name);
 char        poly_extern_review      (int n);
+int         poly_extern__sdepth     (int n);
+char        poly_extern__dgnome     (void);
+char        poly_extern__sform      (void);
+char*       poly_extern__unit       (char *a_question, int n);
 
+char        poly_proto_init         (void);
+char        poly_proto_add          (int a_file, char *a_name, char a_type, int a_line);
 

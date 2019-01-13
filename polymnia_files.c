@@ -15,26 +15,31 @@ char
 poly_files__wipe   (tFILE *a_dst)
 {
    if (a_dst == NULL)  return -1;
-   strlcpy (a_dst->name, "", LEN_RECD);
+   strlcpy (a_dst->name, "", LEN_NAME);
    a_dst->lines    = 0;
    a_dst->empty    = 0;
    a_dst->docs     = 0;
    a_dst->debug    = 0;
    a_dst->code     = 0;
    a_dst->slocl    = 0;
+   a_dst->btag     = 0;
+   a_dst->etag     = 0;
    return 0;
 }
 
 char
 poly_files__copy  (tFILE *a_dst, tFILE *a_src)
 {
-   strlcpy (a_dst->name, a_src->name, LEN_RECD);
+   strlcpy (a_dst->name, a_src->name, LEN_NAME);
    a_dst->lines  = a_src->lines;
    a_dst->empty  = a_src->empty;
    a_dst->docs   = a_src->docs;
    a_dst->debug  = a_src->debug;
    a_dst->code   = a_src->code;
    a_dst->slocl  = a_src->slocl;
+   a_dst->btag   = a_src->btag;
+   a_dst->etag   = a_src->etag;
+   return 0;
 }
 
 char
@@ -103,7 +108,7 @@ poly_files_add    (char *a_name)
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return  rce;
    }
-   strlcpy (s_files [s_nfile].name, a_name  , LEN_RECD);
+   strlcpy (s_files [s_nfile].name, a_name  , LEN_NAME);
    /*---(type)---------------------------*/
    x_len = strlen (a_name);
    s_files [s_nfile].type = a_name [x_len - 1];
@@ -123,7 +128,7 @@ poly_files_review  (void)
    char        rce         =  -10;          /* return code for errors         */
    DIR        *x_dir       = NULL;          /* directory pointer              */
    tDIRENT    *x_file      = NULL;          /* directory entry pointer        */
-   char        x_name      [LEN_RECD];      /* file name                      */
+   char        x_name      [LEN_NAME];      /* file name                      */
    int         x_len       =    0;
    int         x_read      =    0;          /* count of entries reviewed      */
    int         x_good      =    0;          /* count of entries processed     */
@@ -149,7 +154,7 @@ poly_files_review  (void)
       if (x_file == NULL)  break;
       ++x_read;
       /*---(filter by name)--------------*/
-      strlcpy (x_name, x_file->d_name, LEN_RECD);
+      strlcpy (x_name, x_file->d_name, LEN_NAME);
       DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
       x_len = strlen (x_name);
       DEBUG_INPT   yLOG_value   ("x_len"     , x_len);

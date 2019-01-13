@@ -3,74 +3,74 @@
 
 
 char
-htags_tags_wipe    (int n)
+htags_tags_wipe    (tTAG *a_dst)
 {
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(master)-------------------------*/
-   strlcpy (s_tags [n].name  , "", LEN_RECD);
-   s_tags [n].file     = -1;
-   strlcpy (s_tags [n].type  , "", LEN_RECD);
-   s_tags [n].line     = -1;
-   strlcpy (s_tags [n].source, "", LEN_RECD);
-   strlcpy (s_tags [n].hint  , "", LEN_LABEL);
+   strlcpy (a_dst->name  , "", LEN_NAME);
+   a_dst->file     = -1;
+   strlcpy (a_dst->type  , "", LEN_RECD);
+   a_dst->line     = -1;
+   strlcpy (a_dst->source, "", LEN_RECD);
+   strlcpy (a_dst->hint  , "", LEN_LABEL);
    /*---(positioning)--------------------*/
-   s_tags [n].oneline  = '-';
-   s_tags [n].beg      = -1;
-   s_tags [n].end      = -1;
+   a_dst->oneline  = '-';
+   a_dst->beg      = -1;
+   a_dst->end      = -1;
    /*---(line counts)--------------------*/
-   s_tags [n].lines    = 0;
-   s_tags [n].empty    = 0;
-   s_tags [n].docs     = 0;
-   s_tags [n].debug    = 0;
-   s_tags [n].code     = 0;
-   s_tags [n].slocl    = 0;
+   a_dst->lines    = 0;
+   a_dst->empty    = 0;
+   a_dst->docs     = 0;
+   a_dst->debug    = 0;
+   a_dst->code     = 0;
+   a_dst->slocl    = 0;
    /*---(group one outputs)--------------*/
-   s_tags [n].scope    = '-';
-   s_tags [n].rtype    = '-';
-   s_tags [n].psize    = '-';
-   s_tags [n].tsize    = '-';
-   s_tags [n].dsize    = '-';
-   s_tags [n].ssize    = '-';
-   s_tags [n].lsize    = '-';
-   s_tags [n].csize    = '-';
-   s_tags [n].rsize    = '-';
-   s_tags [n].isize    = '-';
-   s_tags [n].msize    = '-';
+   a_dst->scope    = '-';
+   a_dst->rtype    = '-';
+   a_dst->psize    = '-';
+   a_dst->tsize    = '-';
+   a_dst->dsize    = '-';
+   a_dst->ssize    = '-';
+   a_dst->lsize    = '-';
+   a_dst->csize    = '-';
+   a_dst->rsize    = '-';
+   a_dst->isize    = '-';
+   a_dst->msize    = '-';
    /*---(group one working)--------------*/
-   strlcpy (s_tags [n].rname , "", LEN_RECD);
-   strlcpy (s_tags [n].params, "", LEN_RECD);
-   s_tags [n].nparam   = -3;
-   s_tags [n].lvars    = 0;
-   s_tags [n].choices  = 0;
-   s_tags [n].returns  = 0;
-   s_tags [n].indent   = 0;
-   s_tags [n].memories = 0;
+   strlcpy (a_dst->rname , "", LEN_RECD);
+   strlcpy (a_dst->params, "", LEN_RECD);
+   a_dst->nparam   = -3;
+   a_dst->lvars    = 0;
+   a_dst->choices  = 0;
+   a_dst->returns  = 0;
+   a_dst->indent   = 0;
+   a_dst->memories = 0;
    /*---(group two outputs)-----------*/
-   s_tags [n].Lsize    = '-';
-   s_tags [n].Gsize    = '-';
-   s_tags [n].Esize    = '-';
-   s_tags [n].Dsize    = '-';
-   s_tags [n].Fsize    = '-';
-   s_tags [n].Csize    = '-';
-   s_tags [n].Ysize    = '-';
-   s_tags [n].Xsize    = '-';
-   s_tags [n].Rsize    = '-';
-   s_tags [n].Wsize    = '-';
-   s_tags [n].Vsize    = '-';
+   a_dst->Lsize    = '-';
+   a_dst->Gsize    = '-';
+   a_dst->Esize    = '-';
+   a_dst->Dsize    = '-';
+   a_dst->Fsize    = '-';
+   a_dst->Csize    = '-';
+   a_dst->Ysize    = '-';
+   a_dst->Xsize    = '-';
+   a_dst->Rsize    = '-';
+   a_dst->Wsize    = '-';
+   a_dst->Vsize    = '-';
    /*---(group two working)-----------*/
-   s_tags [n].lcalls   = 0;
-   s_tags [n].gcalls   = 0;
-   s_tags [n].ecalls   = 0;
-   s_tags [n].depth    = 0;
-   s_tags [n].funcs    = 0;
-   s_tags [n].cstd     = 0;
-   s_tags [n].ylibs    = 0;
-   s_tags [n].xfuncs   = 0;
-   s_tags [n].reads    = 0;
-   s_tags [n].writes   = 0;
-   s_tags [n].opengl   = 0;
-   s_tags [n].ncurses  = 0;
+   a_dst->lcalls   = 0;
+   a_dst->gcalls   = 0;
+   a_dst->ecalls   = 0;
+   a_dst->depth    = 0;
+   a_dst->funcs    = 0;
+   a_dst->cstd     = 0;
+   a_dst->ylibs    = 0;
+   a_dst->xfuncs   = 0;
+   a_dst->reads    = 0;
+   a_dst->writes   = 0;
+   a_dst->opengl   = 0;
+   a_dst->ncurses  = 0;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -84,7 +84,7 @@ htags_tags_init    (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    for (i = 0; i < MAX_TAG; ++i) {
-      htags_tags_wipe (i);
+      htags_tags_wipe (&s_tags [i]);
    }
    s_ntag = 0;
    /*---(complete)-----------------------*/
@@ -133,15 +133,15 @@ htags_tags_add     (int a_file, char *a_name, char *a_type, int a_line, char *a_
    /*---(name)---------------------------*/
    DEBUG_INPT   yLOG_spoint  (a_name);
    --rce;  if (a_name == NULL) {
-      htags_tags_wipe (s_ntag);
+      htags_tags_wipe (&s_tags [s_ntag]);
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return  rce;
    }
-   strlcpy (s_tags [s_ntag].name  , a_name  , LEN_RECD);
+   strlcpy (s_tags [s_ntag].name  , a_name  , LEN_NAME);
    /*---(type)---------------------------*/
    DEBUG_INPT   yLOG_spoint  (a_type);
    --rce;  if (a_type == NULL) {
-      htags_tags_wipe (s_ntag);
+      htags_tags_wipe (&s_tags [s_ntag]);
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return  rce;
    }
@@ -149,7 +149,7 @@ htags_tags_add     (int a_file, char *a_name, char *a_type, int a_line, char *a_
    /*---(line)---------------------------*/
    DEBUG_INPT   yLOG_sint    (a_line);
    --rce;  if (a_line <= 0) {
-      htags_tags_wipe (s_ntag);
+      htags_tags_wipe (&s_tags [s_ntag]);
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return  rce;
    }
@@ -157,7 +157,7 @@ htags_tags_add     (int a_file, char *a_name, char *a_type, int a_line, char *a_
    /*---(source)-------------------------*/
    DEBUG_INPT   yLOG_spoint  (a_source);
    --rce;  if (a_source == NULL) {
-      htags_tags_wipe (s_ntag);
+      htags_tags_wipe (&s_tags [s_ntag]);
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return  rce;
    }
@@ -184,7 +184,7 @@ htags_tags_inventory    (int n)
    char       *p           = NULL;
    char       *q           = " ";
    int         c           =   0;
-   char        x_name      [LEN_RECD];
+   char        x_name      [LEN_NAME];
    int         x_line      =   0;
    char        x_type      [LEN_RECD];
    char        x_source    [LEN_RECD];
@@ -201,7 +201,8 @@ htags_tags_inventory    (int n)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
-   sprintf (x_cmd, "ctags  --language-force=c -x --sort=no --file-scope=yes %s > htags.tmp", s_files [n].name);
+   system ("ctags --language-force=c -x --sort=no --c-kinds=l htags.code | wc -l >  htags.stats");
+   sprintf (x_cmd, "ctags  --language-force=c -x --sort=no --file-scope=yes  --c-kinds=pfl %s > htags.tmp", s_files [n].name);
    DEBUG_INPT   yLOG_info    ("system"    , x_cmd);
    rc = system (x_cmd);
    DEBUG_INPT   yLOG_value   ("system"    , rc);
@@ -241,7 +242,7 @@ htags_tags_inventory    (int n)
          DEBUG_INPT   yLOG_note    ("can not find name field, SKIP");
          continue;
       }
-      strlcpy (x_name, p, LEN_RECD);
+      strlcpy (x_name, p, LEN_NAME);
       DEBUG_INPT   yLOG_info    ("name"      , x_name);
       /*---(type)------------------------*/
       p = strtok (NULL  , q);
