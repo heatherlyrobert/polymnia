@@ -13,8 +13,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.5c"
-#define   VER_TXT       "externs sorting and search tree building complete"
+#define   VER_NUM       "0.5d"
+#define   VER_TXT       "separated sort and search to apply across all areas (unit tested too)"
 
 
 
@@ -200,6 +200,54 @@ extern char      s_pprev     [LEN_RECD];
 extern char      s_prev      [LEN_RECD];
 extern char      s_curr      [LEN_RECD];
 
+
+
+/*----------+-----------+-----------+-----------+-----------+-----------+-----*/
+typedef     struct      cBTREE      tBTREE;
+struct      cBTREE {
+   /*---(information)-------*/
+   char       *sort;
+   /*---(linked list)-------*/
+   tBTREE     *prev;
+   tBTREE     *next;
+   /*---(searching)---------*/
+   tBTREE     *left;
+   tBTREE     *right;
+   /*---(data)--------------*/
+   void       *data;
+   /*---(done)--------------*/
+};
+#define     B_FILES     'f'
+#define     B_TAGS      't'
+#define     B_PROTO     'p'
+#define     B_EXTERN    'e'
+#define     B_UNIT      'U'
+#define     B_ALL       "ftpeU"
+
+
+
+/*----------+-----------+-----------+-----------+-----------+-----------+-----*/
+typedef     struct      cEXTERN     tEXTERN;
+struct      cEXTERN {
+   /*---(information)-------*/
+   char       *name;
+   int         len;
+   char        type;
+   int         count;
+   /*---(linked list)-------*/
+   tEXTERN    *prev;
+   tEXTERN    *next;
+   /*---(searching)---------*/
+   tEXTERN    *left;
+   tEXTERN    *right;
+   /*---(done)--------------*/
+};
+
+extern int   g_depth;
+extern char  g_path    [LEN_LABEL];
+
+
+
 extern char      unit_answer [LEN_RECD];
 
 
@@ -242,8 +290,21 @@ char        poly_extern_review      (int n);
 int         poly_extern__sdepth     (int n);
 char        poly_extern__dgnome     (void);
 char        poly_extern__sform      (void);
+tEXTERN*    poly_extern_search      (char *a_name);
 char*       poly_extern__unit       (char *a_question, int n);
 
 char        poly_proto_init         (void);
 char        poly_proto_add          (int a_file, char *a_name, char a_type, int a_line);
+
+char        poly_btree_create       (char a_btree, void *a_data, char *a_sort);
+char        poly_btree_purge        (char a_btree);
+int         poly_btree__depth       (int a_size);
+int         poly_btree__span        (int a_levels);
+char        poly_btree_dgnome       (char a_btree);
+char        poly_btree_build        (char a_btree);
+char        poly_btree_list         (char a_btree);
+void*       poly_btree_search       (char a_btree, char *a_name);
+char*       poly_btree__unit        (char a_btree, char *a_question, int i);
+
+
 

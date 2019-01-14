@@ -1,30 +1,14 @@
 /*============================----beg-of-source---============================*/
 #include  "polymnia.h"
 
-
-
-/*----------+-----------+-----------+-----------+-----------+-----------+-----*/
-typedef     struct      cEXTERN     tEXTERN;
-struct      cEXTERN {
-   /*---(information)-------*/
-   char       *name;
-   int         len;
-   char        type;
-   int         count;
-   /*---(linked list)-------*/
-   tEXTERN    *prev;
-   tEXTERN    *next;
-   /*---(searching)---------*/
-   tEXTERN    *left;
-   tEXTERN    *right;
-   /*---(done)--------------*/
-};
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 static      tEXTERN    *s_head      = NULL;
 static      tEXTERN    *s_tail      = NULL;
 static      int         s_count     = 0;
 static      tEXTERN    *s_root      = NULL;
 
+int   g_depth   = 0;
+char  g_path    [LEN_LABEL] = "";
 
 
 /*====================------------------------------------====================*/
@@ -318,8 +302,8 @@ poly_extern__sdisplay   (int a_lvl, tEXTERN *a_node)
    if (a_lvl > 20)      return 0;
    for (i = 0; i < a_lvl; ++i)  strcat (x_pre, "  ");
    poly_extern__sdisplay (a_lvl + 1, a_node->left);
-   /*> printf ("%s%s\n", x_pre, a_node->name);                                        <*/
-   printf ("%s\n", a_node->name);
+   printf ("%s%s\n", x_pre, a_node->name);
+   /*> printf ("%s\n", a_node->name);                                                 <*/
    poly_extern__sdisplay (a_lvl + 1, a_node->right);
    return 0;
 }
@@ -329,6 +313,29 @@ poly_extern__slist      (void)
 {
    poly_extern__sdisplay (0, s_root);
    return 0;
+}
+
+
+tEXTERN*
+poly_extern__sdown      (tEXTERN *a_node, char *a_dir, char *a_name)
+{
+   int         rc          =    0;
+   if (a_node == NULL)  return NULL;
+   ++g_depth;
+   strlcat (g_path, a_dir, LEN_LABEL);
+   rc = strcmp  (a_node->name, a_name);
+   printf ("%s %-20.20s %4d\n", a_dir, a_node->name, rc);
+   if (rc >  0)  return poly_extern__sdown (a_node->left , "L", a_name);
+   if (rc <  0)  return poly_extern__sdown (a_node->right, "R", a_name);
+   return a_node;
+}
+
+tEXTERN*
+poly_extern_search      (char *a_name)
+{
+   g_depth = 0;
+   strlcpy (g_path, "", LEN_LABEL);
+   return poly_extern__sdown (s_root, ">", a_name);
 }
 
 
@@ -509,21 +516,21 @@ poly_extern_load        (void)
     *> }                                                                              <* 
     *> printf ("   count = %d\n", c);                                                 <*/
    rc = poly_extern__dgnome ();
-   printf ("\n\n\nAFTER gnome...\n");
-   c = 0;
-   u = s_head;
-   while (u != NULL) {
-      ++c;
-      /*> printf ("%3d   %3d:%-20.20s %c\n", c, u->len, u->name, u->type);            <*/
-      printf ("%s\n", u->name);
-      u = u->next;
-   }
-   printf ("   count = %d\n", c);
+   /*> printf ("\n\n\nAFTER gnome...\n");                                                       <* 
+    *> c = 0;                                                                                   <* 
+    *> u = s_head;                                                                              <* 
+    *> while (u != NULL) {                                                                      <* 
+    *>    ++c;                                                                                  <* 
+    *>    /+> printf ("%3d   %3d:%-20.20s %c\n", c, u->len, u->name, u->type);            <+/   <* 
+    *>    printf ("%s\n", u->name);                                                             <* 
+    *>    u = u->next;                                                                          <* 
+    *> }                                                                                        <* 
+    *> printf ("   count = %d\n", c);                                                           <*/
    rc = poly_extern__sform  ();
-   printf ("\n\n\nAFTER sform...\n");
-   rc = poly_extern__slist  ();
+   /*> printf ("\n\n\nAFTER sform...\n");                                             <*/
+   /*> rc = poly_extern__slist  ();                                                   <*/
 
-   exit (0);
+   /*> exit (0);                                                                      <*/
 
    /*---(complete)-----------------------*/
    DEBUG_SORT   yLOG_exit    (__FUNCTION__);
