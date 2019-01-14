@@ -112,7 +112,7 @@ PROG_end             (void)
 char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.#]-*/ /*-[--.---.---.--]-*/
 PROG__unit_quiet   (void)
 {
-   char       *x_args [1]  = { "htags" };
+   char       *x_args [1]  = { "polymnia" };
    yURG_logger (1, x_args);
    PROG_init   (1, x_args);
    yURG_urgs   (1, x_args);
@@ -124,7 +124,7 @@ PROG__unit_quiet   (void)
 char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 PROG__unit_loud      (void)
 {
-   char       *x_args [2]  = { "htags_unit", "@@kitchen" };
+   char       *x_args [2]  = { "polymnia_unit", "@@kitchen" };
    yURG_logger (2, x_args);
    PROG_init   (2, x_args);
    yURG_urgs   (2, x_args);

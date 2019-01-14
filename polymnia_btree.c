@@ -66,6 +66,33 @@ poly_btree__by_abbr     (char a_btree)
 static void  o___EXISTANCE_______o () { return; }
 
 char
+poly_btree_init         (char a_btree)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        n           =   -1;
+   /*---(begin)--------------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_schar   (a_btree);
+   n = poly_btree__by_abbr   (a_btree);
+   DEBUG_DATA   yLOG_sint    (n);
+   --rce;  if (n < 0) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(create cell)--------------------*/
+   DEBUG_DATA   yLOG_snote   ("clear");
+   B_HEAD  = NULL;
+   B_TAIL  = NULL;
+   B_ROOT  = NULL;
+   B_COUNT = 0;
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
 poly_btree_create       (char a_btree, void *a_data, char *a_sort)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -194,8 +221,8 @@ poly_btree_purge        (char a_btree)
       return rce;
    }
    /*---(clean ends)---------------------*/
-   B_HEAD = NULL;
-   B_TAIL = NULL;
+   B_HEAD  = NULL;
+   B_TAIL  = NULL;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -283,9 +310,12 @@ poly_btree_dgnome       (char a_btree)
    DEBUG_SORT   yLOG_point   ("->next"    , B_HEAD->next);
    --rce;  if (B_HEAD->next == NULL) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      return 0;
    }
    /*---(prepare)------------------------*/
+   s_swaps = 0;
+   s_comps = 0;
+   s_teles = 0;
    o   = B_HEAD->next;
    if (o != NULL) {
       p = o->prev;
@@ -340,6 +370,134 @@ poly_btree_dgnome       (char a_btree)
    /*---(complete)-----------------------*/
    DEBUG_SORT   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                      sequential access                       ----===*/
+/*====================------------------------------------====================*/
+static void  o___SEQUENCE________o () { return; }
+
+static tBTREE   *s_btree = -1;
+static tBTREE   *s_last  = NULL;
+
+void*
+poly_btree_first        (char a_btree)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         n           =   -1;
+   tBTREE     *u           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   s_btree  = -1;
+   s_last   = NULL;
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   n = poly_btree__by_abbr   (a_btree);
+   DEBUG_DATA   yLOG_value   ("a_btree"   , n);
+   --rce;  if (n < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return NULL;
+   }
+   /*---(save)---------------------------*/
+   s_btree  = a_btree;
+   s_last   = B_HEAD;
+   DEBUG_DATA   yLOG_point   ("s_last"    , s_last);
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return s_last->data;
+}
+
+void*
+poly_btree_next         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         n           =   -1;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   s_btree  = -1;
+   s_last   = NULL;
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_value   ("s_btree"   , s_btree);
+   --rce;  if (s_btree < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return NULL;
+   }
+   /*---(walk)---------------------------*/
+   DEBUG_DATA   yLOG_point   ("s_last"    , s_last);
+   if (s_last == NULL)  {
+      DEBUG_DATA   yLOG_note    ("already null");
+      return NULL;
+   }
+   s_last = s_last->next;
+   DEBUG_DATA   yLOG_point   ("s_last"    , s_last);
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return s_last->data;
+}
+
+void*
+poly_btree_entry        (char a_btree, int i)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         n           =   -1;
+   int         c           =    0;
+   tBTREE     *u           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   n = poly_btree__by_abbr   (a_btree);
+   DEBUG_DATA   yLOG_value   ("a_btree"   , n);
+   --rce;  if (n < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return NULL;
+   }
+   /*---(walk)---------------------------*/
+   DEBUG_DATA   yLOG_note    ("walking");
+   u = B_HEAD;
+   while (c < i) {
+      if (u == NULL)  break;
+      u = u->next;
+      ++c;
+   }
+   DEBUG_DATA   yLOG_point   ("u"         , u);
+   --rce;  if (u == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return NULL;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return u->data;
+}
+
+int
+poly_btree_count        (char a_btree)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         n           =   -1;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   n = poly_btree__by_abbr   (a_btree);
+   DEBUG_DATA   yLOG_value   ("a_btree"   , n);
+   --rce;  if (n < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(count)--------------------------*/
+   DEBUG_DATA   yLOG_point   ("count"     , B_COUNT);
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return B_COUNT;
 }
 
 

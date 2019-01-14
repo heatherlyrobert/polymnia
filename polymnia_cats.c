@@ -2,6 +2,13 @@
 #include  "polymnia.h"
 
 
+int       s_lines   = 0;
+int       s_empty   = 0;
+int       s_docs    = 0;
+int       s_debug   = 0;
+int       s_code    = 0;
+int       s_slocl   = 0;
+
 
 /*====================------------------------------------====================*/
 /*===----                   convert values to markers                  ----===*/
@@ -103,31 +110,31 @@ poly_cats_lines    (int a_file, int a_tag, char a_type)
 {
    int         c           =     0;
    ++(s_files [a_file].lines);
-   ++(s_totals.lines);
+   ++(s_lines);
    IN_TAGLINES  ++(s_tags [a_tag].lines);
    switch (a_type) {
    case 'D' :
-      ++(s_totals.debug);
+      ++(s_debug);
       ++(s_files [a_file].debug);
       IN_TAGLINES  ++(s_tags [a_tag].debug);
       break;
    case 'd' :
-      ++(s_totals.docs);
+      ++(s_docs);
       ++(s_files [a_file].docs);
       IN_TAGLINES  ++(s_tags [a_tag].docs );
       break;
    case 'e' :
-      ++(s_totals.empty);
+      ++(s_empty);
       ++(s_files [a_file].empty);
       IN_TAGLINES  ++(s_tags [a_tag].empty);
       break;
    case 'c' :
-      ++(s_totals.code);
+      ++(s_code);
       ++(s_files [a_file].code);
       IN_TAGLINES  ++(s_tags [a_tag].code );
       c = strldcnt (s_curr, ';', LEN_RECD);
       if (c < 0)  c = 0;
-      s_totals.slocl += c;
+      s_slocl += c;
       s_files [a_file].slocl += c;
       IN_TAGLINES  s_tags [a_tag].slocl += c;
       break;

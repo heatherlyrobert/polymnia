@@ -32,9 +32,9 @@ main (int argc, char *argv[])
             s_files [i].code , s_files [i].slocl);
    }
    printf ("full= %3d %3d %3d %3d %3d %3d\n",
-         s_totals.lines, s_totals.empty, 
-         s_totals.docs , s_totals.debug, 
-         s_totals.code , s_totals.slocl);
+         s_lines, s_empty, 
+         s_docs , s_debug, 
+         s_code , s_slocl);
    /*---(wrap-up)------------------------*/
    PROG_end     ();
    /*---(complete)-----------------------*/

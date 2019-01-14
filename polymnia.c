@@ -11,6 +11,9 @@
  *
  */
 
+char      s_pprev     [LEN_RECD];
+char      s_prev      [LEN_RECD];
+char      s_curr      [LEN_RECD];
 
 
 

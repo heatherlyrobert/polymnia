@@ -13,8 +13,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.5d"
-#define   VER_TXT       "separated sort and search to apply across all areas (unit tested too)"
+#define   VER_NUM       "0.5e"
+#define   VER_TXT       "files uses btree now, and unit testing is updated"
 
 
 
@@ -92,26 +92,36 @@
 
 #define      FILE_EXTERN     "/var/lib/polymnia/external.txt"
 
-typedef struct dirent    tDIRENT;
-
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+typedef     struct      dirent      tDIRENT;
+typedef     struct      cFILE       tFILE;
+typedef     struct      cTAG        tTAG;
+typedef     struct      cBTREE      tBTREE;
+typedef     struct      cEXTERN     tEXTERN;
 
 
 extern FILE *f;
 extern FILE *c;
 
 #define       MAX_FILE     200
-typedef struct cFILE tFILE;
 struct cFILE {
+   /*---(master)------------*/
    char        type;
-   char        name        [LEN_NAME];
+   char       *name;
+   /*---(stats)-------------*/
    int         lines;
    int         empty;
    int         docs;
    int         debug;
    int         code;
    int         slocl;
+   /*---(tags)--------------*/
    int         btag;
    int         etag;
+   tTAG       *thead;
+   tTAG       *ttail;
+   int         ntag;
+   /*---(done)--------------*/
 };
 extern   tFILE    s_files [MAX_FILE];
 extern   int      s_nfile;
@@ -120,7 +130,6 @@ extern   tFILE    s_totals;
 
 
 #define       MAX_TAG     5000
-typedef struct cTAG tTAG;
 struct cTAG {
    /*---(master)-------------------------*/
    char        name        [LEN_NAME];
@@ -200,10 +209,16 @@ extern char      s_pprev     [LEN_RECD];
 extern char      s_prev      [LEN_RECD];
 extern char      s_curr      [LEN_RECD];
 
+extern int       s_lines;
+extern int       s_empty;
+extern int       s_docs;
+extern int       s_debug;
+extern int       s_code;
+extern int       s_slocl;
+
 
 
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
-typedef     struct      cBTREE      tBTREE;
 struct      cBTREE {
    /*---(information)-------*/
    char       *sort;
@@ -227,7 +242,6 @@ struct      cBTREE {
 
 
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
-typedef     struct      cEXTERN     tEXTERN;
 struct      cEXTERN {
    /*---(information)-------*/
    char       *name;
@@ -258,8 +272,11 @@ char        poly_cats_tagsumm       (int n);
 char        htags_calls             (char *a_file, int  n, int *a_dst);
 
 char        poly_files_init         (void);
-char        poly_files_add          (char *a_name);
+char        poly_files_wrap         (void);
+char        poly_files__add         (char *a_name, char a_type);
 char        poly_files_review       (void);
+char        poly_files_list         (void);
+tFILE*      poly_files_search       (char *a_name);
 char*       poly_files__unit        (char *a_question, int n);
 
 char        htags_tags_wipe         (tTAG *a_dst);
@@ -284,23 +301,29 @@ char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);
 
 char        poly_extern_init        (void);
+char        poly_extern_wrap        (void);
+char        poly_extern__add        (char *a_name, char a_type);
 char        poly_extern_load        (void);
 char        poly_extern_check       (char *a_name);
 char        poly_extern_review      (int n);
-int         poly_extern__sdepth     (int n);
-char        poly_extern__dgnome     (void);
-char        poly_extern__sform      (void);
+char        poly_extern_list        (void);
 tEXTERN*    poly_extern_search      (char *a_name);
 char*       poly_extern__unit       (char *a_question, int n);
 
 char        poly_proto_init         (void);
 char        poly_proto_add          (int a_file, char *a_name, char a_type, int a_line);
 
+
+char        poly_btree_init         (char a_btree);
 char        poly_btree_create       (char a_btree, void *a_data, char *a_sort);
 char        poly_btree_purge        (char a_btree);
 int         poly_btree__depth       (int a_size);
 int         poly_btree__span        (int a_levels);
 char        poly_btree_dgnome       (char a_btree);
+void*       poly_btree_first        (char a_btree);
+void*       poly_btree_next         (void);
+void*       poly_btree_entry        (char a_btree, int i);
+int         poly_btree_count        (char a_btree);
 char        poly_btree_build        (char a_btree);
 char        poly_btree_list         (char a_btree);
 void*       poly_btree_search       (char a_btree, char *a_name);

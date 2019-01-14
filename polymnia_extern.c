@@ -16,138 +16,54 @@ char  g_path    [LEN_LABEL] = "";
 /*====================------------------------------------====================*/
 static void  o___EXISTANCE_______o () { return; }
 
-tEXTERN*
-poly_extern__create      (char *a_name, char a_type)
+char
+poly_extern__add         (char *a_name, char a_type)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    tEXTERN    *x_new       = NULL;
    int         x_tries     =    0;
    int         x_len       =    0;
    /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_name);
+   DEBUG_DATA   yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_len    = strlen (a_name);
    --rce;  if (x_len == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
    /*---(create cell)--------------------*/
    while (x_new == NULL) {
       ++x_tries;
       x_new = (tEXTERN *) malloc (sizeof (tEXTERN));
       if (x_tries > 10)   break;
    }
-   DEBUG_DATA   yLOG_sint    (x_tries);
-   DEBUG_DATA   yLOG_spoint  (x_new);
+   DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
    --rce;  if (x_new == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(clear)--------------------------*/
-   DEBUG_DATA   yLOG_snote   ("clear");
+   /*---(populate)-----------------------*/
+   DEBUG_DATA   yLOG_note    ("populate");
    x_new->name   = strdup (a_name);
-   x_new->len    = x_len;
    x_new->type   = a_type;
    x_new->count  = 0;
-   /*---(into linked list)---------------*/
-   DEBUG_DATA   yLOG_snote   ("link");
-   x_new->next    = NULL;
-   x_new->prev    = NULL;
-   x_new->left    = NULL;
-   x_new->right   = NULL;
-   if (s_head == NULL) {
-      s_head = s_tail = x_new;
-   } else {
-      x_new->prev  = s_tail;
-      s_tail->next = x_new;
-      s_tail       = x_new;
+   /*---(into btree)---------------------*/
+   rc = poly_btree_create (B_EXTERN, x_new, x_new->name);
+   DEBUG_DATA   yLOG_value   ("btree"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   /*---(update count)-------------------*/
-   ++s_count;
-   DEBUG_DATA   yLOG_sint    (s_count);
-   DEBUG_DATA   yLOG_snote   ("successful");
    /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_extern__swap       (tEXTERN *a_one, tEXTERN *a_two)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tEXTERN    *t           = NULL;
-   /*---(beginning)----------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   DEBUG_DATA   yLOG_spoint  (a_one);
-   --rce;  if (a_one == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_spoint  (a_two);
-   --rce;  if (a_two == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   --rce;  if (a_one == a_two) {
-      DEBUG_DATA   yLOG_snote   ("same, no action");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(cut two from list)--------------*/
-   DEBUG_DATA   yLOG_snote   ("unlink");
-   if (a_two->next != NULL)   a_two->next->prev = a_two->prev;
-   else                       s_tail            = a_two->prev;
-   if (a_two->prev != NULL)   a_two->prev->next = a_two->next;
-   else                       s_head            = a_two->next;
-   /*---(insert before one)--------------*/
-   DEBUG_DATA   yLOG_snote   ("insert");
-   if (a_one->prev != NULL)   a_one->prev->next = a_two;
-   else                       s_head            = a_two;
-   a_two->prev = a_one->prev;
-   a_two->next = a_one;
-   a_one->prev = a_two;
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_extern__destroy     (tEXTERN *a_old)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   /*---(beginning)----------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   DEBUG_DATA   yLOG_spoint  (a_old);
-   --rce;  if (a_old == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(clear fields)-------------------*/
-   if (a_old->name != NULL)  free (a_old->name);
-   /*---(out of linked list)-------------*/
-   DEBUG_DATA   yLOG_snote   ("unlink");
-   if (a_old->next != NULL)   a_old->next->prev = a_old->prev;
-   else                       s_tail            = a_old->prev;
-   if (a_old->prev != NULL)   a_old->prev->next = a_old->next;
-   else                       s_head            = a_old->next;
-   /*---(update count)-------------------*/
-   --s_count;
-   DEBUG_DATA   yLOG_sint    (s_count);
-   /*---(free main)----------------------*/
-   DEBUG_DATA   yLOG_snote   ("free");
-   free (a_old);
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -161,16 +77,20 @@ static void  o___PROGRAM_________o () { return; }
 char
 poly_extern_init        (void)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_senter  (__FUNCTION__);
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
-   DEBUG_PROG   yLOG_snote   ("pointers");
-   s_head    = NULL;
-   s_tail    = NULL;
-   DEBUG_PROG   yLOG_snote   ("counts");
-   s_count   = 0;
+   rc = poly_btree_init (B_EXTERN);
+   DEBUG_PROG   yLOG_value   ("init"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -180,27 +100,17 @@ poly_extern_wrap        (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   tEXTERN    *x_curr      = NULL;
-   tEXTERN    *x_next      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
-   x_next = s_head;
-   DEBUG_DATA   yLOG_spoint  (s_head);
-   while (x_next != NULL) {
-      x_curr = x_next;
-      x_next = x_curr->next;
-      rc = poly_extern__destroy (x_curr);
-   }
-   --rce;  if (s_count > 0) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+   rc = poly_btree_purge (B_EXTERN);
+   DEBUG_PROG   yLOG_value   ("purge"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(clean ends)---------------------*/
-   s_head = NULL;
-   s_tail = NULL;
    /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -211,222 +121,8 @@ poly_extern_wrap        (void)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int 
-poly_extern__sdepth     (int n)
-{
-   int         c           =    0;
-   if (n <= 0)  return -1;
-   while (n > 1) {
-      n /= 2;
-      ++c;
-   }
-   ++c;
-   return c;
-}
-
-tEXTERN*
-poly_extern__smake      (int a_lvl, int a_pos, int a_dist, char a_dir, tEXTERN *a_node)
-{
-   tEXTERN    *x_node      = NULL;
-   char        x_pre       [LEN_RECD] = "";
-   int         x_pos       =    0;
-   int         c           =    0;
-   int         i           =    0;
-   for (i = 0; i < a_lvl; ++i)  strcat (x_pre, "  ");
-   if (a_dist == 0)   return NULL;
-   x_node = a_node;
-   switch (a_dir) {
-   case 'L' :
-      x_pos = a_pos - a_dist;
-      if (x_pos <= 0) {
-         /*> x_node->left  = poly_extern__smake (a_lvl, a_pos, a_dist / 2, 'L', x_node);   <*/
-         return poly_extern__smake (a_lvl, a_pos, a_dist / 2, 'L', x_node);
-      }
-      break;
-   case 'R' :
-      x_pos = a_pos + a_dist;
-      if (x_pos > s_count) {
-         /*> x_node->right = poly_extern__smake (a_lvl, a_pos, a_dist / 2, 'R', x_node);   <*/
-         return poly_extern__smake (a_lvl, a_pos, a_dist / 2, 'R', x_node);
-      }
-      break;
-   default  :
-      return NULL;
-      break;
-   }
-   while (c < a_dist) {
-      if (a_dir == 'L')   x_node = x_node->prev;
-      if (a_dir == 'R')   x_node = x_node->next;
-      ++c;
-   }
-   /*> printf ("%s%2d %c %2d (%3d) %s\n", x_pre, a_lvl, a_dir, a_dist, x_pos, x_node->name);   <*/
-   x_node->left  = poly_extern__smake (a_lvl + 1, x_pos, a_dist / 2, 'L', x_node);
-   x_node->right = poly_extern__smake (a_lvl + 1, x_pos, a_dist / 2, 'R', x_node);
-   return x_node;
-}
-
-char
-poly_extern__sform      (void)
-{
-   tEXTERN    *x_node      = NULL;
-   int         x_lvl       =    0;
-   int         x_ctr       =    0;
-   int         x_span      =    0;
-   int         x_dist      =    0;
-   int         c           =    0;
-   x_lvl  = poly_extern__sdepth (s_count);
-   /*> printf ("depth  = %d\n", x_lvl);                                               <*/
-   x_span = pow (2, x_lvl) - 1;
-   /*> printf ("span   = %d\n", x_span);                                              <*/
-   /*> printf ("use    = %5.2f\n", s_count / (float) x_span);                         <*/
-   x_ctr  = (s_count / 2) + 1;
-   /*> printf ("center = %d\n", x_ctr);                                               <*/
-   s_root = s_head;
-   c = 1;
-   while (c < x_ctr) {
-      s_root = s_root->next;
-      ++c;
-   }
-   /*> printf ("ROOT %2d (%3d) %s\n", x_lvl, x_ctr, s_root->name);                    <*/
-   s_root->left  = poly_extern__smake (1, x_ctr, x_span / 4 + 1, 'L', s_root);
-   s_root->right = poly_extern__smake (1, x_ctr, x_span / 4 + 1, 'R', s_root);
-   return 0;
-}
-
-char
-poly_extern__sdisplay   (int a_lvl, tEXTERN *a_node)
-{
-   char        x_pre       [LEN_RECD] = "";
-   int         i           =    0;
-   if (a_node == NULL)  return 0;
-   if (a_lvl > 20)      return 0;
-   for (i = 0; i < a_lvl; ++i)  strcat (x_pre, "  ");
-   poly_extern__sdisplay (a_lvl + 1, a_node->left);
-   printf ("%s%s\n", x_pre, a_node->name);
-   /*> printf ("%s\n", a_node->name);                                                 <*/
-   poly_extern__sdisplay (a_lvl + 1, a_node->right);
-   return 0;
-}
-
-char
-poly_extern__slist      (void)
-{
-   poly_extern__sdisplay (0, s_root);
-   return 0;
-}
-
-
-tEXTERN*
-poly_extern__sdown      (tEXTERN *a_node, char *a_dir, char *a_name)
-{
-   int         rc          =    0;
-   if (a_node == NULL)  return NULL;
-   ++g_depth;
-   strlcat (g_path, a_dir, LEN_LABEL);
-   rc = strcmp  (a_node->name, a_name);
-   printf ("%s %-20.20s %4d\n", a_dir, a_node->name, rc);
-   if (rc >  0)  return poly_extern__sdown (a_node->left , "L", a_name);
-   if (rc <  0)  return poly_extern__sdown (a_node->right, "R", a_name);
-   return a_node;
-}
-
-tEXTERN*
-poly_extern_search      (char *a_name)
-{
-   g_depth = 0;
-   strlcpy (g_path, "", LEN_LABEL);
-   return poly_extern__sdown (s_root, ">", a_name);
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                          sorting                             ----===*/
-/*====================------------------------------------====================*/
-static void  o___SORT____________o () { return; }
-
-static  s_swaps      = 0;
-static  s_comps      = 0;
-static  s_teles      = 0;
-
-char
-poly_extern__dgnome          (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   int         x_match     =    0;
-   char        x_flag      =  '-';
-   tEXTERN    *p           = NULL;          /* main index                     */
-   tEXTERN    *t           = NULL;          /* teleport point                 */
-   tEXTERN    *o           = NULL;          /* origin point                   */
-   char        x_swap      =  '-';
-   /*---(header)-------------------------*/
-   DEBUG_SORT   yLOG_enter   (__FUNCTION__);
-   /*---(gnome)--------------------------*/
-   DEBUG_SORT   yLOG_point   ("s_head"    , s_head);
-   --rce;  if (s_head == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_SORT   yLOG_point   ("->next"    , s_head->next);
-   --rce;  if (s_head == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   o   = s_head->next;
-   if (o != NULL) {
-      p = o->prev;
-      t = o->next;
-   }
-   while (o != NULL) {
-      /*---(beginning)-------------------*/
-      if (p == NULL) {
-         DEBUG_SORT   yLOG_note    ("bounce off beginning");
-         if (x_swap == 'y') {
-            ++s_swaps;
-            poly_extern__swap (s_head, o);
-            x_swap = '-';
-         }
-         ++s_teles;
-         o = t;
-         if (o != NULL) {
-            p = o->prev;
-            t = o->next;
-         }
-         continue;
-      }
-      /*---(compare)---------------------*/
-      ++s_comps;
-      x_match = strcmp (p->name, o->name);
-      x_flag  = (x_match <= 0) ? 'y' : '#';
-      DEBUG_SORT   yLOG_complex ("compare"   , "%-20.20s v %-20.20s   %c %4d   %4d %4d %4d", p->name, o->name, x_flag, x_match, s_comps, s_teles, s_swaps);
-      if (x_match <= 0) {
-         if (x_swap == 'y') {
-            ++s_swaps;
-            poly_extern__swap (p->next, o);
-            x_swap = '-';
-         }
-         ++s_teles;
-         o = t;
-         if (o != NULL) {
-            p = o->prev;
-            t = o->next;
-         }
-         continue;
-      }
-      /*---(swap)------------------------*/
-      x_swap = 'y';
-      p = p->prev;
-      /*---(next)------------------------*/
-   }
-   DEBUG_SORT   yLOG_value   ("size"       , s_count);
-   DEBUG_SORT   yLOG_value   ("compares"   , s_comps);
-   DEBUG_SORT   yLOG_value   ("teleports"  , s_teles);
-   DEBUG_SORT   yLOG_value   ("swaps"      , s_swaps);
-   /*---(complete)-----------------------*/
-   DEBUG_SORT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+char      poly_extern_list        (void) { return poly_btree_list (B_EXTERN); }
+tEXTERN*  poly_extern_search      (char *a_name) { return (tEXTERN *) poly_btree_search  (B_EXTERN, a_name); }
 
 
 
@@ -445,10 +141,10 @@ poly_extern_load        (void)
    char        x_recd      [LEN_RECD];
    int         x_len       =    0;
    char        x_type      =  '-';
-   int         c           =    0;
-   tEXTERN    *u           = NULL;
    /*---(header)-------------------------*/
    DEBUG_SORT   yLOG_enter   (__FUNCTION__);
+   /*---(purge existing)-----------------*/
+   rc = poly_btree_purge (B_EXTERN);
    /*---(open)---------------------------*/
    r = fopen (FILE_EXTERN, "rt");
    DEBUG_SORT   yLOG_point   ("r"          , r);
@@ -464,7 +160,6 @@ poly_extern_load        (void)
          DEBUG_SORT   yLOG_note    ("end of file");
          break;
       }
-      ++c;
       x_len = strlen (x_recd);
       DEBUG_SORT   yLOG_value   ("x_len"     , x_len);
       if (strlen >= 1)  x_recd [--x_len] = '\0';
@@ -495,7 +190,7 @@ poly_extern_load        (void)
       }
       /*---(save)------------------------*/
       strltrim (x_recd, ySTR_BOTH, LEN_RECD);
-      poly_extern__create (x_recd, x_type);
+      poly_extern__add (x_recd, x_type);
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
@@ -505,38 +200,30 @@ poly_extern_load        (void)
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(sort)---------------------------*/
-   /*> printf ("BEFORE gnome...\n");                                                  <* 
-    *> u = s_head;                                                                    <* 
-    *> c = 0;                                                                         <* 
-    *> while (u != NULL) {                                                            <* 
-    *>    ++c;                                                                        <* 
-    *>    printf ("%3d:%-20.20s %c\n", u->len, u->name, u->type);                     <* 
-    *>    u = u->next;                                                                <* 
-    *> }                                                                              <* 
-    *> printf ("   count = %d\n", c);                                                 <*/
-   rc = poly_extern__dgnome ();
-   /*> printf ("\n\n\nAFTER gnome...\n");                                                       <* 
-    *> c = 0;                                                                                   <* 
-    *> u = s_head;                                                                              <* 
-    *> while (u != NULL) {                                                                      <* 
-    *>    ++c;                                                                                  <* 
-    *>    /+> printf ("%3d   %3d:%-20.20s %c\n", c, u->len, u->name, u->type);            <+/   <* 
-    *>    printf ("%s\n", u->name);                                                             <* 
-    *>    u = u->next;                                                                          <* 
-    *> }                                                                                        <* 
-    *> printf ("   count = %d\n", c);                                                           <*/
-   rc = poly_extern__sform  ();
-   /*> printf ("\n\n\nAFTER sform...\n");                                             <*/
-   /*> rc = poly_extern__slist  ();                                                   <*/
-
-   /*> exit (0);                                                                      <*/
-
+   /*---(check count)--------------------*/
+   DEBUG_INPT   yLOG_value   ("s_nfile"   , poly_btree_count (B_EXTERN));
+   --rce;  if (poly_btree_count (B_EXTERN) <= 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(prepare for use)----------------*/
+   rc = poly_btree_dgnome   (B_EXTERN);
+   DEBUG_SORT   yLOG_value   ("dgnome"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_btree_build (B_EXTERN);
+   DEBUG_SORT   yLOG_value   ("build"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> poly_extern_list ();                                                           <*/
    /*---(complete)-----------------------*/
    DEBUG_SORT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
-
 
 char
 poly_extern_check       (char *a_name)
