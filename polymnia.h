@@ -13,8 +13,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.5e"
-#define   VER_TXT       "files uses btree now, and unit testing is updated"
+#define   VER_NUM       "0.5f"
+#define   VER_TXT       "added shortcutting, by type, to btree search (and unit test)"
 
 
 

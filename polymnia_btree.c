@@ -13,16 +13,19 @@ struct      cROOTS {
    tBTREE     *head;
    tBTREE     *tail;
    tBTREE     *root;
+   /*---(saved)-------------*/
+   char       *search;
+   tBTREE     *last;
    /*---(stats)-------------*/
    int         count;
    /*---(done)--------------*/
 } s_trees [MAX_BTREE] = {
-   { B_FILES , NULL, NULL, NULL, 0},
-   { B_TAGS  , NULL, NULL, NULL, 0},
-   { B_EXTERN, NULL, NULL, NULL, 0},
-   { B_PROTO , NULL, NULL, NULL, 0},
-   { B_UNIT  , NULL, NULL, NULL, 0},
-   { 0       , NULL, NULL, NULL, 0},
+   { B_FILES , NULL, NULL, NULL, NULL, NULL, 0},
+   { B_TAGS  , NULL, NULL, NULL, NULL, NULL, 0},
+   { B_EXTERN, NULL, NULL, NULL, NULL, NULL, 0},
+   { B_PROTO , NULL, NULL, NULL, NULL, NULL, 0},
+   { B_UNIT  , NULL, NULL, NULL, NULL, NULL, 0},
+   { 0       , NULL, NULL, NULL, NULL, NULL, 0},
 };
 
 
@@ -32,6 +35,8 @@ struct      cROOTS {
 #define     B_TAIL      s_trees [n].tail
 #define     B_ROOT      s_trees [n].root
 #define     B_COUNT     s_trees [n].count
+#define     B_SEARCH    s_trees [n].search
+#define     B_LAST      s_trees [n].last
 
 
 
@@ -670,20 +675,27 @@ poly_btree_search       (char a_btree, char *a_name)
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   /*---(find tree)----------------------*/
    n = poly_btree__by_abbr   (a_btree);
    DEBUG_DATA   yLOG_value   ("a_btree"   , n);
    --rce;  if (n < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(prepare)------------------------*/
    g_depth = 0;
    strlcpy (g_path, "", LEN_LABEL);
+   /*---(short-cut)----------------------*/
+   if (B_SEARCH != NULL && strcmp (B_SEARCH, a_name) == 0)   return B_LAST;
+   /*---(search)-------------------------*/
    x_node = poly_btree__searchdown (B_ROOT, "@", a_name);
+   /*---(save)---------------------------*/
+   B_SEARCH = strdup (a_name);
+   B_LAST   = x_node->data;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return x_node->data;
 }
-
 
 
 

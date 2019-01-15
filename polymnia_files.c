@@ -256,8 +256,8 @@ poly_files_review  (void)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-char      poly_files_list         (void) { return poly_btree_list (B_FILES); }
-tFILE*    poly_files_search       (char *a_name) { return (tFILE *) poly_btree_search  (B_FILES, a_name); }
+tFILE*  poly_files_search  (char *a_name) { return (tFILE *) poly_btree_search  (B_FILES, a_name); }
+char    poly_files_list    (void)         { return poly_btree_list (B_FILES); }
 
 
 
