@@ -13,8 +13,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.5f"
-#define   VER_TXT       "added shortcutting, by type, to btree search (and unit test)"
+#define   VER_NUM       "0.5g"
+#define   VER_TXT       "wow, tons of changes, forgot incremental git versions"
 
 
 
@@ -40,28 +40,32 @@
  *     j indent (maximum indentation)          in threes
  *     k memory (memory management)            y/-
  *     ----
- *  5) interaction (15 chars long)                 [abc.def.ghijk]
+ *  5) interaction (15 chars long)                 [ab.cdefg.hijk]
  *     ----
- *     a local  (local/file references count)
  *     b global (global references count)
- *     c extern (extern references count)
+ *     a local  (local/file references count)
  *     ----
- *     d funcs  (function call count)
+ *     c funcs  (function call count)
+ *     d intern (calls to internal functions)
  *     e cstd   (function call count, just c-std)
  *     f ylib   (function call count, just my-libs)
+ *     g mystry (who knows the destination)
  *     ----
- *     g input  (std library input function count)
- *     h output (std library output function count)
- *     i ncures/opengl/both (ncurses function count)
- *     j process
- *     k system
+ *     h input  (std library input)            R/-
+ *     i output (std library output)           W/-
+ *     j process/system                        P/S/B
+ *     k recursion                             y/-
  *     ----
- *  6) group three                                 [ab.cdefg.hijk]
- *     a gproto (global protopyte)                    
- *     b lproto (local protytype)                   
+ *  6) warnings                                    [ab.cdefg.hijk]
+ *     a dstyle (multi, single, mix, none)
+ *     b dmacro (single, multi)
+ *     ----
+ *     d proto  (global, private, local)              
  *     ----
  *     c unit   (calls in unit tests)
+ *     i ncures/opengl/both                    N/O/B
  *
+ *     c extern (extern references count)
  *
  *
  */
@@ -90,7 +94,6 @@
 #define      LEN_LABEL          20
 
 
-#define      FILE_EXTERN     "/var/lib/polymnia/external.txt"
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 typedef     struct      dirent      tDIRENT;
@@ -100,8 +103,21 @@ typedef     struct      cBTREE      tBTREE;
 typedef     struct      cEXTERN     tEXTERN;
 
 
-extern FILE *f;
-extern FILE *c;
+
+
+extern      FILE       *f_prog;
+
+extern      FILE       *f_tags;
+#define     F_CTAGS     "polymnia.ctag"
+extern      FILE       *f_flow;
+#define     F_CFLOW     "polymnia.cflow"
+extern      FILE       *f_extern;
+#define     F_EXTERN    "/var/lib/polymnia/external.txt"
+extern      FILE       *f_mystry;
+#define     F_MYSTRY    "polymnia.mystry"
+extern      FILE       *f_ylib;
+#define     F_YLIB      "polymnia.ylib"
+
 
 #define       MAX_FILE     200
 struct cFILE {
@@ -124,20 +140,23 @@ struct cFILE {
    /*---(done)--------------*/
 };
 extern   tFILE    s_files [MAX_FILE];
-extern   int      s_nfile;
-extern   tFILE    s_totals;
 
 
 
 #define       MAX_TAG     5000
 struct cTAG {
    /*---(master)-------------------------*/
-   char        name        [LEN_NAME];
-   int         file;
-   char        type        [LEN_NAME];
+   tFILE      *file;
+   char       *name;
+   char        type;
    int         line;
-   char        source      [LEN_RECD];
-   char        hint        [5];
+   char        hint        [3];
+   char        image       [10];
+   char        desc        [40];
+   char        ready;
+   /*---(file linked list)---------------*/
+   tTAG       *fprev;
+   tTAG       *fnext;
    /*---(positioning)--------------------*/
    char        oneline;                 /* return type and name on same line  */
    int         beg;
@@ -162,8 +181,6 @@ struct cTAG {
    int         isize;
    char        msize;
    /*---(group one working)--------------*/
-   char        rname       [LEN_RECD];
-   char        params      [LEN_RECD];
    char        nparam;
    int         lvars;
    int         choices;
@@ -173,23 +190,27 @@ struct cTAG {
    /*---(group two outputs)-----------*/
    char        Lsize;
    char        Gsize;
-   char        Esize;
    char        Dsize;
    char        Fsize;
+   char        Isize;
    char        Csize;
    char        Ysize;
-   char        Xsize;
-   char        Rsize;
-   char        Wsize;
-   char        Vsize;
-   char        Psize;
-   char        Ssize;
+   char        Msize;
+   char        Rflag;                     /* read from file or terminal       */
+   char        Wflag;                     /* write to file or terminal        */
+   char        Vflag;                     /* use ncurses or opengl            */
+   char        Nsize;                     /* use ncurses                      */
+   char        Osize;                     /* use opengl                       */
+   char        Lflag;                     /* linux system and process calls   */
+   char        Sflag;                     /* self/recursion flag              */
    /*---(group two working)-----------*/
    int         lcalls;
    int         gcalls;
    int         ecalls;
    int         depth;
    int         funcs;
+   int         intern;
+   int         mystry;
    int         cstd;
    int         ylibs;
    int         xfuncs;
@@ -199,6 +220,16 @@ struct cTAG {
    int         ncurses;
    int         process;
    int         scalls;
+   int         recurse;
+   /*---(group three outputs)---------*/
+   char        Dstyle;                    /* debug style (long, short)        */
+   char        Dmacro;                    /* which macro used                 */
+   char        Xsize;
+   char        Esize;
+   /*---(group three working)---------*/
+   int         dlong;                     /* long style yLOG_                 */
+   int         dshort;                    /* short style yLOG_                */
+   int         dfree;                     /* yLOG_ without DEBUG_ protection  */
    /*---(done)--------------*/
 };
 extern   tTAG     s_tags [MAX_TAG];
@@ -266,10 +297,7 @@ extern char      unit_answer [LEN_RECD];
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
-char        htags_readline          (int a_file, int *l, int *n);
-char        htags_scope             (int n, int l);
-char        poly_cats_tagsumm       (int n);
-char        htags_calls             (char *a_file, int  n, int *a_dst);
+char        poly_cats_tagsumm       (tTAG *a_tag);
 
 char        poly_files_init         (void);
 char        poly_files_wrap         (void);
@@ -277,25 +305,31 @@ char        poly_files__add         (char *a_name, char a_type);
 char        poly_files_review       (void);
 char        poly_files_list         (void);
 tFILE*      poly_files_search       (char *a_name);
+char        poly_files_addtag       (tFILE *a_file, tTAG *a_tag);
+char        poly_files_nexttag      (tFILE *a_file, tTAG **a_tag);
 char*       poly_files__unit        (char *a_question, int n);
 
-char        htags_tags_wipe         (tTAG *a_dst);
-char        htags_tags_init         (void);
-char        htags_tags_hint         (int n, char *a_label);
-char        htags_tags_add          (int a_file, char *a_name, char *a_type, int a_line, char *a_source);
-char        htags_tags_inventory    (int n);
-char        htags_tags_review       (int a_file);
+char        poly_tags_macro         (char *a_macro);
+tTAG*       poly_tags_byline        (tFILE *a_file, int a_line);
+char        poly_tags_init          (void);
+char        poly_tags_wrap          (void);
+char        poly_tags__hint         (int n, char *a_label);
+char        poly_tags__wipe         (tTAG *a_dst);
+char        poly_tags__add          (tFILE *a_file, char *a_name, char a_type, int a_line);
+char        poly_tags_inventory     (tFILE *a_file);
+char        poly_tags_readline      (tFILE *a_file, int *a_line, tTAG **a_tag);
+char        poly_tags_review        (tFILE *a_file);
 char*       htags_tags__unit        (char *a_question, int n);
 
 char        poly_cats_flag          (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_exists        (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_exact         (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_scaled        (char *a_label, int a_src, char *a_dst, char a_zero);
-char        poly_cats_logic         (int a_tag, char a_type);
-char        poly_cats_lines         (int a_file, int a_tag, char a_type);
-char        poly_cats_depth         (int n);
+char        poly_cats_logic         (tTAG *a_tag, char a_type);
+char        poly_cats_lines         (tFILE *a_file, tTAG *a_tag, char a_type);
 char*       htags_cats__unit        (char *a_question, int n);
 
+char        PROG_report             (char a_format);
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);
@@ -305,7 +339,7 @@ char        poly_extern_wrap        (void);
 char        poly_extern__add        (char *a_name, char a_type);
 char        poly_extern_load        (void);
 char        poly_extern_check       (char *a_name);
-char        poly_extern_review      (int n);
+char        poly_extern_review      (void);
 char        poly_extern_list        (void);
 tEXTERN*    poly_extern_search      (char *a_name);
 char*       poly_extern__unit       (char *a_question, int n);
@@ -321,7 +355,7 @@ int         poly_btree__depth       (int a_size);
 int         poly_btree__span        (int a_levels);
 char        poly_btree_dgnome       (char a_btree);
 void*       poly_btree_first        (char a_btree);
-void*       poly_btree_next         (void);
+void*       poly_btree_next         (char a_btree);
 void*       poly_btree_entry        (char a_btree, int i);
 int         poly_btree_count        (char a_btree);
 char        poly_btree_build        (char a_btree);

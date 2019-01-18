@@ -94,11 +94,6 @@ poly_files__add          (char *a_name, char a_type)
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   x_len    = strlen (a_name);
-   --rce;  if (x_len == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
    DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
    /*---(create cell)--------------------*/
    while (x_new == NULL) {
@@ -158,11 +153,8 @@ poly_files_review  (void)
       return  rce;
    }
    DEBUG_INPT   yLOG_note    ("openned successfully");
-   /*---(prepare)------------------------*/
-   s_nfile = 0;
    /*---(process entries)----------------*/
    DEBUG_INPT   yLOG_note    ("processing entries");
-   /*> printf ("FILE INVENTORY...\n");                                                <*/
    while (1) {
       /*---(read a directory entry)------*/
       x_file = readdir (x_dir);
@@ -209,7 +201,6 @@ poly_files_review  (void)
       /*---(save)------------------------*/
       poly_files__add (x_name, x_type);
       ++x_good;
-      /*> printf ("   %3d %s\n", s_nfile, s_files [s_nfile].name);                    <*/
       DEBUG_INPT   yLOG_note    ("added to inventory");
       /*---(done)------------------------*/
    }
@@ -221,7 +212,7 @@ poly_files_review  (void)
    DEBUG_INPT   yLOG_value   ("close_rc"  , rc);
    /*> printf ("   end-of-files\n\n\n");                                              <*/
    /*---(check count)--------------------*/
-   DEBUG_INPT   yLOG_value   ("s_nfile"   , poly_btree_count (B_FILES));
+   DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_FILES));
    --rce;  if (poly_btree_count (B_FILES) <= 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
@@ -240,10 +231,6 @@ poly_files_review  (void)
       return rce;
    }
    /*> poly_extern_list ();                                                           <*/
-   /*---(build analysis files)------------------*/
-   /*> system ("cflow -r -d 2 *.c 2> /dev/null > htags.gcalls");                      <*/
-   system ("cflow -r -d 2 $(ls -1 *.c | grep -v unit) 2> /dev/null > htags.gcalls");
-   system ("cflow -d 150 $(ls -1 *.c | grep -v unit) 2> /dev/null > htags.flow");
    /*---(complete)------------------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -259,6 +246,93 @@ static void  o___SEARCH__________o () { return; }
 tFILE*  poly_files_search  (char *a_name) { return (tFILE *) poly_btree_search  (B_FILES, a_name); }
 char    poly_files_list    (void)         { return poly_btree_list (B_FILES); }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                         tag inventory                        ----===*/
+/*====================------------------------------------====================*/
+static void  o___TAGS____________o () { return; }
+
+char
+poly_files_addtag       (tFILE *a_file, tTAG *a_tag)
+{
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (a_file);
+   if (a_file == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
+      return -1;
+   }
+   DEBUG_DATA   yLOG_spoint  (a_tag);
+   if (a_tag == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
+      return -1;
+   }
+   /*---(into linked list)---------------*/
+   DEBUG_DATA   yLOG_spoint  (a_file->thead);
+   DEBUG_DATA   yLOG_spoint  (a_file->ttail);
+   if (a_file->thead == NULL) {
+      DEBUG_DATA   yLOG_snote   ("first");
+      a_file->thead = a_file->ttail = a_tag;
+   } else {
+      DEBUG_DATA   yLOG_snote   ("append");
+      a_tag->fprev         = a_file->ttail;
+      a_file->ttail->fnext = a_tag;
+      a_file->ttail        = a_tag;
+   }
+   /*---(update count)-------------------*/
+   ++a_file->ntag;
+   DEBUG_DATA   yLOG_sint    (a_file->ntag);
+   /*---(complete)------------------------------*/
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_files_nexttag      (tFILE *a_file, tTAG **a_tag)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_spoint  (a_tag);
+   --rce;  if (a_tag == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_spoint  (*a_tag);
+   /*---(first time)---------------------*/
+   --rce;  if (*a_tag == NULL) {
+      DEBUG_DATA   yLOG_snote   ("first");
+      if (a_file->thead == NULL) {
+         DEBUG_DATA   yLOG_snote   ("head is null");
+         DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+         return rce;
+      }
+      *a_tag = a_file->thead;
+   }
+   /*---(next time)----------------------*/
+   else { 
+      DEBUG_DATA   yLOG_snote   ("next");
+      if ((*a_tag)->fnext == NULL) {
+         DEBUG_DATA   yLOG_snote   ("next is null");
+         DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+         return rce;
+      }
+      *a_tag = (*a_tag)->fnext;
+   }
+   DEBUG_DATA   yLOG_spoint  (*a_tag);
+   /*---(complete)------------------------------*/
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
 
 
 /*====================------------------------------------====================*/

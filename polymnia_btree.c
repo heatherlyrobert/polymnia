@@ -13,19 +13,22 @@ struct      cROOTS {
    tBTREE     *head;
    tBTREE     *tail;
    tBTREE     *root;
-   /*---(saved)-------------*/
+   /*---(searches)----------*/
    char       *search;
    tBTREE     *last;
+   /*---(sequential)--------*/
+   tBTREE     *saved;
    /*---(stats)-------------*/
    int         count;
+   int         depth;
    /*---(done)--------------*/
 } s_trees [MAX_BTREE] = {
-   { B_FILES , NULL, NULL, NULL, NULL, NULL, 0},
-   { B_TAGS  , NULL, NULL, NULL, NULL, NULL, 0},
-   { B_EXTERN, NULL, NULL, NULL, NULL, NULL, 0},
-   { B_PROTO , NULL, NULL, NULL, NULL, NULL, 0},
-   { B_UNIT  , NULL, NULL, NULL, NULL, NULL, 0},
-   { 0       , NULL, NULL, NULL, NULL, NULL, 0},
+   { B_FILES , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
+   { B_TAGS  , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
+   { B_EXTERN, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
+   { B_PROTO , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
+   { B_UNIT  , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
+   { 0       , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
 };
 
 
@@ -35,8 +38,10 @@ struct      cROOTS {
 #define     B_TAIL      s_trees [n].tail
 #define     B_ROOT      s_trees [n].root
 #define     B_COUNT     s_trees [n].count
+#define     B_DEPTH     s_trees [n].depth
 #define     B_SEARCH    s_trees [n].search
 #define     B_LAST      s_trees [n].last
+#define     B_SAVED     s_trees [n].saved
 
 
 
@@ -250,37 +255,37 @@ poly_btree__swap        (int n, tBTREE *a_one, tBTREE *a_two)
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
    /*---(beginning)----------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   DEBUG_DATA   yLOG_spoint  (a_one);
+   DEBUG_SORT   yLOG_senter  (__FUNCTION__);
+   DEBUG_SORT   yLOG_spoint  (a_one);
    --rce;  if (a_one == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_spoint  (a_two);
+   DEBUG_SORT   yLOG_spoint  (a_two);
    --rce;  if (a_two == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    --rce;  if (a_one == a_two) {
-      DEBUG_DATA   yLOG_snote   ("same, no action");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_SORT   yLOG_snote   ("same, no action");
+      DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(cut two from list)--------------*/
-   DEBUG_DATA   yLOG_snote   ("unlink");
+   DEBUG_SORT   yLOG_snote   ("unlink");
    if (a_two->next != NULL)   a_two->next->prev = a_two->prev;
    else                       B_TAIL            = a_two->prev;
    if (a_two->prev != NULL)   a_two->prev->next = a_two->next;
    else                       B_HEAD            = a_two->next;
    /*---(insert before one)--------------*/
-   DEBUG_DATA   yLOG_snote   ("insert");
+   DEBUG_SORT   yLOG_snote   ("insert");
    if (a_one->prev != NULL)   a_one->prev->next = a_two;
    else                       B_HEAD            = a_two;
    a_two->prev = a_one->prev;
    a_two->next = a_one;
    a_one->prev = a_two;
    /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   DEBUG_SORT   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -299,11 +304,11 @@ poly_btree_dgnome       (char a_btree)
    /*---(header)-------------------------*/
    DEBUG_SORT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   DEBUG_SORT   yLOG_char    ("a_btree"   , a_btree);
    n = poly_btree__by_abbr   (a_btree);
-   DEBUG_DATA   yLOG_value   ("a_btree"   , n);
+   DEBUG_SORT   yLOG_value   ("a_btree"   , n);
    --rce;  if (n < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(check list)---------------------*/
@@ -384,9 +389,6 @@ poly_btree_dgnome       (char a_btree)
 /*====================------------------------------------====================*/
 static void  o___SEQUENCE________o () { return; }
 
-static tBTREE   *s_btree = -1;
-static tBTREE   *s_last  = NULL;
-
 void*
 poly_btree_first        (char a_btree)
 {
@@ -397,8 +399,7 @@ poly_btree_first        (char a_btree)
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   s_btree  = -1;
-   s_last   = NULL;
+   B_SAVED    = NULL;
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
    n = poly_btree__by_abbr   (a_btree);
@@ -408,42 +409,51 @@ poly_btree_first        (char a_btree)
       return NULL;
    }
    /*---(save)---------------------------*/
-   s_btree  = a_btree;
-   s_last   = B_HEAD;
-   DEBUG_DATA   yLOG_point   ("s_last"    , s_last);
+   B_SAVED   = B_HEAD;
+   DEBUG_DATA   yLOG_point   ("B_SAVED"    , B_SAVED);
+   if (B_SAVED == NULL)  {
+      DEBUG_DATA   yLOG_note    ("head is null");
+      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+      return NULL;
+   }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return s_last->data;
+   return B_SAVED->data;
 }
 
 void*
-poly_btree_next         (void)
+poly_btree_next         (char a_btree)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    int         n           =   -1;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(prepare)------------------------*/
-   s_btree  = -1;
-   s_last   = NULL;
    /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_value   ("s_btree"   , s_btree);
-   --rce;  if (s_btree < 0) {
+   DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   n = poly_btree__by_abbr   (a_btree);
+   DEBUG_DATA   yLOG_value   ("a_btree"   , n);
+   --rce;  if (n < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return NULL;
    }
    /*---(walk)---------------------------*/
-   DEBUG_DATA   yLOG_point   ("s_last"    , s_last);
-   if (s_last == NULL)  {
+   DEBUG_DATA   yLOG_point   ("saved"     , B_SAVED);
+   if (B_SAVED == NULL)  {
       DEBUG_DATA   yLOG_note    ("already null");
+      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
       return NULL;
    }
-   s_last = s_last->next;
-   DEBUG_DATA   yLOG_point   ("s_last"    , s_last);
+   B_SAVED = B_SAVED->next;
+   DEBUG_DATA   yLOG_point   ("B_SAVED"    , B_SAVED);
+   if (B_SAVED == NULL)  {
+      DEBUG_DATA   yLOG_note    ("now null");
+      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+      return NULL;
+   }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return s_last->data;
+   return B_SAVED->data;
 }
 
 void*
@@ -499,7 +509,7 @@ poly_btree_count        (char a_btree)
       return rce;
    }
    /*---(count)--------------------------*/
-   DEBUG_DATA   yLOG_point   ("count"     , B_COUNT);
+   DEBUG_DATA   yLOG_value   ("count"     , B_COUNT);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return B_COUNT;
@@ -542,31 +552,33 @@ poly_btree__nextlevel   (int n, int a_lvl, int a_pos, int a_dist, char a_dir, tE
    /*---(pre-defense)--------------------*/
    if (a_dist == 0)   return NULL;
    /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   DEBUG_SORT   yLOG_enter   (__FUNCTION__);
+   /*---(depth)--------------------------*/
+   if (a_lvl + 1 > B_DEPTH)  B_DEPTH = a_lvl + 1;
    /*---(check new position)-------------*/
    x_node = a_node;
    switch (a_dir) {
    case 'L' :
       x_pos = a_pos - a_dist;
       if (x_pos <= 0) {
-         DEBUG_DATA   yLOG_note    ("too far left, skip level");
+         DEBUG_SORT   yLOG_note    ("too far left, skip level");
          x_node = poly_btree__nextlevel (n, a_lvl, a_pos, a_dist / 2, 'L', x_node);
-         DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+         DEBUG_SORT   yLOG_exit    (__FUNCTION__);
          return x_node;
       }
       break;
    case 'R' :
       x_pos = a_pos + a_dist;
       if (x_pos > B_COUNT) {
-         DEBUG_DATA   yLOG_note    ("too far right, skip level");
+         DEBUG_SORT   yLOG_note    ("too far right, skip level");
          x_node = poly_btree__nextlevel (n, a_lvl, a_pos, a_dist / 2, 'R', x_node);
-         DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+         DEBUG_SORT   yLOG_exit    (__FUNCTION__);
          return x_node;
       }
       break;
    default  :
-      DEBUG_DATA   yLOG_note    ("a_dir not LR, skipping");
-      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+      DEBUG_SORT   yLOG_note    ("a_dir not LR, skipping");
+      DEBUG_SORT   yLOG_exit    (__FUNCTION__);
       return NULL;
       break;
    }
@@ -577,11 +589,11 @@ poly_btree__nextlevel   (int n, int a_lvl, int a_pos, int a_dist, char a_dir, tE
       ++c;
    }
    /*---(recurse)------------------------*/
-   DEBUG_DATA   yLOG_complex ("a_btree"   , "%2d %c %4d %4d %s", a_lvl, a_dir, a_dist, x_pos, x_node->sort);
+   DEBUG_SORT   yLOG_complex ("a_btree"   , "%2d %c %4d %4d %s", a_lvl, a_dir, a_dist, x_pos, x_node->sort);
    x_node->left  = poly_btree__nextlevel (n, a_lvl + 1, x_pos, a_dist / 2, 'L', x_node);
    x_node->right = poly_btree__nextlevel (n, a_lvl + 1, x_pos, a_dist / 2, 'R', x_node);
    /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   DEBUG_SORT   yLOG_exit    (__FUNCTION__);
    return x_node;
 }
 
@@ -597,33 +609,34 @@ poly_btree_build        (char a_btree)
    int         c           =    0;
    int         n           =  -1;
    /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   DEBUG_SORT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   DEBUG_SORT   yLOG_char    ("a_btree"   , a_btree);
    n = poly_btree__by_abbr   (a_btree);
-   DEBUG_DATA   yLOG_value   ("a_btree"   , n);
+   DEBUG_SORT   yLOG_value   ("a_btree"   , n);
    --rce;  if (n < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_lvl  = poly_btree__depth (B_COUNT);
-   DEBUG_DATA   yLOG_value   ("est depth" , x_lvl);
+   DEBUG_SORT   yLOG_value   ("est depth" , x_lvl);
    x_span = poly_btree__span (x_lvl);
-   DEBUG_DATA   yLOG_value   ("max span"  , x_span);
-   DEBUG_DATA   yLOG_double  ("est usage" , B_COUNT / 2.0 + 1);
+   DEBUG_SORT   yLOG_value   ("max span"  , x_span);
+   DEBUG_SORT   yLOG_double  ("est usage" , B_COUNT / 2.0 + 1);
    x_ctr  = (B_COUNT / 2) + 1;
-   DEBUG_DATA   yLOG_value   ("center"    , x_ctr);
+   DEBUG_SORT   yLOG_value   ("center"    , x_ctr);
    B_ROOT = B_HEAD;
    c = 1;
    while (c < x_ctr) {
       B_ROOT = B_ROOT->next;
       ++c;
    }
-   DEBUG_DATA   yLOG_info    ("ROOT"      , B_ROOT->sort);
+   DEBUG_SORT   yLOG_info    ("ROOT"      , B_ROOT->sort);
    B_ROOT->left  = poly_btree__nextlevel (n, 1, x_ctr, x_span / 4 + 1, 'L', B_ROOT);
    B_ROOT->right = poly_btree__nextlevel (n, 1, x_ctr, x_span / 4 + 1, 'R', B_ROOT);
+   DEBUG_SORT   yLOG_value   ("real depth", B_DEPTH);
    /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   DEBUG_SORT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -686,10 +699,25 @@ poly_btree_search       (char a_btree, char *a_name)
    g_depth = 0;
    strlcpy (g_path, "", LEN_LABEL);
    /*---(short-cut)----------------------*/
-   if (B_SEARCH != NULL && strcmp (B_SEARCH, a_name) == 0)   return B_LAST;
+   if (B_SEARCH != NULL && strcmp (B_SEARCH, a_name) == 0) {
+      DEBUG_DATA   yLOG_note    ("shortcut");
+      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+      return B_LAST;
+   }
    /*---(search)-------------------------*/
+   DEBUG_DATA   yLOG_note    ("dive into btree");
    x_node = poly_btree__searchdown (B_ROOT, "@", a_name);
+   DEBUG_DATA   yLOG_value   ("max depth" , B_DEPTH);
+   DEBUG_DATA   yLOG_value   ("g_depth"   , g_depth);
+   DEBUG_DATA   yLOG_info    ("g_path"    , g_path);
+   /*---(check)--------------------------*/
+   --rce;  if (x_node == NULL) {
+      DEBUG_DATA   yLOG_note    ("not found");
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return NULL;
+   }
    /*---(save)---------------------------*/
+   DEBUG_DATA   yLOG_note    ("found");
    B_SEARCH = strdup (a_name);
    B_LAST   = x_node->data;
    /*---(complete)-----------------------*/

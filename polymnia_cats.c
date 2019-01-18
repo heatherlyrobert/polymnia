@@ -21,7 +21,8 @@ poly_cats_flag     (char *a_label, int a_src, char *a_dst, char a_flag)
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
    DEBUG_DATA   yLOG_sint    (a_src);
-   if      (a_src <      0)  *a_dst = '-';
+   if      (a_src <     -1)  *a_dst = '*';
+   else if (a_src ==    -1)  *a_dst = '-';
    else if (a_src ==     0)  *a_dst = '-';
    else                      *a_dst = a_flag;
    DEBUG_DATA   yLOG_schar   (*a_dst);
@@ -35,7 +36,8 @@ poly_cats_exists   (char *a_label, int a_src, char *a_dst, char a_zero)
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
    DEBUG_DATA   yLOG_sint    (a_src);
-   if      (a_src <      0)  *a_dst = '-';
+   if      (a_src <     -1)  *a_dst = '*';
+   else if (a_src ==    -1)  *a_dst = '-';
    else if (a_src ==     0)  *a_dst = a_zero;
    else                      *a_dst = '#';
    DEBUG_DATA   yLOG_schar   (*a_dst);
@@ -48,11 +50,13 @@ poly_cats_exact    (char *a_label, int a_src, char *a_dst, char a_zero)
 {
    int         c           =    0;
    char       *x_scale     = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+   /*> char       *x_scale     = "0123456789abcdefghijklmnopqrstuvwxyz";              <*/
    int         x_max       = (strlen (x_scale));
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
    DEBUG_DATA   yLOG_sint    (a_src);
-   if      (a_src <      0)  *a_dst = '-';
+   if      (a_src <     -1)  *a_dst = '*';
+   else if (a_src ==    -1)  *a_dst = '-';
    else if (a_src ==     0)  *a_dst = a_zero;
    else if (a_src >= x_max)  *a_dst = '#';
    else                      *a_dst = x_scale [a_src];
@@ -71,7 +75,8 @@ poly_cats_scaled   (char *a_label, int a_src, char *a_dst, char a_zero)
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
    DEBUG_DATA   yLOG_sint    (a_src);
-   if      (a_src <      0)  *a_dst = '-';
+   if      (a_src <     -1)  *a_dst = '*';
+   else if (a_src ==    -1)  *a_dst = '-';
    else if (a_src ==     0)  *a_dst = a_zero;
    else if (a_src >= x_max)  *a_dst = '#';
    else                      *a_dst = x_scale [a_src /  5];
@@ -87,93 +92,62 @@ poly_cats_scaled   (char *a_label, int a_src, char *a_dst, char a_zero)
 /*====================------------------------------------====================*/
 static void  o___ADDING__________o () { return; }
 
-#define  IN_TAG  if (a_tag >= 0 && (s_tags [a_tag].oneline == 'y' || (s_tags [a_tag].beg >= 0 && s_tags [a_tag].end < 0))) 
+#define  IN_TAG  if (a_tag != NULL && (a_tag->oneline == 'y' || (a_tag->beg >= 0 && a_tag->end < 0))) 
 
 char
-poly_cats_logic    (int a_tag, char a_type)
+poly_cats_logic    (tTAG *a_tag, char a_type)
 {
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    switch (a_type) {
    case 'r' :
-      IN_TAG  ++(s_tags [a_tag].returns);
+      IN_TAG  ++(a_tag->returns);
       break;
    case 'c' :
-      IN_TAG  ++(s_tags [a_tag].choices);
+      IN_TAG  ++(a_tag->choices);
       break;
    }
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
-#define  IN_TAGLINES  if (a_tag >= 0 && s_tags [a_tag].beg >= 0 && s_tags [a_tag].end < 0) 
+#define  IN_TAGLINES  if (a_tag != NULL && a_tag->beg >= 0 && a_tag->end < 0) 
 
 char
-poly_cats_lines    (int a_file, int a_tag, char a_type)
+poly_cats_lines    (tFILE *a_file, tTAG *a_tag, char a_type)
 {
    int         c           =     0;
-   ++(s_files [a_file].lines);
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   ++(a_file->lines);
    ++(s_lines);
-   IN_TAGLINES  ++(s_tags [a_tag].lines);
+   IN_TAGLINES  ++(a_tag->lines);
    switch (a_type) {
    case 'D' :
       ++(s_debug);
-      ++(s_files [a_file].debug);
-      IN_TAGLINES  ++(s_tags [a_tag].debug);
+      ++(a_file->debug);
+      IN_TAGLINES  ++(a_tag->debug);
       break;
    case 'd' :
       ++(s_docs);
-      ++(s_files [a_file].docs);
-      IN_TAGLINES  ++(s_tags [a_tag].docs );
+      ++(a_file->docs);
+      IN_TAGLINES  ++(a_tag->docs );
       break;
    case 'e' :
       ++(s_empty);
-      ++(s_files [a_file].empty);
-      IN_TAGLINES  ++(s_tags [a_tag].empty);
+      ++(a_file->empty);
+      IN_TAGLINES  ++(a_tag->empty);
       break;
-   case 'c' :
+   case 'C' :
       ++(s_code);
-      ++(s_files [a_file].code);
-      IN_TAGLINES  ++(s_tags [a_tag].code );
+      ++(a_file->code);
+      IN_TAGLINES  ++(a_tag->code );
       c = strldcnt (s_curr, ';', LEN_RECD);
       if (c < 0)  c = 0;
       s_slocl += c;
-      s_files [a_file].slocl += c;
-      IN_TAGLINES  s_tags [a_tag].slocl += c;
+      a_file->slocl += c;
+      IN_TAGLINES  a_tag->slocl += c;
       break;
    }
-   return 0;
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                      specialty categories                    ----===*/
-/*====================------------------------------------====================*/
-static void  o___SPECIALTY_______o () { return; }
-
-char
-poly_cats_depth      (int n)
-{
-   char        x_recd      [LEN_RECD] = "";
-   FILE       *d           = NULL;
-   char       *p           = NULL;
-   int         x_pre       =    0;
-   int         x_min       =  100;
-   if (n < 0)  return 0;
-   d = fopen ("htags.flow", "rt");
-   if (d == NULL) {
-      s_tags [n].depth = -2;
-      return -1;
-   }
-   while (1) {
-      fgets (x_recd, LEN_RECD, d);
-      if (feof (d))  break;
-      p = strstr (x_recd, s_tags [n].name);
-      if (p == NULL)  continue;
-      x_pre = p - x_recd;
-      if (x_pre < x_min)  x_min = x_pre;
-   }
-   fclose (d);
-   if (x_min == 100)   s_tags [n].depth = -1;
-   else                s_tags [n].depth = x_min / 4;
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -185,58 +159,51 @@ poly_cats_depth      (int n)
 static void  o___SUMMARY_________o () { return; }
 
 char
-poly_cats_tagsumm  (int n)
+poly_cats_tagsumm  (tTAG *a_tag)
 {
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   DEBUG_DATA   yLOG_value   ("index"     , n);
-   if (n < 0) {
-      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-      return -1;
-   }
-   DEBUG_DATA   yLOG_info    ("name"      , s_tags [n].name);
-   htags_parse        (n);
-   poly_extern_review (n);
-   /*> poly_cats_depth  (n);                                                          <*/
-   s_tags [n].indent  /= 3;
-   s_tags [n].indent  -= 1;
+   DEBUG_DATA   yLOG_info    ("name"      , a_tag->name);
+   a_tag->indent  /= 3;
+   a_tag->indent  -= 1;
    /*---(group one)----------------------*/
-   poly_cats_scaled  ("lines"   , s_tags [n].lines   , &s_tags [n].tsize, '-');
-   poly_cats_scaled  ("debug"   , s_tags [n].debug   , &s_tags [n].dsize, '-');
-   poly_cats_scaled  ("slocl"   , s_tags [n].slocl   , &s_tags [n].ssize, '-');
-   poly_cats_exact   ("choices" , s_tags [n].choices , &s_tags [n].csize, '-');
-   poly_cats_exact   ("returns" , s_tags [n].returns , &s_tags [n].rsize, '-');
-   poly_cats_exact   ("indent"  , s_tags [n].indent  , &s_tags [n].isize, '-');
-   poly_cats_exact   ("locals"  , s_tags [n].lvars   , &s_tags [n].lsize, '-');
-   poly_cats_flag    ("memories", s_tags [n].memories, &s_tags [n].msize, '#');
+   poly_cats_scaled  ("lines"   , a_tag->lines   , &a_tag->tsize, '-');
+   poly_cats_scaled  ("debug"   , a_tag->debug   , &a_tag->dsize, '-');
+   poly_cats_scaled  ("slocl"   , a_tag->slocl   , &a_tag->ssize, '-');
+   poly_cats_exact   ("locals"  , a_tag->lvars   , &a_tag->lsize, '-');
+   poly_cats_exact   ("choices" , a_tag->choices , &a_tag->csize, '-');
+   poly_cats_exact   ("returns" , a_tag->returns , &a_tag->rsize, '-');
+   poly_cats_exact   ("indent"  , a_tag->indent  , &a_tag->isize, '-');
+   poly_cats_flag    ("memories", a_tag->memories, &a_tag->msize, '#');
    /*---(group two)----------------------*/
-   poly_cats_exact   ("lcalls"  , s_tags [n].lcalls  , &s_tags [n].Lsize, '-');
-   poly_cats_exact   ("gcalls"  , s_tags [n].gcalls  , &s_tags [n].Gsize, '-');
-   poly_cats_exact   ("ecalls"  , s_tags [n].ecalls  , &s_tags [n].Esize, '-');
-   poly_cats_exact   ("depth"   , s_tags [n].depth   , &s_tags [n].Dsize, '-');
-   poly_cats_exact   ("funcs"   , s_tags [n].funcs   , &s_tags [n].Fsize, '-');
-   poly_cats_exact   ("cstd"    , s_tags [n].cstd    , &s_tags [n].Csize, '-');
-   poly_cats_exact   ("ylib"    , s_tags [n].ylibs   , &s_tags [n].Ysize, '-');
-   poly_cats_exact   ("extern"  , s_tags [n].xfuncs  , &s_tags [n].Xsize, '-');
-   poly_cats_flag    ("reads"   , s_tags [n].reads   , &s_tags [n].Rsize, 'R');
-   poly_cats_flag    ("writes"  , s_tags [n].writes  , &s_tags [n].Wsize, 'W');
-   poly_cats_flag    ("visual"  , s_tags [n].ncurses + s_tags [n].opengl, &s_tags [n].Vsize, 'N');
-   if (s_tags [n].ncurses > 0 && s_tags [n].opengl  > 0)  s_tags [n].Vsize = 'B';
-   else if (s_tags [n].ncurses > 0)  s_tags [n].Vsize = 'N';
-   else if (s_tags [n].opengl  > 0)  s_tags [n].Vsize = 'O';
-   poly_cats_flag    ("process" , s_tags [n].process , &s_tags [n].Psize, 'P');
-   poly_cats_flag    ("systen"  , s_tags [n].scalls  , &s_tags [n].Ssize, 'S');
-   /*---(output)-------------------------*/
-   printf ("   tag (%3d) %-25.25s %c [%c%c%c.%c%c%c.%c%c%c%c%c] [%c%c%c.%c%c%c.%c%c%c%c%c]\n",
-         n, s_tags [n].name, s_tags [n].oneline,
-
-         s_tags [n].scope, s_tags [n].rtype, s_tags [n].psize,
-         s_tags [n].tsize, s_tags [n].dsize, s_tags [n].ssize,
-         s_tags [n].lsize, s_tags [n].csize, s_tags [n].rsize, s_tags [n].isize, s_tags [n].msize,
-
-         s_tags [n].Lsize, s_tags [n].Gsize, s_tags [n].Esize, s_tags [n].Fsize,
-         s_tags [n].Csize, s_tags [n].Ysize,
-         s_tags [n].Rsize, s_tags [n].Wsize, s_tags [n].Vsize,
-         s_tags [n].Psize, s_tags [n].Ssize);
+   poly_cats_exact   ("gcalls"  , a_tag->gcalls  , &a_tag->Gsize, '-');
+   poly_cats_exact   ("lcalls"  , a_tag->lcalls  , &a_tag->Lsize, '-');
+   poly_cats_exact   ("ecalls"  , a_tag->ecalls  , &a_tag->Esize, '-');
+   poly_cats_exact   ("funcs"   , a_tag->funcs   , &a_tag->Fsize, '-');
+   poly_cats_exact   ("intern"  , a_tag->intern  , &a_tag->Isize, '-');
+   poly_cats_exact   ("cstd"    , a_tag->cstd    , &a_tag->Csize, '-');
+   poly_cats_exact   ("ylib"    , a_tag->ylibs   , &a_tag->Ysize, '-');
+   a_tag->mystry = a_tag->funcs - a_tag->intern - a_tag->cstd - a_tag->ylibs - a_tag->ncurses - a_tag->opengl;
+   poly_cats_exact   ("mystry"  , a_tag->mystry  , &a_tag->Msize, '-');
+   poly_cats_exact   ("extern"  , a_tag->xfuncs  , &a_tag->Xsize, '-');
+   poly_cats_flag    ("reads"   , a_tag->reads   , &a_tag->Rflag, 'r');
+   poly_cats_flag    ("writes"  , a_tag->writes  , &a_tag->Wflag, 'w');
+   poly_cats_flag    ("visual"  , a_tag->ncurses + a_tag->opengl, &a_tag->Vflag, 'N');
+   poly_cats_exact   ("ncurses" , a_tag->ncurses , &a_tag->Nsize, '-');
+   poly_cats_exact   ("opengl"  , a_tag->opengl  , &a_tag->Osize, '-');
+   if (a_tag->process > 0 && a_tag->scalls  > 0)  a_tag->Lflag = 'B';
+   else if (a_tag->process > 0)  a_tag->Lflag = 'p';
+   else if (a_tag->scalls  > 0)  a_tag->Lflag = 's';
+   poly_cats_flag    ("recurse" , a_tag->recurse , &a_tag->Sflag, '#');
+   /*---(group three)--------------------*/
+   if (a_tag->dlong   > 0 && a_tag->dshort  > 0)  a_tag->Dstyle = 'B';
+   else if (a_tag->dlong   > 0)  a_tag->Dstyle = 'l';
+   else if (a_tag->dshort  > 0)  a_tag->Dstyle = 's';
+   if (a_tag->dfree > 0)  a_tag->Dstyle = '#';
+   /*---(type)---------------------------*/
+   if      (strncmp (a_tag->name, "o___", 4) == 0)        strlcpy (a_tag->image, "-"     , LEN_LABEL);
+   else if (strstr  (a_tag->name, "_init") != NULL)       strlcpy (a_tag->image, "shoot" , LEN_LABEL);
+   else if (strstr  (a_tag->name, "_wrap") != NULL)       strlcpy (a_tag->image, "shoot" , LEN_LABEL);
+   else if (a_tag->funcs == a_tag->cstd + a_tag->ylibs)   strlcpy (a_tag->image, "leaf"  , LEN_LABEL);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -250,38 +217,54 @@ poly_cats_tagsumm  (int n)
 static void  o___UNITTEST________o () { return; }
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-htags_cats__unit     (char *a_question, int n)
+htags_cats__unit     (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
-   char        t           [LEN_RECD];
+   char        t           [LEN_RECD] = "[]";
+   tTAG       *u           = NULL;
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "CATS unit        : tag number unknown");
-   if (n <  0)       return unit_answer;
-   /*> if (n >= s_ntag)  return unit_answer;                                          <*/
+   if (i <  0)       return unit_answer;
+   /*---(prepare)------------------------*/
+   u = (tTAG *) poly_btree_entry (B_TAGS, i);
+   if (u != NULL)  sprintf  (t, "[%.20s]", u->name);
    /*---(simple)-------------------------*/
-   sprintf  (t, "[%.20s]", s_tags [n].name);
    if        (strcmp (a_question, "complex"   )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "CATS complex(%2d) : %-22.22s  [%c%c%c.%c%c%c.%c%c%c%c%c]",
-            n, t,
-            s_tags [n].scope, s_tags [n].rtype, s_tags [n].psize,
-            s_tags [n].tsize, s_tags [n].dsize, s_tags [n].ssize,
-            s_tags [n].lsize, s_tags [n].csize, s_tags [n].rsize,
-            s_tags [n].isize, s_tags [n].msize);
+      if (u != NULL) {
+         snprintf (unit_answer, LEN_RECD, "CATS complex(%2d) : %-22.22s  [%c%c%c.%c%c%c.%c%c%c%c%c]",
+               i, t,
+               u->scope, u->rtype, u->psize,
+               u->tsize, u->dsize, u->ssize,
+               u->lsize, u->csize, u->rsize, u->isize, u->msize);
+      } else {
+         snprintf (unit_answer, LEN_RECD, "CATS complex(%2d) : %-22.22s  [%c%c%c.%c%c%c.%c%c%c%c%c]",
+               i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');
+      }
    }
    else if   (strcmp (a_question, "connect"   )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "CATS connect(%2d) : %-22.22s  [%c%c%c%c.%c%c%c%c.%c%c%c]",
-            n, t,
-            s_tags [n].Lsize, s_tags [n].Gsize, s_tags [n].Esize, s_tags [n].Dsize,
-            s_tags [n].Fsize, s_tags [n].Csize, s_tags [n].Ysize, s_tags [n].Xsize,
-            s_tags [n].Rsize, s_tags [n].Wsize, s_tags [n].Vsize);
+      if (u != NULL) {
+         snprintf (unit_answer, LEN_RECD, "CATS connect(%2d) : %-22.22s  [%c%c%c.%c%c%c.%c%c%c%c%c]",
+               i, t,
+               u->Lsize, u->Gsize, u->Esize,
+               u->Fsize, u->Csize, u->Ysize,
+               u->Rflag, u->Wflag, u->Vflag, u->Lflag, u->Sflag);
+      } else {
+         snprintf (unit_answer, LEN_RECD, "CATS connect(%2d) : %-22.22s  [%c%c%c.%c%c%c.%c%c%c%c%c]",
+               i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');
+      }
    }
    else if   (strcmp (a_question, "future"    )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "CATS future (%2d) : %-22.22s  [%c%c%c%c.%c%c%c.%c%c%c%c]",
-            n, t,
-            '-', '-', '-', 
-            '-', '-', '-', '-', 
-            '-', '-', '-', '-');
+      if (u != NULL) {
+         snprintf (unit_answer, LEN_RECD, "CATS future (%2d) : %-22.22s  [%c%c%c%c.%c%c%c.%c%c%c%c]",
+               i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');
+      } else {
+         snprintf (unit_answer, LEN_RECD, "CATS future (%2d) : %-22.22s  [%c%c%c%c.%c%c%c.%c%c%c%c]",
+               i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');
+      }
    }
    /*---(complete)-----------------------*/
    return unit_answer;
 }
+
+
+

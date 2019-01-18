@@ -137,56 +137,55 @@ poly_extern_load        (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;          /* return code for errors         */
    char        rc          =    0;          /* generic return code            */
-   FILE       *r           = NULL;          /* external functions file        */
    char        x_recd      [LEN_RECD];
    int         x_len       =    0;
    char        x_type      =  '-';
    /*---(header)-------------------------*/
-   DEBUG_SORT   yLOG_enter   (__FUNCTION__);
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(purge existing)-----------------*/
    rc = poly_btree_purge (B_EXTERN);
    /*---(open)---------------------------*/
-   r = fopen (FILE_EXTERN, "rt");
-   DEBUG_SORT   yLOG_point   ("r"          , r);
-   --rce;  if (r == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+   f_extern = fopen (F_EXTERN, "rt");
+   DEBUG_INPT   yLOG_point   ("f_extern"          , f_extern);
+   --rce;  if (f_extern == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(walk)---------------------------*/
    while (1) {
       /*---(read)------------------------*/
-      fgets (x_recd, LEN_RECD, r);
-      if (feof (r)) {
-         DEBUG_SORT   yLOG_note    ("end of file");
+      fgets (x_recd, LEN_RECD, f_extern);
+      if (feof (f_extern)) {
+         DEBUG_INPT   yLOG_note    ("end of file");
          break;
       }
       x_len = strlen (x_recd);
-      DEBUG_SORT   yLOG_value   ("x_len"     , x_len);
+      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
       if (strlen >= 1)  x_recd [--x_len] = '\0';
-      DEBUG_SORT   yLOG_value   ("x_len"     , x_len);
+      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
       strltrim (x_recd, ySTR_BOTH, LEN_RECD);
-      DEBUG_SORT   yLOG_info    ("x_recd"    , x_recd);
+      DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
       x_len = strlen (x_recd);
-      DEBUG_SORT   yLOG_value   ("x_len"     , x_len);
-      DEBUG_SORT   yLOG_info    ("x_recd"    , x_recd);
+      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
+      DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
       /*---(filter)----------------------*/
       if (x_len == 0) {
-         DEBUG_SORT   yLOG_note    ("empty line, SKIP");
+         DEBUG_INPT   yLOG_note    ("empty line, SKIP");
          continue;
       }
       if (strncmp (x_recd, "##", 2) == 0) {
-         DEBUG_SORT   yLOG_note    ("header line, SKIP");
+         DEBUG_INPT   yLOG_note    ("header line, SKIP");
          continue;
       }
       if (x_recd [0] == '#') {
-         DEBUG_SORT   yLOG_note    ("category line, SKIP");
+         DEBUG_INPT   yLOG_note    ("category line, SKIP");
          continue;
       }
       /*---(type)------------------------*/
       x_type = '-';
-      if (x_len >= 20) {
-         x_type = x_recd [19];
-         x_recd [19] = '\0';
+      if (x_len >= 25) {
+         x_type = x_recd [24];
+         x_recd [24] = '\0';
       }
       /*---(save)------------------------*/
       strltrim (x_recd, ySTR_BOTH, LEN_RECD);
@@ -194,34 +193,34 @@ poly_extern_load        (void)
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
-   rc = fclose (r);
-   DEBUG_SORT   yLOG_value   ("close"      , rc);
+   rc = fclose (f_extern);
+   DEBUG_INPT   yLOG_value   ("close"      , rc);
    --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(check count)--------------------*/
-   DEBUG_INPT   yLOG_value   ("s_nfile"   , poly_btree_count (B_EXTERN));
+   DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_EXTERN));
    --rce;  if (poly_btree_count (B_EXTERN) <= 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
    /*---(prepare for use)----------------*/
    rc = poly_btree_dgnome   (B_EXTERN);
-   DEBUG_SORT   yLOG_value   ("dgnome"     , rc);
+   DEBUG_INPT   yLOG_value   ("dgnome"     , rc);
    --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    rc = poly_btree_build (B_EXTERN);
-   DEBUG_SORT   yLOG_value   ("build"      , rc);
+   DEBUG_INPT   yLOG_value   ("build"      , rc);
    --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*> poly_extern_list ();                                                           <*/
    /*---(complete)-----------------------*/
-   DEBUG_SORT   yLOG_exit    (__FUNCTION__);
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -243,497 +242,280 @@ poly_extern_check       (char *a_name)
 }
 
 char
-poly_extern_review      (int n)
+poly_extern__extracts   (void)
 {
-   /*> /+---(locals)-----------+-----+-----+-+/                                        <* 
-    *> char        rce         =  -10;          /+ return code for errors         +/   <* 
-    *> char        rc          =    0;          /+ generic return code            +/   <* 
-    *> FILE       *r           = NULL;          /+ external functions file        +/   <* 
-    *> char       *p           = NULL;                                                 <* 
-    *> char        x_recd      [LEN_RECD];                                             <* 
-    *> int         x_len       =    0;                                                 <* 
-    *> int         c           =    0;                                                 <* 
-    *> char        x_cat       =  ' ';                                                 <* 
-    *> /+---(header)-------------------------+/                                        <* 
-    *> DEBUG_SORT   yLOG_enter   (__FUNCTION__);                                       <* 
-    *> /+---(create file)--------------------+/                                        <* 
-    *> rc = system ("cflow -d 2 htags.code > polymnia.calls");                         <* 
-    *> DEBUG_SORT   yLOG_value   ("cflow"      , rc);                                  <* 
-    *> /+---(open)---------------------------+/                                        <* 
-    *> r = fopen ("polymnia.calls", "rt");                                             <* 
-    *> DEBUG_SORT   yLOG_point   ("r"          , r);                                   <* 
-    *> --rce;  if (r == NULL) {                                                        <* 
-    *>    DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);                               <* 
-    *>    return rce;                                                                  <* 
-    *> }                                                                               <* 
-    *> /+---(walk)---------------------------+/                                        <* 
-    *> while (1) {                                                                     <* 
-    *>    /+---(read)------------------------+/                                        <* 
-    *>    fgets (x_recd, LEN_RECD, r);                                                 <* 
-    *>    if (feof (r)) {                                                              <* 
-    *>       DEBUG_SORT   yLOG_note    ("end of file");                                <* 
-    *>       break;                                                                    <* 
-    *>    }                                                                            <* 
-    *>    if (x_recd [0] != ' ') {                                                     <* 
-    *>       DEBUG_SORT   yLOG_note    ("header line, skipping");                      <* 
-    *>       continue;                                                                 <* 
-    *>    }                                                                            <* 
-    *>    ++c;                                                                         <* 
-    *>    x_len = strlen (x_recd);                                                     <* 
-    *>    if (strlen >= 1)  x_recd [--x_len] = '\0';                                   <* 
-    *>    strltrim (x_recd, ySTR_EVERY, LEN_RECD);                                     <* 
-    *>    /+---(filter)----------------------+/                                        <* 
-    *>    p = strchr (x_recd, '(');                                                    <* 
-    *>    if (p == NULL) {                                                             <* 
-    *>       DEBUG_SORT   yLOG_note    ("not a function call, SKIPPING");              <* 
-    *>       continue;                                                                 <* 
-    *>    }                                                                            <* 
-    *>    *p = '\0';                                                                   <* 
-    *>    x_len = strlen (x_recd);                                                     <* 
-    *>    DEBUG_SORT   yLOG_value   ("x_len"     , x_len);                             <* 
-    *>    DEBUG_SORT   yLOG_info    ("x_recd"    , x_recd);                            <* 
-    *>    /+---(lookup)----------------------+/                                        <* 
-    *>    x_cat = poly_extern_check (x_recd);                                          <* 
-    *>    DEBUG_SORT   yLOG_value   ("x_cat"     , x_cat);                             <* 
-    *>    if (x_cat <= 0) {                                                            <* 
-    *>       DEBUG_SORT   yLOG_note    ("not an external function");                   <* 
-    *>       continue;                                                                 <* 
-    *>    }                                                                            <* 
-    *>    /+---(categorize)------------------+/                                        <* 
-    *>    DEBUG_SORT   yLOG_char    ("x_cat"     , x_cat);                             <* 
-    *>    ++s_tags [n].funcs;                                                          <* 
-    *>    switch (x_cat) {                                                             <* 
-    *>    case '-' :                                                                   <* 
-    *>       ++s_tags [n].cstd;                                                        <* 
-    *>       break;                                                                    <* 
-    *>    case 'W' :                                                                   <* 
-    *>       ++s_tags [n].cstd;                                                        <* 
-    *>       ++s_tags [n].writes;                                                      <* 
-    *>       break;                                                                    <* 
-    *>    case 'R' :                                                                   <* 
-    *>       ++s_tags [n].cstd;                                                        <* 
-    *>       ++s_tags [n].reads;                                                       <* 
-    *>       break;                                                                    <* 
-    *>    case 'N' :                                                                   <* 
-    *>       ++s_tags [n].ncurses;                                                     <* 
-   *>       break;                                                                    <* 
-      *>    case 'O' :                                                                   <* 
-      *>       ++s_tags [n].opengl;                                                      <* 
-      *>       break;                                                                    <* 
-      *>    case 'Y' :                                                                   <* 
-      *>       ++s_tags [n].ylibs;                                                       <* 
-      *>       break;                                                                    <* 
-      *>    case 'M' :                                                                   <* 
-      *>       ++s_tags [n].cstd;                                                        <* 
-      *>       ++s_tags [n].memories;                                                    <* 
-      *>       break;                                                                    <* 
-      *>    case 'P' :                                                                   <* 
-      *>       ++s_tags [n].cstd;                                                        <* 
-      *>       ++s_tags [n].process;                                                     <* 
-      *>       break;                                                                    <* 
-      *>    case 'S' :                                                                   <* 
-      *>       ++s_tags [n].cstd;                                                        <* 
-      *>       ++s_tags [n].scalls;                                                      <* 
-      *>       break;                                                                    <* 
-      *>    }                                                                            <* 
-      *>    /+---(done)------------------------+/                                        <* 
-      *> }                                                                               <* 
-      *> /+---(close)--------------------------+/                                        <* 
-      *> rc = fclose (r);                                                                <* 
-      *> DEBUG_SORT   yLOG_value   ("close"      , rc);                                  <* 
-      *> --rce;  if (rc < 0) {                                                           <* 
-         *>    DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);                               <* 
-            *>    return rce;                                                                  <* 
-            *> }                                                                               <* 
-            *> /+---(complete)-----------------------+/                                        <* 
-            *> DEBUG_SORT   yLOG_exit    (__FUNCTION__);                                       <* 
-            *> return 0;                                                                       <*/
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;           /* return code for errors         */
+   int         rc          =   0;           /* generic return code            */
+   char        x_cmd       [LEN_RECD];      /* ctags command                  */
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(function calls)-----------------*/
+   sprintf (x_cmd, "cflow -x $(ls -1 *.c | grep -v unit) 2> /dev/null > %s", F_CFLOW);
+   DEBUG_INPT   yLOG_info    ("system"    , x_cmd);
+   rc = system (x_cmd);
+   DEBUG_INPT   yLOG_value   ("system"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
 }
 
+char
+poly_extern__cleanup    (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;           /* return code for errors         */
+   int         rc          =   0;           /* generic return code            */
+   char        x_cmd       [LEN_RECD];      /* ctags command                  */
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(function calls)-----------------*/
+   sprintf (x_cmd, "rm -f %s", F_CFLOW);
+   DEBUG_INPT   yLOG_info    ("system"    , x_cmd);
+   rc = system (x_cmd);
+   DEBUG_INPT   yLOG_value   ("system"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
-/*> char                                                                              <* 
- *> poly_extern__copy       (tEXTERN *a_dst, tEXTERN *a_src)                          <* 
- *> {                                                                                 <* 
- *>    strlcpy (a_dst->name, a_src->name, LEN_NAME);                                  <* 
- *>    a_dst->len    = a_src->len;                                                    <* 
- *>    a_dst->type   = a_src->type;                                                   <* 
- *>    a_dst->count  = a_src->count;                                                  <* 
- *>    a_dst->pos    = a_src->pos;                                                    <* 
- *>    return 0;                                                                      <* 
- *> }                                                                                 <*/
-
-/*> char                                                                                                                                                      <* 
- *> poly_extern__gnome_BASE      (void)                                                                                                                       <* 
- *> {                                                                                                                                                         <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                                               <* 
- *>    int         i           =    0;          /+ current index                  +/                                                                          <* 
- *>    int         c           =    0;          /+ comparisons                    +/                                                                          <* 
- *>    int         s           =    0;          /+ swaps                          +/                                                                          <* 
- *>    tEXTERN     x_tmp;                                                                                                                                     <* 
- *>    /+---(header)-------------------------+/                                                                                                               <* 
- *>    DEBUG_SORT   yLOG_enter   (__FUNCTION__);                                                                                                              <* 
- *>    /+---(gnome)--------------------------+/                                                                                                               <* 
- *>    while (i < s_nextern) {                                                                                                                                <* 
- *>       /+---(beginning)-------------------+/                                                                                                               <* 
- *>       if (i <= 0) {                                                                                                                                       <* 
- *>          DEBUG_SORT   yLOG_note    ("bounce off beginning");                                                                                              <* 
- *>          ++i;                                                                                                                                             <* 
- *>          continue;                                                                                                                                        <* 
- *>       }                                                                                                                                                   <* 
- *>       /+---(compare)---------------------+/                                                                                                               <* 
- *>       ++c;                                                                                                                                                <* 
- *>       if (strcmp (s_externs [i - 1].name, s_externs [i].name) <= 0) {                                                                                     <* 
- *>          DEBUG_SORT   yLOG_complex ("correct"   , "%2d %-20.20s v %2d %-20.20s   %4d %4d", i - 1, s_externs [i - 1].name, i, s_externs [i].name, c, s);   <* 
- *>          ++i;                                                                                                                                             <* 
- *>          continue;                                                                                                                                        <* 
- *>       }                                                                                                                                                   <* 
- *>       /+---(swap)------------------------+/                                                                                                               <* 
- *>       ++s;                                                                                                                                                <* 
- *>       poly_extern__copy (&x_tmp            , &s_externs [i]    );                                                                                         <* 
- *>       poly_extern__copy (&s_externs [i]    , &s_externs [i - 1]);                                                                                         <* 
- *>       poly_extern__copy (&s_externs [i - 1], &x_tmp           );                                                                                          <* 
- *>       DEBUG_SORT   yLOG_complex ("swapped"   , "%2d %-20.20s # %2d %-20.20s   %4d %4d", i - 1, s_externs [i - 1].name, i, s_externs [i].name, c, s);      <* 
- *>       /+---(next)------------------------+/                                                                                                               <* 
- *>       --i;                                                                                                                                                <* 
- *>    }                                                                                                                                                      <* 
- *>    DEBUG_SORT   yLOG_value   ("size"       , s_nextern);                                                                                                  <* 
- *>    DEBUG_SORT   yLOG_value   ("compares"   , c);                                                                                                          <* 
- *>    DEBUG_SORT   yLOG_value   ("swaps"      , s);                                                                                                          <* 
- *>    /+---(complete)-----------------------+/                                                                                                               <* 
- *>    DEBUG_SORT   yLOG_exit    (__FUNCTION__);                                                                                                              <* 
- *>    return 0;                                                                                                                                              <* 
- *> }                                                                                                                                                         <*/
-
-/*> char                                                                                                                                                      <* 
- *> poly_extern__gnome_TELE      (void)                                                                                                                       <* 
- *> {                                                                                                                                                         <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                                               <* 
- *>    int         i           =    0;          /+ current index                  +/                                                                          <* 
- *>    int         c           =    0;          /+ comparisons                    +/                                                                          <* 
- *>    int         s           =    0;          /+ swaps                          +/                                                                          <* 
- *>    int         t           =    0;          /+ teleport index                 +/                                                                          <* 
- *>    tEXTERN     x_tmp;                                                                                                                                     <* 
- *>    /+---(header)-------------------------+/                                                                                                               <* 
- *>    DEBUG_SORT   yLOG_enter   (__FUNCTION__);                                                                                                              <* 
- *>    /+---(gnome)--------------------------+/                                                                                                               <* 
- *>    while (i < s_nextern) {                                                                                                                                <* 
- *>       if (i > t)  t = i;                                                                                                                                  <* 
- *>       /+---(beginning)-------------------+/                                                                                                               <* 
- *>       if (i <= 0) {                                                                                                                                       <* 
- *>          DEBUG_SORT   yLOG_note    ("bounce off beginning");                                                                                              <* 
- *>          ++i;                                                                                                                                             <* 
- *>          continue;                                                                                                                                        <* 
- *>       }                                                                                                                                                   <* 
- *>       /+---(compare)---------------------+/                                                                                                               <* 
- *>       ++c;                                                                                                                                                <* 
- *>       if (strcmp (s_externs [i - 1].name, s_externs [i].name) <= 0) {                                                                                     <* 
- *>          DEBUG_SORT   yLOG_complex ("correct"   , "%2d %-20.20s v %2d %-20.20s   %4d %4d", i - 1, s_externs [i - 1].name, i, s_externs [i].name, c, s);   <* 
- *>          i = t + 1;                                                                                                                                       <* 
- *>          continue;                                                                                                                                        <* 
- *>       }                                                                                                                                                   <* 
- *>       /+---(swap)------------------------+/                                                                                                               <* 
- *>       ++s;                                                                                                                                                <* 
- *>       poly_extern__copy (&x_tmp            , &s_externs [i]    );                                                                                         <* 
- *>       poly_extern__copy (&s_externs [i]    , &s_externs [i - 1]);                                                                                         <* 
- *>       poly_extern__copy (&s_externs [i - 1], &x_tmp           );                                                                                          <* 
- *>       DEBUG_SORT   yLOG_complex ("swapped"   , "%2d %-20.20s # %2d %-20.20s   %4d %4d", i - 1, s_externs [i - 1].name, i, s_externs [i].name, c, s);      <* 
- *>       /+---(next)------------------------+/                                                                                                               <* 
- *>       --i;                                                                                                                                                <* 
- *>    }                                                                                                                                                      <* 
- *>    DEBUG_SORT   yLOG_value   ("size"       , s_nextern);                                                                                                  <* 
- *>    DEBUG_SORT   yLOG_value   ("compares"   , c);                                                                                                          <* 
- *>    DEBUG_SORT   yLOG_value   ("swaps"      , s);                                                                                                          <* 
- *>    /+---(complete)-----------------------+/                                                                                                               <* 
- *>    DEBUG_SORT   yLOG_exit    (__FUNCTION__);                                                                                                              <* 
- *>    return 0;                                                                                                                                              <* 
- *> }                                                                                                                                                         <*/
-
-/*> static  tEXTERN      s_head;                                                      <* 
- *> static  int          s_headnum;                                                   <* 
- *> static  tEXTERN      s_saved;                                                     <* 
- *> static  int          s_start;                                                     <* 
- *> static int           s_next;                                                      <* 
- *> static int           s_hole;                                                      <*/
-
-
-/*> int                                                                               <* 
- *> poly_extern__move_SALTS (void)                                                    <* 
- *> {                                                                                 <* 
- *>    /+---(header)-------------------------+/                                       <* 
- *>    DEBUG_SORT   yLOG_senter  (__FUNCTION__);                                      <* 
- *>    DEBUG_SORT   yLOG_snote   ("hole");                                            <* 
- *>    DEBUG_SORT   yLOG_sint    (s_hole);                                            <* 
- *>    DEBUG_SORT   yLOG_snote   (s_externs [s_hole].name);                           <* 
- *>    DEBUG_SORT   yLOG_snote   ("next");                                            <* 
- *>    DEBUG_SORT   yLOG_sint    (s_next);                                            <* 
- *>    DEBUG_SORT   yLOG_snote   (s_externs [s_next].name);                           <* 
- *>    /+---(defense)------------------------+/                                       <* 
- *>    if (s_hole == s_next) {                                                        <* 
- *>       DEBUG_SORT   yLOG_snote   ("no move required");                             <* 
- *>       DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, -1);                               <* 
- *>       return -1;                                                                  <* 
- *>    }                                                                              <* 
- *>    /+---(move from original)-------------+/                                       <* 
- *>    poly_extern__copy (&s_externs [s_hole], &s_externs [s_next]);                  <* 
- *>    s_externs [s_next].name [0] = '\0';                                            <* 
- *>    s_alts [s_hole] = -1;                                                          <* 
- *>    DEBUG_SORT   yLOG_snote   ("moved");                                           <* 
- *>    ++s_swaps;                                                                     <* 
- *>    /+---(save next index)----------------+/                                       <* 
- *>    s_hole = s_next;                                                               <* 
- *>    DEBUG_SORT   yLOG_sint    (s_hole);                                            <* 
- *>    s_next = s_alts [s_next];                                                      <* 
- *>    DEBUG_SORT   yLOG_sint    (s_next);                                            <* 
- *>    if (s_hole == s_next) {                                                        <* 
- *>       DEBUG_SORT   yLOG_snote   ("end of chain");                                 <* 
- *>       DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, -2);                               <* 
- *>       return -2;                                                                  <* 
- *>    }                                                                              <* 
- *>    /+---(complete)-----------------------+/                                       <* 
- *>    DEBUG_SORT   yLOG_sexit   (__FUNCTION__);                                      <* 
- *>    return 1;                                                                      <* 
- *> }                                                                                 <*/
-
-/*> char                                                                                                       <* 
- *> poly_extern__reorder_SALTS    (void)                                                                       <* 
- *> {                                                                                                          <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                <* 
- *>    char        rc          =    0;                                                                         <* 
- *>    int         i           =    0;          /+ current index                  +/                           <* 
- *>    int         c           =    0;                                                                         <* 
- *>    /+---(header)-------------------------+/                                                                <* 
- *>    DEBUG_SORT   yLOG_enter   (__FUNCTION__);                                                               <* 
- *>    /+---(walk list)----------------------+/                                                                <* 
- *>    for (i = 0; i < s_nextern; ++i) {                                                                       <* 
- *>       /+---(header)----------------------+/                                                                <* 
- *>       DEBUG_SORT   yLOG_value   ("ROUND"     , i);                                                         <* 
- *>       DEBUG_SORT   yLOG_complex ("check"     , "%3d  %3d  %-20.20s", i, s_alts [i], s_externs [i].name);   <* 
- *>       /+---(filter)----------------------+/                                                                <* 
- *>       if (s_alts [i] < 0) {                                                                                <* 
- *>          DEBUG_SORT   yLOG_note    ("already in the right order");                                         <* 
- *>          continue;                                                                                         <* 
- *>       }                                                                                                    <* 
- *>       /+---(save starting)---------------+/                                                                <* 
- *>       c = 0;                                                                                               <* 
- *>       s_hole  = SAVE;                                                                                      <* 
- *>       s_start = s_next  = i;                                                                               <* 
- *>       rc      = 0;                                                                                         <* 
- *>       while (rc >= 0) {                                                                                    <* 
- *>          rc = poly_extern__move ();                                                                        <* 
- *>          ++c;                                                                                              <* 
- *>          if (s_next == s_start)  break;                                                                    <* 
- *>       }                                                                                                    <* 
- *>       s_next  = SAVE;                                                                                      <* 
- *>       rc = poly_extern__move ();                                                                           <* 
- *>       ++c;                                                                                                 <* 
- *>       DEBUG_SORT   yLOG_value   ("chain len" , c);                                                         <* 
- *>    }                                                                                                       <* 
- *>    /+---(complete)-----------------------+/                                                                <* 
- *>    DEBUG_SORT   yLOG_exit    (__FUNCTION__);                                                               <* 
- *>    return 0;                                                                                               <* 
- *> }                                                                                                          <*/
-
-/*> char                                                                                                                                                                                                                                     <* 
- *> poly_extern__gnome_SALTS      (void)                                                                                                                                                                                                     <* 
- *> {                                                                                                                                                                                                                                        <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                                                                                                                              <* 
- *>    char        rc          =    0;                                                                                                                                                                                                       <* 
- *>    int         i           =    0;          /+ current index                  +/                                                                                                                                                         <* 
- *>    int         t           =    0;          /+ teleport index                 +/                                                                                                                                                         <* 
- *>    int         x_tmp;                                                                                                                                                                                                                    <* 
- *>    /+---(header)-------------------------+/                                                                                                                                                                                              <* 
- *>    DEBUG_SORT   yLOG_enter   (__FUNCTION__);                                                                                                                                                                                             <* 
- *>    /+---(display)------------------------+/                                                                                                                                                                                              <* 
- *>    /+> printf ("BEFORE...\n");                                                                   <*                                                                                                                                      <* 
- *>     *> for (i = 0; i < s_nextern; ++i) {                                                         <*                                                                                                                                      <* 
- *>     *>    printf ("%3d %2d:%s\n", i, s_externs [s_alts [i]].len, s_externs [s_alts [i]].name);   <*                                                                                                                                      <* 
- *>     *> }                                                                                         <+/                                                                                                                                     <* 
- *>    /+---(gnome)--------------------------+/                                                                                                                                                                                              <* 
- *>    i = 0;                                                                                                                                                                                                                                <* 
- *>    while (i < s_nextern) {                                                                                                                                                                                                               <* 
- *>       if (i > t)  t = i;                                                                                                                                                                                                                 <* 
- *>       /+---(beginning)-------------------+/                                                                                                                                                                                              <* 
- *>       if (i <= 0) {                                                                                                                                                                                                                      <* 
- *>          DEBUG_SORT   yLOG_note    ("bounce off beginning");                                                                                                                                                                             <* 
- *>          ++s_teles;                                                                                                                                                                                                                      <* 
- *>          i = t + 1;                                                                                                                                                                                                                      <* 
- *>          continue;                                                                                                                                                                                                                       <* 
- *>       }                                                                                                                                                                                                                                  <* 
- *>       /+---(compare)---------------------+/                                                                                                                                                                                              <* 
- *>       ++s_comps;                                                                                                                                                                                                                         <* 
- *>       rc = strcmp (s_externs [s_alts[i - 1]].name, s_externs [s_alts [i]].name);                                                                                                                                                         <* 
- *>       if (rc <= 0) {                                                                                                                                                                                                                     <* 
- *>          DEBUG_SORT   yLOG_complex ("correct"   , "%3d %-20.20s v %3d %-20.20s   %c %4d   %5d %5d %5d", i - 1, s_externs [s_alts [i - 1]].name, i, s_externs [s_alts [i]].name, (rc <= 0) ? 'y' : '-', rc, s_comps, s_swaps, s_teles);   <* 
- *>          ++s_teles;                                                                                                                                                                                                                      <* 
- *>          i = t + 1;                                                                                                                                                                                                                      <* 
- *>          continue;                                                                                                                                                                                                                       <* 
- *>       }                                                                                                                                                                                                                                  <* 
- *>       /+---(swap)------------------------+/                                                                                                                                                                                              <* 
- *>       ++s_notes;                                                                                                                                                                                                                         <* 
- *>       DEBUG_SORT   yLOG_complex ("swapped"   , "%3d %-20.20s # %3d %-20.20s   %c %4d   %5d %5d %5d", i - 1, s_externs [s_alts [i - 1]].name, i, s_externs [s_alts [i]].name, (rc <= 0) ? 'y' : '-', rc, s_comps, s_swaps, s_teles);      <* 
- *>       x_tmp          = s_alts [i];                                                                                                                                                                                                       <* 
- *>       s_alts [i]     = s_alts [i - 1];                                                                                                                                                                                                   <* 
- *>       s_alts [i - 1] = x_tmp;                                                                                                                                                                                                            <* 
- *>       /+---(next)------------------------+/                                                                                                                                                                                              <* 
- *>       --i;                                                                                                                                                                                                                               <* 
- *>    }                                                                                                                                                                                                                                     <* 
- *>    /+---(display)------------------------+/                                                                                                                                                                                              <* 
- *>    /+> printf ("AFTER...\n");                                                                    <*                                                                                                                                      <* 
- *>     *> for (i = 0; i < s_nextern; ++i) {                                                         <*                                                                                                                                      <* 
- *>     *>    printf ("%3d %2d:%s\n", i, s_externs [s_alts [i]].len, s_externs [s_alts [i]].name);   <*                                                                                                                                      <* 
- *>     *> }                                                                                         <*                                                                                                                                      <* 
- *>     *> printf ("BEFORE reorder...\n");                                                           <*                                                                                                                                      <* 
- *>     *> for (i = 0; i < s_nextern; ++i) {                                                         <*                                                                                                                                      <* 
- *>     *>    printf ("%3d %3d %2d:%s\n", i, s_alts [i], s_externs [i].len, s_externs [i].name);     <*                                                                                                                                      <* 
- *>     *> }                                                                                         <+/                                                                                                                                     <* 
- *>    poly_extern__reorder_SALTS ();                                                                                                                                                                                                        <* 
- *>    printf ("AFTER reorder...\n");                                                                                                                                                                                                        <* 
- *>    for (i = 0; i < s_nextern; ++i) {                                                                                                                                                                                                     <* 
- *>       printf ("%3d %3d %2d:%s\n", i, s_alts [i], s_externs [i].len, s_externs [i].name);                                                                                                                                                 <* 
- *>    }                                                                                                                                                                                                                                     <* 
- *>    DEBUG_SORT   yLOG_value   ("size"       , s_nextern);                                                                                                                                                                                 <* 
- *>    DEBUG_SORT   yLOG_value   ("compares"   , s_comps);                                                                                                                                                                                   <* 
- *>    DEBUG_SORT   yLOG_value   ("notes"      , s_notes);                                                                                                                                                                                   <* 
- *>    DEBUG_SORT   yLOG_value   ("swaps"      , s_swaps);                                                                                                                                                                                   <* 
- *>    DEBUG_SORT   yLOG_value   ("teleports"  , s_teles);                                                                                                                                                                                   <* 
- *>    /+---(complete)-----------------------+/                                                                                                                                                                                              <* 
- *>    DEBUG_SORT   yLOG_exit    (__FUNCTION__);                                                                                                                                                                                             <* 
- *>    return 0;                                                                                                                                                                                                                             <* 
- *> }                                                                                                                                                                                                                                        <*/
-
-
-/*> int                                                                               <* 
- *> poly_extern__move_INDEX (void)                                                    <* 
- *> {                                                                                 <* 
- *>    /+---(header)-------------------------+/                                       <* 
- *>    DEBUG_SORT   yLOG_senter  (__FUNCTION__);                                      <* 
- *>    DEBUG_SORT   yLOG_snote   ("hole");                                            <* 
- *>    DEBUG_SORT   yLOG_sint    (s_hole);                                            <* 
- *>    DEBUG_SORT   yLOG_snote   (s_externs [s_hole].name);                           <* 
- *>    DEBUG_SORT   yLOG_snote   ("next");                                            <* 
- *>    DEBUG_SORT   yLOG_sint    (s_next);                                            <* 
- *>    DEBUG_SORT   yLOG_snote   (s_externs [s_next].name);                           <* 
- *>    /+---(defense)------------------------+/                                       <* 
- *>    if (s_hole == s_next) {                                                        <* 
- *>       DEBUG_SORT   yLOG_snote   ("no move required");                             <* 
- *>       DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, -1);                               <* 
- *>       return -1;                                                                  <* 
- *>    }                                                                              <* 
- *>    /+---(move from original)-------------+/                                       <* 
- *>    poly_extern__copy (&s_externs [s_hole], &s_externs [s_next]);                  <* 
- *>    s_externs [s_next].name [0] = '\0';                                            <* 
- *>    s_externs [s_hole].pos = -1;                                                   <* 
- *>    DEBUG_SORT   yLOG_snote   ("moved");                                           <* 
- *>    ++s_swaps;                                                                     <* 
- *>    /+---(save next index)----------------+/                                       <* 
- *>    s_hole = s_next;                                                               <* 
- *>    DEBUG_SORT   yLOG_sint    (s_hole);                                            <* 
- *>    s_next = s_externs [s_next].pos;                                               <* 
- *>    DEBUG_SORT   yLOG_sint    (s_next);                                            <* 
- *>    if (s_hole == s_next) {                                                        <* 
- *>       DEBUG_SORT   yLOG_snote   ("end of chain");                                 <* 
- *>       DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, -2);                               <* 
- *>       return -2;                                                                  <* 
- *>    }                                                                              <* 
- *>    /+---(complete)-----------------------+/                                       <* 
- *>    DEBUG_SORT   yLOG_sexit   (__FUNCTION__);                                      <* 
- *>    return 1;                                                                      <* 
- *> }                                                                                 <*/
-
-/*> char                                                                                                              <* 
- *> poly_extern__reorder_INDEX (void)                                                                                 <* 
- *> {                                                                                                                 <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                       <* 
- *>    char        rc          =    0;                                                                                <* 
- *>    int         i           =    0;          /+ current index                  +/                                  <* 
- *>    int         c           =    0;                                                                                <* 
- *>    /+---(header)-------------------------+/                                                                       <* 
- *>    DEBUG_SORT   yLOG_enter   (__FUNCTION__);                                                                      <* 
- *>    /+---(walk list)----------------------+/                                                                       <* 
- *>    for (i = 0; i < s_nextern; ++i) {                                                                              <* 
- *>       /+---(header)----------------------+/                                                                       <* 
- *>       DEBUG_SORT   yLOG_value   ("ROUND"     , i);                                                                <* 
- *>       DEBUG_SORT   yLOG_complex ("check"     , "%3d  %3d  %-20.20s", i, s_externs [i].pos, s_externs [i].name);   <* 
- *>       /+---(filter)----------------------+/                                                                       <* 
- *>       if (s_externs [i].pos < 0) {                                                                                <* 
- *>          DEBUG_SORT   yLOG_note    ("already in the right order");                                                <* 
- *>          continue;                                                                                                <* 
- *>       }                                                                                                           <* 
- *>       /+---(save starting)---------------+/                                                                       <* 
- *>       c = 0;                                                                                                      <* 
- *>       s_hole  = SAVE;                                                                                             <* 
- *>       s_start = s_next  = i;                                                                                      <* 
- *>       rc      = 0;                                                                                                <* 
- *>       while (rc >= 0) {                                                                                           <* 
- *>          rc = poly_extern__move ();                                                                               <* 
- *>          ++c;                                                                                                     <* 
- *>          if (s_next == s_start)  break;                                                                           <* 
- *>       }                                                                                                           <* 
- *>       s_next  = SAVE;                                                                                             <* 
- *>       rc = poly_extern__move ();                                                                                  <* 
- *>       ++c;                                                                                                        <* 
- *>       DEBUG_SORT   yLOG_value   ("chain len" , c);                                                                <* 
- *>    }                                                                                                              <* 
- *>    /+---(complete)-----------------------+/                                                                       <* 
- *>    DEBUG_SORT   yLOG_exit    (__FUNCTION__);                                                                      <* 
- *>    return 0;                                                                                                      <* 
- *> }                                                                                                                 <*/
-
-/*> char                                                                                                                                                                                                                                                   <* 
- *> poly_extern__gnome_INDEX(void)                                                                                                                                                                                                                         <* 
- *> {                                                                                                                                                                                                                                                      <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                                                                                                                                            <* 
- *>    char        rc          =    0;                                                                                                                                                                                                                     <* 
- *>    int         i           =    0;          /+ current index                  +/                                                                                                                                                                       <* 
- *>    int         t           =    0;          /+ teleport index                 +/                                                                                                                                                                       <* 
- *>    int         x_tmp;                                                                                                                                                                                                                                  <* 
- *>    /+---(header)-------------------------+/                                                                                                                                                                                                            <* 
- *>    DEBUG_SORT   yLOG_enter   (__FUNCTION__);                                                                                                                                                                                                           <* 
- *>    /+---(gnome)--------------------------+/                                                                                                                                                                                                            <* 
- *>    i = 0;                                                                                                                                                                                                                                              <* 
- *>    while (i < s_nextern) {                                                                                                                                                                                                                             <* 
- *>       if (i > t)  t = i;                                                                                                                                                                                                                               <* 
- *>       /+---(beginning)-------------------+/                                                                                                                                                                                                            <* 
- *>       if (i <= 0) {                                                                                                                                                                                                                                    <* 
- *>          DEBUG_SORT   yLOG_note    ("bounce off beginning");                                                                                                                                                                                           <* 
- *>          ++s_teles;                                                                                                                                                                                                                                    <* 
- *>          i = t + 1;                                                                                                                                                                                                                                    <* 
- *>          continue;                                                                                                                                                                                                                                     <* 
- *>       }                                                                                                                                                                                                                                                <* 
- *>       /+---(compare)---------------------+/                                                                                                                                                                                                            <* 
- *>       ++s_comps;                                                                                                                                                                                                                                       <* 
- *>       rc = strcmp (s_externs [s_externs [i - 1].pos].name, s_externs [s_externs [i].pos].name);                                                                                                                                                        <* 
- *>       if (rc <= 0) {                                                                                                                                                                                                                                   <* 
- *>          DEBUG_SORT   yLOG_complex ("correct"   , "%3d %-20.20s v %3d %-20.20s   %c %4d   %5d %5d %5d", i - 1, s_externs [s_externs [i - 1].pos].name, i, s_externs [s_externs [i].pos].name, (rc <= 0) ? 'y' : '-', rc, s_comps, s_swaps, s_teles);   <* 
- *>          ++s_teles;                                                                                                                                                                                                                                    <* 
- *>          i = t + 1;                                                                                                                                                                                                                                    <* 
- *>          continue;                                                                                                                                                                                                                                     <* 
- *>       }                                                                                                                                                                                                                                                <* 
- *>       /+---(swap)------------------------+/                                                                                                                                                                                                            <* 
- *>       ++s_notes;                                                                                                                                                                                                                                       <* 
- *>       DEBUG_SORT   yLOG_complex ("swapped"   , "%3d %-20.20s # %3d %-20.20s   %c %4d   %5d %5d %5d", i - 1, s_externs [s_externs [i - 1].pos].name, i, s_externs [s_externs [i].pos].name, (rc <= 0) ? 'y' : '-', rc, s_comps, s_swaps, s_teles);      <* 
- *>       x_tmp                 = s_externs [i].pos;                                                                                                                                                                                                       <* 
- *>       s_externs [i].pos     = s_externs [i - 1].pos;                                                                                                                                                                                                   <* 
- *>       s_externs [i - 1].pos = x_tmp;                                                                                                                                                                                                                   <* 
- *>       /+---(next)------------------------+/                                                                                                                                                                                                            <* 
- *>       --i;                                                                                                                                                                                                                                             <* 
- *>    }                                                                                                                                                                                                                                                   <* 
- *>    /+---(display)------------------------+/                                                                                                                                                                                                            <* 
- *>    poly_extern__reorder ();                                                                                                                                                                                                                            <* 
- *>    printf ("AFTER reorder...\n");                                                                                                                                                                                                                      <* 
- *>    for (i = 0; i < s_nextern; ++i) {                                                                                                                                                                                                                   <* 
- *>       printf ("%3d %2d:%s\n", i, s_externs [i].len, s_externs [i].name);                                                                                                                                                                               <* 
- *>    }                                                                                                                                                                                                                                                   <* 
- *>    DEBUG_SORT   yLOG_value   ("size"       , s_nextern);                                                                                                                                                                                               <* 
- *>    DEBUG_SORT   yLOG_value   ("compares"   , s_comps);                                                                                                                                                                                                 <* 
- *>    DEBUG_SORT   yLOG_value   ("notes"      , s_notes);                                                                                                                                                                                                 <* 
- *>    DEBUG_SORT   yLOG_value   ("swaps"      , s_swaps);                                                                                                                                                                                                 <* 
- *>    DEBUG_SORT   yLOG_value   ("teleports"  , s_teles);                                                                                                                                                                                                 <* 
- *>    /+---(complete)-----------------------+/                                                                                                                                                                                                            <* 
- *>    DEBUG_SORT   yLOG_exit    (__FUNCTION__);                                                                                                                                                                                                           <* 
- *>    return 0;                                                                                                                                                                                                                                           <* 
- *> }                                                                                                                                                                                                                                                      <*/
-
+char
+poly_extern_review      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;          /* return code for errors         */
+   char        rc          =    0;          /* generic return code            */
+   char       *p           = NULL;
+   char       *q           = NULL;
+   char        x_recd      [LEN_RECD];
+   char        x_funcname  [LEN_NAME];
+   char        x_filename  [LEN_NAME];
+   int         x_len       =    0;
+   int         x_flen      =    0;
+   int         x_line      =    0;
+   tFILE      *x_file      =    0;
+   tTAG       *x_src       = NULL;
+   tTAG       *x_dst       = NULL;
+   tEXTERN    *x_extern    = NULL;
+   int         c           =    0;
+   char        x_cat       =  ' ';
+   int         x_ylibs     =    0;
+   int         x_mystry    =    0;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   poly_extern__extracts ();
+   DEBUG_INPT   yLOG_value   ("extracts"  , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(open)---------------------------*/
+   DEBUG_INPT   yLOG_info    ("cflow file" , F_CFLOW);
+   f_flow = fopen (F_CFLOW, "rt");
+   DEBUG_INPT   yLOG_point   ("f_flow"          , f_flow);
+   --rce;  if (f_flow == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_info    ("ylib file"  , F_YLIB);
+   f_ylib   = fopen (F_YLIB, "wt");
+   DEBUG_INPT   yLOG_point   ("f_ylib"          , f_ylib);
+   --rce;  if (f_ylib == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_info    ("mystry file", F_MYSTRY);
+   f_mystry = fopen (F_MYSTRY, "wt");
+   DEBUG_INPT   yLOG_point   ("f_mystry"        , f_mystry);
+   --rce;  if (f_mystry == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk)---------------------------*/
+   while (1) {
+      /*---(read)------------------------*/
+      fgets  (x_recd, LEN_RECD, f_flow);
+      if (feof (f_flow)) {
+         DEBUG_INPT   yLOG_note    ("end of file");
+         break;
+      }
+      /*---(filter)----------------------*/
+      x_len = strlen (x_recd);
+      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
+      if (x_len < 10) {
+         DEBUG_INPT   yLOG_note    ("too short, SKIP");
+         continue;
+      }
+      x_recd [--x_len] = '\0';
+      DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
+      /*---(get function)----------------*/
+      p = strchr (x_recd, ' ');
+      if (p == NULL) {
+         DEBUG_INPT   yLOG_note    ("space not found, SKIP");
+         continue;
+      }
+      DEBUG_INPT   yLOG_value   ("space"     , p - x_recd + 1);
+      strlcpy (x_funcname, x_recd, p - x_recd + 1);
+      DEBUG_INPT   yLOG_info    ("func name" , x_funcname);
+      /*---(get if definition)-----------*/
+      DEBUG_INPT   yLOG_char    ("def mark"  , p [1]);
+      if (p [1] == '*') {
+         DEBUG_INPT   yLOG_note    ("function definition, SKIP");
+         continue;
+      }
+      /*---(get file)--------------------*/
+      p += 3;
+      DEBUG_INPT   yLOG_info    ("p"         , p);
+      q = strchr (p, ':');
+      if (q == NULL) {
+         DEBUG_INPT   yLOG_note    ("did not find line marker, SKIP");
+         continue;
+      }
+      q [0] = '\0';
+      strlcpy (x_filename, p, LEN_NAME);
+      DEBUG_INPT   yLOG_info    ("file name" , x_filename);
+      x_file = (tFILE *) poly_btree_search (B_FILES, x_filename);
+      if (x_file == NULL) {
+         DEBUG_INPT   yLOG_note    ("file not found");
+         continue;
+      }
+      DEBUG_INPT   yLOG_info    ("file name" , x_file->name);
+      /*---(get line)--------------------*/
+      ++q;
+      DEBUG_INPT   yLOG_info    ("line str"  , q);
+      x_line = atoi (q);
+      DEBUG_INPT   yLOG_value   ("x_line"    , x_line);
+      if (x_line <= 0) {
+         DEBUG_INPT   yLOG_note    ("line could not be parsed, SKIP");
+         continue;
+      }
+      /*---(get source tag)--------------*/
+      x_src = poly_tags_byline (x_file, x_line);
+      if (x_src == NULL) {
+         DEBUG_INPT   yLOG_note    ("source tag not found");
+         continue;
+      }
+      /*---(get destination tag)---------*/
+      x_dst    = (tTAG *)    poly_btree_search  (B_TAGS, x_funcname);
+      DEBUG_INPT   yLOG_point   ("x_dst"     , x_dst);
+      x_extern = (tEXTERN *) poly_extern_search (x_funcname);
+      DEBUG_INPT   yLOG_point   ("x_extern"  , x_extern);
+      /*---(mystry)----------------------*/
+      if (x_dst == NULL && x_extern == NULL) {
+         if (x_mystry %  5 == 0)  fprintf (f_mystry, "\n");
+         if (x_mystry % 25 == 0)  fprintf (f_mystry, "##---calling-file-------   line   ---calling-function------   ---mystery-function------\n\n");
+         fprintf (f_mystry, "%-25.25s  %4d   %-25.25s   %-25.25s\n",
+               x_file->name, x_line, x_src->name, x_funcname);
+         ++x_mystry;
+         DEBUG_INPT   yLOG_note    ("found a mystry function");
+         continue;
+      }
+      /*---(tally)-----------------------*/
+      ++x_src->funcs;
+      if (x_src == x_dst) {
+         DEBUG_INPT   yLOG_note    ("found a recursive reverence");
+         ++x_src->recurse;
+         continue;
+      }
+      if (x_dst != NULL) {
+         DEBUG_INPT   yLOG_note    ("found a local/global internal call");
+         if (x_src->file == x_dst->file)  ++x_dst->lcalls;
+         else                             ++x_dst->gcalls;
+         ++x_src->intern;
+         continue;
+      }
+      if (x_extern != NULL) {
+         DEBUG_INPT   yLOG_char    ("type"      , x_extern->type);
+         switch (x_extern->type) {
+         case 'd' :
+            --x_src->funcs;
+            ++x_src->dshort;
+            break;
+         case 'D' :
+            --x_src->funcs;
+            ++x_src->dlong;
+            break;
+         case '-' :
+            ++x_src->cstd;
+            break;
+         case 'w' :
+            ++x_src->cstd;
+            ++x_src->writes;
+            break;
+         case 'r' :
+            ++x_src->cstd;
+            ++x_src->reads;
+            break;
+         case 'n' :
+            ++x_src->ncurses;
+            break;
+         case 'o' :
+            ++x_src->opengl;
+            break;
+         case 'm' :
+            ++x_src->cstd;
+            ++x_src->memories;
+            break;
+         case 'p' :
+            ++x_src->cstd;
+            ++x_src->process;
+            break;
+         case 's' :
+            ++x_src->cstd;
+            ++x_src->scalls;
+            break;
+         case 'Y' :
+            ++x_src->ylibs;
+            if (x_ylibs %  5 == 0)  fprintf (f_ylib, "\n");
+            if (x_ylibs % 25 == 0)  fprintf (f_ylib, "##---ylib-function-------   ---calling-file----------   line   ---calling-function------\n\n");
+            fprintf (f_ylib, "%-25.25s   %-25.25s   %4d   %-25.25s\n", x_funcname, x_file->name, x_line, x_src->name);
+            ++x_ylibs;
+            break;
+         }
+      }
+      /*---(done)------------------------*/
+   }
+   /*---(close)--------------------------*/
+   rc = fclose (f_flow);
+   DEBUG_INPT   yLOG_value   ("flow close" , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   fprintf (f_ylib, "\n## done, finito, complete\n");
+   rc = fclose (f_ylib);
+   DEBUG_INPT   yLOG_value   ("ylib close" , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   fprintf (f_mystry, "\n## done, finito, complete\n");
+   rc = fclose (f_mystry);
+   DEBUG_INPT   yLOG_value   ("mystry clos", rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(wrapup)-------------------------*/
+   poly_extern__cleanup ();
+   DEBUG_INPT   yLOG_value   ("cleanup"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
 
 
