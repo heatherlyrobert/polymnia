@@ -199,6 +199,8 @@ poly_cats_tagsumm  (tTAG *a_tag)
    else if (a_tag->dlong   > 0)  a_tag->Dstyle = 'l';
    else if (a_tag->dshort  > 0)  a_tag->Dstyle = 's';
    if (a_tag->dfree > 0)  a_tag->Dstyle = '#';
+   poly_cats_exact   ("myx"     , a_tag->myx     , &a_tag->Zsize, '-');
+   poly_cats_exact   ("window"  , a_tag->window  , &a_tag->Wsize, '-');
    /*---(type)---------------------------*/
    if      (strncmp (a_tag->name, "o___", 4) == 0)        strlcpy (a_tag->image, "-"     , LEN_LABEL);
    else if (strstr  (a_tag->name, "_init") != NULL)       strlcpy (a_tag->image, "shoot" , LEN_LABEL);

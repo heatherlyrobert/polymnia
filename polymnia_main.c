@@ -57,7 +57,7 @@ main (int argc, char *argv[])
     *>       s_lines, s_empty,                                                        <* 
     *>       s_docs , s_debug,                                                        <* 
     *>       s_code , s_slocl);                                                       <*/
-   PROG_report ('h');
+   PROG_report ();
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    /*---(wrap-up)------------------------*/
    PROG_end     ();

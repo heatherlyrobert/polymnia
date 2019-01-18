@@ -4,7 +4,7 @@
  *
  *   polymnia-hymnos (many praises) is the muse and protector of divine hymns
  *   and lyric poetry, inventor of the lyre, patron of dancing, geometry, and
- *   gammar.  the muses (mousai) are nine daughters of zeus and mnemosyne
+ *   grammar.  the muses (mousai) are nine daughters of zeus and mnemosyne
  *   (titan of memory) and are the goddesses of art, literature, and science.
  *   they inspire creation, enthusiasm, and the creative impulses.  polymnia
  *   is usually depicted wearing a veil and looking up to the heavens
@@ -13,8 +13,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.5g"
-#define   VER_TXT       "wow, tons of changes, forgot incremental git versions"
+#define   VER_NUM       "0.6a"
+#define   VER_TXT       "integrated into vim HTAG macro"
 
 
 
@@ -60,12 +60,17 @@
  *     a dstyle (multi, single, mix, none)
  *     b dmacro (single, multi)
  *     ----
- *     d proto  (global, private, local)              
- *     ----
- *     c unit   (calls in unit tests)
- *     i ncures/opengl/both                    N/O/B
- *
  *     c extern (extern references count)
+ *     d ncurse (calls to ncurses)             
+ *     e opengl (calls to opengl)             
+ *     f window (calls to X11, etc)
+ *     g myx    (calls to yX11, yFONT, yCOLOR)
+ *     ----
+ *     h proto  (global, private, local)              
+ *     - -
+ *     - -
+ *     k unit   (calls in unit tests)
+ *
  *
  *
  */
@@ -103,6 +108,7 @@ typedef     struct      cBTREE      tBTREE;
 typedef     struct      cEXTERN     tEXTERN;
 
 
+extern      char        g_format;
 
 
 extern      FILE       *f_prog;
@@ -226,10 +232,14 @@ struct cTAG {
    char        Dmacro;                    /* which macro used                 */
    char        Xsize;
    char        Esize;
+   char        Wsize;                     /* window manager/X11 calls         */
+   char        Zsize;                     /* my x11 fuctions in ylibs         */
    /*---(group three working)---------*/
    int         dlong;                     /* long style yLOG_                 */
    int         dshort;                    /* short style yLOG_                */
    int         dfree;                     /* yLOG_ without DEBUG_ protection  */
+   int         window;                    /* window manager/x11 calls         */
+   int         myx;
    /*---(done)--------------*/
 };
 extern   tTAG     s_tags [MAX_TAG];
@@ -329,7 +339,7 @@ char        poly_cats_logic         (tTAG *a_tag, char a_type);
 char        poly_cats_lines         (tFILE *a_file, tTAG *a_tag, char a_type);
 char*       htags_cats__unit        (char *a_question, int n);
 
-char        PROG_report             (char a_format);
+char        PROG_report             (void);
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);

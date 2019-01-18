@@ -473,6 +473,8 @@ poly_extern_review      (void)
             ++x_src->cstd;
             ++x_src->scalls;
             break;
+         case 'y' :
+            ++x_src->myx;
          case 'Y' :
             ++x_src->ylibs;
             if (x_ylibs %  5 == 0)  fprintf (f_ylib, "\n");

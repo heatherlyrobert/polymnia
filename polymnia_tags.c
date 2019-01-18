@@ -274,10 +274,14 @@ poly_tags__wipe    (tTAG *a_dst)
    /*---(group three outputs)---------*/
    a_dst->Dstyle   = '-';
    a_dst->Dmacro   = '-';
+   a_dst->Wsize    = '-';
+   a_dst->Zsize    = '-';
    /*---(group three working)---------*/
    a_dst->dlong    = 0;
    a_dst->dshort   = 0;
    a_dst->dfree    = 0;
+   a_dst->window   = 0;
+   a_dst->myx      = 0;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
