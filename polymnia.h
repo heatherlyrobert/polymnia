@@ -1,3 +1,21 @@
+/*===============================[[ beg-code ]]===============================*/
+
+/*===[[ HEADER ]]=============================================================*/
+/*
+ *   focus         : development environment
+ *   heritage      : polymnia-hymnos (muse of divine hymns, geometry, and grammar)
+ *   purpose       : research and analysis of c programs and my full code-base
+ *
+ *   base_system   : gnu/linux   (powerful, ubiquitous, technical, and hackable)
+ *   lang_name     : ansi-c      (wicked, limitless, universal, and everlasting)
+ *   dependencies  : none
+ *   size          : small       (approximately 2,000 slocL)
+ * 
+ *   author        : rsheatherly
+ *   created       : 2019-01
+ *   priorities    : direct, simple, brief, vigorous, and lucid (h.w. fowler)
+ *   end goal      : loosely coupled, strict interface, maintainable, traceable
+ */
 
 /*===[[ GREEK HERITAGE ]]=====================================================*/
 /*
@@ -13,8 +31,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.6a"
-#define   VER_TXT       "integrated into vim HTAG macro"
+#define   VER_NUM       "0.6b"
+#define   VER_TXT       "back to a full pass on unit testing"
 
 
 
@@ -56,19 +74,19 @@
  *     j process/system                        P/S/B
  *     k recursion                             y/-
  *     ----
- *  6) warnings                                    [ab.cdefg.hijk]
+ *  6) warnings                                    [ab.cdef.ghijk]
  *     a dstyle (multi, single, mix, none)
  *     b dmacro (single, multi)
  *     ----
- *     c extern (extern references count)
- *     d ncurse (calls to ncurses)             
- *     e opengl (calls to opengl)             
- *     f window (calls to X11, etc)
- *     g myx    (calls to yX11, yFONT, yCOLOR)
+ *     c ncurse (calls to ncurses)             
+ *     d opengl (calls to opengl)             
+ *     e window (calls to X11, etc)
+ *     f myx    (calls to yX11, yFONT, yCOLOR)
  *     ----
- *     h proto  (global, private, local)              
- *     - -
- *     - -
+ *     g proto  (global, private, local)              
+ *     h extern (extern references count)
+ *     i -
+ *     j -
  *     k unit   (calls in unit tests)
  *
  *
@@ -95,15 +113,20 @@
 
 
 #define      LEN_RECD         2000
-#define      LEN_NAME           50
+#define      LEN_FULL          100
+#define      LEN_NAME           30
 #define      LEN_LABEL          20
 
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 typedef     struct      dirent      tDIRENT;
+
+typedef     struct      cPROJ       tPROJ;
 typedef     struct      cFILE       tFILE;
 typedef     struct      cTAG        tTAG;
+typedef     struct      cWORK       tWORK;
+
 typedef     struct      cBTREE      tBTREE;
 typedef     struct      cEXTERN     tEXTERN;
 
@@ -111,6 +134,8 @@ typedef     struct      cEXTERN     tEXTERN;
 extern      char        g_format;
 
 
+extern      FILE       *f_db;
+#define     F_DB        "/var/lib/polymnia/polymnia.db"
 extern      FILE       *f_prog;
 
 extern      FILE       *f_tags;
@@ -125,11 +150,16 @@ extern      FILE       *f_ylib;
 #define     F_YLIB      "polymnia.ylib"
 
 
-#define       MAX_FILE     200
-struct cFILE {
+
+/*----------+-----------+-----------+-----------+-----------+-----------+-----*/
+struct cPROJ {
    /*---(master)------------*/
-   char        type;
-   char       *name;
+   char        focus       [LEN_FULL];
+   char        name        [LEN_NAME];
+   char        heritage    [LEN_FULL];
+   char        purpose     [LEN_FULL];
+   char        codesize    [LEN_NAME];
+   char        home        [LEN_FULL];
    /*---(stats)-------------*/
    int         lines;
    int         empty;
@@ -137,36 +167,57 @@ struct cFILE {
    int         debug;
    int         code;
    int         slocl;
-   /*---(tags)--------------*/
-   int         btag;
-   int         etag;
-   tTAG       *thead;
-   tTAG       *ttail;
-   int         ntag;
+   /*---(files)-------------*/
+   tFILE      *head;
+   tFILE      *tail;
+   int         count;
    /*---(done)--------------*/
 };
-extern   tFILE    s_files [MAX_FILE];
 
 
 
-#define       MAX_TAG     5000
+struct cFILE {
+   /*---(master)------------*/
+   char        type;
+   char        name        [LEN_NAME];
+   /*---(stats)-------------*/
+   int         lines;
+   int         empty;
+   int         docs;
+   int         debug;
+   int         code;
+   int         slocl;
+   /*---(parent)------------*/
+   tPROJ      *proj;
+   /*---(files)-------------*/
+   tFILE      *prev;
+   tFILE      *next;
+   /*---(tags)--------------*/
+   tTAG       *head;
+   tTAG       *tail;
+   int         count;
+   /*---(done)--------------*/
+};
+
+
+
 struct cTAG {
    /*---(master)-------------------------*/
-   tFILE      *file;
-   char       *name;
    char        type;
+   char        name        [LEN_NAME];
    int         line;
    char        hint        [3];
    char        image       [10];
    char        desc        [40];
    char        ready;
-   /*---(file linked list)---------------*/
-   tTAG       *fprev;
-   tTAG       *fnext;
+   /*---(parent)------------*/
+   tFILE      *file;
+   /*---(tags)--------------*/
+   tTAG       *prev;
+   tTAG       *next;
+   tWORK      *work;
    /*---(positioning)--------------------*/
    char        oneline;                 /* return type and name on same line  */
-   int         beg;
-   int         end;
    /*---(line counts)--------------------*/
    int         lines;
    int         empty;
@@ -175,17 +226,46 @@ struct cTAG {
    int         code;
    int         slocl;
    /*---(group one outputs)--------------*/
-   char        scope;
+   char        scope;      /* 1st sub */
    char        rtype;
    char        psize;
-   char        tsize;
+   char        tsize;      /* 2nd sub */
    char        dsize;
    char        ssize;
-   char        lsize;
+   char        lsize;      /* 3rd sub */
    char        csize;
    char        rsize;
    int         isize;
    char        msize;
+   /*---(group two outputs)-----------*/
+   char        Lsize;      /* 1st sub */
+   char        Gsize;
+   char        Fsize;      /* 2nd sub */
+   char        Isize;
+   char        Csize;
+   char        Ysize;
+   char        Msize;
+   char        Rflag;      /* 3rd sub */
+   char        Wflag;
+   char        Lflag;
+   char        Sflag;
+   /*---(group three outputs)---------*/
+   char        Dstyle;     /* 1st sub */
+   char        Dmacro;
+   char        Nsize;      /* 2nd sub */
+   char        Osize;
+   char        Wsize;
+   char        Zsize;
+   char        Pstyle;     /* 3rd sub */
+   char        Esize;
+   char        Xsize;
+   /*---(done)--------------*/
+};
+
+struct cWORK {
+   /*---(positioning)--------------------*/
+   int         beg;
+   int         end;
    /*---(group one working)--------------*/
    char        nparam;
    int         lvars;
@@ -193,22 +273,6 @@ struct cTAG {
    int         returns;
    int         indent;
    int         memories;
-   /*---(group two outputs)-----------*/
-   char        Lsize;
-   char        Gsize;
-   char        Dsize;
-   char        Fsize;
-   char        Isize;
-   char        Csize;
-   char        Ysize;
-   char        Msize;
-   char        Rflag;                     /* read from file or terminal       */
-   char        Wflag;                     /* write to file or terminal        */
-   char        Vflag;                     /* use ncurses or opengl            */
-   char        Nsize;                     /* use ncurses                      */
-   char        Osize;                     /* use opengl                       */
-   char        Lflag;                     /* linux system and process calls   */
-   char        Sflag;                     /* self/recursion flag              */
    /*---(group two working)-----------*/
    int         lcalls;
    int         gcalls;
@@ -227,23 +291,15 @@ struct cTAG {
    int         process;
    int         scalls;
    int         recurse;
-   /*---(group three outputs)---------*/
-   char        Dstyle;                    /* debug style (long, short)        */
-   char        Dmacro;                    /* which macro used                 */
-   char        Xsize;
-   char        Esize;
-   char        Wsize;                     /* window manager/X11 calls         */
-   char        Zsize;                     /* my x11 fuctions in ylibs         */
    /*---(group three working)---------*/
    int         dlong;                     /* long style yLOG_                 */
    int         dshort;                    /* short style yLOG_                */
    int         dfree;                     /* yLOG_ without DEBUG_ protection  */
    int         window;                    /* window manager/x11 calls         */
    int         myx;
-   /*---(done)--------------*/
+   /*---(done)------------------------*/
 };
-extern   tTAG     s_tags [MAX_TAG];
-extern   int      s_ntag;
+
 
 
 extern char      s_pprev     [LEN_RECD];
@@ -273,21 +329,22 @@ struct      cBTREE {
    void       *data;
    /*---(done)--------------*/
 };
+#define     B_PROJ      'T'
 #define     B_FILES     'f'
 #define     B_TAGS      't'
 #define     B_PROTO     'p'
 #define     B_EXTERN    'e'
 #define     B_UNIT      'U'
-#define     B_ALL       "ftpeU"
+#define     B_ALL       "TftpeU"
 
 
 
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct      cEXTERN {
    /*---(information)-------*/
-   char       *name;
-   int         len;
    char        type;
+   char        name        [LEN_NAME];
+   int         len;
    int         count;
    /*---(linked list)-------*/
    tEXTERN    *prev;
@@ -311,8 +368,9 @@ char        poly_cats_tagsumm       (tTAG *a_tag);
 
 char        poly_files_init         (void);
 char        poly_files_wrap         (void);
-char        poly_files__add         (char *a_name, char a_type);
-char        poly_files_review       (void);
+tFILE*      poly_files_new          (void);
+char        poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file);
+char        poly_files_review       (tPROJ *a_proj);
 char        poly_files_list         (void);
 tFILE*      poly_files_search       (char *a_name);
 char        poly_files_addtag       (tFILE *a_file, tTAG *a_tag);
@@ -325,7 +383,8 @@ char        poly_tags_init          (void);
 char        poly_tags_wrap          (void);
 char        poly_tags__hint         (int n, char *a_label);
 char        poly_tags__wipe         (tTAG *a_dst);
-char        poly_tags__add          (tFILE *a_file, char *a_name, char a_type, int a_line);
+tTAG*       poly_tags_new           (void);
+char        poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, tTAG **a_tag);
 char        poly_tags_inventory     (tFILE *a_file);
 char        poly_tags_readline      (tFILE *a_file, int *a_line, tTAG **a_tag);
 char        poly_tags_review        (tFILE *a_file);
@@ -337,9 +396,9 @@ char        poly_cats_exact         (char *a_label, int a_src, char *a_dst, char
 char        poly_cats_scaled        (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_logic         (tTAG *a_tag, char a_type);
 char        poly_cats_lines         (tFILE *a_file, tTAG *a_tag, char a_type);
-char*       htags_cats__unit        (char *a_question, int n);
+char*       poly_cats__unit         (char *a_question, int n);
 
-char        PROG_report             (void);
+char        PROG_report             (tPROJ *x_proj);
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);
@@ -373,5 +432,11 @@ char        poly_btree_list         (char a_btree);
 void*       poly_btree_search       (char a_btree, char *a_name);
 char*       poly_btree__unit        (char a_btree, char *a_question, int i);
 
+char        poly_proj_init          (void);
+char        poly_proj_wrap          (void);
+tPROJ*      poly_proj_new           (void);
+char        poly_proj_add           (char *a_name, char *a_home, tPROJ **a_proj);
+char        poly_proj_here          (tPROJ **a_proj);
+char        poly_proj_prepare       (void);
 
 

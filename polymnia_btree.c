@@ -14,7 +14,7 @@ struct      cROOTS {
    tBTREE     *tail;
    tBTREE     *root;
    /*---(searches)----------*/
-   char       *search;
+   char        search      [LEN_NAME];
    tBTREE     *last;
    /*---(sequential)--------*/
    tBTREE     *saved;
@@ -23,12 +23,13 @@ struct      cROOTS {
    int         depth;
    /*---(done)--------------*/
 } s_trees [MAX_BTREE] = {
-   { B_FILES , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
-   { B_TAGS  , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
-   { B_EXTERN, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
-   { B_PROTO , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
-   { B_UNIT  , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
-   { 0       , NULL, NULL, NULL, NULL, NULL, NULL, 0, 0},
+   { B_PROJ    , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_FILES   , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_TAGS    , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_EXTERN  , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_PROTO   , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_UNIT    , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { 0         , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
 };
 
 
@@ -55,17 +56,14 @@ poly_btree__by_abbr     (char a_btree)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   int         i           =    0;
    /*---(defense)------------------------*/
-   switch (a_btree) {
-   case B_FILES  :  return 0;
-   case B_TAGS   :  return 1;
-   case B_EXTERN :  return 2;
-   case B_PROTO  :  return 3;
-   case B_UNIT   :  return 4;
-   default       :  return rce;
+   while (s_trees [i].which != 0) {
+      if (s_trees [i].which == a_btree)   return i;
+      ++i;
    }
    /*---(complete)-----------------------*/
-   return 0;
+   return rce;
 }
 
 
@@ -398,8 +396,6 @@ poly_btree_first        (char a_btree)
    tBTREE     *u           = NULL;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(prepare)------------------------*/
-   B_SAVED    = NULL;
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
    n = poly_btree__by_abbr   (a_btree);
@@ -416,6 +412,7 @@ poly_btree_first        (char a_btree)
       DEBUG_DATA   yLOG_exit    (__FUNCTION__);
       return NULL;
    }
+   DEBUG_DATA   yLOG_point   ("->data"     , B_SAVED->data);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return B_SAVED->data;
@@ -451,6 +448,7 @@ poly_btree_next         (char a_btree)
       DEBUG_DATA   yLOG_exit    (__FUNCTION__);
       return NULL;
    }
+   DEBUG_DATA   yLOG_point   ("->data"     , B_SAVED->data);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return B_SAVED->data;
@@ -718,7 +716,7 @@ poly_btree_search       (char a_btree, char *a_name)
    }
    /*---(save)---------------------------*/
    DEBUG_DATA   yLOG_note    ("found");
-   B_SEARCH = strdup (a_name);
+   strlcpy (B_SEARCH, a_name, LEN_NAME);
    B_LAST   = x_node->data;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);

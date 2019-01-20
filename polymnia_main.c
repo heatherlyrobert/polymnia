@@ -10,6 +10,7 @@ main (int argc, char *argv[])
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
+   tPROJ      *x_proj      = NULL;
    tFILE      *x_file      = NULL;
    /*---(initialize)---------------------*/
    if (rc >= 0)  rc = yURG_logger  (argc, argv);
@@ -21,6 +22,26 @@ main (int argc, char *argv[])
    if (rc <  0) {
       PROG_end ();
       return -1;
+   }
+   /*---(setup project)------------------*/
+   /*> rc  = poly_proj_add     ("test", "test", &x_proj);                             <*/
+   rc  = poly_proj_here    (&x_proj);
+   DEBUG_PROG   yLOG_value   ("proj_here"  , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
+   --rce;  if (x_proj == NULL) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(produce global files)-----------*/
+   rc  = poly_files_review (x_proj);
+   DEBUG_PROG   yLOG_value   ("review"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    /*---(main loop)----------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
@@ -57,7 +78,7 @@ main (int argc, char *argv[])
     *>       s_lines, s_empty,                                                        <* 
     *>       s_docs , s_debug,                                                        <* 
     *>       s_code , s_slocl);                                                       <*/
-   PROG_report ();
+   PROG_report (x_proj);
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    /*---(wrap-up)------------------------*/
    PROG_end     ();

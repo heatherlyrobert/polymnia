@@ -52,7 +52,7 @@ poly_extern__add         (char *a_name, char a_type)
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   x_new->name   = strdup (a_name);
+   strlcpy (x_new->name, a_name, LEN_NAME);
    x_new->type   = a_type;
    x_new->count  = 0;
    /*---(into btree)---------------------*/
@@ -420,63 +420,63 @@ poly_extern_review      (void)
          continue;
       }
       /*---(tally)-----------------------*/
-      ++x_src->funcs;
+      ++x_src->work->funcs;
       if (x_src == x_dst) {
          DEBUG_INPT   yLOG_note    ("found a recursive reverence");
-         ++x_src->recurse;
+         ++x_src->work->recurse;
          continue;
       }
       if (x_dst != NULL) {
          DEBUG_INPT   yLOG_note    ("found a local/global internal call");
-         if (x_src->file == x_dst->file)  ++x_dst->lcalls;
-         else                             ++x_dst->gcalls;
-         ++x_src->intern;
+         if (x_src->file == x_dst->file)  ++x_dst->work->lcalls;
+         else                             ++x_dst->work->gcalls;
+         ++x_src->work->intern;
          continue;
       }
       if (x_extern != NULL) {
          DEBUG_INPT   yLOG_char    ("type"      , x_extern->type);
          switch (x_extern->type) {
          case 'd' :
-            --x_src->funcs;
-            ++x_src->dshort;
+            --x_src->work->funcs;
+            ++x_src->work->dshort;
             break;
          case 'D' :
-            --x_src->funcs;
-            ++x_src->dlong;
+            --x_src->work->funcs;
+            ++x_src->work->dlong;
             break;
          case '-' :
-            ++x_src->cstd;
+            ++x_src->work->cstd;
             break;
          case 'w' :
-            ++x_src->cstd;
-            ++x_src->writes;
+            ++x_src->work->cstd;
+            ++x_src->work->writes;
             break;
          case 'r' :
-            ++x_src->cstd;
-            ++x_src->reads;
+            ++x_src->work->cstd;
+            ++x_src->work->reads;
             break;
          case 'n' :
-            ++x_src->ncurses;
+            ++x_src->work->ncurses;
             break;
          case 'o' :
-            ++x_src->opengl;
+            ++x_src->work->opengl;
             break;
          case 'm' :
-            ++x_src->cstd;
-            ++x_src->memories;
+            ++x_src->work->cstd;
+            ++x_src->work->memories;
             break;
          case 'p' :
-            ++x_src->cstd;
-            ++x_src->process;
+            ++x_src->work->cstd;
+            ++x_src->work->process;
             break;
          case 's' :
-            ++x_src->cstd;
-            ++x_src->scalls;
+            ++x_src->work->cstd;
+            ++x_src->work->scalls;
             break;
          case 'y' :
-            ++x_src->myx;
+            ++x_src->work->myx;
          case 'Y' :
-            ++x_src->ylibs;
+            ++x_src->work->ylibs;
             if (x_ylibs %  5 == 0)  fprintf (f_ylib, "\n");
             if (x_ylibs % 25 == 0)  fprintf (f_ylib, "##---ylib-function-------   ---calling-file----------   line   ---calling-function------\n\n");
             fprintf (f_ylib, "%-25.25s   %-25.25s   %4d   %-25.25s\n", x_funcname, x_file->name, x_line, x_src->name);

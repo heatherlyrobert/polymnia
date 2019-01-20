@@ -7,6 +7,7 @@ char        g_format    = 'h';
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+FILE       *f_db        = NULL;
 FILE       *f_prog      = NULL;
 FILE       *f_tags      = NULL;
 FILE       *f_flow      = NULL;
@@ -19,10 +20,7 @@ char       s_prev       [LEN_RECD];
 char       s_curr       [LEN_RECD];
 
 
-tFILE    s_files [MAX_FILE];
 
-tTAG     s_tags [MAX_TAG];
-int      s_ntag            =   0;
 
 char      unit_answer [LEN_RECD] = "";
 
@@ -31,6 +29,7 @@ PROG_init          (int a_argc, char *a_argv[])
 {
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   poly_proj_init    ();
    poly_files_init   ();
    poly_tags_init    ();
    poly_extern_init  ();
@@ -99,15 +98,13 @@ PROG_final         (void)
    char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
-   /*---(produce global files)-----------*/
-   rc = poly_files_review ();
    /*---(complete)-----------------------*/
    DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
    return 0;
 }
 
 char
-PROG_report             (void)
+PROG_report             (tPROJ *x_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -124,6 +121,15 @@ PROG_report             (void)
    char        g           [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   if      (s_slocl < 100    )  strlcpy (x_proj->codesize, "u.micro"       , LEN_LABEL);
+   else if (s_slocl < 500    )  strlcpy (x_proj->codesize, "t.tiny"        , LEN_LABEL);
+   else if (s_slocl < 2000   )  strlcpy (x_proj->codesize, "s.small"       , LEN_LABEL);
+   else if (s_slocl < 10000  )  strlcpy (x_proj->codesize, "m.moderate"    , LEN_LABEL);
+   else if (s_slocl < 50000  )  strlcpy (x_proj->codesize, "l.large"       , LEN_LABEL);
+   else if (s_slocl < 250000 )  strlcpy (x_proj->codesize, "h.huge"        , LEN_LABEL);
+   else if (s_slocl < 1000000)  strlcpy (x_proj->codesize, "e.elephantine" , LEN_LABEL);
+   else                         strlcpy (x_proj->codesize, "g.gargantuan"  , LEN_LABEL);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
    x_file = (tFILE *) poly_btree_first (B_FILES);
@@ -131,34 +137,33 @@ PROG_report             (void)
    if (g_format == 'h') {
       printf ("##/usr/local/bin/polymnia --htags\n");
       printf ("##   polymnia-hymnos (many praises) greek muse and protector of divine hymns, dancing, geometry, and grammar\n");
-      printf ("##   version %s, %s\n\n\n", VER_NUM, VER_TXT);
+      printf ("##   version %s, %s\n", VER_NUM, VER_TXT);
+      printf ("##\n");
+      printf ("##   name       [%s]\n", x_proj->name);
+      printf ("##   focus      [%s]\n", x_proj->focus);
+      printf ("##   heritage   [%s]\n", x_proj->heritage);
+      printf ("##   purpose    [%s]\n", x_proj->purpose);
+      printf ("##   code-size  [%s]\n", x_proj->codesize);
+      printf ("##   home       [%s]\n", x_proj->home);
+      printf ("##\n\n\n\n");
    }
    while (x_file != NULL) {
       if (g_format == 'h') {
-         /*> printf ("%-25.25s    FILE\n", x_file->name);                                                                                                 <* 
-          *> printf ("lines : %4d %5d   \n", x_file->lines, s_lines);                                                                                     <* 
-          *> printf ("empty : %4d %5d   \n", x_file->empty, s_empty);                                                                                     <* 
-          *> printf ("docs  : %4d %5d   \n", x_file->docs , s_docs );                                                                                     <* 
-          *> printf ("debug : %4d %5d   \n", x_file->debug, s_debug);                                                                                     <* 
-          *> printf ("code  : %4d %5d   \n", x_file->code , s_code );                                                                                     <* 
-          *> printf ("slocl : %4d %5d   \n", x_file->slocl, s_slocl);                                                                                     <* 
-          *> printf ("\n");                                                                                                                               <* 
-          *> printf ("functions (%2d)               [=complexity==] [=integration=] [=watch=point=]  [====source=file======]  [line]\n", x_file->ntag);   <*/
          sprintf (a, "lines : %4d  %5d", x_file->lines, s_lines);
          sprintf (b, "empty : %4d  %5d", x_file->empty, s_empty);
          sprintf (c, "docs  : %4d  %5d", x_file->docs , s_docs );
          sprintf (d, "debug : %4d  %5d", x_file->debug, s_debug);
          sprintf (e, "code  : %4d  %5d", x_file->code , s_code );
          sprintf (f, "slocl : %4d  %5d", x_file->slocl, s_slocl);
-         sprintf (g, "function (%d)"   , x_file->ntag);
+         sprintf (g, "function (%d)"   , x_file->count);
          printf ("%-25.25s    FILE\n", x_file->name);
          printf ("%-25.25s                     c                                                          \n", a);
-         printf ("%-25.25s                   l h r i m          i     m        r   d d  e c o w           \n", b);
-         printf ("%-25.25s     s r p  l d s  o o e n e   g l  c n     y    w l e   s m  x u p i           \n", c);
-         printf ("%-25.25s     c c a  i e l  c i t d m   c c  a t c y s  r r i c   t a  t r e n           \n", d);
-         printf ("%-25.25s     o o r  n b o  a c u e o   a a  l e s l t  e i n u   y c  e s n d m         \n", e);
-         printf ("%-25.25s     p d a  e u c  l e r n r   l l  l r t i r  a t u r   l r  r e g o y         \n", f);
-         printf ("%-25.25s     e e m  s g l  s s n t y   l l  s n d b y  d e x s   e o  n s l w x  - - - -    ------------------staging area-----------------\n", "");
+         printf ("%-25.25s                   l h r i m          i     m        r   d d  c o w      e      \n", b);
+         printf ("%-25.25s     s r p  l d s  o o e n e   g l  c n     y    w l e   s m  u p i    p x      \n", c);
+         printf ("%-25.25s     c c a  i e l  c i t d m   c c  a t c y s  r r i c   t a  r e n    r t      \n", d);
+         printf ("%-25.25s     o o r  n b o  a c u e o   a a  l e s l t  e i n u   y c  s n d m  o e      \n", e);
+         printf ("%-25.25s     p d a  e u c  l e r n r   l l  l r t i r  a t u r   l r  e g o y  t r      \n", f);
+         printf ("%-25.25s     e e m  s g l  s s n t y   l l  s n d b y  d e x s   e o  s l w x  o n - - -    ------------------staging area-----------------\n", "");
          printf ("%-25.25s    [------complexity-------] [------integration------] [----watch-points-------]   [-complexity--] [-integration-] [-watch-point-]  [----source-file-------] [line]    [-type-] [rdy] [-----------description-------------]\n", g);
       }
       x_tag = NULL;
@@ -167,7 +172,7 @@ PROG_report             (void)
          poly_cats_tagsumm (x_tag);
          printf ("%-2s  %-23.23s   ", x_tag->hint  , x_tag->name);
          if (strncmp (x_tag->name, "o___", 4) != 0) {
-            printf ("%c %c %c  %c %c %c  %c %c %c %c %c   %c %c  %c %c %c %c %c  %c %c %c %c   %c %c  %c %c %c %c %c  %c %c %c %c    ",
+            printf ("%c %c %c  %c %c %c  %c %c %c %c %c   %c %c  %c %c %c %c %c  %c %c %c %c   %c %c  %c %c %c %c  %c %c %c %c %c    ",
                   x_tag->scope , x_tag->rtype , x_tag->psize ,
                   x_tag->tsize , x_tag->dsize , x_tag->ssize ,
                   x_tag->lsize , x_tag->csize , x_tag->rsize , x_tag->isize , x_tag->msize ,
@@ -175,9 +180,9 @@ PROG_report             (void)
                   x_tag->Fsize , x_tag->Isize , x_tag->Csize , x_tag->Ysize , x_tag->Msize ,
                   x_tag->Rflag , x_tag->Wflag , x_tag->Lflag , x_tag->Sflag ,
                   x_tag->Dstyle, x_tag->Dmacro,
-                  x_tag->Esize , x_tag->Nsize , x_tag->Osize , x_tag->Wsize , x_tag->Zsize ,
-                  '-', '-', '-', '-');
-            printf ("[%c%c%c.%c%c%c.%c%c%c%c%c] [%c%c.%c%c%c%c%c.%c%c%c%c] [%c%c.%c%c%c%c%c.%c%c%c%c]   ",
+                  x_tag->Nsize , x_tag->Osize , x_tag->Wsize , x_tag->Zsize ,
+                  x_tag->Pstyle, x_tag->Esize , x_tag->Xsize , '-', '-');
+            printf ("[%c%c%c.%c%c%c.%c%c%c%c%c] [%c%c.%c%c%c%c%c.%c%c%c%c] [%c%c.%c%c%c%c.%c%c%c%c%c]   ",
                   x_tag->scope , x_tag->rtype , x_tag->psize ,
                   x_tag->tsize , x_tag->dsize , x_tag->ssize ,
                   x_tag->lsize , x_tag->csize , x_tag->rsize , x_tag->isize , x_tag->msize ,
@@ -185,8 +190,8 @@ PROG_report             (void)
                   x_tag->Fsize , x_tag->Isize , x_tag->Csize , x_tag->Ysize , x_tag->Msize ,
                   x_tag->Rflag , x_tag->Wflag , x_tag->Lflag , x_tag->Sflag ,
                   x_tag->Dstyle, x_tag->Dmacro,
-                  x_tag->Esize , x_tag->Nsize , x_tag->Osize , x_tag->Wsize , x_tag->Zsize ,
-                  '-', '-', '-', '-');
+                  x_tag->Nsize , x_tag->Osize , x_tag->Wsize , x_tag->Zsize ,
+                  x_tag->Pstyle, x_tag->Esize , x_tag->Xsize , '-', '-');
          } else {
             printf ("%c %c %c  %-68.68s    ", x_tag->scope , x_tag->rtype , x_tag->psize , "");
             printf ("%-47.47s   ", "");
@@ -196,7 +201,7 @@ PROG_report             (void)
          printf ("\n");
          rc = poly_files_nexttag (x_file, &x_tag);
       }
-      if (g_format == 'h')  for (i = 0; i < 70 - x_file->ntag; ++i)  printf ("\n");
+      if (g_format == 'h')  for (i = 0; i < 70 - x_file->count; ++i)  printf ("\n");
       x_file = (tFILE *) poly_btree_next  (B_FILES);
       DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    }
@@ -211,9 +216,10 @@ PROG_end             (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(wrap-up)------------------------*/
-   poly_files_wrap   ();
-   poly_tags_wrap    ();
    poly_extern_wrap  ();
+   poly_tags_wrap    ();
+   poly_files_wrap   ();
+   poly_proj_wrap    ();
    /*---(remove global files)------------*/
    system ("rm -f htags.gcalls");
    system ("rm -f htags.flow");
