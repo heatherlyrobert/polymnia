@@ -4,52 +4,6 @@
 
 
 /*====================------------------------------------====================*/
-/*===----                        program level                         ----===*/
-/*====================------------------------------------====================*/
-static void  o___PROGRAM_________o () { return; }
-
-char
-poly_files_init         (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(initialize)---------------------*/
-   rc = poly_btree_init (B_FILES);
-   DEBUG_PROG   yLOG_value   ("init"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_files_wrap         (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(walk through list)--------------*/
-   rc = poly_btree_purge (B_FILES);
-   DEBUG_PROG   yLOG_value   ("purge"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-
-/*====================------------------------------------====================*/
 /*===----                     creation/destruction                     ----===*/
 /*====================------------------------------------====================*/
 static void  o___EXISTANCE_______o () { return; }
@@ -69,6 +23,8 @@ poly_files__wipe   (tFILE *a_dst)
    a_dst->slocl    = 0;
    /*---(tags)--------------*/
    a_dst->proj     = NULL;
+   a_dst->next     = NULL;
+   a_dst->prev     = NULL;
    a_dst->head     = NULL;
    a_dst->tail     = NULL;
    a_dst->count    = 0;
@@ -113,6 +69,8 @@ poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    tFILE      *x_new       = NULL;
    int         x_tries     =    0;
    int         x_len       =    0;
+   char        x_type      =  'c';
+   char        x_prefix    =  'n';
    /*---(begin)--------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
@@ -135,6 +93,9 @@ poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    DEBUG_DATA   yLOG_note    ("populate");
    strlcpy (x_new->name, a_name, LEN_NAME);
    x_new->type   = a_type;
+   if (x_new->type == 'h')  x_type = 'H';
+   if (strncmp (a_name, a_proj->name, strlen (a_proj->name)) == 0) x_prefix = 'Y';
+   sprintf (x_new->sort, "%c%c%s", x_prefix, x_type, x_new->name);
    /*---(link to project)----------------*/
    rc = poly_proj_addfile (a_proj, x_new);
    DEBUG_DATA   yLOG_value   ("addfile"   , rc);
@@ -143,7 +104,7 @@ poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
       return rce;
    }
    /*---(into btree)---------------------*/
-   rc = poly_btree_create (B_FILES, x_new, x_new->name);
+   rc = poly_btree_hook (B_FILES, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -153,6 +114,223 @@ poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    if (a_file != NULL)  *a_file = x_new;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_files__del         (tFILE *a_file)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(beginning)----------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   DEBUG_DATA   yLOG_point   ("a_file"    , a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_info    ("->name"    , a_file->name);
+   /*---(purge assigned tags)------------*/
+   rc = poly_tags_purge_file (a_file);
+   DEBUG_DATA   yLOG_value   ("purge"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(out of linked list)-------------*/
+   DEBUG_DATA   yLOG_note    ("unlink");
+   if (a_file->next != NULL)  a_file->next->prev = a_file->prev;
+   else                       a_file->proj->tail = a_file->prev;
+   if (a_file->prev != NULL)  a_file->prev->next = a_file->next;
+   else                       a_file->proj->head = a_file->next;
+   /*---(update count)-------------------*/
+   --(a_file->proj->count);
+   DEBUG_DATA   yLOG_value   ("count"     , a_file->proj->count);
+   /*---(unhook from btree)--------------*/
+   rc = poly_btree_unhook (&a_file->btree);
+   DEBUG_DATA   yLOG_value   ("btree"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(free main)----------------------*/
+   DEBUG_DATA   yLOG_note    ("free");
+   free (a_file);
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        program level                         ----===*/
+/*====================------------------------------------====================*/
+static void  o___PROGRAM_________o () { return; }
+
+char
+poly_files_init         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(initialize)---------------------*/
+   rc = poly_btree_init (B_FILES);
+   DEBUG_PROG   yLOG_value   ("init"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_files_purge_proj   (tPROJ *a_proj)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tFILE      *x_file      = NULL;
+   tFILE      *x_next      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point   ("a_proj"    , a_proj);
+   --rce;  if (a_proj == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk-through)-------------------*/
+   DEBUG_DATA   yLOG_value   ("->count"   , a_proj->count);
+   x_file = a_proj->head;
+   while (x_file != NULL) {
+      x_next = x_file->next;
+      rc = poly_tags_purge_file (x_file);
+      rc = poly_files__del      (x_file);
+      x_file = x_next;
+   }
+   /*---(check)--------------------------*/
+   DEBUG_DATA   yLOG_value   ("->count"   , a_proj->count);
+   --rce;  if (a_proj->count > 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_files_wrap         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(walk through list)--------------*/
+   rc = poly_btree_purge (B_FILES);
+   DEBUG_PROG   yLOG_value   ("purge"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+/*====================------------------------------------====================*/
+/*===----                       review files                           ----===*/
+/*====================------------------------------------====================*/
+static void  o___REVIEW__________o () { return; }
+
+static  s_swaps      = 0;
+static  s_comps      = 0;
+static  s_teles      = 0;
+
+char
+poly_files__swap        (tFILE *a_one, tFILE *a_two)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;
+   /*---(beginning)----------------------*/
+   DEBUG_SORT   yLOG_senter  (__FUNCTION__);
+   DEBUG_SORT   yLOG_spoint  (a_one);
+   --rce;  if (a_one == NULL) {
+      DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_SORT   yLOG_spoint  (a_two);
+   --rce;  if (a_two == NULL) {
+      DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   --rce;  if (a_one == a_two) {
+      DEBUG_SORT   yLOG_snote   ("same, no action");
+      DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(cut two from list)--------------*/
+   DEBUG_SORT   yLOG_snote   ("unlink");
+   if (a_two->next != NULL)   a_two->next->prev = a_two->prev;
+   else                       a_two->proj->tail = a_two->prev;
+   if (a_two->prev != NULL)   a_two->prev->next = a_two->next;
+   else                       a_two->proj->head = a_two->next;
+   /*---(insert before one)--------------*/
+   DEBUG_SORT   yLOG_snote   ("insert");
+   if (a_one->prev != NULL)   a_one->prev->next = a_two;
+   else                       a_one->proj->head = a_two;
+   a_two->prev = a_one->prev;
+   a_two->next = a_one;
+   a_one->prev = a_two;
+   /*---(complete)-----------------------*/
+   DEBUG_SORT   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_files__dgnome      (tPROJ *x_proj)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tFILE      *o           = NULL;          /* origin point                   */
+   int         x_match     =    0;
+   char        x_flag      =  '-';
+   /*---(header)-------------------------*/
+   DEBUG_SORT   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   o = x_proj->head;
+   /*---(do the gnome walk)--------------*/
+   while (o != NULL) {
+      /*---(beginning)-------------------*/
+      if (o == x_proj->head) {
+         DEBUG_SORT   yLOG_note    ("bounce off beginning");
+         o = o->next;
+         continue;
+      }
+      /*---(compare)---------------------*/
+      x_match = strcmp (o->prev->sort, o->sort);
+      x_flag  = (x_match <= 0) ? 'y' : '#';
+      DEBUG_SORT   yLOG_complex ("compare"   , "%-10p (%-30.30s) v %-10p (%-30.30s)   %c %4d", o->prev, o->prev->sort, o, o->sort, x_flag, x_match);
+      if (x_match <= 0) {
+         DEBUG_SORT   yLOG_note    ("move forward");
+         o = o->next;
+         continue;
+      }
+      /*---(swap)------------------------*/
+      DEBUG_SORT   yLOG_note    ("swap and move back");
+      poly_files__swap (o->prev, o);
+      /*---(next)------------------------*/
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_SORT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -171,13 +349,6 @@ poly_files_review  (tPROJ *a_proj)
    int         x_good      =    0;          /* count of entries processed     */
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(purge existing)-----------------*/
-   rc = poly_btree_purge (B_FILES);
-   DEBUG_INPT   yLOG_value   ("purge"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
-   }
    /*---(open dir)-----------------------*/
    x_dir = opendir(".");
    DEBUG_INPT   yLOG_point   ("x_dir"      , x_dir);
@@ -251,6 +422,12 @@ poly_files_review  (tPROJ *a_proj)
       return  rce;
    }
    /*---(prepare for use)----------------*/
+   rc = poly_files__dgnome  (a_proj);
+   DEBUG_SORT   yLOG_value   ("files sort" , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    rc = poly_btree_dgnome   (B_FILES);
    DEBUG_SORT   yLOG_value   ("dgnome"     , rc);
    --rce;  if (rc < 0) {

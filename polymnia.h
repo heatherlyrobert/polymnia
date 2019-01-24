@@ -31,12 +31,11 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.6b"
-#define   VER_TXT       "back to a full pass on unit testing"
+#define   VER_NUM       "0.7a"
+#define   VER_TXT       "handles updates, system-wide, removal, etc"
 
 
 
-/*type*/     /*-> tbd --------------------------------[ leaf   [gn.530.341.50]*/ /*-[02.0000.000.!]-*/ /*-[--.---.---.--]-*/
 /*
  *  the headers have five parts
  *  1) the return type on the left        (00-13)  int  
@@ -74,18 +73,18 @@
  *     j process/system                        P/S/B
  *     k recursion                             y/-
  *     ----
- *  6) warnings                                    [ab.cdef.ghijk]
+ *  6) warnings                                    [abc.defg.hijk]
  *     a dstyle (multi, single, mix, none)
  *     b dmacro (single, multi)
+ *     c dmatch (verify matching enter/exits)
  *     ----
- *     c ncurse (calls to ncurses)             
- *     d opengl (calls to opengl)             
- *     e window (calls to X11, etc)
- *     f myx    (calls to yX11, yFONT, yCOLOR)
+ *     d ncurse (calls to ncurses)             
+ *     e opengl (calls to opengl)             
+ *     f window (calls to X11, etc)
+ *     g myx    (calls to yX11, yFONT, yCOLOR)
  *     ----
- *     g proto  (global, private, local)              
- *     h extern (extern references count)
- *     i -
+ *     h proto  (global, private, local)              
+ *     i extern (extern references count)
  *     j -
  *     k unit   (calls in unit tests)
  *
@@ -131,7 +130,19 @@ typedef     struct      cBTREE      tBTREE;
 typedef     struct      cEXTERN     tEXTERN;
 
 
-extern      char        g_format;
+
+#define     MODE_HTAGS        'h'
+#define     MODE_SEARCH       's'
+#define     MODE_WRITE        'w'
+#define     MODE_REMOVE       'r'
+#define     MODE_UPDATE       'u'
+#define     MODE_SYSTEM       'S'
+#define     MODE_PROJ         'P'
+#define     MODE_FILE         'F'
+#define     MODE_TAGS         'T'
+#define     MODE_DUMP         'd'
+
+extern      char        g_mode;
 
 
 extern      FILE       *f_db;
@@ -154,13 +165,18 @@ extern      FILE       *f_ylib;
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct cPROJ {
    /*---(master)------------*/
-   char        focus       [LEN_FULL];
+   char        focus       [LEN_NAME];
+   char        niche       [LEN_NAME];
    char        name        [LEN_NAME];
    char        heritage    [LEN_FULL];
    char        purpose     [LEN_FULL];
+   char        created     [LEN_LABEL];
    char        codesize    [LEN_NAME];
    char        home        [LEN_FULL];
+   char        vernum      [LEN_LABEL];
+   char        vertxt      [LEN_FULL];
    /*---(stats)-------------*/
+   int         ntags;
    int         lines;
    int         empty;
    int         docs;
@@ -171,6 +187,8 @@ struct cPROJ {
    tFILE      *head;
    tFILE      *tail;
    int         count;
+   /*---(btree)-------------*/
+   tBTREE     *btree;
    /*---(done)--------------*/
 };
 
@@ -180,6 +198,7 @@ struct cFILE {
    /*---(master)------------*/
    char        type;
    char        name        [LEN_NAME];
+   char        sort        [LEN_NAME];
    /*---(stats)-------------*/
    int         lines;
    int         empty;
@@ -196,6 +215,8 @@ struct cFILE {
    tTAG       *head;
    tTAG       *tail;
    int         count;
+   /*---(btree)-------------*/
+   tBTREE     *btree;
    /*---(done)--------------*/
 };
 
@@ -259,6 +280,8 @@ struct cTAG {
    char        Pstyle;     /* 3rd sub */
    char        Esize;
    char        Xsize;
+   /*---(btree)-------------*/
+   tBTREE     *btree;
    /*---(done)--------------*/
 };
 
@@ -306,6 +329,9 @@ extern char      s_pprev     [LEN_RECD];
 extern char      s_prev      [LEN_RECD];
 extern char      s_curr      [LEN_RECD];
 
+extern char      s_name      [LEN_RECD];
+extern int       s_files;
+extern int       s_funcs;
 extern int       s_lines;
 extern int       s_empty;
 extern int       s_docs;
@@ -318,6 +344,7 @@ extern int       s_slocl;
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct      cBTREE {
    /*---(information)-------*/
+   char        n;
    char       *sort;
    /*---(linked list)-------*/
    tBTREE     *prev;
@@ -344,14 +371,9 @@ struct      cEXTERN {
    /*---(information)-------*/
    char        type;
    char        name        [LEN_NAME];
-   int         len;
    int         count;
-   /*---(linked list)-------*/
-   tEXTERN    *prev;
-   tEXTERN    *next;
-   /*---(searching)---------*/
-   tEXTERN    *left;
-   tEXTERN    *right;
+   /*---(btree)-------------*/
+   tBTREE     *btree;
    /*---(done)--------------*/
 };
 
@@ -370,6 +392,7 @@ char        poly_files_init         (void);
 char        poly_files_wrap         (void);
 tFILE*      poly_files_new          (void);
 char        poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file);
+char        poly_files_purge_proj   (tPROJ *a_proj);
 char        poly_files_review       (tPROJ *a_proj);
 char        poly_files_list         (void);
 tFILE*      poly_files_search       (char *a_name);
@@ -380,6 +403,7 @@ char*       poly_files__unit        (char *a_question, int n);
 char        poly_tags_macro         (char *a_macro);
 tTAG*       poly_tags_byline        (tFILE *a_file, int a_line);
 char        poly_tags_init          (void);
+char        poly_tags_purge_file    (tFILE *a_file);
 char        poly_tags_wrap          (void);
 char        poly_tags__hint         (int n, char *a_label);
 char        poly_tags__wipe         (tTAG *a_dst);
@@ -388,7 +412,7 @@ char        poly_tags_add           (tFILE *a_file, char *a_name, char a_type, i
 char        poly_tags_inventory     (tFILE *a_file);
 char        poly_tags_readline      (tFILE *a_file, int *a_line, tTAG **a_tag);
 char        poly_tags_review        (tFILE *a_file);
-char*       htags_tags__unit        (char *a_question, int n);
+char*       poly_tags__unit         (char *a_question, int n);
 
 char        poly_cats_flag          (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_exists        (char *a_label, int a_src, char *a_dst, char a_zero);
@@ -398,6 +422,8 @@ char        poly_cats_logic         (tTAG *a_tag, char a_type);
 char        poly_cats_lines         (tFILE *a_file, tTAG *a_tag, char a_type);
 char*       poly_cats__unit         (char *a_question, int n);
 
+char        PROG_prepare            (void);
+char        PROG_summarize          (tPROJ *x_proj);
 char        PROG_report             (tPROJ *x_proj);
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
@@ -418,7 +444,8 @@ char        poly_proto_add          (int a_file, char *a_name, char a_type, int 
 
 
 char        poly_btree_init         (char a_btree);
-char        poly_btree_create       (char a_btree, void *a_data, char *a_sort);
+char        poly_btree_hook         (char a_btree, void *a_data, char *a_sort, tBTREE **a_link);
+char        poly_btree_unhook       (tBTREE **a_link);
 char        poly_btree_purge        (char a_btree);
 int         poly_btree__depth       (int a_size);
 int         poly_btree__span        (int a_levels);
@@ -428,6 +455,8 @@ void*       poly_btree_next         (char a_btree);
 void*       poly_btree_entry        (char a_btree, int i);
 int         poly_btree_count        (char a_btree);
 char        poly_btree_build        (char a_btree);
+char        poly_btree_prepare_all  (void);
+char        poly_btree_purge_all    (void);
 char        poly_btree_list         (char a_btree);
 void*       poly_btree_search       (char a_btree, char *a_name);
 char*       poly_btree__unit        (char a_btree, char *a_question, int i);
@@ -436,7 +465,20 @@ char        poly_proj_init          (void);
 char        poly_proj_wrap          (void);
 tPROJ*      poly_proj_new           (void);
 char        poly_proj_add           (char *a_name, char *a_home, tPROJ **a_proj);
+char        poly_proj_del           (tPROJ *a_proj);
 char        poly_proj_here          (tPROJ **a_proj);
+char        poly_proj_nextfile      (tPROJ *a_proj, tFILE **a_file);
 char        poly_proj_prepare       (void);
+char        poly_proj_system        (char *a_path);
+
+char        poly_db_write           (void);
+char        poly_db_read            (void);
+
+char        poly_rptg_dump          (void);
+
+char        poly_action_generate    (void);
+char        poly_action_search      (void);
+char        poly_action_update      (void);
+char        poly_action_remove      (void);
 
 

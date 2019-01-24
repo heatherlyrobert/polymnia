@@ -2,13 +2,32 @@
 #include  "polymnia.h"
 
 
+/*
+ *  for stable, sorted data with exact, zero duplicate matching, b-tree is one
+ *  of the most efficient searching methods.
+ *     -- polymnia adds data in mass, not incrementally (perfect)
+ *     -- polymnia will pre-sort the data using a delayed-swap gnome sort
+ *     -- polymnia uses no fuzzy or appoximate matching
+ *     -- polymnia may have duplicates, but will resolve those after search
+ *
+ *  the b-tree has been implemented as a separate structure so it can be easiy
+ *  reused for all the polymnia data types.  to make things more consistent,
+ *  the master linked lists by-type have been included in the b-tree data
+ *  structure rather than duplicated for each type.
+ *
+ *
+ *
+ */
+
 
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 #define     MAX_BTREE   20
 typedef     struct      cROOTS      tROOTS;
 struct      cROOTS {
    /*---(ref)---------------*/
-   char        which;
+   char        type;
+   char        name        [LEN_LABEL];
+   char        ready;
    /*---(tree)--------------*/
    tBTREE     *head;
    tBTREE     *tail;
@@ -23,18 +42,19 @@ struct      cROOTS {
    int         depth;
    /*---(done)--------------*/
 } s_trees [MAX_BTREE] = {
-   { B_PROJ    , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
-   { B_FILES   , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
-   { B_TAGS    , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
-   { B_EXTERN  , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
-   { B_PROTO   , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
-   { B_UNIT    , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
-   { 0         , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_PROJ    , "proj"      , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_FILES   , "files"     , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_TAGS    , "tags"      , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_EXTERN  , "extern"    , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_PROTO   , "proto"     , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_UNIT    , "unit"      , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { 0         , ""          , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
 };
 
 
 
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
+#define     B_READY     s_trees [n].ready
 #define     B_HEAD      s_trees [n].head
 #define     B_TAIL      s_trees [n].tail
 #define     B_ROOT      s_trees [n].root
@@ -58,8 +78,8 @@ poly_btree__by_abbr     (char a_btree)
    char        rce         =  -10;
    int         i           =    0;
    /*---(defense)------------------------*/
-   while (s_trees [i].which != 0) {
-      if (s_trees [i].which == a_btree)   return i;
+   while (s_trees [i].type != 0) {
+      if (s_trees [i].type == a_btree)   return i;
       ++i;
    }
    /*---(complete)-----------------------*/
@@ -74,34 +94,7 @@ poly_btree__by_abbr     (char a_btree)
 static void  o___EXISTANCE_______o () { return; }
 
 char
-poly_btree_init         (char a_btree)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        n           =   -1;
-   /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_schar   (a_btree);
-   n = poly_btree__by_abbr   (a_btree);
-   DEBUG_DATA   yLOG_sint    (n);
-   --rce;  if (n < 0) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(create cell)--------------------*/
-   DEBUG_DATA   yLOG_snote   ("clear");
-   B_HEAD  = NULL;
-   B_TAIL  = NULL;
-   B_ROOT  = NULL;
-   B_COUNT = 0;
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_btree_create       (char a_btree, void *a_data, char *a_sort)
+poly_btree_hook         (char a_btree, void *a_data, char *a_sort, tBTREE **a_link)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -142,6 +135,7 @@ poly_btree_create       (char a_btree, void *a_data, char *a_sort)
    }
    /*---(clear)--------------------------*/
    DEBUG_DATA   yLOG_snote   ("data");
+   x_new->n      = n;
    x_new->sort   = a_sort;
    x_new->data   = a_data;
    /*---(into linked list)---------------*/
@@ -161,6 +155,52 @@ poly_btree_create       (char a_btree, void *a_data, char *a_sort)
    ++B_COUNT;
    DEBUG_DATA   yLOG_sint    (B_COUNT);
    DEBUG_DATA   yLOG_snote   ("successful");
+   /*---(reverse link)-------------------*/
+   if (a_link != NULL)  *a_link = x_new;
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_btree_unhook       (tBTREE **a_link)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        n           =   -1;
+   tBTREE     *x_old       = NULL;
+   /*---(beginning)----------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   DEBUG_DATA   yLOG_spoint  (a_link);
+   --rce;  if (a_link == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   x_old = *a_link;
+   DEBUG_DATA   yLOG_spoint  (x_old);
+   --rce;  if (x_old == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(set index for macros)-----------*/
+   n = x_old->n;
+   /*---(out of linked list)-------------*/
+   DEBUG_DATA   yLOG_snote   ("unlink");
+   if (x_old->next != NULL)   x_old->next->prev = x_old->prev;
+   else                       B_TAIL            = x_old->prev;
+   if (x_old->prev != NULL)   x_old->prev->next = x_old->next;
+   else                       B_HEAD            = x_old->next;
+   /*---(update count)-------------------*/
+   --B_COUNT;
+   DEBUG_DATA   yLOG_sint    (B_COUNT);
+   /*---(free main)----------------------*/
+   DEBUG_DATA   yLOG_snote   ("free and null");
+   free (x_old);
+   *a_link = NULL;
+   /*---(reset ready)--------------------*/
+   DEBUG_DATA   yLOG_snote   ("reset");
+   B_READY = '-';
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -191,6 +231,8 @@ poly_btree__destroy     (int n, tBTREE *a_old)
    /*---(free main)----------------------*/
    DEBUG_DATA   yLOG_snote   ("free");
    free (a_old);
+   /*---(reset ready)--------------------*/
+   B_READY = '-';
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -233,6 +275,133 @@ poly_btree_purge        (char a_btree)
    B_TAIL  = NULL;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        program level                         ----===*/
+/*====================------------------------------------====================*/
+static void  o___PROGRAM_________o () { return; }
+
+char
+poly_btree_init         (char a_btree)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        n           =   -1;
+   /*---(begin)--------------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_schar   (a_btree);
+   n = poly_btree__by_abbr   (a_btree);
+   DEBUG_DATA   yLOG_sint    (n);
+   --rce;  if (n < 0) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(create cell)--------------------*/
+   DEBUG_DATA   yLOG_snote   ("clear");
+   B_READY = '-';
+   B_HEAD  = NULL;
+   B_TAIL  = NULL;
+   B_ROOT  = NULL;
+   B_COUNT = 0;
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_btree_prepare_all  (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(prepare proj)-------------------*/
+   DEBUG_PROG   yLOG_note    ("prepare proj for use");
+   rc = poly_btree_dgnome   (B_PROJ);
+   DEBUG_PROG   yLOG_value   ("dgnome"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_btree_build (B_PROJ);
+   DEBUG_PROG   yLOG_value   ("build"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare files)------------------*/
+   DEBUG_PROG   yLOG_note    ("prepare files for use");
+   rc = poly_btree_dgnome   (B_FILES);
+   DEBUG_PROG   yLOG_value   ("dgnome"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_btree_build (B_FILES);
+   DEBUG_PROG   yLOG_value   ("build"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare tags)-------------------*/
+   DEBUG_PROG   yLOG_note    ("prepare tags for use");
+   rc = poly_btree_dgnome   (B_TAGS);
+   DEBUG_PROG   yLOG_value   ("dgnome"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_btree_build (B_TAGS);
+   DEBUG_PROG   yLOG_value   ("build"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_btree_purge_all    (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(prepare proj)-------------------*/
+   DEBUG_PROG   yLOG_note    ("clear proj fully");
+   rc = poly_btree_purge    (B_PROJ);
+   DEBUG_PROG   yLOG_value   ("dgnome"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare files)------------------*/
+   DEBUG_PROG   yLOG_note    ("clear files fully");
+   rc = poly_btree_purge    (B_FILES);
+   DEBUG_PROG   yLOG_value   ("dgnome"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare tags)-------------------*/
+   DEBUG_PROG   yLOG_note    ("clear tags fully");
+   rc = poly_btree_purge    (B_TAGS);
+   DEBUG_PROG   yLOG_value   ("dgnome"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -395,26 +564,26 @@ poly_btree_first        (char a_btree)
    int         n           =   -1;
    tBTREE     *u           = NULL;
    /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   DEBUG_SORT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   DEBUG_SORT   yLOG_char    ("a_btree"   , a_btree);
    n = poly_btree__by_abbr   (a_btree);
-   DEBUG_DATA   yLOG_value   ("a_btree"   , n);
+   DEBUG_SORT   yLOG_value   ("a_btree"   , n);
    --rce;  if (n < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return NULL;
    }
    /*---(save)---------------------------*/
    B_SAVED   = B_HEAD;
-   DEBUG_DATA   yLOG_point   ("B_SAVED"    , B_SAVED);
+   DEBUG_SORT   yLOG_point   ("B_SAVED"    , B_SAVED);
    if (B_SAVED == NULL)  {
-      DEBUG_DATA   yLOG_note    ("head is null");
-      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+      DEBUG_SORT   yLOG_note    ("head is null");
+      DEBUG_SORT   yLOG_exit    (__FUNCTION__);
       return NULL;
    }
-   DEBUG_DATA   yLOG_point   ("->data"     , B_SAVED->data);
+   DEBUG_SORT   yLOG_point   ("->data"     , B_SAVED->data);
    /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   DEBUG_SORT   yLOG_exit    (__FUNCTION__);
    return B_SAVED->data;
 }
 
@@ -633,6 +802,8 @@ poly_btree_build        (char a_btree)
    B_ROOT->left  = poly_btree__nextlevel (n, 1, x_ctr, x_span / 4 + 1, 'L', B_ROOT);
    B_ROOT->right = poly_btree__nextlevel (n, 1, x_ctr, x_span / 4 + 1, 'R', B_ROOT);
    DEBUG_SORT   yLOG_value   ("real depth", B_DEPTH);
+   /*---(mark as ready)------------------*/
+   B_READY = 'y';
    /*---(complete)-----------------------*/
    DEBUG_SORT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -691,7 +862,12 @@ poly_btree_search       (char a_btree, char *a_name)
    DEBUG_DATA   yLOG_value   ("a_btree"   , n);
    --rce;  if (n < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      return NULL;
+   }
+   /*---(check ready)--------------------*/
+   --rce;  if (B_READY != 'y') {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return NULL;
    }
    /*---(prepare)------------------------*/
    g_depth = 0;
@@ -740,13 +916,18 @@ poly_btree__unit        (char a_btree, char *a_question, int i)
    int         c           =    0;
    char        t           [LEN_RECD]  = "[]";
    /*---(defense)------------------------*/
-   snprintf (unit_answer, LEN_RECD, "EXTERN unit      : tag number unknown");
    n = poly_btree__by_abbr   (a_btree);
-   --rce;  if (n < 0)  return rce;
-   if (i <  0)       return unit_answer;
+   --rce;  if (n < 0) {
+      snprintf (unit_answer, LEN_RECD, "BTREE unit       : tree type (%c) unknown", a_btree);
+      return unit_answer;
+   }
+   if (i <  0) {
+      snprintf (unit_answer, LEN_RECD, "BTREE unit       : index (%d) is negative", i);
+      return unit_answer;
+   }
    u = B_HEAD;
    while (c < i) {
-      if (u == NULL)  break;
+      if (u == NULL) break;
       u = u->next;
       ++c;
    }

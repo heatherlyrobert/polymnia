@@ -56,12 +56,41 @@ poly_extern__add         (char *a_name, char a_type)
    x_new->type   = a_type;
    x_new->count  = 0;
    /*---(into btree)---------------------*/
-   rc = poly_btree_create (B_EXTERN, x_new, x_new->name);
+   rc = poly_btree_hook (B_EXTERN, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_extern__del         (tEXTERN *a_extern)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(begin)--------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point   ("a_extern"  , a_extern);
+   --rce;  if (a_extern == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(btree)--------------------------*/
+   rc = poly_btree_unhook (&a_extern->btree);
+   DEBUG_DATA   yLOG_value   ("unhook"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(free)---------------------------*/
+   DEBUG_DATA   yLOG_note    ("free extern");
+   free (a_extern);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -95,6 +124,36 @@ poly_extern_init        (void)
 }
 
 char
+poly_extern__purge      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tEXTERN    *u           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   DEBUG_PROG   yLOG_value   ("count"     , poly_btree_count (B_EXTERN));
+   /*---(walk through list)--------------*/
+   u = (tEXTERN *) poly_btree_first (B_EXTERN);
+   while (u != NULL) {
+      DEBUG_PROG   yLOG_value   ("extern"    , u->name);
+      rc = poly_extern__del (u);
+      DEBUG_PROG   yLOG_value   ("del"       , rc);
+      if (rc < 0) {
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
+         return rc;
+      }
+      u = (tEXTERN *) poly_btree_first (B_EXTERN);
+   }
+   /*---(check)--------------------------*/
+   DEBUG_PROG   yLOG_value   ("count"     , poly_btree_count (B_EXTERN));
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 poly_extern_wrap        (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -103,6 +162,12 @@ poly_extern_wrap        (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
+   rc = poly_extern__purge ();
+   DEBUG_PROG   yLOG_value   ("purge"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    rc = poly_btree_purge (B_EXTERN);
    DEBUG_PROG   yLOG_value   ("purge"     , rc);
    --rce;  if (rc < 0) {
@@ -400,6 +465,7 @@ poly_extern_review      (void)
       }
       /*---(get source tag)--------------*/
       x_src = poly_tags_byline (x_file, x_line);
+      DEBUG_INPT   yLOG_point   ("x_scr"     , x_src);
       if (x_src == NULL) {
          DEBUG_INPT   yLOG_note    ("source tag not found");
          continue;
@@ -428,8 +494,14 @@ poly_extern_review      (void)
       }
       if (x_dst != NULL) {
          DEBUG_INPT   yLOG_note    ("found a local/global internal call");
-         if (x_src->file == x_dst->file)  ++x_dst->work->lcalls;
-         else                             ++x_dst->work->gcalls;
+         DEBUG_INPT   yLOG_point   ("x_src"     , x_src);
+         DEBUG_INPT   yLOG_point   ("->file"    , x_src->file);
+         DEBUG_INPT   yLOG_point   ("->work"    , x_src->work);
+         DEBUG_INPT   yLOG_point   ("x_dst"     , x_dst);
+         DEBUG_INPT   yLOG_point   ("->file"    , x_dst->file);
+         DEBUG_INPT   yLOG_point   ("->work"    , x_dst->work);
+         if      (x_src->file == x_dst->file)  ++x_dst->work->lcalls;
+         else if (x_src->file->proj == x_dst->file->proj)  ++x_dst->work->gcalls;
          ++x_src->work->intern;
          continue;
       }
@@ -527,31 +599,25 @@ poly_extern_review      (void)
 static void  o___UNITTEST________o () { return; }
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_extern__unit       (char *a_question, int n)
+poly_extern__unit       (char *a_question, int i)
 {
    /*---(locals)-----------+-----+-----+-*/
    tEXTERN    *u           = NULL;
-   int         c           =    0;
    char        s           [LEN_RECD]  = "[]";
    char        t           [LEN_RECD]  = "";
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "EXTERN unit      : tag number unknown");
-   if (n <  0)       return unit_answer;
-   u = s_head;
-   while (c < n) {
-      if (u == NULL)  break;
-      u = u->next;
-      ++c;
-   }
+   if (i <  0)       return unit_answer;
+   u = (tEXTERN *) poly_btree_entry (B_EXTERN, i);
    /*---(simple)-------------------------*/
    if (u != NULL) sprintf  (s, "[%.20s]", u->name);
    if        (strcmp (a_question, "count"     )     == 0) {
       snprintf (unit_answer, LEN_RECD, "EXTERN count     : %3d", s_count);
    }
    else if   (strcmp (a_question, "entry"     )     == 0) {
-      if (u != NULL)  sprintf  (t, "%2d %-22.22s %c %d", u->len, s   , u->type, u->count);
+      if (u != NULL)  sprintf  (t, "%2d %-22.22s %c %d", strlen (u->name), s   , u->type, u->count);
       else            sprintf  (t, "%2d %-22.22s %c %d", 0     , "[]", '-'    , 0       );
-      snprintf (unit_answer, LEN_RECD, "EXTERN entry(%2d) : %s", n, t);
+      snprintf (unit_answer, LEN_RECD, "EXTERN entry(%2d) : %s", i, t);
    }
    /*---(complete)-----------------------*/
    return unit_answer;

@@ -2,6 +2,9 @@
 #include  "polymnia.h"
 
 
+char      s_name      [LEN_RECD] = "";
+int       s_files   = 0;
+int       s_funcs   = 0;
 int       s_lines   = 0;
 int       s_empty   = 0;
 int       s_docs    = 0;
@@ -118,33 +121,39 @@ poly_cats_lines    (tFILE *a_file, tTAG *a_tag, char a_type)
 {
    int         c           =     0;
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   ++(a_file->lines);
    ++(s_lines);
+   ++(a_file->lines);
+   ++(a_file->proj->lines);
    IN_TAGLINES  ++(a_tag->lines);
    switch (a_type) {
    case 'D' :
       ++(s_debug);
       ++(a_file->debug);
+      ++(a_file->proj->debug);
       IN_TAGLINES  ++(a_tag->debug);
       break;
    case 'd' :
       ++(s_docs);
       ++(a_file->docs);
+      ++(a_file->proj->docs);
       IN_TAGLINES  ++(a_tag->docs );
       break;
    case 'e' :
       ++(s_empty);
       ++(a_file->empty);
+      ++(a_file->proj->empty);
       IN_TAGLINES  ++(a_tag->empty);
       break;
    case 'C' :
       ++(s_code);
       ++(a_file->code);
+      ++(a_file->proj->code);
       IN_TAGLINES  ++(a_tag->code );
       c = strldcnt (s_curr, ';', LEN_RECD);
       if (c < 0)  c = 0;
       s_slocl += c;
       a_file->slocl += c;
+      a_file->proj->slocl += c;
       IN_TAGLINES  a_tag->slocl += c;
       break;
    }
@@ -162,46 +171,64 @@ static void  o___SUMMARY_________o () { return; }
 char
 poly_cats_tagsumm  (tTAG *a_tag)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =    0;
+   /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   DEBUG_DATA   yLOG_info    ("name"      , a_tag->name);
-   a_tag->work->indent  /= 3;
-   a_tag->work->indent  -= 1;
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);
+   --rce;  if (a_tag == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_info    ("->name"    , a_tag->name);
+   DEBUG_DATA   yLOG_point   ("->work"    , a_tag->work);
+   --rce;  if (a_tag->work == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(group one)----------------------*/
+   DEBUG_DATA   yLOG_note    ("group one");
    poly_cats_scaled  ("lines"   , a_tag->lines   , &a_tag->tsize, '-');
    poly_cats_scaled  ("debug"   , a_tag->debug   , &a_tag->dsize, '-');
    poly_cats_scaled  ("slocl"   , a_tag->slocl   , &a_tag->ssize, '-');
    poly_cats_exact   ("locals"  , a_tag->work->lvars   , &a_tag->lsize, '-');
    poly_cats_exact   ("choices" , a_tag->work->choices , &a_tag->csize, '-');
    poly_cats_exact   ("returns" , a_tag->work->returns , &a_tag->rsize, '-');
+   a_tag->work->indent  /= 3;
+   a_tag->work->indent  -= 1;
    poly_cats_exact   ("indent"  , a_tag->work->indent  , &a_tag->isize, '-');
    poly_cats_flag    ("memories", a_tag->work->memories, &a_tag->msize, '#');
    /*---(group two)----------------------*/
+   DEBUG_DATA   yLOG_note    ("group two");
    poly_cats_exact   ("gcalls"  , a_tag->work->gcalls  , &a_tag->Gsize, '-');
    poly_cats_exact   ("lcalls"  , a_tag->work->lcalls  , &a_tag->Lsize, '-');
-   poly_cats_exact   ("ecalls"  , a_tag->work->ecalls  , &a_tag->Esize, '-');
    poly_cats_exact   ("funcs"   , a_tag->work->funcs   , &a_tag->Fsize, '-');
    poly_cats_exact   ("intern"  , a_tag->work->intern  , &a_tag->Isize, '-');
    poly_cats_exact   ("cstd"    , a_tag->work->cstd    , &a_tag->Csize, '-');
    poly_cats_exact   ("ylib"    , a_tag->work->ylibs   , &a_tag->Ysize, '-');
    a_tag->work->mystry = a_tag->work->funcs - a_tag->work->intern - a_tag->work->cstd - a_tag->work->ylibs - a_tag->work->ncurses - a_tag->work->opengl;
    poly_cats_exact   ("mystry"  , a_tag->work->mystry  , &a_tag->Msize, '-');
-   poly_cats_exact   ("extern"  , a_tag->work->xfuncs  , &a_tag->Xsize, '-');
    poly_cats_flag    ("reads"   , a_tag->work->reads   , &a_tag->Rflag, 'r');
    poly_cats_flag    ("writes"  , a_tag->work->writes  , &a_tag->Wflag, 'w');
-   poly_cats_exact   ("ncurses" , a_tag->work->ncurses , &a_tag->Nsize, '-');
-   poly_cats_exact   ("opengl"  , a_tag->work->opengl  , &a_tag->Osize, '-');
    if (a_tag->work->process > 0 && a_tag->work->scalls  > 0)  a_tag->Lflag = 'B';
    else if (a_tag->work->process > 0)  a_tag->Lflag = 'p';
    else if (a_tag->work->scalls  > 0)  a_tag->Lflag = 's';
    poly_cats_flag    ("recurse" , a_tag->work->recurse , &a_tag->Sflag, '#');
    /*---(group three)--------------------*/
+   DEBUG_DATA   yLOG_note    ("group three");
    if (a_tag->work->dlong   > 0 && a_tag->work->dshort  > 0)  a_tag->Dstyle = 'B';
    else if (a_tag->work->dlong   > 0)  a_tag->Dstyle = 'l';
    else if (a_tag->work->dshort  > 0)  a_tag->Dstyle = 's';
    if (a_tag->work->dfree > 0)  a_tag->Dstyle = '#';
+   poly_cats_exact   ("ncurses" , a_tag->work->ncurses , &a_tag->Nsize, '-');
+   poly_cats_exact   ("opengl"  , a_tag->work->opengl  , &a_tag->Osize, '-');
    poly_cats_exact   ("myx"     , a_tag->work->myx     , &a_tag->Zsize, '-');
    poly_cats_exact   ("window"  , a_tag->work->window  , &a_tag->Wsize, '-');
+   poly_cats_exact   ("ecalls"  , a_tag->work->ecalls  , &a_tag->Esize, '-');
+   poly_cats_exact   ("extern"  , a_tag->work->xfuncs  , &a_tag->Xsize, '-');
    /*---(type)---------------------------*/
+   DEBUG_DATA   yLOG_note    ("group image");
    if      (strncmp (a_tag->name, "o___", 4) == 0)        strlcpy (a_tag->image, "-"     , LEN_LABEL);
    else if (strstr  (a_tag->name, "_init") != NULL)       strlcpy (a_tag->image, "shoot" , LEN_LABEL);
    else if (strstr  (a_tag->name, "_wrap") != NULL)       strlcpy (a_tag->image, "shoot" , LEN_LABEL);
