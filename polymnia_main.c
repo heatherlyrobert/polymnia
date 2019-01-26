@@ -24,7 +24,7 @@ main (int argc, char *argv[])
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(dispatch)-----------------------*/
-   switch (g_mode) {
+   switch (my.g_mode) {
    case MODE_HTAGS  :
       rc = poly_action_generate    ();
       rc = PROG_report      (NULL);
@@ -54,6 +54,9 @@ main (int argc, char *argv[])
    case MODE_DUMP   :
       rc = poly_db_read     ();
       rc = poly_rptg_dump   ();
+      break;
+   case MODE_EXTERN :
+      rc = poly_action_extern ();
       break;
    }
    /*---(check for failure)--------------*/

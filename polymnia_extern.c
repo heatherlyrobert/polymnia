@@ -2,13 +2,6 @@
 #include  "polymnia.h"
 
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
-static      tEXTERN    *s_head      = NULL;
-static      tEXTERN    *s_tail      = NULL;
-static      int         s_count     = 0;
-static      tEXTERN    *s_root      = NULL;
-
-int   g_depth   = 0;
-char  g_path    [LEN_LABEL] = "";
 
 
 /*====================------------------------------------====================*/
@@ -17,7 +10,7 @@ char  g_path    [LEN_LABEL] = "";
 static void  o___EXISTANCE_______o () { return; }
 
 char
-poly_extern__add         (char *a_name, char a_type)
+poly_extern__add         (char *a_name, char a_type, char a_more)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -54,7 +47,11 @@ poly_extern__add         (char *a_name, char a_type)
    DEBUG_DATA   yLOG_note    ("populate");
    strlcpy (x_new->name, a_name, LEN_NAME);
    x_new->type   = a_type;
+   x_new->uses   = 0;
+   x_new->head   = NULL;
+   x_new->tail   = NULL;
    x_new->count  = 0;
+   x_new->more   = a_more;
    /*---(into btree)---------------------*/
    rc = poly_btree_hook (B_EXTERN, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
@@ -205,22 +202,23 @@ poly_extern_load        (void)
    char        x_recd      [LEN_RECD];
    int         x_len       =    0;
    char        x_type      =  '-';
+   char        x_more      =  '-';
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(purge existing)-----------------*/
    rc = poly_btree_purge (B_EXTERN);
    /*---(open)---------------------------*/
-   f_extern = fopen (F_EXTERN, "rt");
-   DEBUG_INPT   yLOG_point   ("f_extern"          , f_extern);
-   --rce;  if (f_extern == NULL) {
+   my.f_extern = fopen (F_EXTERN, "rt");
+   DEBUG_INPT   yLOG_point   ("my.f_extern"          , my.f_extern);
+   --rce;  if (my.f_extern == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(walk)---------------------------*/
    while (1) {
       /*---(read)------------------------*/
-      fgets (x_recd, LEN_RECD, f_extern);
-      if (feof (f_extern)) {
+      fgets (x_recd, LEN_RECD, my.f_extern);
+      if (feof (my.f_extern)) {
          DEBUG_INPT   yLOG_note    ("end of file");
          break;
       }
@@ -248,17 +246,17 @@ poly_extern_load        (void)
       }
       /*---(type)------------------------*/
       x_type = '-';
-      if (x_len >= 25) {
-         x_type = x_recd [24];
-         x_recd [24] = '\0';
-      }
+      if (x_len >= 25)  x_type = x_recd [24];
+      x_more = '-';
+      if (x_len >= 28)  x_more = x_recd [27];
+      x_recd [23] = '\0';
       /*---(save)------------------------*/
       strltrim (x_recd, ySTR_BOTH, LEN_RECD);
-      poly_extern__add (x_recd, x_type);
+      poly_extern__add (x_recd, x_type, x_more);
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
-   rc = fclose (f_extern);
+   rc = fclose (my.f_extern);
    DEBUG_INPT   yLOG_value   ("close"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -385,31 +383,24 @@ poly_extern_review      (void)
    }
    /*---(open)---------------------------*/
    DEBUG_INPT   yLOG_info    ("cflow file" , F_CFLOW);
-   f_flow = fopen (F_CFLOW, "rt");
-   DEBUG_INPT   yLOG_point   ("f_flow"          , f_flow);
-   --rce;  if (f_flow == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("ylib file"  , F_YLIB);
-   f_ylib   = fopen (F_YLIB, "wt");
-   DEBUG_INPT   yLOG_point   ("f_ylib"          , f_ylib);
-   --rce;  if (f_ylib == NULL) {
+   my.f_flow = fopen (F_CFLOW, "rt");
+   DEBUG_INPT   yLOG_point   ("my.f_flow"          , my.f_flow);
+   --rce;  if (my.f_flow == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_INPT   yLOG_info    ("mystry file", F_MYSTRY);
-   f_mystry = fopen (F_MYSTRY, "wt");
-   DEBUG_INPT   yLOG_point   ("f_mystry"        , f_mystry);
-   --rce;  if (f_mystry == NULL) {
+   my.f_mystry = fopen (F_MYSTRY, "wt");
+   DEBUG_INPT   yLOG_point   ("my.f_mystry"        , my.f_mystry);
+   --rce;  if (my.f_mystry == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(walk)---------------------------*/
    while (1) {
       /*---(read)------------------------*/
-      fgets  (x_recd, LEN_RECD, f_flow);
-      if (feof (f_flow)) {
+      fgets  (x_recd, LEN_RECD, my.f_flow);
+      if (feof (my.f_flow)) {
          DEBUG_INPT   yLOG_note    ("end of file");
          break;
       }
@@ -477,9 +468,9 @@ poly_extern_review      (void)
       DEBUG_INPT   yLOG_point   ("x_extern"  , x_extern);
       /*---(mystry)----------------------*/
       if (x_dst == NULL && x_extern == NULL) {
-         if (x_mystry %  5 == 0)  fprintf (f_mystry, "\n");
-         if (x_mystry % 25 == 0)  fprintf (f_mystry, "##---calling-file-------   line   ---calling-function------   ---mystery-function------\n\n");
-         fprintf (f_mystry, "%-25.25s  %4d   %-25.25s   %-25.25s\n",
+         if (x_mystry %  5 == 0)  fprintf (my.f_mystry, "¦");
+         if (x_mystry % 25 == 0)  fprintf (my.f_mystry, "##---calling-file-------   line   ---calling-function------   ---mystery-function------¦¦");
+         fprintf (my.f_mystry, "%-25.25s  %4d   %-25.25s   %-25.25s¦",
                x_file->name, x_line, x_src->name, x_funcname);
          ++x_mystry;
          DEBUG_INPT   yLOG_note    ("found a mystry function");
@@ -511,10 +502,18 @@ poly_extern_review      (void)
          case 'd' :
             --x_src->work->funcs;
             ++x_src->work->dshort;
+            switch (x_extern->more) {
+            case 'e' :   ++x_src->work->denterc;      break;
+            case 'x' :   ++x_src->work->dexitc;       break;
+            }
             break;
          case 'D' :
             --x_src->work->funcs;
             ++x_src->work->dlong;
+            switch (x_extern->more) {
+            case 'e' :   ++x_src->work->denterc;      break;
+            case 'x' :   ++x_src->work->dexitc;       break;
+            }
             break;
          case '-' :
             ++x_src->work->cstd;
@@ -549,31 +548,21 @@ poly_extern_review      (void)
             ++x_src->work->myx;
          case 'Y' :
             ++x_src->work->ylibs;
-            if (x_ylibs %  5 == 0)  fprintf (f_ylib, "\n");
-            if (x_ylibs % 25 == 0)  fprintf (f_ylib, "##---ylib-function-------   ---calling-file----------   line   ---calling-function------\n\n");
-            fprintf (f_ylib, "%-25.25s   %-25.25s   %4d   %-25.25s\n", x_funcname, x_file->name, x_line, x_src->name);
-            ++x_ylibs;
+            poly_ylib_add (x_src, x_extern, x_line, NULL);
             break;
          }
       }
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
-   rc = fclose (f_flow);
+   rc = fclose (my.f_flow);
    DEBUG_INPT   yLOG_value   ("flow close" , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   fprintf (f_ylib, "\n## done, finito, complete\n");
-   rc = fclose (f_ylib);
-   DEBUG_INPT   yLOG_value   ("ylib close" , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   fprintf (f_mystry, "\n## done, finito, complete\n");
-   rc = fclose (f_mystry);
+   fprintf (my.f_mystry, "¦## done, finito, complete¦");
+   rc = fclose (my.f_mystry);
    DEBUG_INPT   yLOG_value   ("mystry clos", rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -588,6 +577,44 @@ poly_extern_review      (void)
    }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_extern_addylib     (tEXTERN *a_extern, tYLIB *a_ylib)
+{
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (a_extern);
+   if (a_extern == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
+      return -1;
+   }
+   DEBUG_DATA   yLOG_spoint  (a_ylib);
+   if (a_ylib == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
+      return -1;
+   }
+   /*---(into linked list)---------------*/
+   DEBUG_DATA   yLOG_spoint  (a_extern->head);
+   DEBUG_DATA   yLOG_spoint  (a_extern->tail);
+   if (a_extern->head  == NULL) {
+      DEBUG_DATA   yLOG_snote   ("first");
+      a_extern->head  = a_extern->tail  = a_ylib;
+   } else {
+      DEBUG_DATA   yLOG_snote   ("append");
+      a_ylib->eprev         = a_extern->tail;
+      a_extern->tail->enext = a_ylib;
+      a_extern->tail        = a_ylib;
+   }
+   /*---(tie tag back to file)-----------*/
+   a_ylib->ylib  = a_extern;
+   /*---(update count)-------------------*/
+   ++a_extern->count;
+   DEBUG_DATA   yLOG_sint    (a_extern->count);
+   /*---(complete)------------------------------*/
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -612,10 +639,10 @@ poly_extern__unit       (char *a_question, int i)
    /*---(simple)-------------------------*/
    if (u != NULL) sprintf  (s, "[%.20s]", u->name);
    if        (strcmp (a_question, "count"     )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "EXTERN count     : %3d", s_count);
+      snprintf (unit_answer, LEN_RECD, "EXTERN count     : %3d", poly_btree_count (B_EXTERN));
    }
    else if   (strcmp (a_question, "entry"     )     == 0) {
-      if (u != NULL)  sprintf  (t, "%2d %-22.22s %c %d", strlen (u->name), s   , u->type, u->count);
+      if (u != NULL)  sprintf  (t, "%2d %-22.22s %c %d", strlen (u->name), s   , u->type, u->uses);
       else            sprintf  (t, "%2d %-22.22s %c %d", 0     , "[]", '-'    , 0       );
       snprintf (unit_answer, LEN_RECD, "EXTERN entry(%2d) : %s", i, t);
    }

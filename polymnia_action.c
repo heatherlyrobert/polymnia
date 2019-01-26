@@ -184,8 +184,8 @@ poly_action_remove      (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(setup project)------------------*/
-   DEBUG_PROG   yLOG_info    ("s_name"     , s_name);
-   x_len = strlen (s_name);
+   DEBUG_PROG   yLOG_info    ("g_project" , my.g_project);
+   x_len = strlen (my.g_project);
    DEBUG_PROG   yLOG_value   ("x_len"      , x_len);
    --rce;  if (x_len <= 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -199,7 +199,7 @@ poly_action_remove      (void)
       return rce;
    }
    /*---(find target)--------------------*/
-   x_proj = (tPROJ *) poly_proj_search  (s_name);
+   x_proj = (tPROJ *) poly_proj_search  (my.g_project);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exit    (__FUNCTION__);
@@ -216,6 +216,51 @@ poly_action_remove      (void)
    /*---(save)---------------------------*/
    rc = poly_db_write    ();
    DEBUG_PROG   yLOG_value   ("db_write"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_action_extern      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tPROJ      *x_extern    = NULL;
+   int         x_len       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(setup project)------------------*/
+   DEBUG_PROG   yLOG_info    ("g_extern"      , my.g_extern);
+   x_len = strlen (my.g_extern);
+   DEBUG_PROG   yLOG_value   ("x_len"      , x_len);
+   --rce;  if (x_len <= 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(read database)------------------*/
+   rc = poly_db_read     ();
+   DEBUG_PROG   yLOG_value   ("db_read"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(find target)--------------------*/
+   x_extern = poly_extern_search (my.g_extern);
+   DEBUG_PROG   yLOG_point   ("x_extern"   , x_extern);
+   --rce;  if (x_extern == NULL) {
+      DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_PROG   yLOG_point   ("->name"     , x_extern->name);
+   /*---(read database)------------------*/
+   rc = poly_rptg_extern (x_extern);
+   DEBUG_PROG   yLOG_value   ("rptg"       , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

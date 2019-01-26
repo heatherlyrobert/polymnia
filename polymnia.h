@@ -2,7 +2,8 @@
 
 /*===[[ HEADER ]]=============================================================*/
 /*
- *   focus         : development environment
+ *   focus         : c-ide
+ *   niche         : code analysis
  *   heritage      : polymnia-hymnos (muse of divine hymns, geometry, and grammar)
  *   purpose       : research and analysis of c programs and my full code-base
  *
@@ -31,8 +32,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.7a"
-#define   VER_TXT       "handles updates, system-wide, removal, etc"
+#define   VER_NUM       "0.7b"
+#define   VER_TXT       "bringing back and enhancing unit testing"
 
 
 
@@ -74,7 +75,7 @@
  *     k recursion                             y/-
  *     ----
  *  6) warnings                                    [abc.defg.hijk]
- *     a dstyle (multi, single, mix, none)
+ *     a dstyle (multi, single, mix, none)    - l s b L S B f #
  *     b dmacro (single, multi)
  *     c dmatch (verify matching enter/exits)
  *     ----
@@ -121,9 +122,11 @@
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 typedef     struct      dirent      tDIRENT;
 
+typedef     struct      cMY         tMY;
 typedef     struct      cPROJ       tPROJ;
 typedef     struct      cFILE       tFILE;
 typedef     struct      cTAG        tTAG;
+typedef     struct      cYLIB       tYLIB;
 typedef     struct      cWORK       tWORK;
 
 typedef     struct      cBTREE      tBTREE;
@@ -140,25 +143,60 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     MODE_PROJ         'P'
 #define     MODE_FILE         'F'
 #define     MODE_TAGS         'T'
+#define     MODE_EXTERN       'E'
 #define     MODE_DUMP         'd'
 
-extern      char        g_mode;
+#define     RPTG_TITLES       't'
+#define     RPTG_NOTITLES     '-'
+#define     RPTG_TREEVIEW     'T'
 
 
-extern      FILE       *f_db;
+#define     FILTER_NONE       '-'
+#define     FILTER_DEBUG      'd'
+
+
 #define     F_DB        "/var/lib/polymnia/polymnia.db"
-extern      FILE       *f_prog;
-
-extern      FILE       *f_tags;
 #define     F_CTAGS     "polymnia.ctag"
-extern      FILE       *f_flow;
 #define     F_CFLOW     "polymnia.cflow"
-extern      FILE       *f_extern;
 #define     F_EXTERN    "/var/lib/polymnia/external.txt"
-extern      FILE       *f_mystry;
 #define     F_MYSTRY    "polymnia.mystry"
-extern      FILE       *f_ylib;
-#define     F_YLIB      "polymnia.ylib"
+
+
+struct cMY {
+   /*---(runtime config)------*/
+   char        g_mode;                 /* run-time mode                       */
+   char        g_titles;               /* use/hide report titles              */
+   char        g_filter;               /* report filtering criteria           */
+   /*---(filtering)-----------*/
+   char        g_project   [LEN_RECD]; /* project name for filtering          */
+   tPROJ      *g_proj;                 /* limit output to this project        */
+   char        g_extern    [LEN_RECD]; /* name for focus/filtering            */
+   /*---(files)---------------*/
+   FILE       *f_db;                   /* shared database                     */
+   FILE       *f_prog;                 /* current program source file         */
+   FILE       *f_tags;                 /* ctags input file                    */
+   FILE       *f_flow;                 /* cflow input file                    */
+   FILE       *f_extern;               /* shared external function list       */
+   FILE       *f_mystry;               /* local mystery external calls        */
+   /*---(counts)--------------*/
+   int         s_files;                /* global file count                   */
+   int         s_funcs;                /* global function count               */
+   int         s_lines;                /* global line count (all)             */
+   int         s_empty;                /* global empty line count             */
+   int         s_docs;                 /* global doc/commnent line count      */
+   int         s_debug;                /* global debug line count             */
+   int         s_code;                 /* global source code line count       */
+   int         s_slocl;                /* global truer code line count        */
+   /*---(content)-------------*/
+   char        s_curr      [LEN_RECD]; /* current source line                 */
+   char        s_prev      [LEN_RECD]; /* previous source line                */
+   char        s_pprev     [LEN_RECD]; /* prev-previous source line           */
+   /*---(done)----------------*/
+};
+extern      tMY         my;
+
+
+
 
 
 
@@ -231,12 +269,6 @@ struct cTAG {
    char        image       [10];
    char        desc        [40];
    char        ready;
-   /*---(parent)------------*/
-   tFILE      *file;
-   /*---(tags)--------------*/
-   tTAG       *prev;
-   tTAG       *next;
-   tWORK      *work;
    /*---(positioning)--------------------*/
    char        oneline;                 /* return type and name on same line  */
    /*---(line counts)--------------------*/
@@ -273,6 +305,7 @@ struct cTAG {
    /*---(group three outputs)---------*/
    char        Dstyle;     /* 1st sub */
    char        Dmacro;
+   char        Dmatch;
    char        Nsize;      /* 2nd sub */
    char        Osize;
    char        Wsize;
@@ -280,8 +313,33 @@ struct cTAG {
    char        Pstyle;     /* 3rd sub */
    char        Esize;
    char        Xsize;
+   /*---(parent)------------*/
+   tFILE      *file;
+   /*---(tags)--------------*/
+   tTAG       *prev;
+   tTAG       *next;
+   tWORK      *work;
+   /*---(extern)------------*/
+   tYLIB      *head;
+   tYLIB      *tail;
+   int         count;
    /*---(btree)-------------*/
    tBTREE     *btree;
+   /*---(done)--------------*/
+};
+
+struct cYLIB {
+   /*---(master)-------------------------*/
+   char        name        [LEN_NAME];
+   int         line;
+   /*---(tags)--------------*/
+   tTAG       *tag;
+   tYLIB      *tprev;
+   tYLIB      *tnext;
+   /*---(ylib)--------------*/
+   tEXTERN    *ylib;
+   tYLIB      *eprev;
+   tYLIB      *enext;
    /*---(done)--------------*/
 };
 
@@ -315,8 +373,11 @@ struct cWORK {
    int         scalls;
    int         recurse;
    /*---(group three working)---------*/
+   int         dcount;                    /* uses of DEBUG_ in function       */
    int         dlong;                     /* long style yLOG_                 */
    int         dshort;                    /* short style yLOG_                */
+   int         denterc;                   /* enter count - externals          */
+   int         dexitc;                    /* exit  count - externals          */
    int         dfree;                     /* yLOG_ without DEBUG_ protection  */
    int         window;                    /* window manager/x11 calls         */
    int         myx;
@@ -324,20 +385,6 @@ struct cWORK {
 };
 
 
-
-extern char      s_pprev     [LEN_RECD];
-extern char      s_prev      [LEN_RECD];
-extern char      s_curr      [LEN_RECD];
-
-extern char      s_name      [LEN_RECD];
-extern int       s_files;
-extern int       s_funcs;
-extern int       s_lines;
-extern int       s_empty;
-extern int       s_docs;
-extern int       s_debug;
-extern int       s_code;
-extern int       s_slocl;
 
 
 
@@ -371,6 +418,11 @@ struct      cEXTERN {
    /*---(information)-------*/
    char        type;
    char        name        [LEN_NAME];
+   int         uses;
+   char        more;
+   /*---(ylib)--------------*/
+   tYLIB      *head;
+   tYLIB      *tail;
    int         count;
    /*---(btree)-------------*/
    tBTREE     *btree;
@@ -412,6 +464,7 @@ char        poly_tags_add           (tFILE *a_file, char *a_name, char a_type, i
 char        poly_tags_inventory     (tFILE *a_file);
 char        poly_tags_readline      (tFILE *a_file, int *a_line, tTAG **a_tag);
 char        poly_tags_review        (tFILE *a_file);
+char        poly_tags_addylib       (tTAG *a_tag, tYLIB *a_ylib);
 char*       poly_tags__unit         (char *a_question, int n);
 
 char        poly_cats_flag          (char *a_label, int a_src, char *a_dst, char a_zero);
@@ -431,12 +484,13 @@ char        PROG__unit_end          (void);
 
 char        poly_extern_init        (void);
 char        poly_extern_wrap        (void);
-char        poly_extern__add        (char *a_name, char a_type);
+char        poly_extern__add        (char *a_name, char a_type, char a_more);
 char        poly_extern_load        (void);
 char        poly_extern_check       (char *a_name);
 char        poly_extern_review      (void);
 char        poly_extern_list        (void);
 tEXTERN*    poly_extern_search      (char *a_name);
+char        poly_extern_addylib     (tEXTERN *a_extern, tYLIB *a_ylib);
 char*       poly_extern__unit       (char *a_question, int n);
 
 char        poly_proto_init         (void);
@@ -475,10 +529,16 @@ char        poly_db_write           (void);
 char        poly_db_read            (void);
 
 char        poly_rptg_dump          (void);
+char        poly_rptg_extern        (tEXTERN *a_extern);
 
 char        poly_action_generate    (void);
 char        poly_action_search      (void);
 char        poly_action_update      (void);
 char        poly_action_remove      (void);
+char        poly_action_extern      (void);
 
+tYLIB*      poly_ylib_new           (void);
+char        poly_ylib_add           (tTAG *a_tag, tEXTERN *a_extern, int a_line, tYLIB **a_ylib);
+char        poly_ylib_del           (tYLIB *a_ylib);
+char        poly_ylib_purge_tag     (tTAG *a_tag);
 

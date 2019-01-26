@@ -65,6 +65,11 @@ struct      cROOTS {
 #define     B_SAVED     s_trees [n].saved
 
 
+int   g_depth   = 0;
+char  g_path    [LEN_LABEL] = "";
+
+
+
 
 /*====================------------------------------------====================*/
 /*===----                       support functions                      ----===*/

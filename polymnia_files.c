@@ -210,6 +210,8 @@ poly_files_purge_proj   (tPROJ *a_proj)
    x_file = a_proj->head;
    while (x_file != NULL) {
       x_next = x_file->next;
+      DEBUG_DATA   yLOG_point   ("x_file"    , x_file);
+      DEBUG_DATA   yLOG_info    ("->name"    , x_file->name);
       rc = poly_tags_purge_file (x_file);
       rc = poly_files__del      (x_file);
       x_file = x_next;

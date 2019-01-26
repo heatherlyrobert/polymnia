@@ -3,22 +3,11 @@
 
 
 
-char        g_mode      = '-';
+tMY         my;
+
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
-FILE       *f_db        = NULL;
-FILE       *f_prog      = NULL;
-FILE       *f_tags      = NULL;
-FILE       *f_flow      = NULL;
-FILE       *f_extern    = NULL;
-FILE       *f_mystry    = NULL;
-FILE       *f_ylib      = NULL;
-
-char       s_pprev      [LEN_RECD];
-char       s_prev       [LEN_RECD];
-char       s_curr       [LEN_RECD];
-
 
 
 
@@ -29,10 +18,36 @@ PROG_init          (int a_argc, char *a_argv[])
 {
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(run-time-config)----------------*/
+   my.g_mode      = MODE_SEARCH;
+   my.g_titles    = RPTG_NOTITLES;
+   my.g_filter    = FILTER_NONE;
+   /*---(filtering)----------------------*/
+   my.g_project [0]  = '\0';
+   my.g_proj         = NULL;
+   my.g_extern [0]   = '\0';
+   /*---(files)--------------------------*/
+   my.f_db        = NULL;
+   my.f_prog      = NULL;
+   my.f_tags      = NULL;
+   my.f_flow      = NULL;
+   my.f_extern    = NULL;
+   my.f_mystry    = NULL;
+   /*---(global counts)------------------*/
+   my.s_files     = 0;
+   my.s_funcs     = 0;
+   my.s_lines     = 0;
+   my.s_empty     = 0;
+   my.s_docs      = 0;
+   my.s_debug     = 0;
+   my.s_code      = 0;
+   my.s_slocl     = 0;
+   /*---(initialization)-----------------*/
    poly_proj_init    ();
    poly_files_init   ();
    poly_tags_init    ();
    poly_extern_init  ();
+   /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -58,20 +73,41 @@ PROG_args          (int argc, char *argv[])
       DEBUG_ARGS  yLOG_info    ("cli arg", a);
       ++x_args;
       /*---(simple)----------------------*/
-      if      (strcmp (a, "--search" ) == 0)  g_mode = MODE_SEARCH;
-      else if (strcmp (a, "--htags"  ) == 0)  g_mode = MODE_HTAGS;
-      else if (strcmp (a, "--dump"   ) == 0)  g_mode = MODE_DUMP;
-      else if (strcmp (a, "--write"  ) == 0)  g_mode = MODE_WRITE;
-      else if (strcmp (a, "--update" ) == 0)  g_mode = MODE_UPDATE;
-      else if (strcmp (a, "--projs"  ) == 0)  g_mode = MODE_PROJ;
-      else if (strcmp (a, "--files"  ) == 0)  g_mode = MODE_FILE;
-      else if (strcmp (a, "--system" ) == 0)  g_mode = MODE_SYSTEM;
+      if      (strcmp (a, "--search"   ) == 0)  my.g_mode   = MODE_SEARCH;
+      else if (strcmp (a, "--htags"    ) == 0)  my.g_mode   = MODE_HTAGS;
+      else if (strcmp (a, "--dump"     ) == 0)  my.g_mode   = MODE_DUMP;
+      else if (strcmp (a, "--write"    ) == 0)  my.g_mode   = MODE_WRITE;
+      else if (strcmp (a, "--update"   ) == 0)  my.g_mode   = MODE_UPDATE;
+      else if (strcmp (a, "--projs"    ) == 0)  my.g_mode   = MODE_PROJ;
+      else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;
+      else if (strcmp (a, "--system"   ) == 0)  my.g_mode   = MODE_SYSTEM;
+      else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;
+      else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;
+      else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;
+      else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;
       /*---(compound)--------------------*/
       else if (strcmp (a, "--remove" ) == 0) {
-         g_mode = MODE_REMOVE;
-         if (++i < argc)  strlcpy (s_name, argv[i], LEN_NAME);
+         my.g_mode = MODE_REMOVE;
+         if (++i < argc)  strlcpy (my.g_project, argv[i], LEN_NAME);
          else {
             DEBUG_TOPS  yLOG_note  ("project name not included");
+            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
+            return -1;
+         }
+      }
+      else if (strcmp (a, "--project") == 0) {
+         if (++i < argc)  strlcpy (my.g_project, argv[i], LEN_NAME);
+         else {
+            DEBUG_TOPS  yLOG_note  ("project name not included");
+            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
+            return -1;
+         }
+      }
+      else if (strcmp (a, "--extern" ) == 0) {
+         my.g_mode = MODE_EXTERN;
+         if (++i < argc)  strlcpy (my.g_extern, argv[i], LEN_NAME);
+         else {
+            DEBUG_TOPS  yLOG_note  ("extern name not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
             return -1;
          }
@@ -123,7 +159,7 @@ PROG_final         (void)
 char
 PROG_prepare            (void)
 {
-   s_files = s_funcs = s_lines = s_empty = s_docs  = s_debug = s_code  = s_slocl = 0;
+   my.s_files = my.s_funcs = my.s_lines = my.s_empty = my.s_docs  = my.s_debug = my.s_code  = my.s_slocl = 0;
    return 0;
 }
 
@@ -140,13 +176,13 @@ PROG_summarize          (tPROJ *a_proj)
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
    DEBUG_PROG   yLOG_info    ("->name"    , a_proj->name);
    /*---(prepare)------------------------*/
-   if      (s_slocl < 100    )  strlcpy (a_proj->codesize, "u.micro"       , LEN_LABEL);
-   else if (s_slocl < 500    )  strlcpy (a_proj->codesize, "t.tiny"        , LEN_LABEL);
-   else if (s_slocl < 2000   )  strlcpy (a_proj->codesize, "s.small"       , LEN_LABEL);
-   else if (s_slocl < 10000  )  strlcpy (a_proj->codesize, "m.moderate"    , LEN_LABEL);
-   else if (s_slocl < 50000  )  strlcpy (a_proj->codesize, "l.large"       , LEN_LABEL);
-   else if (s_slocl < 250000 )  strlcpy (a_proj->codesize, "h.huge"        , LEN_LABEL);
-   else if (s_slocl < 1000000)  strlcpy (a_proj->codesize, "e.elephantine" , LEN_LABEL);
+   if      (my.s_slocl < 100    )  strlcpy (a_proj->codesize, "u.micro"       , LEN_LABEL);
+   else if (my.s_slocl < 500    )  strlcpy (a_proj->codesize, "t.tiny"        , LEN_LABEL);
+   else if (my.s_slocl < 2000   )  strlcpy (a_proj->codesize, "s.small"       , LEN_LABEL);
+   else if (my.s_slocl < 10000  )  strlcpy (a_proj->codesize, "m.moderate"    , LEN_LABEL);
+   else if (my.s_slocl < 50000  )  strlcpy (a_proj->codesize, "l.large"       , LEN_LABEL);
+   else if (my.s_slocl < 250000 )  strlcpy (a_proj->codesize, "h.huge"        , LEN_LABEL);
+   else if (my.s_slocl < 1000000)  strlcpy (a_proj->codesize, "e.elephantine" , LEN_LABEL);
    else                         strlcpy (a_proj->codesize, "g.gargantuan"  , LEN_LABEL);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
@@ -162,123 +198,6 @@ PROG_summarize          (tPROJ *a_proj)
       x_file = x_file->next;
    }
    /*---(prepare for use)----------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-PROG_report             (tPROJ *a_proj)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tFILE      *x_file      = NULL;
-   tTAG       *x_tag       = NULL;
-   int         i           =    0;
-   char        a           [LEN_LABEL];
-   char        b           [LEN_LABEL];
-   char        c           [LEN_LABEL];
-   char        d           [LEN_LABEL];
-   char        e           [LEN_LABEL];
-   char        f           [LEN_LABEL];
-   char        g           [LEN_LABEL];
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
-   --rce;  if (a_proj == NULL) {
-      a_proj = (tPROJ *) poly_btree_first (B_PROJ);
-      DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
-      if (a_proj == NULL) {
-         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
-   }
-   /*---(output)-------------------------*/
-   DEBUG_PROG   yLOG_note    ("review all tags and code");
-   x_file = a_proj->head;
-   DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
-   if (g_mode == MODE_HTAGS) {
-      printf ("##/usr/local/bin/polymnia --htags\n");
-      printf ("##   polymnia-hymnos (many praises) greek muse and protector of divine hymns, dancing, geometry, and grammar\n");
-      printf ("##   version %s, %s\n", VER_NUM, VER_TXT);
-      printf ("##\n");
-      printf ("##   name       [%s]\n", a_proj->name);
-      printf ("##   focus      [%s]\n", a_proj->focus);
-      printf ("##   niche      [%s]\n", a_proj->niche);
-      printf ("##   heritage   [%s]\n", a_proj->heritage);
-      printf ("##   purpose    [%s]\n", a_proj->purpose);
-      printf ("##   created    [%s]\n", a_proj->created);
-      printf ("##   code-size  [%s]\n", a_proj->codesize);
-      printf ("##   home       [%s]\n", a_proj->home);
-      printf ("##   vernum     [%s]\n", a_proj->vernum);
-      printf ("##   vertxt     [%s]\n", a_proj->vertxt);
-      printf ("##\n\n\n\n");
-   }
-   while (x_file != NULL) {
-      DEBUG_PROG   yLOG_info    ("file name" , x_file->name);
-      if (g_mode == MODE_HTAGS) {
-         sprintf (a, "lines : %4d  %5d", x_file->lines, s_lines);
-         sprintf (b, "empty : %4d  %5d", x_file->empty, s_empty);
-         sprintf (c, "docs  : %4d  %5d", x_file->docs , s_docs );
-         sprintf (d, "debug : %4d  %5d", x_file->debug, s_debug);
-         sprintf (e, "code  : %4d  %5d", x_file->code , s_code );
-         sprintf (f, "slocl : %4d  %5d", x_file->slocl, s_slocl);
-         sprintf (g, "function (%d)"   , x_file->count);
-         printf ("%-29.29s   FILE\n", x_file->name);
-         printf ("%-29.29s   o                   c                                                          \n", a);
-         printf ("%-29.29s   n                 l h r i m          i     m        r   d d  c o w      e      \n", b);
-         printf ("%-29.29s   e   s r p  l d s  o o e n e   g l  c n     y    w l e   s m  u p i    p x      \n", c);
-         printf ("%-29.29s   l   c c a  i e l  c i t d m   c c  a t c y s  r r i c   t a  r e n    r t      \n", d);
-         printf ("%-29.29s   i   o o r  n b o  a c u e o   a a  l e s l t  e i n u   y c  s n d m  o e      \n", e);
-         printf ("%-29.29s   n   p d a  e u c  l e r n r   l l  l r t i r  a t u r   l r  e g o y  t r      \n", f);
-         printf ("%-29.29s   e   e e m  s g l  s s n t y   l l  s n d b y  d e x s   e o  s l w x  o n - - -   ------------------staging area-----------------  -------------location---------------    ------------------extended-data---------------------\n", "");
-         printf ("%-29.29s      [------complexity-------] [------integration------] [----watch-points-------]  [-complexity--] [-integration-] [-watch-point-]  [----source-file----------]   [line]    [-type-] [rdy] [-----------description-------------]\n", g);
-      }
-      x_tag = NULL;
-      rc = poly_files_nexttag (x_file, &x_tag);
-      DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
-      DEBUG_PROG   yLOG_point   ("x_tag"     , x_tag);
-      while (rc >= 0)  {
-         DEBUG_PROG   yLOG_info    ("tag name"  , x_tag->name);
-         printf ("%-2s  %-25.25s   %c   ", x_tag->hint  , x_tag->name, x_tag->oneline);
-         if (strncmp (x_tag->name, "o___", 4) != 0) {
-            printf ("%c %c %c  %c %c %c  %c %c %c %c %c   %c %c  %c %c %c %c %c  %c %c %c %c   %c %c  %c %c %c %c  %c %c %c %c %c   ",
-                  x_tag->scope , x_tag->rtype , x_tag->psize ,
-                  x_tag->tsize , x_tag->dsize , x_tag->ssize ,
-                  x_tag->lsize , x_tag->csize , x_tag->rsize , x_tag->isize , x_tag->msize ,
-                  x_tag->Gsize , x_tag->Lsize ,
-                  x_tag->Fsize , x_tag->Isize , x_tag->Csize , x_tag->Ysize , x_tag->Msize ,
-                  x_tag->Rflag , x_tag->Wflag , x_tag->Lflag , x_tag->Sflag ,
-                  x_tag->Dstyle, x_tag->Dmacro,
-                  x_tag->Nsize , x_tag->Osize , x_tag->Wsize , x_tag->Zsize ,
-                  x_tag->Pstyle, x_tag->Esize , x_tag->Xsize , '-', '-');
-            printf ("[%c%c%c.%c%c%c.%c%c%c%c%c] [%c%c.%c%c%c%c%c.%c%c%c%c] [%c%c.%c%c%c%c.%c%c%c%c%c]   ",
-                  x_tag->scope , x_tag->rtype , x_tag->psize ,
-                  x_tag->tsize , x_tag->dsize , x_tag->ssize ,
-                  x_tag->lsize , x_tag->csize , x_tag->rsize , x_tag->isize , x_tag->msize ,
-                  x_tag->Gsize , x_tag->Lsize ,
-                  x_tag->Fsize , x_tag->Isize , x_tag->Csize , x_tag->Ysize , x_tag->Msize ,
-                  x_tag->Rflag , x_tag->Wflag , x_tag->Lflag , x_tag->Sflag ,
-                  x_tag->Dstyle, x_tag->Dmacro,
-                  x_tag->Nsize , x_tag->Osize , x_tag->Wsize , x_tag->Zsize ,
-                  x_tag->Pstyle, x_tag->Esize , x_tag->Xsize , '-', '-');
-         } else {
-            printf ("%c %c %c  %-68.68s   ", x_tag->scope , x_tag->rtype , x_tag->psize , "");
-            printf ("%-47.47s   ", "");
-         }
-         printf ("%-25.25s     %-4d      ", x_tag->file->name, x_tag->line);
-         printf ("%-6.6s    %c    %-35.35s", x_tag->image, x_tag->ready, x_tag->desc);
-         printf ("\n");
-         rc = poly_files_nexttag (x_file, &x_tag);
-         DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
-         DEBUG_PROG   yLOG_point   ("x_tag"     , x_tag);
-      }
-      if (g_mode == MODE_HTAGS)  for (i = 0; i < 70 - x_file->count; ++i)  printf ("\n");
-      x_file = x_file->next;
-      DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
-   }
-   /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }

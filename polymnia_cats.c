@@ -2,17 +2,6 @@
 #include  "polymnia.h"
 
 
-char      s_name      [LEN_RECD] = "";
-int       s_files   = 0;
-int       s_funcs   = 0;
-int       s_lines   = 0;
-int       s_empty   = 0;
-int       s_docs    = 0;
-int       s_debug   = 0;
-int       s_code    = 0;
-int       s_slocl   = 0;
-
-
 
 /*====================------------------------------------====================*/
 /*===----                   convert values to markers                  ----===*/
@@ -120,44 +109,63 @@ char
 poly_cats_lines    (tFILE *a_file, tTAG *a_tag, char a_type)
 {
    int         c           =     0;
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   ++(s_lines);
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   DEBUG_DATA   yLOG_spoint  (a_tag);
+   if (a_tag == NULL) {
+      DEBUG_DATA   yLOG_snote   ("tag null");
+   } else {
+      DEBUG_DATA   yLOG_spoint  (a_tag->work);
+      if (a_tag->work == NULL) {
+         DEBUG_DATA   yLOG_snote   ("tag->work null");
+      } else {
+         DEBUG_DATA   yLOG_sint    (a_tag->work->beg);
+         DEBUG_DATA   yLOG_sint    (a_tag->work->end);
+      }
+   }
+   IN_TAGLINES  DEBUG_DATA   yLOG_snote   ("in_taglines");
+   ++(my.s_lines);
    ++(a_file->lines);
    ++(a_file->proj->lines);
    IN_TAGLINES  ++(a_tag->lines);
    switch (a_type) {
    case 'D' :
-      ++(s_debug);
+      DEBUG_DATA   yLOG_snote   ("debug");
+      ++(my.s_debug);
       ++(a_file->debug);
       ++(a_file->proj->debug);
       IN_TAGLINES  ++(a_tag->debug);
       break;
    case 'd' :
-      ++(s_docs);
+      DEBUG_DATA   yLOG_snote   ("docs");
+      ++(my.s_docs);
       ++(a_file->docs);
       ++(a_file->proj->docs);
       IN_TAGLINES  ++(a_tag->docs );
       break;
    case 'e' :
-      ++(s_empty);
+      DEBUG_DATA   yLOG_snote   ("empty");
+      ++(my.s_empty);
       ++(a_file->empty);
       ++(a_file->proj->empty);
       IN_TAGLINES  ++(a_tag->empty);
       break;
    case 'C' :
-      ++(s_code);
+      DEBUG_DATA   yLOG_snote   ("code");
+      ++(my.s_code);
       ++(a_file->code);
       ++(a_file->proj->code);
       IN_TAGLINES  ++(a_tag->code );
-      c = strldcnt (s_curr, ';', LEN_RECD);
+      c = strldcnt (my.s_curr, ';', LEN_RECD);
+      DEBUG_DATA   yLOG_sint    (c);
       if (c < 0)  c = 0;
-      s_slocl += c;
+      DEBUG_DATA   yLOG_snote   ("slocl");
+      my.s_slocl += c;
       a_file->slocl += c;
       a_file->proj->slocl += c;
       IN_TAGLINES  a_tag->slocl += c;
       break;
    }
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -167,6 +175,53 @@ poly_cats_lines    (tFILE *a_file, tTAG *a_tag, char a_type)
 /*===----                   creating the tag summary                   ----===*/
 /*====================------------------------------------====================*/
 static void  o___SUMMARY_________o () { return; }
+
+char
+poly_cats_debug    (tTAG *a_tag)
+{
+   /*---(style)--------------------------*/
+   if      (a_tag->work->dlong   > 0 && a_tag->work->dshort  > 0)  a_tag->Dstyle = 'b';
+   else if (a_tag->work->dlong   > 0)                              a_tag->Dstyle = 'l';
+   else if (a_tag->work->dshort  > 0)                              a_tag->Dstyle = 's';
+   if (a_tag->work->dlong + a_tag->work->dshort < a_tag->work->dcount) {
+      switch (a_tag->Dstyle) {
+      case 'b' :  a_tag->Dstyle = 'B';  break;
+      case 'l' :  a_tag->Dstyle = 'L';  break;
+      case 's' :  a_tag->Dstyle = 'S';  break;
+      default  :  a_tag->Dstyle = 'f';  break;
+      }
+   }
+   if (a_tag->work->dfree > 0)  a_tag->Dstyle = '#';
+   if (strchr ("-f", a_tag->Dstyle) != NULL)   return 0;
+   /*---(match)--------------------------*/
+   a_tag->Dmatch = '-';
+   /*---(enters)-----------*/
+   if      (a_tag->work->denterc <= 0) 
+      a_tag->Dmatch = 'E';
+   else if (a_tag->work->denterc == 1 && strchr ("ls", a_tag->Dstyle) == NULL) 
+      a_tag->Dmatch = 'E';
+   else if (a_tag->work->denterc == 2 && a_tag->Dstyle != 'b') 
+      a_tag->Dmatch = 'E';
+   else if (a_tag->work->denterc >  2)
+      a_tag->Dmatch = 'E';
+   if (a_tag->Dmatch != '-')   return 0;
+   /*---(exits)------------*/
+   if      (a_tag->work->dexitc  <= 0)
+      a_tag->Dmatch = 'X';
+   else if (a_tag->work->returns != a_tag->work->dexitc)
+      a_tag->Dmatch = 'X';
+   if (a_tag->Dmatch != '-')   return 0;
+   /*---(shorts)-----------*/
+   else if (a_tag->Dstyle == 's' && a_tag->work->intern > 0)
+      a_tag->Dmatch = '!';
+   if (a_tag->Dmatch != '-')   return 0;
+   /*---(good)-------------*/
+   a_tag->Dmatch = 'y';
+   if (a_tag->work->denterc == 0 && a_tag->work->dexitc == 0)
+      a_tag->Dmatch = 'p'; 
+   /*---(complete)-----------------------*/
+   return 0;
+}
 
 char
 poly_cats_tagsumm  (tTAG *a_tag)
@@ -217,10 +272,7 @@ poly_cats_tagsumm  (tTAG *a_tag)
    poly_cats_flag    ("recurse" , a_tag->work->recurse , &a_tag->Sflag, '#');
    /*---(group three)--------------------*/
    DEBUG_DATA   yLOG_note    ("group three");
-   if (a_tag->work->dlong   > 0 && a_tag->work->dshort  > 0)  a_tag->Dstyle = 'B';
-   else if (a_tag->work->dlong   > 0)  a_tag->Dstyle = 'l';
-   else if (a_tag->work->dshort  > 0)  a_tag->Dstyle = 's';
-   if (a_tag->work->dfree > 0)  a_tag->Dstyle = '#';
+   poly_cats_debug (a_tag);
    poly_cats_exact   ("ncurses" , a_tag->work->ncurses , &a_tag->Nsize, '-');
    poly_cats_exact   ("opengl"  , a_tag->work->opengl  , &a_tag->Osize, '-');
    poly_cats_exact   ("myx"     , a_tag->work->myx     , &a_tag->Zsize, '-');
