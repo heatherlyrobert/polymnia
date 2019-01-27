@@ -15,12 +15,7 @@ poly_files__wipe   (tFILE *a_dst)
    /*---(master)------------*/
    a_dst->type     = '-';
    /*---(stats)-------------*/
-   a_dst->lines    = 0;
-   a_dst->empty    = 0;
-   a_dst->docs     = 0;
-   a_dst->debug    = 0;
-   a_dst->code     = 0;
-   a_dst->slocl    = 0;
+   poly_cats_counts_clear (a_dst->counts);
    /*---(tags)--------------*/
    a_dst->proj     = NULL;
    a_dst->next     = NULL;
@@ -76,6 +71,11 @@ poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    /*---(prepare)------------------------*/
    if (a_file != NULL)  *a_file = NULL;
    /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point   ("a_proj"    , a_proj);
+   --rce;  if (a_proj == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    DEBUG_DATA   yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -236,12 +236,12 @@ poly_files_wrap         (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
-   rc = poly_btree_purge (B_FILES);
-   DEBUG_PROG   yLOG_value   ("purge"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = poly_btree_purge (B_FILES);                                               <* 
+    *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -575,7 +575,7 @@ poly_files__unit     (char *a_question, int i)
       u = (tFILE *) poly_btree_entry (B_FILES, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         snprintf (unit_answer, LEN_RECD, "FILE entry  (%2d) : %-22.22s %3d %3d %3d %3d %3d %3d", i, t, u->lines, u->empty, u->docs, u->debug, u->code, u->slocl);
+         snprintf (unit_answer, LEN_RECD, "FILE entry  (%2d) : %-22.22s %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
       } else {
          snprintf (unit_answer, LEN_RECD, "FILE entry  (%2d) : %-22.22s %3d %3d %3d %3d %3d %3d", i, t, 0, 0, 0, 0, 0, 0);
       }

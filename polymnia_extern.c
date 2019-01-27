@@ -165,12 +165,12 @@ poly_extern_wrap        (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = poly_btree_purge (B_EXTERN);
-   DEBUG_PROG   yLOG_value   ("purge"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = poly_btree_purge (B_EXTERN);                                              <* 
+    *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -472,15 +472,16 @@ poly_extern_review      (void)
          if (x_mystry % 25 == 0)  fprintf (my.f_mystry, "##---calling-file-------   line   ---calling-function------   ---mystery-function------¦¦");
          fprintf (my.f_mystry, "%-25.25s  %4d   %-25.25s   %-25.25s¦",
                x_file->name, x_line, x_src->name, x_funcname);
+         ++x_src->WORK_MYSTRY;
          ++x_mystry;
          DEBUG_INPT   yLOG_note    ("found a mystry function");
          continue;
       }
       /*---(tally)-----------------------*/
-      ++x_src->work->funcs;
+      ++x_src->WORK_FUNCS;
       if (x_src == x_dst) {
          DEBUG_INPT   yLOG_note    ("found a recursive reverence");
-         ++x_src->work->recurse;
+         ++x_src->WORK_RECURS;
          continue;
       }
       if (x_dst != NULL) {
@@ -491,64 +492,87 @@ poly_extern_review      (void)
          DEBUG_INPT   yLOG_point   ("x_dst"     , x_dst);
          DEBUG_INPT   yLOG_point   ("->file"    , x_dst->file);
          DEBUG_INPT   yLOG_point   ("->work"    , x_dst->work);
-         if      (x_src->file == x_dst->file)  ++x_dst->work->lcalls;
-         else if (x_src->file->proj == x_dst->file->proj)  ++x_dst->work->gcalls;
-         ++x_src->work->intern;
+         if      (x_src->file == x_dst->file)  ++x_dst->WORK_LCALLS;
+         else if (x_src->file->proj == x_dst->file->proj)  ++x_dst->WORK_GCALLS;
+         ++x_src->WORK_INTERN;
          continue;
       }
       if (x_extern != NULL) {
          DEBUG_INPT   yLOG_char    ("type"      , x_extern->type);
          switch (x_extern->type) {
          case 'd' :
-            --x_src->work->funcs;
-            ++x_src->work->dshort;
+            --x_src->WORK_FUNCS;
+            ++x_src->WORK_DSHORT;
             switch (x_extern->more) {
-            case 'e' :   ++x_src->work->denterc;      break;
-            case 'x' :   ++x_src->work->dexitc;       break;
+            case 'e' :   ++x_src->WORK_DENTER;      break;
+            case 'x' :   ++x_src->WORK_DEXIT;       break;
             }
             break;
          case 'D' :
-            --x_src->work->funcs;
-            ++x_src->work->dlong;
+            --x_src->WORK_FUNCS;
+            ++x_src->WORK_DLONG;
             switch (x_extern->more) {
-            case 'e' :   ++x_src->work->denterc;      break;
-            case 'x' :   ++x_src->work->dexitc;       break;
+            case 'e' :   ++x_src->WORK_DENTER;      break;
+            case 'x' :   ++x_src->WORK_DEXIT;       break;
             }
             break;
          case '-' :
-            ++x_src->work->cstd;
-            break;
-         case 'w' :
-            ++x_src->work->cstd;
-            ++x_src->work->writes;
-            break;
-         case 'r' :
-            ++x_src->work->cstd;
-            ++x_src->work->reads;
-            break;
-         case 'n' :
-            ++x_src->work->ncurses;
+            ++x_src->WORK_CSTD;
             break;
          case 'o' :
-            ++x_src->work->opengl;
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_OUTPUT;
+            break;
+         case 'w' :
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_WRITE;
+            break;
+         case 'W' :
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_BWRITE;
+            break;
+         case 'i' :
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_INPUT;
+            break;
+         case 'r' :
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_READ;
+            break;
+         case 'R' :
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_BREAD;
+            break;
+         case 'N' :
+            ++x_src->WORK_NCURSE;
+            break;
+         case 'O' :
+            ++x_src->WORK_OPENGL;
             break;
          case 'm' :
-            ++x_src->work->cstd;
-            ++x_src->work->memories;
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_MEMORY;
             break;
          case 'p' :
-            ++x_src->work->cstd;
-            ++x_src->work->process;
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_PROCS;
+            break;
+         case 'f' :
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_FILESYS;
             break;
          case 's' :
-            ++x_src->work->cstd;
-            ++x_src->work->scalls;
+            ++x_src->WORK_CSTD;
+            ++x_src->WORK_SYSTEM;
             break;
          case 'y' :
-            ++x_src->work->myx;
+            ++x_src->WORK_MYX;
          case 'Y' :
-            ++x_src->work->ylibs;
+            ++x_src->WORK_YLIB;
             poly_ylib_add (x_src, x_extern, x_line, NULL);
+            break;
+         case 'X' :
+            ++x_src->WORK_WINDOW;
             break;
          }
       }

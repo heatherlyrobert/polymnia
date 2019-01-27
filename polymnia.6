@@ -1,0 +1,137 @@
+.TH polymnia 6 2019-jan "linux" "heatherly custom tools manual"
+.na
+
+.SH NAME
+polymnia-hymnos \- interactive system usage and navigation
+
+.SH IMAGERY (see HERITAGE at bottom for more)
+greek muse of divine hymns, dancing, geometry, and grammar
+
+.SH SUMMARY
+polymnia is a custom code analysis tool offering -- tag navigation for
+vim-ide, detailed function complexity analysis, and code-base wide reporting
+and research -- for the one-true language (c).
+
+.SH SYNOPSIS
+.B polymnia [OPTIONS]
+.nf
+which is the primary production version
+
+.B polymnia_debug [URGENTS] [OPTIONS]
+.nf
+which can perform all actions, but with debugging and tracing
+
+.SH DATABASE OPTIONS
+polymnia creates and maintains a binary-file database of programs, files,
+and functions to support off-line analysis and resarch.
+
+.B --write
+.RS 8
+create/overwrite database using current code project
+.RE
+
+.B --update
+.RS 8
+append database with data from current code project
+.RE
+
+.B --system
+.RS 8
+append database with all code projects in key directories
+.RE
+
+.B --remove <name>
+.RS 8
+remove project <name> related data from database
+.RE
+
+.SH TAGGING OPTIONS
+polymnia analyzes current code project, including files, headers, and fuctions,
+to provide a custom tagging and navigation file for my vim-ide without any
+impact to the shared database.
+
+.B --htags
+.RS 8
+write detailed tags format to stdout for use by vim-ide
+.RE
+
+.SH REPORTING OPTIONS
+polymnia supports several overviews of database content that provide all
+information stored, typically for use in a spreadsheet.
+
+.B --projs
+.RS 8
+write detailed info for each project in database
+.RE
+
+.B --files
+.RS 8
+write detailed info for each project and file in database
+.RE
+
+.B --dump
+.RS 8
+write detailed function info for every project in database
+.RE
+
+.B --treeview
+.RS 8
+write heirarchical, intented view for visualization programs
+.RE
+
+.SH FILTERING OPTIONS
+polymnia supports a series of filters to help reduce the volume and
+target specific settings in certain statistics.
+
+.B --project <name>
+.RS 8
+limit output to only a specific project
+.RE
+
+.B --debug
+.RS 8
+show suspected issues identified in debugging
+.RE
+
+.B --linux
+.RS 8
+show all tags with process, system, or filesystem use
+.RE
+
+.B --data
+.RS 8
+show all tags with file reading or writing
+.RE
+
+.SH FILES
+polymnia stores files in two places -- local files in the code directories and
+a common directory in /var/lib.
+
+.B polymnia.db
+is the shared database with all code analysis stored in /var/lib/polymnia/.
+
+.B external.txt
+is a list of categorized external functions stored in /var/lib/polymnia/.
+
+.B polymnia.mystry
+local file with list of all unknown external calls including file, line,
+and source function.
+
+.SH HERITAGE
+polymnia-hymnos (many praises) is the muse of divine hymns, the lyre, dancing,
+geometry, and grammar.  the muses (mousai) are nine daughters of zeus and
+mnemosyne (titan of memory) and are the goddesses of art, literature, and
+science who inspire creation and enthusiasm.  polymnia is usually depicted
+wearing a veil and looking up to the heavens.
+
+.SH SEE ALSO
+this documentation is layered to provide easier navigation.
+   polymnia (6), interactive system usage and navigation
+   polymnia (7), decision rationale, objectives, and overview
+
+.SH AUTHOR
+jelloshrike at gmail dot com
+
+.SH COLOPHON
+this page is part of a documentation package meant to make use of the
+heatherly tools easier and faster.

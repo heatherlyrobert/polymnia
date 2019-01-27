@@ -6,24 +6,78 @@ static    char     s_prefix     [LEN_LABEL];
 char
 poly_rptg__debug        (tTAG *a_tag)
 {
-   if (strchr ("Bb", a_tag->Dstyle) != NULL) {
+   if (strchr ("Bb", a_tag->STATS_DSTYLE) != NULL) {
       strlcpy (s_prefix, "style"     , LEN_LABEL);
       return 1;
    }
-   if (a_tag->Dstyle == '#') {
+   if (a_tag->STATS_DSTYLE == '#') {
       strlcpy (s_prefix, "boom"      , LEN_LABEL);
       return 1;
    }
-   if (a_tag->Dmacro == '#' && strchr ("LSf", a_tag->Dstyle) == NULL) {
+   if (a_tag->STATS_DMACRO == '#' && strchr ("LSf", a_tag->STATS_DSTYLE) == NULL) {
       strlcpy (s_prefix, "macro"     , LEN_LABEL);
       return 1;
    }
-   if (strchr ("!#EX", a_tag->Dmatch) != NULL) {
+   if (strchr ("!#EX", a_tag->STATS_DMATCH) != NULL) {
       strlcpy (s_prefix, "match"     , LEN_LABEL);
       return 1;
    }
-   if (a_tag->Dstyle == '-' && strchr ("ABCDEFGHIJKLMNOPQRSTUVWXYZ#", a_tag->tsize) != NULL) {
+   if (a_tag->STATS_DSTYLE == '-' && strchr ("ABCDEFGHIJKLMNOPQRSTUVWXYZ#", a_tag->STATS_TOTAL) != NULL) {
       strlcpy (s_prefix, "size"      , LEN_LABEL);
+      return 1;
+   }
+   return 0;
+}
+
+char
+poly_rptg__params       (tTAG *a_tag)
+{
+   if (strchr ("56789ABCDEFGHIJKLMNOPQRSTUVWXYZ#", a_tag->STATS_PARAMS) != NULL) {
+      strlcpy (s_prefix, "count"     , LEN_LABEL);
+      return 1;
+   }
+   if (strchr ("#" , a_tag->STATS_PTWO) != NULL) {
+      strlcpy (s_prefix, "**"        , LEN_LABEL);
+      return 1;
+   }
+   if (strchr ("#" , a_tag->STATS_PNUM) != NULL) {
+      strlcpy (s_prefix, "num*"      , LEN_LABEL);
+      return 1;
+   }
+   return 0;
+}
+
+char
+poly_rptg__data         (tTAG *a_tag)
+{
+   if (strchr ("rR", a_tag->STATS_READ ) != NULL) {
+      strlcpy (s_prefix, "read"      , LEN_LABEL);
+      return 1;
+   }
+   if (strchr ("wW", a_tag->STATS_WRITE) != NULL) {
+      strlcpy (s_prefix, "write"     , LEN_LABEL);
+      return 1;
+   }
+   return 0;
+}
+
+char
+poly_rptg__linux        (tTAG *a_tag)
+{
+   if (strchr ("p"   , a_tag->STATS_SYSTEM) != NULL) {
+      strlcpy (s_prefix, "process"   , LEN_LABEL);
+      return 1;
+   }
+   if (strchr ("s"   , a_tag->STATS_SYSTEM) != NULL) {
+      strlcpy (s_prefix, "system"    , LEN_LABEL);
+      return 1;
+   }
+   if (strchr ("f"   , a_tag->STATS_SYSTEM) != NULL) {
+      strlcpy (s_prefix, "filesys"   , LEN_LABEL);
+      return 1;
+   }
+   if (strchr ("B"   , a_tag->STATS_SYSTEM) != NULL) {
+      strlcpy (s_prefix, "all"       , LEN_LABEL);
       return 1;
    }
    return 0;
@@ -32,30 +86,30 @@ poly_rptg__debug        (tTAG *a_tag)
 char
 poly_rptg__stats        (tTAG *a_tag)
 {
-   printf ("%c   ", a_tag->oneline);
+   printf ("%c   ", a_tag->STATS_SINGLE);
    if (strncmp (a_tag->name, "o___", 4) != 0) {
       printf ("%c %c %c  %c %c %c  %c %c %c %c %c   %c %c  %c %c %c %c %c  %c %c %c %c   %c %c %c  %c %c %c %c  %c %c %c %c   ",
-            a_tag->scope , a_tag->rtype , a_tag->psize ,
-            a_tag->tsize , a_tag->dsize , a_tag->ssize ,
-            a_tag->lsize , a_tag->csize , a_tag->rsize , a_tag->isize , a_tag->msize ,
-            a_tag->Gsize , a_tag->Lsize ,
-            a_tag->Fsize , a_tag->Isize , a_tag->Csize , a_tag->Ysize , a_tag->Msize ,
-            a_tag->Rflag , a_tag->Wflag , a_tag->Lflag , a_tag->Sflag ,
-            a_tag->Dstyle, a_tag->Dmacro, a_tag->Dmatch,
-            a_tag->Nsize , a_tag->Osize , a_tag->Wsize , a_tag->Zsize ,
-            a_tag->Pstyle, a_tag->Esize , a_tag->Xsize , '-');
+            a_tag->STATS_SCOPE , a_tag->STATS_RTYPE , a_tag->STATS_PARAMS,
+            a_tag->STATS_TOTAL , a_tag->STATS_DEBUG , a_tag->STATS_SLOCL ,
+            a_tag->STATS_LOCALS, a_tag->STATS_CHOICE, a_tag->STATS_RETURN, a_tag->STATS_INDENT, a_tag->STATS_MEMORY ,
+            a_tag->STATS_GCALLS, a_tag->STATS_LCALLS,
+            a_tag->STATS_FUNCS , a_tag->STATS_INTERN, a_tag->STATS_CSTD  , a_tag->STATS_YLIB  , a_tag->STATS_MSTRY ,
+            a_tag->STATS_READ  , a_tag->STATS_WRITE , a_tag->STATS_SYSTEM, a_tag->STATS_RECURS,
+            a_tag->STATS_DSTYLE, a_tag->STATS_DMACRO, a_tag->STATS_DMATCH,
+            a_tag->STATS_NCURSE, a_tag->STATS_OPENGL, a_tag->STATS_WINDOW, a_tag->STATS_MYX   ,
+            a_tag->STATS_PROTO , a_tag->STATS_ECALLS, a_tag->STATS_PTWO  , a_tag->STATS_PNUM  );
       printf ("[%c%c%c.%c%c%c.%c%c%c%c%c] [%c%c.%c%c%c%c%c.%c%c%c%c] [%c%c%c.%c%c%c%c.%c%c%c%c]   ",
-            a_tag->scope , a_tag->rtype , a_tag->psize ,
-            a_tag->tsize , a_tag->dsize , a_tag->ssize ,
-            a_tag->lsize , a_tag->csize , a_tag->rsize , a_tag->isize , a_tag->msize ,
-            a_tag->Gsize , a_tag->Lsize ,
-            a_tag->Fsize , a_tag->Isize , a_tag->Csize , a_tag->Ysize , a_tag->Msize ,
-            a_tag->Rflag , a_tag->Wflag , a_tag->Lflag , a_tag->Sflag ,
-            a_tag->Dstyle, a_tag->Dmacro, a_tag->Dmatch,
-            a_tag->Nsize , a_tag->Osize , a_tag->Wsize , a_tag->Zsize ,
-            a_tag->Pstyle, a_tag->Esize , a_tag->Xsize , '-');
+            a_tag->STATS_SCOPE , a_tag->STATS_RTYPE , a_tag->STATS_PARAMS,
+            a_tag->STATS_TOTAL , a_tag->STATS_DEBUG , a_tag->STATS_SLOCL ,
+            a_tag->STATS_LOCALS, a_tag->STATS_CHOICE, a_tag->STATS_RETURN, a_tag->STATS_INDENT, a_tag->STATS_MEMORY ,
+            a_tag->STATS_GCALLS, a_tag->STATS_LCALLS,
+            a_tag->STATS_FUNCS , a_tag->STATS_INTERN, a_tag->STATS_CSTD  , a_tag->STATS_YLIB  , a_tag->STATS_MSTRY ,
+            a_tag->STATS_READ  , a_tag->STATS_WRITE , a_tag->STATS_SYSTEM, a_tag->STATS_RECURS,
+            a_tag->STATS_DSTYLE, a_tag->STATS_DMACRO, a_tag->STATS_DMATCH,
+            a_tag->STATS_NCURSE, a_tag->STATS_OPENGL, a_tag->STATS_WINDOW, a_tag->STATS_MYX   ,
+            a_tag->STATS_PROTO , a_tag->STATS_ECALLS, a_tag->STATS_PTWO  , a_tag->STATS_PNUM  );
    } else {
-      printf ("%c %c %c  %-68.68s   ", a_tag->scope , a_tag->rtype , a_tag->psize , "");
+      printf ("%c %c %c  %-68.68s   ", a_tag->STATS_SCOPE , a_tag->STATS_RTYPE , a_tag->STATS_PARAMS , "");
       printf ("%-47.47s   ", "");
    }
    return 0;
@@ -96,9 +150,9 @@ poly_rptg_file          (tPROJ *a_proj)
       if (my.g_mode != MODE_DUMP) {
          printf ("  %-23.23s       %7d %7d %7d %7d %7d %7d %7d\n",
                x_file->name , x_file->count,
-               x_file->lines, x_file->empty,
-               x_file->docs , x_file->debug,
-               x_file->code , x_file->slocl);
+               x_file->COUNT_LINES, x_file->COUNT_EMPTY,
+               x_file->COUNT_DOCS , x_file->COUNT_DEBUG,
+               x_file->COUNT_CODE , x_file->COUNT_SLOCL);
       }
       switch (my.g_mode) {
       case MODE_PROJ :
@@ -145,12 +199,16 @@ poly_rptg_proj          (void)
    char        rce         =  -10;
    char        rc          =    0;
    tPROJ      *x_proj      = NULL;
+   int         c           =    0;
    /*---(header)-------------------------*/
    DEBUG_RPTG   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   my.s_files = my.s_funcs = my.s_lines = my.s_empty = my.s_docs  = my.s_debug = my.s_code  = my.s_slocl = 0;
-   if (my.g_mode != MODE_DUMP) {
-      if (my.g_titles == RPTG_TITLES)  printf ("---name------------------  file --ntags --lines --empty ---docs --debug ---code --slocl  ---code-size---  ---greek-heritage-------------------------------------------  ---purpose-statement----------------------------------------  -ver- ---version-description--------------------------------------  ---focus------------  ---niche------------  --created-  ---home-directory-------------------------------------------\n\n");
+   my.COUNT_FILES = my.COUNT_FUNCS = my.COUNT_LINES = my.COUNT_EMPTY = my.COUNT_DOCS  = my.COUNT_DEBUG = my.COUNT_CODE  = my.COUNT_SLOCL = 0;
+   if (my.g_mode != MODE_DUMP && my.g_titles == RPTG_TITLES) {
+      printf ("## project listing report\n");
+      printf ("##    generated by polymnia-hymnos (many praises) muse of divine hymns, c language, dance, geometry, and grammar\n");
+      printf ("\n");;
+      printf ("##---name----------------  file --ntags --lines --empty ---docs --debug ---code --slocl  ---code-size---  ---greek-heritage-------------------------------------------  ---purpose-statement----------------------------------------  -ver- ---version-description--------------------------------------  ---focus------------  ---niche------------  --created-  ---home-directory-------------------------------------------\n");
    }
    /*---(find target)--------------------*/
    rc = poly_rptg_projfilter ();
@@ -168,27 +226,28 @@ poly_rptg_proj          (void)
       DEBUG_RPTG   yLOG_info    ("->name"    , x_proj->name);
       DEBUG_RPTG   yLOG_value   ("files"     , x_proj->count);
       /*---(grand totals)----------------*/
-      my.s_files += x_proj->count;
-      my.s_funcs += x_proj->ntags;
-      my.s_lines += x_proj->lines;
-      my.s_empty += x_proj->empty;
-      my.s_docs  += x_proj->docs;
-      my.s_debug += x_proj->debug;
-      my.s_code  += x_proj->code;
-      my.s_slocl += x_proj->slocl;
+      my.COUNT_FILES += x_proj->count;
+      my.COUNT_FUNCS += x_proj->ntags;
+      my.COUNT_LINES += x_proj->COUNT_LINES;
+      my.COUNT_EMPTY += x_proj->COUNT_EMPTY;
+      my.COUNT_DOCS  += x_proj->COUNT_DOCS;
+      my.COUNT_DEBUG += x_proj->COUNT_DEBUG;
+      my.COUNT_CODE  += x_proj->COUNT_CODE;
+      my.COUNT_SLOCL += x_proj->COUNT_SLOCL;
       /*---(project filtering)-----------*/
       if (my.g_proj != NULL && x_proj != my.g_proj) {
          x_proj = (tPROJ *) poly_btree_next  (B_PROJ);
          DEBUG_RPTG   yLOG_point   ("proj"      , x_proj);
          continue;
       }
+      if (my.g_titles == RPTG_TITLES && c % 5 == 0)  printf ("\n");
       /*---(reporting)-------------------*/
       if (my.g_mode != MODE_DUMP) {
          printf ("%-25.25s  %4d %7d %7d %7d %7d %7d %7d %7d  %-15.15s  ",
                x_proj->name , x_proj->count, x_proj->ntags,
-               x_proj->lines, x_proj->empty,
-               x_proj->docs , x_proj->debug,
-               x_proj->code , x_proj->slocl,
+               x_proj->COUNT_LINES, x_proj->COUNT_EMPTY,
+               x_proj->COUNT_DOCS , x_proj->COUNT_DEBUG,
+               x_proj->COUNT_CODE , x_proj->COUNT_SLOCL,
                x_proj->codesize);
          printf ("%-60.60s  %-60.60s  %-5.5s %-60.65s  %-20.20s  %-20.20s  %-10.10s  %-60.60s\n",
                x_proj->heritage, x_proj->purpose,
@@ -208,10 +267,14 @@ poly_rptg_proj          (void)
       /*---(next)------------------------*/
       x_proj = (tPROJ *) poly_btree_next  (B_PROJ);
       DEBUG_RPTG   yLOG_point   ("proj"      , x_proj);
+      ++c;
       /*---(done)------------------------*/
    }
-   printf ("%25.25s  %4d %7d %7d %7d %7d %7d %7d %7d\n", "GRAND TOTALS",
-         my.s_files, my.s_funcs, my.s_lines, my.s_empty, my.s_docs, my.s_debug, my.s_code, my.s_slocl);
+   if (my.g_titles == RPTG_TITLES)  {
+      printf ("\n");;
+      printf ("## %17.17s (%3d) %4d %7d %7d %7d %7d %7d %7d %7d\n", "GRAND TOTALS", c,
+            my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_LINES, my.COUNT_EMPTY, my.COUNT_DOCS, my.COUNT_DEBUG, my.COUNT_CODE, my.COUNT_SLOCL);
+   }
    /*---(complete)-----------------------*/
    DEBUG_RPTG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -266,8 +329,11 @@ poly_rptg_dump          (void)
          while (x_tag  != NULL) {
             DEBUG_RPTG   yLOG_info    ("->name"    , x_tag->name);
             switch (my.g_filter) {
-            case FILTER_DEBUG : x_show = poly_rptg__debug (x_tag);  break;
-            default           : x_show = 1;
+            case FILTER_DEBUG  : x_show = poly_rptg__debug  (x_tag);  break;
+            case FILTER_PARAMS : x_show = poly_rptg__params (x_tag);  break;
+            case FILTER_DATA   : x_show = poly_rptg__data   (x_tag);  break;
+            case FILTER_LINUX  : x_show = poly_rptg__linux  (x_tag);  break;
+            default            : x_show = 1;
             }
             if (x_show == 1)  {
                if (my.g_titles == RPTG_TITLES && c % 25 == 0)  printf ("\n##-reason-  -----project-------------   ---file------------------   line   ---function/tag----------   -  [------complexity-------] [------integration------] [----watch-points-------]  [-complexity--] [-integration-] [-watch-point-]  [----source-file----------]   [line]    [-type-] [rdy] [-----------description-------------]\n");
@@ -313,8 +379,9 @@ poly_rptg_extern        (tEXTERN *a_extern)
    }
    /*---(projects)-----------------------*/
    if (my.g_titles == RPTG_TITLES) {
-      printf ("## yLIB (external) usage report for %s\n", a_extern->name);
-      printf ("##    generated by polymnia --extern %s --titles\n", a_extern->name);
+      printf ("## external function call usage report\n");
+      printf ("##    generated by polymnia-hymnos (many praises) muse of divine hymns, c language, dance, geometry, and grammar\n");
+      printf ("##    target extern : %s\n", a_extern->name);
    }
    if (my.g_titles == RPTG_TREEVIEW) {
       printf ("## yLIB (external) treeview report for %s\n", a_extern->name);
@@ -424,12 +491,12 @@ PROG_report             (tPROJ *a_proj)
    while (x_file != NULL) {
       DEBUG_PROG   yLOG_info    ("file name" , x_file->name);
       if (my.g_mode == MODE_HTAGS) {
-         sprintf (a, "lines : %4d  %5d", x_file->lines, my.s_lines);
-         sprintf (b, "empty : %4d  %5d", x_file->empty, my.s_empty);
-         sprintf (c, "docs  : %4d  %5d", x_file->docs , my.s_docs );
-         sprintf (d, "debug : %4d  %5d", x_file->debug, my.s_debug);
-         sprintf (e, "code  : %4d  %5d", x_file->code , my.s_code );
-         sprintf (f, "slocl : %4d  %5d", x_file->slocl, my.s_slocl);
+         sprintf (a, "lines : %4d  %5d", x_file->COUNT_LINES, my.COUNT_LINES);
+         sprintf (b, "empty : %4d  %5d", x_file->COUNT_EMPTY, my.COUNT_EMPTY);
+         sprintf (c, "docs  : %4d  %5d", x_file->COUNT_DOCS , my.COUNT_DOCS );
+         sprintf (d, "debug : %4d  %5d", x_file->COUNT_DEBUG, my.COUNT_DEBUG);
+         sprintf (e, "code  : %4d  %5d", x_file->COUNT_CODE , my.COUNT_CODE );
+         sprintf (f, "slocl : %4d  %5d", x_file->COUNT_SLOCL, my.COUNT_SLOCL);
          sprintf (g, "function (%d)"   , x_file->count);
          printf ("%-29.29s   FILE\n", x_file->name);
          printf ("%-29.29s   o                   c                                                          \n", a);
@@ -449,31 +516,6 @@ PROG_report             (tPROJ *a_proj)
          DEBUG_PROG   yLOG_info    ("tag name"  , x_tag->name);
          printf ("%-2s  %-25.25s   ", x_tag->hint  , x_tag->name);
          poly_rptg__stats (x_tag);
-         /*> if (strncmp (x_tag->name, "o___", 4) != 0) {                                                                                    <* 
-          *>    printf ("%c %c %c  %c %c %c  %c %c %c %c %c   %c %c  %c %c %c %c %c  %c %c %c %c   %c %c %c  %c %c %c %c  %c %c %c %c   ",   <* 
-          *>          x_tag->scope , x_tag->rtype , x_tag->psize ,                                                                           <* 
-          *>          x_tag->tsize , x_tag->dsize , x_tag->ssize ,                                                                           <* 
-          *>          x_tag->lsize , x_tag->csize , x_tag->rsize , x_tag->isize , x_tag->msize ,                                             <* 
-          *>          x_tag->Gsize , x_tag->Lsize ,                                                                                          <* 
-          *>          x_tag->Fsize , x_tag->Isize , x_tag->Csize , x_tag->Ysize , x_tag->Msize ,                                             <* 
-          *>          x_tag->Rflag , x_tag->Wflag , x_tag->Lflag , x_tag->Sflag ,                                                            <* 
-          *>          x_tag->Dstyle, x_tag->Dmacro, x_tag->Dmatch,                                                                           <* 
-          *>          x_tag->Nsize , x_tag->Osize , x_tag->Wsize , x_tag->Zsize ,                                                            <* 
-          *>          x_tag->Pstyle, x_tag->Esize , x_tag->Xsize , '-', '-');                                                                <* 
-          *>    printf ("[%c%c%c.%c%c%c.%c%c%c%c%c] [%c%c.%c%c%c%c%c.%c%c%c%c] [%c%c%c.%c%c%c%c.%c%c%c%c]   ",                               <* 
-          *>          x_tag->scope , x_tag->rtype , x_tag->psize ,                                                                           <* 
-          *>          x_tag->tsize , x_tag->dsize , x_tag->ssize ,                                                                           <* 
-          *>          x_tag->lsize , x_tag->csize , x_tag->rsize , x_tag->isize , x_tag->msize ,                                             <* 
-          *>          x_tag->Gsize , x_tag->Lsize ,                                                                                          <* 
-          *>          x_tag->Fsize , x_tag->Isize , x_tag->Csize , x_tag->Ysize , x_tag->Msize ,                                             <* 
-          *>          x_tag->Rflag , x_tag->Wflag , x_tag->Lflag , x_tag->Sflag ,                                                            <* 
-          *>          x_tag->Dstyle, x_tag->Dmacro, x_tag->Dmatch,                                                                           <* 
-          *>          x_tag->Nsize , x_tag->Osize , x_tag->Wsize , x_tag->Zsize ,                                                            <* 
-          *>          x_tag->Pstyle, x_tag->Esize , x_tag->Xsize , '-');                                                                     <* 
-          *> } else {                                                                                                                        <* 
-          *>    printf ("%c %c %c  %-68.68s   ", x_tag->scope , x_tag->rtype , x_tag->psize , "");                                           <* 
-          *>    printf ("%-47.47s   ", "");                                                                                                  <* 
-          *> }                                                                                                                               <*/
          printf ("%-25.25s     %-4d      ", x_tag->file->name, x_tag->line);
          printf ("%-6.6s    %c    %-35.35s", x_tag->image, x_tag->ready, x_tag->desc);
          printf ("\n");

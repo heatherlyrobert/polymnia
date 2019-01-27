@@ -1,0 +1,64 @@
+.TH polymnia 7 2019-jan "linux" "heatherly custom tools manual"
+.na
+
+.SH NAME
+polymnia-hymnos \- decision rationale, objectives, and overview
+
+.SH IMAGERY (see HERITAGE at bottom for more)
+greek muse of divine hymns, dancing, geometry, and grammar
+
+.SH SUMMARY
+polymnia is a custom code analysis tool offering -- tag navigation for
+vim-ide, detailed function complexity analysis, and code-base wide reporting
+and research -- for the one-true language (c).
+
+.SH SCOPE, REASONING and DECISION
+
+.B situation (S).  
+moving quickly through-out a code-base, identifying particularly complex
+functions, and understanding the key local, global, and extern integration
+points is vital to maintaining a large custom environment.
+
+.B complication (C).  
+there are many tools that provide a wide variety of tagging, analysis, and
+reporting; but, they all have their own "view point" and target different
+ide environments.  they also have a shelf-life that is shorter than mine ;)
+
+.B answer (A).  
+build what i must while standing on the shoulders of well-worn, long-standing
+unix tools (like ctags and cflow) to parse the details.  my part will focus on a
+custom tool to gather, present, and analyze key stats and flags of complex code.
+
+.B target user (T).  
+very technical, well-versed, power user.
+
+.B drawbacks...
+   -- takes a lot of time to define up front (think once, use forever)
+   -- takes a lot of willpower to stay with it (no problem)
+   -- impossible to release my application to others (do not care)
+   -- will have to maintain it personally (yup)
+
+.B benefits...
+   -- stable interface (no concern over people changing shit)
+   -- zero re-learning (common interface for every one of my projects)
+   -- good forever as linux, c, and vim will outlive me ;)
+   -- can focus closely on my coding style's dangers (like debugging)
+
+.SH HERITAGE
+polymnia-hymnos (many praises) is the muse of divine hymns, the lyre, dancing,
+geometry, and grammar.  the muses (mousai) are nine daughters of zeus and
+mnemosyne (titan of memory) and are the goddesses of art, literature, and
+science who inspire creation and enthusiasm.  polymnia is usually depicted
+wearing a veil and looking up to the heavens.
+
+.SH SEE ALSO
+this documentation is layered to provide easier navigation.
+   polymnia (6), interactive system usage and navigation
+   polymnia (7), decision rationale, objectives, and overview
+
+.SH AUTHOR
+jelloshrike at gmail dot com
+
+.SH COLOPHON
+this page is part of a documentation package meant to make use of the
+heatherly tools easier and faster.

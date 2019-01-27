@@ -4,8 +4,8 @@
 /*
  *   focus         : c-ide
  *   niche         : code analysis
- *   heritage      : polymnia-hymnos (muse of divine hymns, geometry, and grammar)
- *   purpose       : research and analysis of c programs and my full code-base
+ *   heritage      : polymnia-hymnos (muse of divine hymns, dance, and geometry)
+ *   purpose       : c language code-base navigation, research, and analysis
  *
  *   base_system   : gnu/linux   (powerful, ubiquitous, technical, and hackable)
  *   lang_name     : ansi-c      (wicked, limitless, universal, and everlasting)
@@ -32,8 +32,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.7b"
-#define   VER_TXT       "bringing back and enhancing unit testing"
+#define   VER_NUM       "0.7c"
+#define   VER_TXT       "added filters to reporting to help isolate troubles"
 
 
 
@@ -60,8 +60,8 @@
  *     ----
  *  5) interaction (15 chars long)                 [ab.cdefg.hijk]
  *     ----
- *     b global (global references count)
- *     a local  (local/file references count)
+ *     b gcalls (global references count)
+ *     a lcalls (local/file references count)
  *     ----
  *     c funcs  (function call count)
  *     d intern (calls to internal functions)
@@ -86,7 +86,10 @@
  *     ----
  *     h proto  (global, private, local)              
  *     i extern (extern references count)
- *     j -
+ *     j ptwo   (parameter with double pointer)
+ *     k pnum   (parameter is pointer to number)
+ *
+ *
  *     k unit   (calls in unit tests)
  *
  *
@@ -152,7 +155,10 @@ typedef     struct      cEXTERN     tEXTERN;
 
 
 #define     FILTER_NONE       '-'
-#define     FILTER_DEBUG      'd'
+#define     FILTER_DEBUG      'D'
+#define     FILTER_PARAMS     'p'
+#define     FILTER_DATA       'd'
+#define     FILTER_LINUX      'l'
 
 
 #define     F_DB        "/var/lib/polymnia/polymnia.db"
@@ -160,6 +166,20 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     F_CFLOW     "polymnia.cflow"
 #define     F_EXTERN    "/var/lib/polymnia/external.txt"
 #define     F_MYSTRY    "polymnia.mystry"
+
+
+
+#define     MAX_COUNTS     10
+#define     COUNT_PROJS    counts [0]
+#define     COUNT_FILES    counts [1]
+#define     COUNT_FUNCS    counts [2]
+#define     COUNT_LINES    counts [3]
+#define     COUNT_EMPTY    counts [4]
+#define     COUNT_DOCS     counts [5]
+#define     COUNT_DEBUG    counts [6]
+#define     COUNT_CODE     counts [7]
+#define     COUNT_SLOCL    counts [8]
+
 
 
 struct cMY {
@@ -178,15 +198,8 @@ struct cMY {
    FILE       *f_flow;                 /* cflow input file                    */
    FILE       *f_extern;               /* shared external function list       */
    FILE       *f_mystry;               /* local mystery external calls        */
-   /*---(counts)--------------*/
-   int         s_files;                /* global file count                   */
-   int         s_funcs;                /* global function count               */
-   int         s_lines;                /* global line count (all)             */
-   int         s_empty;                /* global empty line count             */
-   int         s_docs;                 /* global doc/commnent line count      */
-   int         s_debug;                /* global debug line count             */
-   int         s_code;                 /* global source code line count       */
-   int         s_slocl;                /* global truer code line count        */
+   /*---(new stats interface)-*/
+   int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(content)-------------*/
    char        s_curr      [LEN_RECD]; /* current source line                 */
    char        s_prev      [LEN_RECD]; /* previous source line                */
@@ -194,8 +207,6 @@ struct cMY {
    /*---(done)----------------*/
 };
 extern      tMY         my;
-
-
 
 
 
@@ -213,14 +224,9 @@ struct cPROJ {
    char        home        [LEN_FULL];
    char        vernum      [LEN_LABEL];
    char        vertxt      [LEN_FULL];
-   /*---(stats)-------------*/
+   /*---(new stats interface)-*/
    int         ntags;
-   int         lines;
-   int         empty;
-   int         docs;
-   int         debug;
-   int         code;
-   int         slocl;
+   int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(files)-------------*/
    tFILE      *head;
    tFILE      *tail;
@@ -237,13 +243,8 @@ struct cFILE {
    char        type;
    char        name        [LEN_NAME];
    char        sort        [LEN_NAME];
-   /*---(stats)-------------*/
-   int         lines;
-   int         empty;
-   int         docs;
-   int         debug;
-   int         code;
-   int         slocl;
+   /*---(new stats interface)-*/
+   int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(parent)------------*/
    tPROJ      *proj;
    /*---(files)-------------*/
@@ -259,6 +260,47 @@ struct cFILE {
 };
 
 
+#define     MAX_STATS      50
+
+#define     STATS_SINGLE   stats [0]
+
+#define     STATS_SCOPE    stats [1]
+#define     STATS_RTYPE    stats [2]
+#define     STATS_PARAMS   stats [3]
+#define     STATS_TOTAL    stats [4]
+#define     STATS_DEBUG    stats [5]
+#define     STATS_SLOCL    stats [6]
+#define     STATS_LOCALS   stats [7]
+#define     STATS_CHOICE   stats [8]
+#define     STATS_RETURN   stats [9]
+#define     STATS_INDENT   stats [10]
+#define     STATS_MEMORY   stats [11]
+
+#define     STATS_GCALLS   stats [12]
+#define     STATS_LCALLS   stats [13]
+#define     STATS_FUNCS    stats [14]
+#define     STATS_INTERN   stats [15]
+#define     STATS_CSTD     stats [16]
+#define     STATS_YLIB     stats [17]
+#define     STATS_MSTRY    stats [18]
+#define     STATS_READ     stats [19]
+#define     STATS_WRITE    stats [20]
+#define     STATS_SYSTEM   stats [21]
+#define     STATS_RECURS   stats [22]
+
+#define     STATS_DSTYLE   stats [23]
+#define     STATS_DMACRO   stats [24]
+#define     STATS_DMATCH   stats [25]
+#define     STATS_NCURSE   stats [26]
+#define     STATS_OPENGL   stats [27]
+#define     STATS_WINDOW   stats [28]
+#define     STATS_MYX      stats [29]
+#define     STATS_PROTO    stats [30]
+#define     STATS_ECALLS   stats [31]
+#define     STATS_PTWO     stats [32]
+#define     STATS_PNUM     stats [33]
+
+
 
 struct cTAG {
    /*---(master)-------------------------*/
@@ -269,50 +311,9 @@ struct cTAG {
    char        image       [10];
    char        desc        [40];
    char        ready;
-   /*---(positioning)--------------------*/
-   char        oneline;                 /* return type and name on same line  */
-   /*---(line counts)--------------------*/
-   int         lines;
-   int         empty;
-   int         docs;
-   int         debug;
-   int         code;
-   int         slocl;
-   /*---(group one outputs)--------------*/
-   char        scope;      /* 1st sub */
-   char        rtype;
-   char        psize;
-   char        tsize;      /* 2nd sub */
-   char        dsize;
-   char        ssize;
-   char        lsize;      /* 3rd sub */
-   char        csize;
-   char        rsize;
-   int         isize;
-   char        msize;
-   /*---(group two outputs)-----------*/
-   char        Lsize;      /* 1st sub */
-   char        Gsize;
-   char        Fsize;      /* 2nd sub */
-   char        Isize;
-   char        Csize;
-   char        Ysize;
-   char        Msize;
-   char        Rflag;      /* 3rd sub */
-   char        Wflag;
-   char        Lflag;
-   char        Sflag;
-   /*---(group three outputs)---------*/
-   char        Dstyle;     /* 1st sub */
-   char        Dmacro;
-   char        Dmatch;
-   char        Nsize;      /* 2nd sub */
-   char        Osize;
-   char        Wsize;
-   char        Zsize;
-   char        Pstyle;     /* 3rd sub */
-   char        Esize;
-   char        Xsize;
+   /*---(new stats interface)------------*/
+   int         counts      [MAX_COUNTS];    /* line counts                    */
+   char        stats       [MAX_STATS];     /* statistics                     */
    /*---(parent)------------*/
    tFILE      *file;
    /*---(tags)--------------*/
@@ -343,48 +344,57 @@ struct cYLIB {
    /*---(done)--------------*/
 };
 
+#define     WORK_BEG       work->beg
+#define     WORK_END       work->end
+
+#define     WORK_PARAMS    work->temp  [0]
+#define     WORK_LOCALS    work->temp  [1]
+#define     WORK_CHOICE    work->temp  [2]
+#define     WORK_RETURN    work->temp  [3]
+#define     WORK_INDENT    work->temp  [4]
+#define     WORK_MEMORY    work->temp  [5]
+
+#define     WORK_GCALLS    work->temp  [6]
+#define     WORK_LCALLS    work->temp  [7]
+#define     WORK_FUNCS     work->temp  [8]
+#define     WORK_INTERN    work->temp  [9]
+#define     WORK_CSTD      work->temp  [10]
+#define     WORK_YLIB      work->temp  [11]
+#define     WORK_MYSTRY    work->temp  [12]
+#define     WORK_INPUT     work->temp  [13]
+#define     WORK_READ      work->temp  [14]
+#define     WORK_BREAD     work->temp  [15]
+#define     WORK_OUTPUT    work->temp  [16]
+#define     WORK_WRITE     work->temp  [17]
+#define     WORK_BWRITE    work->temp  [18]
+#define     WORK_PROCS     work->temp  [19]
+#define     WORK_SYSTEM    work->temp  [20]
+#define     WORK_FILESYS   work->temp  [21]
+#define     WORK_RECURS    work->temp  [22]
+
+#define     WORK_DCOUNT    work->temp  [23]
+#define     WORK_DLONG     work->temp  [24]
+#define     WORK_DSHORT    work->temp  [25]
+#define     WORK_DENTER    work->temp  [26]
+#define     WORK_DEXIT     work->temp  [27]
+#define     WORK_DFREE     work->temp  [28]
+#define     WORK_NCURSE    work->temp  [29]
+#define     WORK_OPENGL    work->temp  [30]
+#define     WORK_MYX       work->temp  [31]
+#define     WORK_WINDOW    work->temp  [32]
+#define     WORK_ECALLS    work->temp  [33]
+
+
+
+
+#define     MAX_TEMPS      35
 struct cWORK {
    /*---(positioning)--------------------*/
    int         beg;
    int         end;
-   /*---(group one working)--------------*/
-   char        nparam;
-   int         lvars;
-   int         choices;
-   int         returns;
-   int         indent;
-   int         memories;
-   /*---(group two working)-----------*/
-   int         lcalls;
-   int         gcalls;
-   int         ecalls;
-   int         depth;
-   int         funcs;
-   int         intern;
-   int         mystry;
-   int         cstd;
-   int         ylibs;
-   int         xfuncs;
-   int         reads;
-   int         writes;
-   int         opengl;
-   int         ncurses;
-   int         process;
-   int         scalls;
-   int         recurse;
-   /*---(group three working)---------*/
-   int         dcount;                    /* uses of DEBUG_ in function       */
-   int         dlong;                     /* long style yLOG_                 */
-   int         dshort;                    /* short style yLOG_                */
-   int         denterc;                   /* enter count - externals          */
-   int         dexitc;                    /* exit  count - externals          */
-   int         dfree;                     /* yLOG_ without DEBUG_ protection  */
-   int         window;                    /* window manager/x11 calls         */
-   int         myx;
+   int         temp        [MAX_TEMPS];
    /*---(done)------------------------*/
 };
-
-
 
 
 
@@ -467,6 +477,8 @@ char        poly_tags_review        (tFILE *a_file);
 char        poly_tags_addylib       (tTAG *a_tag, tYLIB *a_ylib);
 char*       poly_tags__unit         (char *a_question, int n);
 
+char        poly_cats_counts_clear  (int  a_counts [MAX_COUNTS]);
+char        poly_cats_stats_clear   (char a_stats  [MAX_STATS]);
 char        poly_cats_flag          (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_exists        (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_exact         (char *a_label, int a_src, char *a_dst, char a_zero);
@@ -520,6 +532,7 @@ char        poly_proj_wrap          (void);
 tPROJ*      poly_proj_new           (void);
 char        poly_proj_add           (char *a_name, char *a_home, tPROJ **a_proj);
 char        poly_proj_del           (tPROJ *a_proj);
+char        poly_proj_purge         (void);
 char        poly_proj_here          (tPROJ **a_proj);
 char        poly_proj_nextfile      (tPROJ *a_proj, tFILE **a_file);
 char        poly_proj_prepare       (void);

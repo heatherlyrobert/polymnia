@@ -19,14 +19,17 @@ PROG_init          (int a_argc, char *a_argv[])
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(run-time-config)----------------*/
+   DEBUG_PROG   yLOG_note    ("initialize run-time settings");
    my.g_mode      = MODE_SEARCH;
    my.g_titles    = RPTG_NOTITLES;
    my.g_filter    = FILTER_NONE;
    /*---(filtering)----------------------*/
+   DEBUG_PROG   yLOG_note    ("initialize global filtering");
    my.g_project [0]  = '\0';
    my.g_proj         = NULL;
    my.g_extern [0]   = '\0';
    /*---(files)--------------------------*/
+   DEBUG_PROG   yLOG_note    ("initialize file pointers");
    my.f_db        = NULL;
    my.f_prog      = NULL;
    my.f_tags      = NULL;
@@ -34,15 +37,10 @@ PROG_init          (int a_argc, char *a_argv[])
    my.f_extern    = NULL;
    my.f_mystry    = NULL;
    /*---(global counts)------------------*/
-   my.s_files     = 0;
-   my.s_funcs     = 0;
-   my.s_lines     = 0;
-   my.s_empty     = 0;
-   my.s_docs      = 0;
-   my.s_debug     = 0;
-   my.s_code      = 0;
-   my.s_slocl     = 0;
+   DEBUG_PROG   yLOG_note    ("initialize global counts");
+   poly_cats_counts_clear (my.counts);
    /*---(initialization)-----------------*/
+   DEBUG_PROG   yLOG_note    ("run sub initialization functions");
    poly_proj_init    ();
    poly_files_init   ();
    poly_tags_init    ();
@@ -85,6 +83,9 @@ PROG_args          (int argc, char *argv[])
       else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;
       else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;
       else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;
+      else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;
+      else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;
+      else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;
       /*---(compound)--------------------*/
       else if (strcmp (a, "--remove" ) == 0) {
          my.g_mode = MODE_REMOVE;
@@ -159,7 +160,7 @@ PROG_final         (void)
 char
 PROG_prepare            (void)
 {
-   my.s_files = my.s_funcs = my.s_lines = my.s_empty = my.s_docs  = my.s_debug = my.s_code  = my.s_slocl = 0;
+   my.COUNT_FILES = my.COUNT_FUNCS = my.COUNT_LINES = my.COUNT_EMPTY = my.COUNT_DOCS  = my.COUNT_DEBUG = my.COUNT_CODE  = my.COUNT_SLOCL = 0;
    return 0;
 }
 
@@ -176,13 +177,13 @@ PROG_summarize          (tPROJ *a_proj)
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
    DEBUG_PROG   yLOG_info    ("->name"    , a_proj->name);
    /*---(prepare)------------------------*/
-   if      (my.s_slocl < 100    )  strlcpy (a_proj->codesize, "u.micro"       , LEN_LABEL);
-   else if (my.s_slocl < 500    )  strlcpy (a_proj->codesize, "t.tiny"        , LEN_LABEL);
-   else if (my.s_slocl < 2000   )  strlcpy (a_proj->codesize, "s.small"       , LEN_LABEL);
-   else if (my.s_slocl < 10000  )  strlcpy (a_proj->codesize, "m.moderate"    , LEN_LABEL);
-   else if (my.s_slocl < 50000  )  strlcpy (a_proj->codesize, "l.large"       , LEN_LABEL);
-   else if (my.s_slocl < 250000 )  strlcpy (a_proj->codesize, "h.huge"        , LEN_LABEL);
-   else if (my.s_slocl < 1000000)  strlcpy (a_proj->codesize, "e.elephantine" , LEN_LABEL);
+   if      (my.COUNT_SLOCL < 100    )  strlcpy (a_proj->codesize, "u.micro"       , LEN_LABEL);
+   else if (my.COUNT_SLOCL < 500    )  strlcpy (a_proj->codesize, "t.tiny"        , LEN_LABEL);
+   else if (my.COUNT_SLOCL < 2000   )  strlcpy (a_proj->codesize, "s.small"       , LEN_LABEL);
+   else if (my.COUNT_SLOCL < 10000  )  strlcpy (a_proj->codesize, "m.moderate"    , LEN_LABEL);
+   else if (my.COUNT_SLOCL < 50000  )  strlcpy (a_proj->codesize, "l.large"       , LEN_LABEL);
+   else if (my.COUNT_SLOCL < 250000 )  strlcpy (a_proj->codesize, "h.huge"        , LEN_LABEL);
+   else if (my.COUNT_SLOCL < 1000000)  strlcpy (a_proj->codesize, "e.elephantine" , LEN_LABEL);
    else                         strlcpy (a_proj->codesize, "g.gargantuan"  , LEN_LABEL);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
@@ -208,6 +209,7 @@ PROG_end             (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(wrap-up)------------------------*/
+   poly_proj_purge   ();
    poly_extern_wrap  ();
    poly_tags_wrap    ();
    poly_files_wrap   ();

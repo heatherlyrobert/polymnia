@@ -43,12 +43,12 @@ poly_proj_wrap          (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
-   rc = poly_btree_purge (B_PROJ);
-   DEBUG_PROG   yLOG_value   ("purge"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = poly_btree_purge (B_PROJ);                                                <* 
+    *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -77,12 +77,7 @@ poly_proj__wipe    (tPROJ *a_dst)
    a_dst->vertxt   [0] = '\0';
    /*---(stats)-------------*/
    a_dst->ntags     = 0;
-   a_dst->lines     = 0;
-   a_dst->empty     = 0;
-   a_dst->docs      = 0;
-   a_dst->debug     = 0;
-   a_dst->code      = 0;
-   a_dst->slocl     = 0;
+   poly_cats_counts_clear (a_dst->counts);
    /*---(files)-------------*/
    a_dst->head      = NULL;
    a_dst->tail      = NULL;
@@ -283,6 +278,38 @@ poly_proj_del          (tPROJ *a_proj)
    /*---(free main)----------------------*/
    DEBUG_DATA   yLOG_note    ("free");
    free (a_proj);
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_proj_purge         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tPROJ      *x_proj      = NULL;
+   tPROJ      *x_next      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(walk-through)-------------------*/
+   DEBUG_DATA   yLOG_value   ("count"     , poly_btree_count (B_PROJ));
+   x_proj = (tPROJ * )poly_btree_first (B_PROJ);
+   while (x_proj != NULL) {
+      x_next = (tPROJ * )poly_btree_next  (B_PROJ);
+      DEBUG_DATA   yLOG_point   ("x_proj"    , x_proj);
+      DEBUG_DATA   yLOG_info    ("->name"    , x_proj->name);
+      rc = poly_files_purge_proj (x_proj);
+      rc = poly_proj_del         (x_proj);
+      x_proj = x_next;
+   }
+   /*---(check)--------------------------*/
+   DEBUG_DATA   yLOG_value   ("count"     , poly_btree_count (B_PROJ));
+   --rce;  if (poly_btree_count (B_PROJ) > 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -562,7 +589,7 @@ poly_proj__unit     (char *a_question, int i)
       u = (tPROJ *) poly_btree_entry (B_PROJ, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         snprintf (unit_answer, LEN_RECD, "PROJ entry  (%2d) : %-22.22s %3d %3d %3d %3d %3d %3d", i, t, u->lines, u->empty, u->docs, u->debug, u->code, u->slocl);
+         snprintf (unit_answer, LEN_RECD, "PROJ entry  (%2d) : %-22.22s %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
       } else {
          snprintf (unit_answer, LEN_RECD, "PROJ entry  (%2d) : %-22.22s %3d %3d %3d %3d %3d %3d", i, t, 0, 0, 0, 0, 0, 0);
       }
