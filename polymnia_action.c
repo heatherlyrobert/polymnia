@@ -27,7 +27,7 @@ poly_action_search      (void)
       return rce;
    }
    /*---(report)-------------------------*/
-   rc = PROG_report (x_proj);
+   rc = poly_rptg_htags (x_proj);
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;

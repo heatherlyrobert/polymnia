@@ -74,6 +74,7 @@ PROG_args          (int argc, char *argv[])
       if      (strcmp (a, "--search"   ) == 0)  my.g_mode   = MODE_SEARCH;
       else if (strcmp (a, "--htags"    ) == 0)  my.g_mode   = MODE_HTAGS;
       else if (strcmp (a, "--dump"     ) == 0)  my.g_mode   = MODE_DUMP;
+      else if (strcmp (a, "--report"   ) == 0)  my.g_mode   = MODE_RPTG;
       else if (strcmp (a, "--write"    ) == 0)  my.g_mode   = MODE_WRITE;
       else if (strcmp (a, "--update"   ) == 0)  my.g_mode   = MODE_UPDATE;
       else if (strcmp (a, "--projs"    ) == 0)  my.g_mode   = MODE_PROJ;

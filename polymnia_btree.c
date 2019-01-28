@@ -66,7 +66,7 @@ struct      cROOTS {
 
 
 int   g_depth   = 0;
-char  g_path    [LEN_LABEL] = "";
+char  g_path    [LEN_FULL] = "";
 
 
 
@@ -845,7 +845,7 @@ poly_btree__searchdown  (tBTREE *a_node, char *a_dir, char *a_name)
    int         rc          =    0;
    if (a_node == NULL)  return NULL;
    ++g_depth;
-   strlcat (g_path, a_dir, LEN_LABEL);
+   strlcat (g_path, a_dir, LEN_FULL);
    rc = strcmp  (a_node->sort, a_name);
    DEBUG_SORT   yLOG_complex ("compare"   , "%s  %-20.20s  %4d", a_dir, a_node->sort, rc);
    if (rc >  0)  return poly_btree__searchdown (a_node->left , "L", a_name);
@@ -876,7 +876,7 @@ poly_btree_search       (char a_btree, char *a_name)
    }
    /*---(prepare)------------------------*/
    g_depth = 0;
-   strlcpy (g_path, "", LEN_LABEL);
+   strlcpy (g_path, "", LEN_FULL);
    /*---(short-cut)----------------------*/
    if (B_SEARCH != NULL && strcmp (B_SEARCH, a_name) == 0) {
       DEBUG_DATA   yLOG_note    ("shortcut");

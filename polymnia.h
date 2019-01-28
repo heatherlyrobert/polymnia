@@ -32,8 +32,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.7c"
-#define   VER_TXT       "added filters to reporting to help isolate troubles"
+#define   VER_NUM       "0.7d"
+#define   VER_TXT       "fixed extern vs library symbol conflict in analysis"
 
 
 
@@ -138,9 +138,10 @@ typedef     struct      cEXTERN     tEXTERN;
 
 
 #define     MODE_HTAGS        'h'
+#define     MODE_RPTG         'r'
 #define     MODE_SEARCH       's'
 #define     MODE_WRITE        'w'
-#define     MODE_REMOVE       'r'
+#define     MODE_REMOVE       'R'
 #define     MODE_UPDATE       'u'
 #define     MODE_SYSTEM       'S'
 #define     MODE_PROJ         'P'
@@ -440,7 +441,7 @@ struct      cEXTERN {
 };
 
 extern int   g_depth;
-extern char  g_path    [LEN_LABEL];
+extern char  g_path    [LEN_FULL];
 
 
 
@@ -489,7 +490,6 @@ char*       poly_cats__unit         (char *a_question, int n);
 
 char        PROG_prepare            (void);
 char        PROG_summarize          (tPROJ *x_proj);
-char        PROG_report             (tPROJ *x_proj);
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);
@@ -541,6 +541,7 @@ char        poly_proj_system        (char *a_path);
 char        poly_db_write           (void);
 char        poly_db_read            (void);
 
+char        poly_rptg_htags         (tPROJ *x_proj);
 char        poly_rptg_dump          (void);
 char        poly_rptg_extern        (tEXTERN *a_extern);
 

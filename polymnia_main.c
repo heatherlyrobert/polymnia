@@ -27,7 +27,11 @@ main (int argc, char *argv[])
    switch (my.g_mode) {
    case MODE_HTAGS  :
       rc = poly_action_generate    ();
-      rc = PROG_report      (NULL);
+      rc = poly_rptg_htags  (NULL);
+      break;
+   case MODE_RPTG   :
+      rc = poly_db_read     ();
+      rc = poly_rptg_dump   ();
       break;
    case MODE_WRITE  :
       rc = poly_action_generate    ();

@@ -244,6 +244,10 @@ poly_extern_load        (void)
          DEBUG_INPT   yLOG_note    ("category line, SKIP");
          continue;
       }
+      if (x_recd [0] == '/') {
+         DEBUG_INPT   yLOG_note    ("c comment line, SKIP");
+         continue;
+      }
       /*---(type)------------------------*/
       x_type = '-';
       if (x_len >= 25)  x_type = x_recd [24];
@@ -492,10 +496,16 @@ poly_extern_review      (void)
          DEBUG_INPT   yLOG_point   ("x_dst"     , x_dst);
          DEBUG_INPT   yLOG_point   ("->file"    , x_dst->file);
          DEBUG_INPT   yLOG_point   ("->work"    , x_dst->work);
-         if      (x_src->file == x_dst->file)  ++x_dst->WORK_LCALLS;
-         else if (x_src->file->proj == x_dst->file->proj)  ++x_dst->WORK_GCALLS;
-         ++x_src->WORK_INTERN;
-         continue;
+         if      (x_src->file == x_dst->file) {
+            ++x_src->WORK_INTERN;
+            ++x_dst->WORK_LCALLS;
+            continue;
+         }
+         else if (x_src->file->proj == x_dst->file->proj) {
+            ++x_src->WORK_INTERN;
+            ++x_dst->WORK_GCALLS;
+            continue;
+         }
       }
       if (x_extern != NULL) {
          DEBUG_INPT   yLOG_char    ("type"      , x_extern->type);
