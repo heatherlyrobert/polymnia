@@ -6,7 +6,7 @@
 #define     MAX_PROTO   500
 typedef     struct      cPROTO      tPROTO;
 struct      cPROTO {
-   char        name        [LEN_NAME];
+   char        name        [LEN_TITLE];
    int         len;
    int         file;
    int         line;
@@ -26,7 +26,7 @@ char
 poly_proto__wipe   (tPROTO *a_dst)
 {
    /*> if (a_dst == NULL)  return -1;                                                 <* 
-    *> strlcpy (a_dst->name, "", LEN_NAME);                                           <* 
+    *> strlcpy (a_dst->name, "", LEN_TITLE);                                           <* 
     *> a_dst->len      = 0;                                                           <* 
     *> a_dst->file     = 0;                                                           <* 
     *> a_dst->line     = 0;                                                           <* 
@@ -37,7 +37,7 @@ poly_proto__wipe   (tPROTO *a_dst)
 char
 poly_proto__copy  (tPROTO *a_dst, tPROTO *a_src)
 {
-   /*> strlcpy (a_dst->name, a_src->name, LEN_NAME);                                  <* 
+   /*> strlcpy (a_dst->name, a_src->name, LEN_TITLE);                                  <* 
     *> a_dst->len    = a_src->len;                                                    <* 
     *> a_dst->file   = a_src->file;                                                   <* 
     *> a_dst->line   = a_src->line;                                                   <* 
@@ -91,7 +91,7 @@ poly_proto_add          (int a_file, char *a_name, char a_type, int a_line)
     *>    DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);                               <* 
     *>    return  rce;                                                                 <* 
     *> }                                                                               <* 
-    *> strlcpy (s_protos [s_nproto].name  , a_name  , LEN_NAME);                       <* 
+    *> strlcpy (s_protos [s_nproto].name  , a_name  , LEN_TITLE);                       <* 
     *> /+---(type)---------------------------+/                                        <* 
     *> DEBUG_INPT   yLOG_spoint  (a_type);                                             <* 
     *> --rce;  if (a_type == NULL) {                                                   <* 

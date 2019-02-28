@@ -82,7 +82,7 @@ struct cLABEL {
    char        grp;
    char        pos;
    char        value;
-   char        desc        [LEN_NAME];
+   char        desc        [LEN_TITLE];
 } s_labels [MAX_LABELS] = {
    /*--   -   -123456789012345678901234567890- */
    { 1,  1, 'e', "extern (library)"               },

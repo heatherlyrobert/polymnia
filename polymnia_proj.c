@@ -68,11 +68,16 @@ poly_proj__wipe    (tPROJ *a_dst)
    a_dst->focus    [0] = '\0';
    a_dst->niche    [0] = '\0';
    a_dst->name     [0] = '\0';
+   /*---(greek)-------------*/
+   a_dst->namesake [0] = '\0';
    a_dst->heritage [0] = '\0';
+   a_dst->imagery  [0] = '\0';
+   /*---(chars)-------------*/
    a_dst->purpose  [0] = '\0';
    a_dst->codesize [0] = '\0';
    a_dst->created  [0] = '\0';
    a_dst->home     [0] = '\0';
+   /*---(versioning)--------*/
    a_dst->vernum   [0] = '\0';
    a_dst->vertxt   [0] = '\0';
    /*---(stats)-------------*/
@@ -148,8 +153,8 @@ poly_proj_add            (char *a_name, char *a_home, tPROJ **a_proj)
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   strlcpy (x_new->name, a_name, LEN_NAME);
-   strlcpy (x_new->home, a_home, LEN_FULL);
+   strlcpy (x_new->name, a_name, LEN_TITLE);
+   strlcpy (x_new->home, a_home, LEN_HUND);
    /*---(into btree)---------------------*/
    rc = poly_btree_hook (B_PROJ, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
@@ -185,7 +190,7 @@ poly_proj_here           (tPROJ **a_proj)
       return rce;
    }
    /*---(get the home)-------------------*/
-   p = getcwd (x_proj->home, LEN_FULL);
+   p = getcwd (x_proj->home, LEN_HUND);
    DEBUG_DATA   yLOG_point   ("getcwd"    , p);
    --rce;  if (p == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -483,8 +488,8 @@ poly_proj_system        (char *a_path)
    char        rce         =  -10;          /* return code for errors         */
    DIR        *x_dir       = NULL;          /* directory pointer              */
    tDIRENT    *x_file      = NULL;          /* directory entry pointer        */
-   char        x_base      [LEN_FULL];      /* file name                      */
-   char        x_name      [LEN_FULL];      /* file name                      */
+   char        x_base      [LEN_HUND];      /* file name                      */
+   char        x_name      [LEN_HUND];      /* file name                      */
    int         x_len       =    0;
    char        x_type      =  '-';
    int         x_read      =    0;          /* count of entries reviewed      */
@@ -498,7 +503,7 @@ poly_proj_system        (char *a_path)
       return  rce;
    }
    DEBUG_INPT   yLOG_info    ("a_path"     , a_path);
-   strlcpy  (x_base, a_path, LEN_FULL);
+   strlcpy  (x_base, a_path, LEN_HUND);
    x_dir = opendir(a_path);
    DEBUG_INPT   yLOG_point   ("x_dir"      , x_dir);
    --rce;  if (x_dir == NULL) {
@@ -515,7 +520,7 @@ poly_proj_system        (char *a_path)
       DEBUG_INPT   yLOG_point   ("x_file"    , x_file);
       if (x_file == NULL)  break;
       /*---(filter by name)--------------*/
-      strlcpy (x_name, x_file->d_name, LEN_NAME);
+      strlcpy (x_name, x_file->d_name, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
       x_len = strlen (x_name);
       DEBUG_INPT   yLOG_value   ("x_len"     , x_len);

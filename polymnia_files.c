@@ -91,7 +91,7 @@ poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   strlcpy (x_new->name, a_name, LEN_NAME);
+   strlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->type   = a_type;
    if (x_new->type == 'h')  x_type = 'H';
    if (strncmp (a_name, a_proj->name, strlen (a_proj->name)) == 0) x_prefix = 'Y';
@@ -344,7 +344,7 @@ poly_files_review  (tPROJ *a_proj)
    char        rce         =  -10;          /* return code for errors         */
    DIR        *x_dir       = NULL;          /* directory pointer              */
    tDIRENT    *x_file      = NULL;          /* directory entry pointer        */
-   char        x_name      [LEN_NAME];      /* file name                      */
+   char        x_name      [LEN_TITLE];      /* file name                      */
    int         x_len       =    0;
    char        x_type      =  '-';
    int         x_read      =    0;          /* count of entries reviewed      */
@@ -368,7 +368,7 @@ poly_files_review  (tPROJ *a_proj)
       if (x_file == NULL)  break;
       ++x_read;
       /*---(filter by name)--------------*/
-      strlcpy (x_name, x_file->d_name, LEN_NAME);
+      strlcpy (x_name, x_file->d_name, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
       x_len = strlen (x_name);
       DEBUG_INPT   yLOG_value   ("x_len"     , x_len);

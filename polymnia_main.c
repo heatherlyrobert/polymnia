@@ -62,6 +62,9 @@ main (int argc, char *argv[])
    case MODE_EXTERN :
       rc = poly_action_extern ();
       break;
+   case MODE_LIBUSE :
+      rc = poly_action_libuse ();
+      break;
    }
    /*---(check for failure)--------------*/
    DEBUG_PROG   yLOG_value   ("rc"        , rc);

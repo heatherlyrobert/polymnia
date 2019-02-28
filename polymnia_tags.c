@@ -203,7 +203,7 @@ poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
    x_new->file   = a_file;
-   strlcpy (x_new->name, a_name, LEN_NAME);
+   strlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->type   = a_type;
    x_new->line   = a_line;
    /*---(into file list)-----------------*/
@@ -536,7 +536,7 @@ poly_tags_inventory     (tFILE *a_file)
    char       *p           = NULL;
    char       *q           =  " ";
    int         c           =    0;
-   char        x_name      [LEN_NAME];
+   char        x_name      [LEN_TITLE];
    int         x_line      =    0;
    char        x_type      =  '-';
    char        x_source    [LEN_RECD];
@@ -588,7 +588,7 @@ poly_tags_inventory     (tFILE *a_file)
          DEBUG_INPT   yLOG_note    ("can not find name field, SKIP");
          continue;
       }
-      strlcpy (x_name, p, LEN_NAME);
+      strlcpy (x_name, p, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("name"      , x_name);
       /*---(type)------------------------*/
       p = strtok (NULL  , q);
@@ -849,8 +849,12 @@ poly_tags__linetype     (tFILE *a_file, tTAG *a_tag)
       poly_cats_lines (a_file, a_tag, 'D');
       x_macro = poly_tags_macro (x_recd + 6);
       if (a_tag != NULL) {
-         if (a_tag->STATS_DMACRO == '-')           a_tag->STATS_DMACRO = x_macro;
-         else if (a_tag->STATS_DMACRO != x_macro)  a_tag->STATS_DMACRO = '#';
+         if (a_tag->STATS_DMACRO == '-')         a_tag->STATS_DMACRO = x_macro;
+         else if (a_tag->STATS_DMACRO != x_macro) {
+            if      (a_tag->STATS_DMACRO == 't') a_tag->STATS_DMACRO = x_macro;
+            else if (x_macro             == 't') ;
+            else                                 a_tag->STATS_DMACRO = '#';
+         }
       }
    }
    else if (strncmp (x_recd, "yLOG_"    , 5) == 0)  ++a_tag->WORK_DFREE;
@@ -992,6 +996,23 @@ poly_tags_readline      (tFILE *a_file, int *a_line, tTAG **a_tag)
 }
 
 char
+poly_tags__unquote      (char *a_dst, char *a_src, int a_max)
+{
+   char       *x_beg       = NULL;
+   char       *x_end       = NULL;
+   int         x_len       =    0;
+   if (a_src [0] != '"')  return 0;
+   x_beg = a_src + 1;
+   x_end = strrchr (x_beg, '"');
+   if (x_end == NULL)  return 0;
+   x_len = x_end - x_beg + 1;
+   if (x_len > a_max)  x_len = a_max;
+   strlcpy (a_dst, x_beg, x_len);
+   a_dst [x_len] = '\0';
+   return 0;
+}
+
+char
 poly_tags_review        (tFILE *a_file)
 {
    /*---(locals)-----------+-----------+-*/
@@ -1034,23 +1055,28 @@ poly_tags_review        (tFILE *a_file)
       if (a_file->type == 'h') {
          DEBUG_INPT   yLOG_note    ("header file line");
          DEBUG_INPT   yLOG_info    ("my.s_curr"    , my.s_curr);
-         if (strncmp (my.s_curr, " *   focus         : ", 21) == 0)  strlcpy (a_file->proj->focus   , my.s_curr + 21, LEN_NAME);
-         if (strncmp (my.s_curr, " *   niche         : ", 21) == 0)  strlcpy (a_file->proj->niche   , my.s_curr + 21, LEN_NAME);
-         if (strncmp (my.s_curr, " *   heritage      : ", 21) == 0)  strlcpy (a_file->proj->heritage, my.s_curr + 21, LEN_FULL);
-         if (strncmp (my.s_curr, " *   purpose       : ", 21) == 0)  strlcpy (a_file->proj->purpose , my.s_curr + 21, LEN_FULL);
-         if (strncmp (my.s_curr, " *   created       : ", 21) == 0)  strlcpy (a_file->proj->created , my.s_curr + 21, LEN_LABEL);
-         if ((p = strstr (my.s_curr, "VER_NUM")) != 0) {
-            q = strchr (p, '"');
-            x_len = strlen (q);
-            q [--x_len] = '\0';
-            if (q != NULL)  strlcpy (a_file->proj->vernum, q + 1, LEN_LABEL);
-         }
-         if ((p = strstr (my.s_curr, "VER_TXT")) != 0) {
-            q = strchr (p, '"');
-            x_len = strlen (q);
-            q [--x_len] = '\0';
-            if (q != NULL)  strlcpy (a_file->proj->vertxt, q + 1, LEN_FULL);
-         }
+         if (strncmp (my.s_curr, "#define     P_FOCUS     ", 24) == 0)  poly_tags__unquote (a_file->proj->focus   , my.s_curr + 24, LEN_TITLE);
+         if (strncmp (my.s_curr, "#define     P_NICHE     ", 24) == 0)  poly_tags__unquote (a_file->proj->niche   , my.s_curr + 24, LEN_TITLE);
+         if (strncmp (my.s_curr, "#define     P_PURPOSE   ", 24) == 0)  poly_tags__unquote (a_file->proj->purpose , my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_NAMESAKE  ", 24) == 0)  poly_tags__unquote (a_file->proj->namesake, my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_HERITAGE  ", 24) == 0)  poly_tags__unquote (a_file->proj->heritage, my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_IMAGERY   ", 24) == 0)  poly_tags__unquote (a_file->proj->imagery , my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_CREATED   ", 24) == 0)  poly_tags__unquote (a_file->proj->created , my.s_curr + 24, LEN_LABEL);
+         if (strncmp (my.s_curr, "#define     P_CODESIZE  ", 24) == 0)  poly_tags__unquote (a_file->proj->codesize, my.s_curr + 24, LEN_TITLE);
+         if (strncmp (my.s_curr, "#define     P_VERNUM    ", 24) == 0)  poly_tags__unquote (a_file->proj->vernum  , my.s_curr + 24, LEN_LABEL);
+         if (strncmp (my.s_curr, "#define     P_VERTXT    ", 24) == 0)  poly_tags__unquote (a_file->proj->vertxt  , my.s_curr + 24, LEN_HUND);
+         /*> if ((p = strstr (my.s_curr, "VER_NUM")) != 0) {                          <* 
+          *>    q = strchr (p, '"');                                                  <* 
+          *>    x_len = strlen (q);                                                   <* 
+          *>    q [--x_len] = '\0';                                                   <* 
+          *>    if (q != NULL)  strlcpy (a_file->proj->vernum, q + 1, LEN_LABEL);     <* 
+          *> }                                                                        <* 
+          *> if ((p = strstr (my.s_curr, "VER_TXT")) != 0) {                          <* 
+          *>    q = strchr (p, '"');                                                  <* 
+          *>    x_len = strlen (q);                                                   <* 
+          *>    q [--x_len] = '\0';                                                   <* 
+          *>    if (q != NULL)  strlcpy (a_file->proj->vertxt, q + 1, LEN_HUND);      <* 
+          *> }                                                                        <*/
       }
       rc = poly_tags_readline (a_file, &x_line, &x_tag);
    }

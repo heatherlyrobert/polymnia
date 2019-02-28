@@ -104,7 +104,7 @@ poly_ylib_add           (tTAG *a_tag, tEXTERN *a_extern, int a_line, tYLIB **a_y
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   strlcpy (x_new->name, a_extern->name, LEN_NAME);
+   strlcpy (x_new->name, a_extern->name, LEN_TITLE);
    x_new->line   = a_line;
    /*---(into tags list)-----------------*/
    DEBUG_DATA   yLOG_note    ("tags list");

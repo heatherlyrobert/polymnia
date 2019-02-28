@@ -1,22 +1,42 @@
-/*===============================[[ beg-code ]]===============================*/
+/*============================[[ beg-of-code ]]===============================*/
 
 /*===[[ HEADER ]]=============================================================*/
-/*
- *   focus         : c-ide
- *   niche         : code analysis
- *   heritage      : polymnia-hymnos (muse of divine hymns, dance, and geometry)
- *   purpose       : c language code-base navigation, research, and analysis
- *
- *   base_system   : gnu/linux   (powerful, ubiquitous, technical, and hackable)
- *   lang_name     : ansi-c      (wicked, limitless, universal, and everlasting)
- *   dependencies  : none
- *   size          : small       (approximately 2,000 slocL)
- * 
- *   author        : rsheatherly
- *   created       : 2019-01
- *   priorities    : direct, simple, brief, vigorous, and lucid (h.w. fowler)
- *   end goal      : loosely coupled, strict interface, maintainable, traceable
- */
+/*345678901-12345678901-123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+
+#define     P_FOCUS     "DE (development environment)"
+#define     P_NICHE     "ca (code anaylsis)"
+#define     P_PURPOSE   "c language code-base navigation, research, and analysis"
+
+#define     P_NAMESAKE  "polymnia-hymnos (many praises)"
+#define     P_HERITAGE  "greek muse of divine hymns, poetry, dancing, geometry, grammer"
+#define     P_IMAGERY   "beautiful woman wearing a veil and looking up at the heavens"
+
+#define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
+#define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
+#define     P_CODESIZE  "small       (appoximately 1,000 slocl)"
+
+#define     P_AUTHOR    "heatherlyrobert"
+#define     P_CREATED   "2019-01"
+#define     P_DEPENDS   "ySTR"
+
+#define     P_VERNUM    "0.7e"
+#define     P_VERTXT    "updated debugging macro assignment to allow mixes with TOPS"
+
+#define     P_SUMMARY   \
+ "polymnia is a custom code analysis tool offering tag navigation for¦" \
+ "vim-ide, detailed function complexity analysis, and code-base wide¦" \
+ "reporting and research for the one-true language (c) ;)¦"
+
+#define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
+#define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
+#define     P_REMINDER  "there are many better options, but i *own* every line of this one"
+
+#define     P_ASSUME    \
+ "-- all applications are only written in c¦" \
+ "-- coding practices follow my standards (allowing deeper analysis)¦" \
+ "-- program headers and key information are in standard named macros¦" \
+ "-- all code stored in system, monkey, and member directories¦" \
+ "-- zero configuration ;) written for me, by me, for only me¦"
 
 /*===[[ GREEK HERITAGE ]]=====================================================*/
 /*
@@ -115,10 +135,7 @@
 
 
 
-#define      LEN_RECD         2000
-#define      LEN_FULL          100
-#define      LEN_NAME           30
-#define      LEN_LABEL          20
+#define      LEN_HUND          100
 
 
 
@@ -148,6 +165,7 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     MODE_FILE         'F'
 #define     MODE_TAGS         'T'
 #define     MODE_EXTERN       'E'
+#define     MODE_LIBUSE       'L'
 #define     MODE_DUMP         'd'
 
 #define     RPTG_TITLES       't'
@@ -185,6 +203,7 @@ typedef     struct      cEXTERN     tEXTERN;
 
 struct cMY {
    /*---(runtime config)------*/
+   char        version     [LEN_HUND];      /* version string                 */
    char        g_mode;                 /* run-time mode                       */
    char        g_titles;               /* use/hide report titles              */
    char        g_filter;               /* report filtering criteria           */
@@ -192,6 +211,7 @@ struct cMY {
    char        g_project   [LEN_RECD]; /* project name for filtering          */
    tPROJ      *g_proj;                 /* limit output to this project        */
    char        g_extern    [LEN_RECD]; /* name for focus/filtering            */
+   char        g_libuse    [LEN_RECD]; /* extern library for filtering        */
    /*---(files)---------------*/
    FILE       *f_db;                   /* shared database                     */
    FILE       *f_prog;                 /* current program source file         */
@@ -215,16 +235,21 @@ extern      tMY         my;
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct cPROJ {
    /*---(master)------------*/
-   char        focus       [LEN_NAME];
-   char        niche       [LEN_NAME];
-   char        name        [LEN_NAME];
-   char        heritage    [LEN_FULL];
-   char        purpose     [LEN_FULL];
+   char        focus       [LEN_TITLE];
+   char        niche       [LEN_TITLE];
+   char        name        [LEN_TITLE];
+   /*---(greek)-------------*/
+   char        namesake    [LEN_HUND];
+   char        heritage    [LEN_HUND];
+   char        imagery     [LEN_HUND];
+   /*---(characteristics)---*/
+   char        purpose     [LEN_HUND];
    char        created     [LEN_LABEL];
-   char        codesize    [LEN_NAME];
-   char        home        [LEN_FULL];
+   char        codesize    [LEN_TITLE];
+   char        home        [LEN_HUND];
+   /*---(versioning)--------*/
    char        vernum      [LEN_LABEL];
-   char        vertxt      [LEN_FULL];
+   char        vertxt      [LEN_HUND];
    /*---(new stats interface)-*/
    int         ntags;
    int         counts      [MAX_COUNTS];    /* line counts                    */
@@ -242,8 +267,8 @@ struct cPROJ {
 struct cFILE {
    /*---(master)------------*/
    char        type;
-   char        name        [LEN_NAME];
-   char        sort        [LEN_NAME];
+   char        name        [LEN_TITLE];
+   char        sort        [LEN_TITLE];
    /*---(new stats interface)-*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(parent)------------*/
@@ -306,7 +331,7 @@ struct cFILE {
 struct cTAG {
    /*---(master)-------------------------*/
    char        type;
-   char        name        [LEN_NAME];
+   char        name        [LEN_TITLE];
    int         line;
    char        hint        [3];
    char        image       [10];
@@ -332,7 +357,7 @@ struct cTAG {
 
 struct cYLIB {
    /*---(master)-------------------------*/
-   char        name        [LEN_NAME];
+   char        name        [LEN_TITLE];
    int         line;
    /*---(tags)--------------*/
    tTAG       *tag;
@@ -427,10 +452,11 @@ struct      cBTREE {
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct      cEXTERN {
    /*---(information)-------*/
+   char        lib         [LEN_TITLE];
+   char        name        [LEN_TITLE];
    char        type;
-   char        name        [LEN_NAME];
-   int         uses;
    char        more;
+   int         uses;
    /*---(ylib)--------------*/
    tYLIB      *head;
    tYLIB      *tail;
@@ -441,7 +467,7 @@ struct      cEXTERN {
 };
 
 extern int   g_depth;
-extern char  g_path    [LEN_FULL];
+extern char  g_path    [LEN_HUND];
 
 
 
@@ -496,7 +522,7 @@ char        PROG__unit_end          (void);
 
 char        poly_extern_init        (void);
 char        poly_extern_wrap        (void);
-char        poly_extern__add        (char *a_name, char a_type, char a_more);
+char        poly_extern__add        (char *a_lib, char *a_name, char a_type, char a_more);
 char        poly_extern_load        (void);
 char        poly_extern_check       (char *a_name);
 char        poly_extern_review      (void);
@@ -550,6 +576,7 @@ char        poly_action_search      (void);
 char        poly_action_update      (void);
 char        poly_action_remove      (void);
 char        poly_action_extern      (void);
+char        poly_action_libuse      (void);
 
 tYLIB*      poly_ylib_new           (void);
 char        poly_ylib_add           (tTAG *a_tag, tEXTERN *a_extern, int a_line, tYLIB **a_ylib);

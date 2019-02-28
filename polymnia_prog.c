@@ -6,12 +6,100 @@
 tMY         my;
 
 
+char      unit_answer [LEN_RECD] = "";
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 
 
 
-char      unit_answer [LEN_RECD] = "";
+/*====================------------------------------------====================*/
+/*===----                         support functions                    ----===*/
+/*====================------------------------------------====================*/
+static void      o___SUPPORT_________________o (void) {;}
+
+char*        /*--: return versioning information ---------[ ------ [ ------ ]-*/
+PROG_version       (void)
+{
+   char    t [20] = "";
+#if    __TINYC__ > 0
+   strcpy (t, "[tcc built  ]");
+#elif  __GNUC__  > 0
+   strcpy (t, "[gnu gcc    ]");
+#elif  __CBANG__  > 0
+   strcpy (t, "[cbang      ]");
+#elif  __HEPH__  > 0
+   strcpy (t, "[hephaestus ]");
+#else
+   strcpy (t, "[unknown    ]");
+#endif
+   snprintf (my.version, LEN_HUND, "%s   %s : %s", t, P_VERNUM, P_VERTXT);
+   return my.version;
+}
+
+char
+PROG_vershow       (void)
+{
+   printf ("%s\n", PROG_version ());
+   exit (0);
+}
+
+char             /* [------] display usage help information ------------------*/
+PROG_about         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;
+   char        t           [LEN_RECD];
+   int         x_len       =    0;
+   /*---(display)----------+-----+-----+-*/
+   printf("\n");
+   printf("focus     : %s\n", P_FOCUS);
+   printf("niche     : %s\n", P_NICHE);
+   printf("purpose   : %s\n", P_PURPOSE);
+   printf("\n");
+   printf("namesake  : %s\n", P_NAMESAKE);
+   printf("heritage  : %s\n", P_HERITAGE);
+   printf("imagery   : %s\n", P_IMAGERY);
+   printf("\n");
+   printf("system    : %s\n", P_SYSTEM);
+   printf("language  : %s\n", P_LANGUAGE);
+   printf("codesize  : %s\n", P_CODESIZE);
+   printf("\n");
+   printf("author    : %s\n", P_AUTHOR);
+   printf("created   : %s\n", P_CREATED);
+   printf("depends   : %s\n", P_DEPENDS);
+   printf("\n");
+   printf("ver num   : %s\n", P_VERNUM);
+   printf("ver txt   : %s\n", P_VERTXT);
+   printf("\n");
+   strcpy (t, P_SUMMARY);
+   x_len = strlen (t);
+   for (i = 0; i < x_len; ++i)   if (t [i] == '¦')  t [i] = '\n';
+   printf ("%s\n", t);
+   printf("priority  : %s\n", P_PRIORITY);
+   printf("principal : %s\n", P_PRINCIPAL);
+   printf("reminder  : %s\n", P_REMINDER);
+   printf("\n");
+   printf("simplifying assumptions\n");
+   strcpy (t, P_ASSUME);
+   x_len = strlen (t);
+   for (i = 0; i < x_len; ++i)   if (t [i] == '¦')  t [i] = '\n';
+   printf ("%s\n", t);
+   printf("\n");
+   exit (0);
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        program startup                       ----===*/
+/*====================------------------------------------====================*/
+static void      o___STARTUP_________________o (void) {;}
+
+char         /*--> pre-debugging code --------------------[ leaf   [ ------ ]-*/
+PROG_preinit       (void)
+{
+   return 0;
+}
 
 char         /*-> very first setup -------------------[ shoot  [gz.633.201.0A]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
 PROG_init          (int a_argc, char *a_argv[])
@@ -58,8 +146,8 @@ PROG_args          (int argc, char *argv[])
    char       *a           = NULL;
    int         x_total     = 0;
    int         x_args      = 0;
-   char        x_name      [LEN_STR]   = "";
-   char        t           [LEN_STR]   = "";
+   char        x_name      [LEN_RECD]   = "";
+   char        t           [LEN_RECD]   = "";
    /*---(header)-------------------------*/
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
    /*> FILE_rename ("");                                                              <*/
@@ -71,7 +159,8 @@ PROG_args          (int argc, char *argv[])
       DEBUG_ARGS  yLOG_info    ("cli arg", a);
       ++x_args;
       /*---(simple)----------------------*/
-      if      (strcmp (a, "--search"   ) == 0)  my.g_mode   = MODE_SEARCH;
+      if      (strcmp (a, "--version"  ) == 0)  PROG_vershow ();
+      else if (strcmp (a, "--about"    ) == 0)  PROG_about   ();
       else if (strcmp (a, "--htags"    ) == 0)  my.g_mode   = MODE_HTAGS;
       else if (strcmp (a, "--dump"     ) == 0)  my.g_mode   = MODE_DUMP;
       else if (strcmp (a, "--report"   ) == 0)  my.g_mode   = MODE_RPTG;
@@ -90,7 +179,7 @@ PROG_args          (int argc, char *argv[])
       /*---(compound)--------------------*/
       else if (strcmp (a, "--remove" ) == 0) {
          my.g_mode = MODE_REMOVE;
-         if (++i < argc)  strlcpy (my.g_project, argv[i], LEN_NAME);
+         if (++i < argc)  strlcpy (my.g_project, argv[i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("project name not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
@@ -98,7 +187,7 @@ PROG_args          (int argc, char *argv[])
          }
       }
       else if (strcmp (a, "--project") == 0) {
-         if (++i < argc)  strlcpy (my.g_project, argv[i], LEN_NAME);
+         if (++i < argc)  strlcpy (my.g_project, argv[i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("project name not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
@@ -107,9 +196,18 @@ PROG_args          (int argc, char *argv[])
       }
       else if (strcmp (a, "--extern" ) == 0) {
          my.g_mode = MODE_EXTERN;
-         if (++i < argc)  strlcpy (my.g_extern, argv[i], LEN_NAME);
+         if (++i < argc)  strlcpy (my.g_extern, argv[i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("extern name not included");
+            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
+            return -1;
+         }
+      }
+      else if (strcmp (a, "--libuse" ) == 0) {
+         my.g_mode = MODE_LIBUSE;
+         if (++i < argc)  strlcpy (my.g_libuse, argv[i], LEN_TITLE);
+         else {
+            DEBUG_TOPS  yLOG_note  ("library name not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
             return -1;
          }
@@ -158,6 +256,13 @@ PROG_final         (void)
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                         unknown                              ----===*/
+/*====================------------------------------------====================*/
+static void      o___OTHER___________________o (void) {;}
+
 char
 PROG_prepare            (void)
 {
@@ -178,14 +283,14 @@ PROG_summarize          (tPROJ *a_proj)
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
    DEBUG_PROG   yLOG_info    ("->name"    , a_proj->name);
    /*---(prepare)------------------------*/
-   if      (my.COUNT_SLOCL < 100    )  strlcpy (a_proj->codesize, "u.micro"       , LEN_LABEL);
-   else if (my.COUNT_SLOCL < 500    )  strlcpy (a_proj->codesize, "t.tiny"        , LEN_LABEL);
-   else if (my.COUNT_SLOCL < 2000   )  strlcpy (a_proj->codesize, "s.small"       , LEN_LABEL);
-   else if (my.COUNT_SLOCL < 10000  )  strlcpy (a_proj->codesize, "m.moderate"    , LEN_LABEL);
-   else if (my.COUNT_SLOCL < 50000  )  strlcpy (a_proj->codesize, "l.large"       , LEN_LABEL);
-   else if (my.COUNT_SLOCL < 250000 )  strlcpy (a_proj->codesize, "h.huge"        , LEN_LABEL);
-   else if (my.COUNT_SLOCL < 1000000)  strlcpy (a_proj->codesize, "e.elephantine" , LEN_LABEL);
-   else                         strlcpy (a_proj->codesize, "g.gargantuan"  , LEN_LABEL);
+   if      (my.COUNT_SLOCL < 100    )  strlcpy (a_proj->codesize, "u.micro       ( < 100)"       , LEN_TITLE);
+   else if (my.COUNT_SLOCL < 500    )  strlcpy (a_proj->codesize, "t.tiny        ( < 500)"       , LEN_TITLE);
+   else if (my.COUNT_SLOCL < 2000   )  strlcpy (a_proj->codesize, "s.small       ( < 2,000"      , LEN_TITLE);
+   else if (my.COUNT_SLOCL < 10000  )  strlcpy (a_proj->codesize, "m.moderate    ( < 10,000)"    , LEN_TITLE);
+   else if (my.COUNT_SLOCL < 50000  )  strlcpy (a_proj->codesize, "l.large       ( < 50,000)"    , LEN_TITLE);
+   else if (my.COUNT_SLOCL < 250000 )  strlcpy (a_proj->codesize, "h.huge        ( < 250,000)"   , LEN_TITLE);
+   else if (my.COUNT_SLOCL < 1000000)  strlcpy (a_proj->codesize, "e.elephantine ( < 1,000,000)" , LEN_TITLE);
+   else                                strlcpy (a_proj->codesize, "g.gargantuan  ( > 1,000,000)" , LEN_TITLE);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
    a_proj->ntags = 0;
@@ -203,6 +308,13 @@ PROG_summarize          (tPROJ *a_proj)
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        program shutdown                      ----===*/
+/*====================------------------------------------====================*/
+static void      o___SHUTDOWN________________o (void) {;}
 
 char         /*-> shutdown program and free memory ---[ ------ [gz.422.001.03]*/ /*-[00.0000.111.!]-*/ /*-[--.---.---.--]-*/
 PROG_end             (void)
@@ -223,6 +335,13 @@ PROG_end             (void)
    DEBUG_TOPS   yLOG_end     ();
    return 0;
 }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       unit testing                           ----===*/
+/*====================------------------------------------====================*/
+static void      o___UNITTEST________________o (void) {;}
 
 char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.#]-*/ /*-[--.---.---.--]-*/
 PROG__unit_quiet   (void)

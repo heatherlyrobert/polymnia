@@ -110,7 +110,7 @@ poly_action_update      (void)
    char        rc          =    0;
    tPROJ      *x_proj      = NULL;
    tFILE      *x_file      = NULL;
-   char        x_name      [LEN_NAME];
+   char        x_name      [LEN_TITLE];
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(setup project)------------------*/
@@ -126,7 +126,7 @@ poly_action_update      (void)
       return rce;
    }
    /*---(save name)----------------------*/
-   strlcpy (x_name, x_proj->name, LEN_NAME);
+   strlcpy (x_name, x_proj->name, LEN_TITLE);
    DEBUG_PROG   yLOG_info    ("x_name"     , x_name);
    /*---(remove stub)--------------------*/
    rc = poly_proj_del (x_proj);
@@ -231,7 +231,7 @@ poly_action_extern      (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   tPROJ      *x_extern    = NULL;
+   tEXTERN    *x_extern    = NULL;
    int         x_len       =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
@@ -264,6 +264,44 @@ poly_action_extern      (void)
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_action_libuse      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tEXTERN    *x_extern    = NULL;
+   int         x_len       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(setup project)------------------*/
+   DEBUG_PROG   yLOG_info    ("g_libuse"      , my.g_libuse);
+   x_len = strlen (my.g_libuse);
+   DEBUG_PROG   yLOG_value   ("x_len"      , x_len);
+   --rce;  if (x_len <= 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(read database)------------------*/
+   rc = poly_db_read     ();
+   DEBUG_PROG   yLOG_value   ("db_read"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(find targets)-------------------*/
+   x_extern = (tEXTERN *) poly_btree_first (B_EXTERN);
+   while (x_extern != NULL) {
+      if (strcmp (x_extern->lib, my.g_libuse) == 0) {
+         rc = poly_rptg_extern (x_extern);
+      }
+      x_extern = (tEXTERN *) poly_btree_next  (B_EXTERN);
    }
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);

@@ -10,7 +10,7 @@
 static void  o___EXISTANCE_______o () { return; }
 
 char
-poly_extern__add         (char *a_name, char a_type, char a_more)
+poly_extern__add         (char *a_lib, char *a_name, char a_type, char a_more)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -27,11 +27,17 @@ poly_extern__add         (char *a_name, char a_type, char a_more)
       return rce;
    }
    x_len    = strlen (a_name);
-   --rce;  if (x_len == NULL) {
+   --rce;  if (x_len <= 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
+   DEBUG_DATA   yLOG_point   ("a_lib"     , a_lib);
+   --rce;  if (a_lib == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_info    ("a_lib"     , a_lib);
    /*---(create cell)--------------------*/
    while (x_new == NULL) {
       ++x_tries;
@@ -45,13 +51,14 @@ poly_extern__add         (char *a_name, char a_type, char a_more)
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   strlcpy (x_new->name, a_name, LEN_NAME);
+   strlcpy (x_new->lib , a_lib , LEN_TITLE);
+   strlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->type   = a_type;
+   x_new->more   = a_more;
    x_new->uses   = 0;
    x_new->head   = NULL;
    x_new->tail   = NULL;
    x_new->count  = 0;
-   x_new->more   = a_more;
    /*---(into btree)---------------------*/
    rc = poly_btree_hook (B_EXTERN, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
@@ -199,6 +206,7 @@ poly_extern_load        (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;          /* return code for errors         */
    char        rc          =    0;          /* generic return code            */
+   char        x_lib       [LEN_RECD]  = "";
    char        x_recd      [LEN_RECD];
    int         x_len       =    0;
    char        x_type      =  '-';
@@ -236,16 +244,21 @@ poly_extern_load        (void)
          DEBUG_INPT   yLOG_note    ("empty line, SKIP");
          continue;
       }
-      if (strncmp (x_recd, "##", 2) == 0) {
-         DEBUG_INPT   yLOG_note    ("header line, SKIP");
-         continue;
-      }
       if (x_recd [0] == '#') {
-         DEBUG_INPT   yLOG_note    ("category line, SKIP");
+         DEBUG_INPT   yLOG_note    ("comment line, SKIP");
          continue;
       }
       if (x_recd [0] == '/') {
          DEBUG_INPT   yLOG_note    ("c comment line, SKIP");
+         continue;
+      }
+      /*---(library)---------------------*/
+      if (x_recd [0] == '<') {
+         DEBUG_INPT   yLOG_note    ("library header name line");
+         x_recd [--x_len] = '\0';
+         strlcpy (x_lib, x_recd + 1, LEN_TITLE);
+         DEBUG_INPT   yLOG_info    ("x_lib"     , x_lib);
+         DEBUG_INPT   yLOG_note    ("CONTINUE");
          continue;
       }
       /*---(type)------------------------*/
@@ -256,7 +269,7 @@ poly_extern_load        (void)
       x_recd [23] = '\0';
       /*---(save)------------------------*/
       strltrim (x_recd, ySTR_BOTH, LEN_RECD);
-      poly_extern__add (x_recd, x_type, x_more);
+      poly_extern__add (x_lib, x_recd, x_type, x_more);
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
@@ -363,8 +376,8 @@ poly_extern_review      (void)
    char       *p           = NULL;
    char       *q           = NULL;
    char        x_recd      [LEN_RECD];
-   char        x_funcname  [LEN_NAME];
-   char        x_filename  [LEN_NAME];
+   char        x_funcname  [LEN_TITLE];
+   char        x_filename  [LEN_TITLE];
    int         x_len       =    0;
    int         x_flen      =    0;
    int         x_line      =    0;
@@ -441,7 +454,7 @@ poly_extern_review      (void)
          continue;
       }
       q [0] = '\0';
-      strlcpy (x_filename, p, LEN_NAME);
+      strlcpy (x_filename, p, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("file name" , x_filename);
       x_file = (tFILE *) poly_btree_search (B_FILES, x_filename);
       if (x_file == NULL) {

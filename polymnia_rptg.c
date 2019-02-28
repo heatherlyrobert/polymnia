@@ -441,7 +441,7 @@ poly_rptg_extern        (tEXTERN *a_extern)
       }
       /*---(normal view)-----------------*/
       else {
-         printf ("%-25.25s  %-25.25s  %4d  %-25.25s\n", x_ylib->tag->file->proj->name, x_ylib->tag->file->name, x_ylib->line, x_ylib->tag->name);
+         printf ("%-25.25s  %-25.25s  %-25.25s  %4d  %-25.25s\n", a_extern->name, x_ylib->tag->file->proj->name, x_ylib->tag->file->name, x_ylib->line, x_ylib->tag->name);
       }
       /*---(next)------------------------*/
       ++c;
@@ -493,13 +493,19 @@ poly_rptg_htags         (tPROJ *a_proj)
       printf ("##   version %s, %s\n", VER_NUM, VER_TXT);
       printf ("##\n");
       printf ("##   name       [%s]\n", a_proj->name);
+      printf ("##\n");
       printf ("##   focus      [%s]\n", a_proj->focus);
       printf ("##   niche      [%s]\n", a_proj->niche);
-      printf ("##   heritage   [%s]\n", a_proj->heritage);
       printf ("##   purpose    [%s]\n", a_proj->purpose);
+      printf ("##\n");
+      printf ("##   namesake   [%s]\n", a_proj->namesake);
+      printf ("##   heritage   [%s]\n", a_proj->heritage);
+      printf ("##   imagery    [%s]\n", a_proj->imagery);
+      printf ("##\n");
       printf ("##   created    [%s]\n", a_proj->created);
       printf ("##   code-size  [%s]\n", a_proj->codesize);
       printf ("##   home       [%s]\n", a_proj->home);
+      printf ("##\n");
       printf ("##   vernum     [%s]\n", a_proj->vernum);
       printf ("##   vertxt     [%s]\n", a_proj->vertxt);
       printf ("##\n\n\n\n");
