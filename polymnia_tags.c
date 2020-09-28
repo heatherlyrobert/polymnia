@@ -1055,14 +1055,23 @@ poly_tags_review        (tFILE *a_file)
       if (a_file->type == 'h') {
          DEBUG_INPT   yLOG_note    ("header file line");
          DEBUG_INPT   yLOG_info    ("my.s_curr"    , my.s_curr);
+         /*---(master)-------------------*/
          if (strncmp (my.s_curr, "#define     P_FOCUS     ", 24) == 0)  poly_tags__unquote (a_file->proj->focus   , my.s_curr + 24, LEN_TITLE);
          if (strncmp (my.s_curr, "#define     P_NICHE     ", 24) == 0)  poly_tags__unquote (a_file->proj->niche   , my.s_curr + 24, LEN_TITLE);
+         if (strncmp (my.s_curr, "#define     P_SUBJECT   ", 24) == 0)  poly_tags__unquote (a_file->proj->subject , my.s_curr + 24, LEN_TITLE);
          if (strncmp (my.s_curr, "#define     P_PURPOSE   ", 24) == 0)  poly_tags__unquote (a_file->proj->purpose , my.s_curr + 24, LEN_HUND);
+         /*---(location)-----------------*/
+         if (strncmp (my.s_curr, "#define     P_FULLPATH  ", 24) == 0)  poly_tags__unquote (a_file->proj->fullpath, my.s_curr + 24, LEN_HUND);
+         /*---(greek)--------------------*/
          if (strncmp (my.s_curr, "#define     P_NAMESAKE  ", 24) == 0)  poly_tags__unquote (a_file->proj->namesake, my.s_curr + 24, LEN_HUND);
          if (strncmp (my.s_curr, "#define     P_HERITAGE  ", 24) == 0)  poly_tags__unquote (a_file->proj->heritage, my.s_curr + 24, LEN_HUND);
          if (strncmp (my.s_curr, "#define     P_IMAGERY   ", 24) == 0)  poly_tags__unquote (a_file->proj->imagery , my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_REASON    ", 24) == 0)  poly_tags__unquote (a_file->proj->reason  , my.s_curr + 24, LEN_HUND);
+         /*---(created)------------------*/
          if (strncmp (my.s_curr, "#define     P_CREATED   ", 24) == 0)  poly_tags__unquote (a_file->proj->created , my.s_curr + 24, LEN_LABEL);
          if (strncmp (my.s_curr, "#define     P_CODESIZE  ", 24) == 0)  poly_tags__unquote (a_file->proj->codesize, my.s_curr + 24, LEN_TITLE);
+         if (strncmp (my.s_curr, "#define     P_DEPENDS   ", 24) == 0)  poly_tags__unquote (a_file->proj->depends , my.s_curr + 24, LEN_TITLE);
+         /*---(version)------------------*/
          if (strncmp (my.s_curr, "#define     P_VERNUM    ", 24) == 0)  poly_tags__unquote (a_file->proj->vernum  , my.s_curr + 24, LEN_LABEL);
          if (strncmp (my.s_curr, "#define     P_VERTXT    ", 24) == 0)  poly_tags__unquote (a_file->proj->vertxt  , my.s_curr + 24, LEN_HUND);
          /*> if ((p = strstr (my.s_curr, "VER_NUM")) != 0) {                          <* 

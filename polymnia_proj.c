@@ -65,18 +65,23 @@ poly_proj__wipe    (tPROJ *a_dst)
 {
    if (a_dst == NULL)  return -1;
    /*---(master)------------*/
+   a_dst->name     [0] = '\0';
    a_dst->focus    [0] = '\0';
    a_dst->niche    [0] = '\0';
-   a_dst->name     [0] = '\0';
+   a_dst->subject  [0] = '\0';
+   a_dst->purpose  [0] = '\0';
    /*---(greek)-------------*/
    a_dst->namesake [0] = '\0';
    a_dst->heritage [0] = '\0';
    a_dst->imagery  [0] = '\0';
+   a_dst->reason   [0] = '\0';
    /*---(chars)-------------*/
-   a_dst->purpose  [0] = '\0';
    a_dst->codesize [0] = '\0';
    a_dst->created  [0] = '\0';
+   a_dst->depends  [0] = '\0';
+   /*---(location)----------*/
    a_dst->home     [0] = '\0';
+   a_dst->fullpath [0] = '\0';
    /*---(versioning)--------*/
    a_dst->vernum   [0] = '\0';
    a_dst->vertxt   [0] = '\0';

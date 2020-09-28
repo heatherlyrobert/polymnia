@@ -1,15 +1,24 @@
 /*============================[[ beg-of-code ]]===============================*/
 
-/*===[[ HEADER ]]=============================================================*/
-/*345678901-12345678901-123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+
+
+/*===[[ 25 ONE_LINERS ]]======================================================*/
+/*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
 
 #define     P_FOCUS     "DE (development environment)"
 #define     P_NICHE     "ca (code anaylsis)"
+#define     P_SUBJECT   "ansi-c code analysis"
 #define     P_PURPOSE   "c language code-base navigation, research, and analysis"
 
 #define     P_NAMESAKE  "polymnia-hymnos (many praises)"
 #define     P_HERITAGE  "greek muse of divine hymns, poetry, dancing, geometry, grammer"
 #define     P_IMAGERY   "beautiful woman wearing a veil and looking up at the heavens"
+#define     P_REASON    "she is the muse of divine hymns (c is the divine language"
+
+#define     P_EXECUTE   "polymnia"
+#define     P_FULLPATH  "/usr/local/bin/polymnia"
+#define     P_SUFFIX    "htags"
+#define     P_CONTENT   "code navigation file"
 
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
@@ -19,17 +28,23 @@
 #define     P_CREATED   "2019-01"
 #define     P_DEPENDS   "ySTR"
 
-#define     P_VERNUM    "0.7e"
-#define     P_VERTXT    "updated debugging macro assignment to allow mixes with TOPS"
+#define     P_VERMAJOR  "0.--, pre-production"
+#define     P_VERMINOR  "0.8-, working out final issues"
+#define     P_VERNUM    "0.8a"
+#define     P_VERTXT    "expanded file header fields that are recorded"
+
+#define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
+#define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
+#define     P_REMINDER  "there are many better options, but i *own* every line of this one"
+
+/*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
+/*===[[ END ONE_LINERS ]]=====================================================*/
+
 
 #define     P_SUMMARY   \
  "polymnia is a custom code analysis tool offering tag navigation for¦" \
  "vim-ide, detailed function complexity analysis, and code-base wide¦" \
  "reporting and research for the one-true language (c) ;)¦"
-
-#define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
-#define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
-#define     P_REMINDER  "there are many better options, but i *own* every line of this one"
 
 #define     P_ASSUME    \
  "-- all applications are only written in c¦" \
@@ -235,18 +250,23 @@ extern      tMY         my;
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct cPROJ {
    /*---(master)------------*/
+   char        name        [LEN_TITLE];
    char        focus       [LEN_TITLE];
    char        niche       [LEN_TITLE];
-   char        name        [LEN_TITLE];
+   char        subject     [LEN_TITLE];
+   char        purpose     [LEN_HUND];
    /*---(greek)-------------*/
    char        namesake    [LEN_HUND];
    char        heritage    [LEN_HUND];
    char        imagery     [LEN_HUND];
+   char        reason      [LEN_HUND];
    /*---(characteristics)---*/
-   char        purpose     [LEN_HUND];
    char        created     [LEN_LABEL];
    char        codesize    [LEN_TITLE];
+   char        depends     [LEN_HUND];
+   /*---(location)----------*/
    char        home        [LEN_HUND];
+   char        fullpath    [LEN_HUND];
    /*---(versioning)--------*/
    char        vernum      [LEN_LABEL];
    char        vertxt      [LEN_HUND];

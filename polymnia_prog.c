@@ -332,7 +332,7 @@ PROG_end             (void)
    system ("rm -f htags.flow");
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   DEBUG_TOPS   yLOG_end     ();
+   DEBUG_TOPS   yLOGS_end    ();
    return 0;
 }
 
