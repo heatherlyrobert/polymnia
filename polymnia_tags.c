@@ -161,8 +161,6 @@ poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
    int         x_len       =    0;
    /*---(begin)--------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(prepare)------------------------*/
-   if (a_tag != NULL)  *a_tag = NULL;
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_point   ("a_file"    , a_file);
    --rce;  if (a_file == NULL) {
@@ -176,7 +174,7 @@ poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
    }
    DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
    DEBUG_DATA   yLOG_char    ("a_type"    , a_type);
-   --rce;  if (a_type != 'f') {
+   --rce;  if (a_type == '\0' || strchr ("f_", a_type) == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -186,7 +184,17 @@ poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
       return rce;
    }
    DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);
-   /*---(create cell)--------------------*/
+   /*---(check return)-------------------*/
+   DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);
+   DEBUG_DATA   yLOG_point   ("*a_tag"    , *a_tag);
+   --rce;  if (a_tag != NULL) {
+      if (*a_tag != NULL) {
+         DEBUG_DATA   yLOG_note    ("already set to a particular tag");
+         DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+   }
+   /*---(create tag)---------------------*/
    x_new = poly_tags_new ();
    DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
    --rce;  if (x_new == NULL) {
@@ -207,7 +215,7 @@ poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
    x_new->type   = a_type;
    x_new->line   = a_line;
    /*---(into file list)-----------------*/
-   rc = poly_files_addtag (a_file, x_new);
+   rc = poly_files_tag_hook   (a_file, x_new);
    DEBUG_DATA   yLOG_value   ("addtag"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -236,11 +244,12 @@ poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
 }
 
 char
-poly_tags__del          (tTAG *a_tag)
+poly_tags_del           (tTAG **a_tag)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
    char        rc          =    0;
+   tTAG       *x_tag       = NULL;
    /*---(beginning)----------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);
@@ -248,28 +257,32 @@ poly_tags__del          (tTAG *a_tag)
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_note    (a_tag->name);
+   x_tag = *a_tag;
+   DEBUG_DATA   yLOG_point   ("x_tag"     , x_tag);
+   --rce;  if (x_tag == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_note    (x_tag->name);
    /*---(out of linked list)-------------*/
-   DEBUG_DATA   yLOG_note    ("unlink");
-   if (a_tag->next != NULL)   a_tag->next->prev = a_tag->prev;
-   else                       a_tag->file->tail = a_tag->prev;
-   if (a_tag->prev != NULL)   a_tag->prev->next = a_tag->next;
-   else                       a_tag->file->head = a_tag->next;
-   /*---(update count)-------------------*/
-   --(a_tag->file->count);
-   DEBUG_DATA   yLOG_value   ("count"     , a_tag->file->count);
+   rc = poly_files_tag_unhook (x_tag);
+   DEBUG_DATA   yLOG_value   ("unhook"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(btree)--------------------------*/
-   rc = poly_btree_unhook (&a_tag->btree);
+   rc = poly_btree_unhook (&x_tag->btree);
    DEBUG_DATA   yLOG_value   ("unhook"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(free work)----------------------*/
-   DEBUG_DATA   yLOG_point   ("work"      , a_tag->work);
-   if (a_tag->work != NULL)  free (a_tag->work);
+   DEBUG_DATA   yLOG_point   ("work"      , x_tag->work);
+   if (x_tag->work != NULL)  free (x_tag->work);
    /*---(purge ylib links)---------------*/
-   rc = poly_ylib_purge_tag  (a_tag);
+   rc = poly_ylib_purge_tag  (x_tag);
    DEBUG_DATA   yLOG_value   ("purge ylib", rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -277,7 +290,8 @@ poly_tags__del          (tTAG *a_tag)
    }
    /*---(free main)----------------------*/
    DEBUG_DATA   yLOG_note    ("free");
-   free (a_tag);
+   free (x_tag);
+   *a_tag = NULL;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -333,7 +347,7 @@ poly_tags_purge_file    (tFILE *a_file)
       x_next = x_tag->next;
       DEBUG_DATA   yLOG_point   ("x_tag"     , x_tag);
       DEBUG_DATA   yLOG_info    ("->name"    , x_tag->name);
-      rc = poly_tags__del (x_tag);
+      rc = poly_tags_del (&x_tag);
       x_tag = x_next;
    }
    /*---(check)--------------------------*/
@@ -609,6 +623,9 @@ poly_tags_inventory     (tFILE *a_file)
          continue;
       }
       x_type = p [0];
+      rc = strncmp ("o___", x_name, 4);
+      /*> printf ("%-20.20s  %d\n", x_name, rc);                                      <*/
+      if (rc != 0)  x_type = '_';
       DEBUG_INPT   yLOG_char    ("type"      , x_type);
       /*---(line)------------------------*/
       p = strtok (NULL  , q);
@@ -1060,18 +1077,28 @@ poly_tags_review        (tFILE *a_file)
          if (strncmp (my.s_curr, "#define     P_NICHE     ", 24) == 0)  poly_tags__unquote (a_file->proj->niche   , my.s_curr + 24, LEN_TITLE);
          if (strncmp (my.s_curr, "#define     P_SUBJECT   ", 24) == 0)  poly_tags__unquote (a_file->proj->subject , my.s_curr + 24, LEN_TITLE);
          if (strncmp (my.s_curr, "#define     P_PURPOSE   ", 24) == 0)  poly_tags__unquote (a_file->proj->purpose , my.s_curr + 24, LEN_HUND);
-         /*---(location)-----------------*/
-         if (strncmp (my.s_curr, "#define     P_FULLPATH  ", 24) == 0)  poly_tags__unquote (a_file->proj->fullpath, my.s_curr + 24, LEN_HUND);
          /*---(greek)--------------------*/
          if (strncmp (my.s_curr, "#define     P_NAMESAKE  ", 24) == 0)  poly_tags__unquote (a_file->proj->namesake, my.s_curr + 24, LEN_HUND);
          if (strncmp (my.s_curr, "#define     P_HERITAGE  ", 24) == 0)  poly_tags__unquote (a_file->proj->heritage, my.s_curr + 24, LEN_HUND);
          if (strncmp (my.s_curr, "#define     P_IMAGERY   ", 24) == 0)  poly_tags__unquote (a_file->proj->imagery , my.s_curr + 24, LEN_HUND);
          if (strncmp (my.s_curr, "#define     P_REASON    ", 24) == 0)  poly_tags__unquote (a_file->proj->reason  , my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_ONELINE   ", 24) == 0)  sprintf (a_file->proj->oneline, "%s %s", a_file->proj->namesake, a_file->proj->subject);
+         /*---(location)-----------------*/
+         if (strncmp (my.s_curr, "#define     P_BASENAME  ", 24) == 0)  poly_tags__unquote (a_file->proj->progname, my.s_curr + 24, LEN_TITLE);
+         if (strncmp (my.s_curr, "#define     P_FULLPATH  ", 24) == 0)  poly_tags__unquote (a_file->proj->fullpath, my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_SUFFIX    ", 24) == 0)  poly_tags__unquote (a_file->proj->suffix  , my.s_curr + 24, LEN_LABEL);
+         if (strncmp (my.s_curr, "#define     P_CONTENT   ", 24) == 0)  poly_tags__unquote (a_file->proj->content , my.s_curr + 24, LEN_TITLE);
+         /*---(chars)--------------------*/
+         if (strncmp (my.s_curr, "#define     P_SYSTEM    ", 24) == 0)  poly_tags__unquote (a_file->proj->systems , my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_LANGUAGE  ", 24) == 0)  poly_tags__unquote (a_file->proj->language, my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_CODESIZE  ", 24) == 0)  poly_tags__unquote (a_file->proj->codesize, my.s_curr + 24, LEN_DESC);
          /*---(created)------------------*/
+         if (strncmp (my.s_curr, "#define     P_AUTHOR    ", 24) == 0)  poly_tags__unquote (a_file->proj->author  , my.s_curr + 24, LEN_TITLE);
          if (strncmp (my.s_curr, "#define     P_CREATED   ", 24) == 0)  poly_tags__unquote (a_file->proj->created , my.s_curr + 24, LEN_LABEL);
-         if (strncmp (my.s_curr, "#define     P_CODESIZE  ", 24) == 0)  poly_tags__unquote (a_file->proj->codesize, my.s_curr + 24, LEN_TITLE);
-         if (strncmp (my.s_curr, "#define     P_DEPENDS   ", 24) == 0)  poly_tags__unquote (a_file->proj->depends , my.s_curr + 24, LEN_TITLE);
+         if (strncmp (my.s_curr, "#define     P_DEPENDS   ", 24) == 0)  poly_tags__unquote (a_file->proj->depends , my.s_curr + 24, LEN_HUND);
          /*---(version)------------------*/
+         if (strncmp (my.s_curr, "#define     P_VERMAJOR  ", 24) == 0)  poly_tags__unquote (a_file->proj->vermajor, my.s_curr + 24, LEN_HUND);
+         if (strncmp (my.s_curr, "#define     P_VERMINOR  ", 24) == 0)  poly_tags__unquote (a_file->proj->verminor, my.s_curr + 24, LEN_HUND);
          if (strncmp (my.s_curr, "#define     P_VERNUM    ", 24) == 0)  poly_tags__unquote (a_file->proj->vernum  , my.s_curr + 24, LEN_LABEL);
          if (strncmp (my.s_curr, "#define     P_VERTXT    ", 24) == 0)  poly_tags__unquote (a_file->proj->vertxt  , my.s_curr + 24, LEN_HUND);
          /*> if ((p = strstr (my.s_curr, "VER_NUM")) != 0) {                          <* 

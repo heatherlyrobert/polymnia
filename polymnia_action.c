@@ -63,7 +63,7 @@ poly_action_generate    (void)
       return rce;
    }
    --rce;  if (x_proj->count == 0) {
-      rc = poly_proj_del (x_proj);
+      rc = poly_proj_del (&x_proj);
       DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
       if (rc < 0) {
          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -129,7 +129,7 @@ poly_action_update      (void)
    strlcpy (x_name, x_proj->name, LEN_TITLE);
    DEBUG_PROG   yLOG_info    ("x_name"     , x_name);
    /*---(remove stub)--------------------*/
-   rc = poly_proj_del (x_proj);
+   rc = poly_proj_del (&x_proj);
    DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -147,7 +147,7 @@ poly_action_update      (void)
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj != NULL) {
       DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);
-      rc = poly_proj_del (x_proj);
+      rc = poly_proj_del (&x_proj);
       DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
       --rce;  if (rc < 0) {
          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -168,6 +168,102 @@ poly_action_update      (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_action_about       (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tPROJ      *x_proj      = NULL;
+   int         x_len       =    0;
+   char        t           [LEN_LABEL] = "";
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(setup project)------------------*/
+   DEBUG_PROG   yLOG_info    ("g_project" , my.g_project);
+   x_len = strlen (my.g_project);
+   DEBUG_PROG   yLOG_value   ("x_len"      , x_len);
+   --rce;  if (x_len <= 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(read database)------------------*/
+   rc = poly_db_read     ();
+   DEBUG_PROG   yLOG_value   ("db_read"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(find target)--------------------*/
+   x_proj = (tPROJ *) poly_proj_search  (my.g_project);
+   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
+   --rce;  if (x_proj == NULL) {
+      DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);
+   /*---(display)----------+-----+-----+-*/
+   printf("%s\n", P_ONELINE);
+   printf("report of project-wide information (--about) for a single project\n");
+   printf("\n");
+   printf("focus     : %s\n", x_proj->focus);
+   printf("niche     : %s\n", x_proj->niche);
+   printf("subject   : %s\n", x_proj->subject);
+   printf("purpose   : %s\n", x_proj->purpose);
+   printf("\n");
+   printf("namesake  : %s\n", x_proj->namesake);
+   printf("heritage  : %s\n", x_proj->heritage);
+   printf("imagery   : %s\n", x_proj->imagery);
+   printf("reason    : %s\n", x_proj->reason);
+   printf("\n");
+   printf("oneline   : %s\n", x_proj->oneline);
+   printf("\n");
+   printf("basename  : %s\n", x_proj->progname);
+   printf("homedir   : %s\n", x_proj->homedir);
+   printf("fullpath  : %s\n", x_proj->fullpath);
+   printf("suffix    : %s\n", x_proj->suffix);
+   printf("content   : %s\n", x_proj->content);
+   printf("\n");
+   printf("system    : %s\n", x_proj->systems);
+   printf("language  : %s\n", x_proj->language);
+   printf("codesize  : %s\n", x_proj->codesize);
+   printf("\n");
+   printf("author    : %s\n", x_proj->author);
+   printf("created   : %s\n", x_proj->created);
+   printf("depends   : %s\n", x_proj->depends);
+   printf("\n");
+   printf("vermajor  : %s\n", x_proj->vermajor);
+   printf("verminor  : %s\n", x_proj->verminor);
+   printf("ver num   : %s\n", x_proj->vernum);
+   printf("ver txt   : %s\n", x_proj->vertxt);
+   printf("\n");
+   printf("priority  : %s\n", P_PRIORITY);
+   printf("principal : %s\n", P_PRINCIPAL);
+   printf("reminder  : %s\n", P_REMINDER);
+   printf("\n");
+   printf("statistics...\n");
+   strl4comma (x_proj->COUNT_FILES, t, 0, 'c', '-', LEN_LABEL);
+   printf("files     : %10.10s\n", t);
+   strl4comma (x_proj->COUNT_FUNCS, t, 0, 'c', '-', LEN_LABEL);
+   printf("funcs     : %10.10s    %d\n", t, x_proj->ntags);
+   strl4comma (x_proj->COUNT_LINES, t, 0, 'c', '-', LEN_LABEL);
+   printf("lines     : %10.10s    %4.2f\n", t, 1.00);
+   strl4comma (x_proj->COUNT_EMPTY, t, 0, 'c', '-', LEN_LABEL);
+   printf("empty     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_EMPTY / x_proj->COUNT_LINES);
+   strl4comma (x_proj->COUNT_DOCS , t, 0, 'c', '-', LEN_LABEL);
+   printf("docs      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DOCS  / x_proj->COUNT_LINES);
+   strl4comma (x_proj->COUNT_DEBUG, t, 0, 'c', '-', LEN_LABEL);
+   printf("debug     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DEBUG / x_proj->COUNT_LINES);
+   strl4comma (x_proj->COUNT_CODE , t, 0, 'c', '-', LEN_LABEL);
+   printf("code      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_CODE  / x_proj->COUNT_LINES);
+   strl4comma (x_proj->COUNT_SLOCL, t, 0, 'c', '-', LEN_LABEL);
+   printf("slocl     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_SLOCL / x_proj->COUNT_LINES);
+   printf("\n");
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -207,7 +303,7 @@ poly_action_remove      (void)
    }
    DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);
    /*---(remove existing target)---------*/
-   rc = poly_proj_del (x_proj);
+   rc = poly_proj_del (&x_proj);
    DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

@@ -246,7 +246,7 @@ poly_db_read_tag      (tFILE *a_file, int a_count)
       x_tag->work  = NULL;
       x_tag->btree = NULL;
       /*---(add to project)-----------------*/
-      rc = poly_files_addtag  (a_file, x_tag);
+      rc = poly_files_tag_hook   (a_file, x_tag);
       DEBUG_INPT   yLOG_value   ("addtag"    , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -304,7 +304,7 @@ poly_db_read_file     (tPROJ *a_proj, int a_count)
       x_file->count = 0;
       x_file->btree = NULL;
       /*---(add to project)-----------------*/
-      rc = poly_proj_addfile (a_proj, x_file);
+      rc = poly_proj_file_hook (a_proj, x_file);
       DEBUG_INPT   yLOG_value   ("addfile"   , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);

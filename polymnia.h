@@ -2,7 +2,7 @@
 
 
 
-/*===[[ 25 ONE_LINERS ]]======================================================*/
+/*===[[ ONE_LINERS ]]=========================================================*/
 /*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
 
 #define     P_FOCUS     "DE (development environment)"
@@ -13,9 +13,11 @@
 #define     P_NAMESAKE  "polymnia-hymnos (many praises)"
 #define     P_HERITAGE  "greek muse of divine hymns, poetry, dancing, geometry, grammer"
 #define     P_IMAGERY   "beautiful woman wearing a veil and looking up at the heavens"
-#define     P_REASON    "she is the muse of divine hymns (c is the divine language"
+#define     P_REASON    "she is the muse of divine hymns (c is the divine language)"
 
-#define     P_EXECUTE   "polymnia"
+#define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
+
+#define     P_BASENAME  "polymnia"
 #define     P_FULLPATH  "/usr/local/bin/polymnia"
 #define     P_SUFFIX    "htags"
 #define     P_CONTENT   "code navigation file"
@@ -30,12 +32,12 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8a"
-#define     P_VERTXT    "expanded file header fields that are recorded"
+#define     P_VERNUM    "0.8b"
+#define     P_VERTXT    "hardened and improved unit testing for projects and files"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
-#define     P_REMINDER  "there are many better options, but i *own* every line of this one"
+#define     P_REMINDER  "there are many better options, but i *own* every byte of this one"
 
 /*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
 /*===[[ END ONE_LINERS ]]=====================================================*/
@@ -170,6 +172,7 @@ typedef     struct      cEXTERN     tEXTERN;
 
 
 #define     MODE_HTAGS        'h'
+#define     MODE_ABOUT        'a'
 #define     MODE_RPTG         'r'
 #define     MODE_SEARCH       's'
 #define     MODE_WRITE        'w'
@@ -228,7 +231,7 @@ struct cMY {
    char        g_extern    [LEN_RECD]; /* name for focus/filtering            */
    char        g_libuse    [LEN_RECD]; /* extern library for filtering        */
    /*---(files)---------------*/
-   FILE       *f_db;                   /* shared database                     */
+   FILE       *f_db;                   /* shared database of tags             */
    FILE       *f_prog;                 /* current program source file         */
    FILE       *f_tags;                 /* ctags input file                    */
    FILE       *f_flow;                 /* cflow input file                    */
@@ -260,14 +263,24 @@ struct cPROJ {
    char        heritage    [LEN_HUND];
    char        imagery     [LEN_HUND];
    char        reason      [LEN_HUND];
-   /*---(characteristics)---*/
-   char        created     [LEN_LABEL];
-   char        codesize    [LEN_TITLE];
-   char        depends     [LEN_HUND];
+   char        oneline     [LEN_HUND];
    /*---(location)----------*/
-   char        home        [LEN_HUND];
+   char        progname    [LEN_TITLE];
+   char        homedir     [LEN_HUND];
    char        fullpath    [LEN_HUND];
+   char        suffix      [LEN_LABEL];
+   char        content     [LEN_TITLE];
+   /*---(chars)-------------*/
+   char        systems     [LEN_HUND];
+   char        language    [LEN_HUND];
+   char        codesize    [LEN_DESC];
+   /*---(when)--------------*/
+   char        author      [LEN_TITLE];
+   char        created     [LEN_LABEL];
+   char        depends     [LEN_HUND];
    /*---(versioning)--------*/
+   char        vermajor    [LEN_HUND];
+   char        verminor    [LEN_HUND];
    char        vernum      [LEN_LABEL];
    char        vertxt      [LEN_HUND];
    /*---(new stats interface)-*/
@@ -501,11 +514,15 @@ char        poly_files_init         (void);
 char        poly_files_wrap         (void);
 tFILE*      poly_files_new          (void);
 char        poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file);
+char        poly_files_del          (tFILE **a_file);
 char        poly_files_purge_proj   (tPROJ *a_proj);
 char        poly_files_review       (tPROJ *a_proj);
 char        poly_files_list         (void);
 tFILE*      poly_files_search       (char *a_name);
-char        poly_files_addtag       (tFILE *a_file, tTAG *a_tag);
+/*---(tags)-----------------*/
+char        poly_files_tag_hook     (tFILE *a_file, tTAG *a_tag);
+char        poly_files_tag_unhook   (tTAG *a_tag);
+char        poly_files_tag_count    (tFILE *a_file);
 char        poly_files_nexttag      (tFILE *a_file, tTAG **a_tag);
 char*       poly_files__unit        (char *a_question, int n);
 
@@ -518,6 +535,7 @@ char        poly_tags__hint         (int n, char *a_label);
 char        poly_tags__wipe         (tTAG *a_dst);
 tTAG*       poly_tags_new           (void);
 char        poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, tTAG **a_tag);
+char        poly_tags_del           (tTAG **a_tag);
 char        poly_tags_inventory     (tFILE *a_file);
 char        poly_tags_readline      (tFILE *a_file, int *a_line, tTAG **a_tag);
 char        poly_tags_review        (tFILE *a_file);
@@ -577,9 +595,13 @@ char        poly_proj_init          (void);
 char        poly_proj_wrap          (void);
 tPROJ*      poly_proj_new           (void);
 char        poly_proj_add           (char *a_name, char *a_home, tPROJ **a_proj);
-char        poly_proj_del           (tPROJ *a_proj);
+char        poly_proj_del           (tPROJ **a_proj);
 char        poly_proj_purge         (void);
 char        poly_proj_here          (tPROJ **a_proj);
+/*---(files)----------------*/
+int         poly_proj_file_count    (tPROJ *a_proj);
+char        poly_proj_file_hook     (tPROJ *a_proj, tFILE *a_file);
+char        poly_proj_file_unhook   (tFILE *a_file);
 char        poly_proj_nextfile      (tPROJ *a_proj, tFILE **a_file);
 char        poly_proj_prepare       (void);
 char        poly_proj_system        (char *a_path);
@@ -594,6 +616,7 @@ char        poly_rptg_extern        (tEXTERN *a_extern);
 char        poly_action_generate    (void);
 char        poly_action_search      (void);
 char        poly_action_update      (void);
+char        poly_action_about       (void);
 char        poly_action_remove      (void);
 char        poly_action_extern      (void);
 char        poly_action_libuse      (void);

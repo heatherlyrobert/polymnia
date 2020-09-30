@@ -423,26 +423,26 @@ poly_cats_tagsumm  (tTAG *a_tag)
    }
    /*---(group one)----------------------*/
    DEBUG_DATA   yLOG_note    ("group one");
-   poly_cats_scaled  ("lines"   , a_tag->COUNT_LINES, &a_tag->STATS_TOTAL, '-');
-   poly_cats_scaled  ("debug"   , a_tag->COUNT_DEBUG   , &a_tag->STATS_DEBUG, '-');
-   poly_cats_scaled  ("slocl"   , a_tag->COUNT_SLOCL   , &a_tag->STATS_SLOCL, '-');
-   poly_cats_exact   ("locals"  , a_tag->WORK_LOCALS   , &a_tag->STATS_LOCALS, '-');
+   poly_cats_scaled  ("lines"   , a_tag->COUNT_LINES , &a_tag->STATS_TOTAL, '-');
+   poly_cats_scaled  ("debug"   , a_tag->COUNT_DEBUG , &a_tag->STATS_DEBUG, '-');
+   poly_cats_scaled  ("slocl"   , a_tag->COUNT_SLOCL , &a_tag->STATS_SLOCL, '-');
+   poly_cats_exact   ("locals"  , a_tag->WORK_LOCALS , &a_tag->STATS_LOCALS, '-');
    poly_cats_exact   ("choices" , a_tag->WORK_CHOICE , &a_tag->STATS_CHOICE, '-');
    poly_cats_exact   ("returns" , a_tag->WORK_RETURN , &a_tag->STATS_RETURN, '-');
    a_tag->WORK_INDENT  /= 3;
    a_tag->WORK_INDENT  -= 1;
-   poly_cats_exact   ("indent"  , a_tag->WORK_INDENT  , &a_tag->STATS_INDENT, '-');
-   poly_cats_flag    ("memories", a_tag->WORK_MEMORY, &a_tag->STATS_MEMORY, '#');
+   poly_cats_exact   ("indent"  , a_tag->WORK_INDENT , &a_tag->STATS_INDENT, '-');
+   poly_cats_flag    ("memories", a_tag->WORK_MEMORY , &a_tag->STATS_MEMORY, '#');
    /*---(group two)----------------------*/
    DEBUG_DATA   yLOG_note    ("group two");
-   poly_cats_exact   ("gcalls"  , a_tag->WORK_GCALLS  , &a_tag->STATS_GCALLS, '-');
-   poly_cats_exact   ("lcalls"  , a_tag->WORK_LCALLS  , &a_tag->STATS_LCALLS, '-');
-   poly_cats_exact   ("funcs"   , a_tag->WORK_FUNCS   , &a_tag->STATS_FUNCS, '-');
-   poly_cats_exact   ("intern"  , a_tag->WORK_INTERN  , &a_tag->STATS_INTERN, '-');
-   poly_cats_exact   ("cstd"    , a_tag->WORK_CSTD    , &a_tag->STATS_CSTD, '-');
+   poly_cats_exact   ("gcalls"  , a_tag->WORK_GCALLS , &a_tag->STATS_GCALLS, '-');
+   poly_cats_exact   ("lcalls"  , a_tag->WORK_LCALLS , &a_tag->STATS_LCALLS, '-');
+   poly_cats_exact   ("funcs"   , a_tag->WORK_FUNCS  , &a_tag->STATS_FUNCS, '-');
+   poly_cats_exact   ("intern"  , a_tag->WORK_INTERN , &a_tag->STATS_INTERN, '-');
+   poly_cats_exact   ("cstd"    , a_tag->WORK_CSTD   , &a_tag->STATS_CSTD, '-');
    poly_cats_exact   ("ylib"    , a_tag->WORK_YLIB   , &a_tag->STATS_YLIB, '-');
    a_tag->WORK_MYSTRY = a_tag->WORK_FUNCS - a_tag->WORK_INTERN - a_tag->WORK_CSTD - a_tag->WORK_YLIB - a_tag->WORK_NCURSE - a_tag->WORK_OPENGL;
-   poly_cats_exact   ("mystry"  , a_tag->WORK_MYSTRY  , &a_tag->STATS_MSTRY, '-');
+   poly_cats_exact   ("mystry"  , a_tag->WORK_MYSTRY , &a_tag->STATS_MSTRY, '-');
    if (a_tag->WORK_INPUT  > 0)   a_tag->STATS_READ  = 'i';
    if (a_tag->WORK_READ   > 0)   a_tag->STATS_READ  = 'r';
    if (a_tag->WORK_BREAD  > 0)   a_tag->STATS_READ  = 'R';

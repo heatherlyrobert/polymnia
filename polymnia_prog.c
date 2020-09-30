@@ -43,51 +43,6 @@ PROG_vershow       (void)
    exit (0);
 }
 
-char             /* [------] display usage help information ------------------*/
-PROG_about         (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   int         i           =    0;
-   char        t           [LEN_RECD];
-   int         x_len       =    0;
-   /*---(display)----------+-----+-----+-*/
-   printf("\n");
-   printf("focus     : %s\n", P_FOCUS);
-   printf("niche     : %s\n", P_NICHE);
-   printf("purpose   : %s\n", P_PURPOSE);
-   printf("\n");
-   printf("namesake  : %s\n", P_NAMESAKE);
-   printf("heritage  : %s\n", P_HERITAGE);
-   printf("imagery   : %s\n", P_IMAGERY);
-   printf("\n");
-   printf("system    : %s\n", P_SYSTEM);
-   printf("language  : %s\n", P_LANGUAGE);
-   printf("codesize  : %s\n", P_CODESIZE);
-   printf("\n");
-   printf("author    : %s\n", P_AUTHOR);
-   printf("created   : %s\n", P_CREATED);
-   printf("depends   : %s\n", P_DEPENDS);
-   printf("\n");
-   printf("ver num   : %s\n", P_VERNUM);
-   printf("ver txt   : %s\n", P_VERTXT);
-   printf("\n");
-   strcpy (t, P_SUMMARY);
-   x_len = strlen (t);
-   for (i = 0; i < x_len; ++i)   if (t [i] == '¦')  t [i] = '\n';
-   printf ("%s\n", t);
-   printf("priority  : %s\n", P_PRIORITY);
-   printf("principal : %s\n", P_PRINCIPAL);
-   printf("reminder  : %s\n", P_REMINDER);
-   printf("\n");
-   printf("simplifying assumptions\n");
-   strcpy (t, P_ASSUME);
-   x_len = strlen (t);
-   for (i = 0; i < x_len; ++i)   if (t [i] == '¦')  t [i] = '\n';
-   printf ("%s\n", t);
-   printf("\n");
-   exit (0);
-}
-
 
 
 /*====================------------------------------------====================*/
@@ -160,8 +115,8 @@ PROG_args          (int argc, char *argv[])
       ++x_args;
       /*---(simple)----------------------*/
       if      (strcmp (a, "--version"  ) == 0)  PROG_vershow ();
-      else if (strcmp (a, "--about"    ) == 0)  PROG_about   ();
       else if (strcmp (a, "--htags"    ) == 0)  my.g_mode   = MODE_HTAGS;
+      else if (strcmp (a, "--about"    ) == 0)  my.g_mode   = MODE_ABOUT;
       else if (strcmp (a, "--dump"     ) == 0)  my.g_mode   = MODE_DUMP;
       else if (strcmp (a, "--report"   ) == 0)  my.g_mode   = MODE_RPTG;
       else if (strcmp (a, "--write"    ) == 0)  my.g_mode   = MODE_WRITE;
@@ -283,14 +238,14 @@ PROG_summarize          (tPROJ *a_proj)
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
    DEBUG_PROG   yLOG_info    ("->name"    , a_proj->name);
    /*---(prepare)------------------------*/
-   if      (my.COUNT_SLOCL < 100    )  strlcpy (a_proj->codesize, "u.micro       ( < 100)"       , LEN_TITLE);
-   else if (my.COUNT_SLOCL < 500    )  strlcpy (a_proj->codesize, "t.tiny        ( < 500)"       , LEN_TITLE);
-   else if (my.COUNT_SLOCL < 2000   )  strlcpy (a_proj->codesize, "s.small       ( < 2,000"      , LEN_TITLE);
-   else if (my.COUNT_SLOCL < 10000  )  strlcpy (a_proj->codesize, "m.moderate    ( < 10,000)"    , LEN_TITLE);
-   else if (my.COUNT_SLOCL < 50000  )  strlcpy (a_proj->codesize, "l.large       ( < 50,000)"    , LEN_TITLE);
-   else if (my.COUNT_SLOCL < 250000 )  strlcpy (a_proj->codesize, "h.huge        ( < 250,000)"   , LEN_TITLE);
-   else if (my.COUNT_SLOCL < 1000000)  strlcpy (a_proj->codesize, "e.elephantine ( < 1,000,000)" , LEN_TITLE);
-   else                                strlcpy (a_proj->codesize, "g.gargantuan  ( > 1,000,000)" , LEN_TITLE);
+   if      (my.COUNT_SLOCL < 100    )  strlcpy (a_proj->codesize, "u.micro        < 100 slocl"             , LEN_DESC);
+   else if (my.COUNT_SLOCL < 500    )  strlcpy (a_proj->codesize, "t.tiny         100 - 499 slocl"         , LEN_DESC);
+   else if (my.COUNT_SLOCL < 2000   )  strlcpy (a_proj->codesize, "s.small        500 - 1,999 slocl"       , LEN_DESC);
+   else if (my.COUNT_SLOCL < 10000  )  strlcpy (a_proj->codesize, "m.moderate     2,000 - 9,999 slocl"     , LEN_DESC);
+   else if (my.COUNT_SLOCL < 50000  )  strlcpy (a_proj->codesize, "l.large        10,000 - 49,999 slocl"   , LEN_DESC);
+   else if (my.COUNT_SLOCL < 250000 )  strlcpy (a_proj->codesize, "h.huge         50,000 - 249,999 slocl"  , LEN_DESC);
+   else if (my.COUNT_SLOCL < 1000000)  strlcpy (a_proj->codesize, "e.elephantine  250,000 - 999,999 slocl" , LEN_DESC);
+   else                                strlcpy (a_proj->codesize, "g.gargantuan   >= 1,000,000 slocl"      , LEN_DESC);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
    a_proj->ntags = 0;

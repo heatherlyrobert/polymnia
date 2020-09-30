@@ -243,7 +243,7 @@ poly_rptg_proj          (void)
       if (my.g_titles == RPTG_TITLES && c % 5 == 0)  printf ("\n");
       /*---(reporting)-------------------*/
       if (my.g_mode != MODE_DUMP) {
-         printf ("%-25.25s  %4d %7d %7d %7d %7d %7d %7d %7d  %-15.15s  ",
+         printf ("%-25.25s  %4d %7d %7d %7d %7d %7d %7d %7d  %-13.13s  ",
                x_proj->name , x_proj->count, x_proj->ntags,
                x_proj->COUNT_LINES, x_proj->COUNT_EMPTY,
                x_proj->COUNT_DOCS , x_proj->COUNT_DEBUG,
@@ -253,7 +253,7 @@ poly_rptg_proj          (void)
                x_proj->heritage, x_proj->purpose,
                x_proj->vernum  , x_proj->vertxt,
                x_proj->focus   , x_proj->niche,
-               x_proj->created , x_proj->home);
+               x_proj->created , x_proj->homedir);
       }
       /*---(diving)----------------------*/
       switch (my.g_mode) {
@@ -503,16 +503,24 @@ poly_rptg_htags         (tPROJ *a_proj)
       printf ("##   heritage   [%s]\n", a_proj->heritage);
       printf ("##   imagery    [%s]\n", a_proj->imagery);
       printf ("##   reason     [%s]\n", a_proj->reason);
+      printf ("##   one-line   [%s]\n", a_proj->oneline);
       printf ("##\n");
-      printf ("##   one-line   [%s %s\n", a_proj->namesake, a_proj->subject);
+      printf ("##   basename   [%s]\n", a_proj->progname);
+      printf ("##   homedir    [%s]\n", a_proj->homedir);
+      printf ("##   fullpath   [%s]\n", a_proj->fullpath);
+      printf ("##   suffix     [%s]\n", a_proj->suffix);
+      printf ("##   content    [%s]\n", a_proj->content);
       printf ("##\n");
-      printf ("##   created    [%s]\n", a_proj->created);
+      printf ("##   system     [%s]\n", a_proj->systems);
+      printf ("##   language   [%s]\n", a_proj->language);
       printf ("##   code-size  [%s]\n", a_proj->codesize);
+      printf ("##\n");
+      printf ("##   author     [%s]\n", a_proj->author);
+      printf ("##   created    [%s]\n", a_proj->created);
       printf ("##   depends    [%s]\n", a_proj->depends);
       printf ("##\n");
-      printf ("##   homepath   [%s]\n", a_proj->home);
-      printf ("##   fullpath   [%s]\n", a_proj->fullpath);
-      printf ("##\n");
+      printf ("##   vermajor   [%s]\n", a_proj->vermajor);
+      printf ("##   verminor   [%s]\n", a_proj->verminor);
       printf ("##   vernum     [%s]\n", a_proj->vernum);
       printf ("##   vertxt     [%s]\n", a_proj->vertxt);
       printf ("##\n\n\n\n");
