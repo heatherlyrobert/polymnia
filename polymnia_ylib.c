@@ -64,7 +64,7 @@ poly_ylib_new           (void)
 }
 
 char
-poly_ylib_add           (tTAG *a_tag, tEXTERN *a_extern, int a_line, tYLIB **a_ylib)
+poly_ylib_add           (tFUNC *a_tag, tEXTERN *a_extern, int a_line, tYLIB **a_ylib)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -171,7 +171,7 @@ poly_ylib_del           (tYLIB *a_ylib)
 }
 
 char
-poly_ylib_purge_tag     (tTAG *a_tag)
+poly_ylib_purge_tag     (tFUNC *a_tag)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;

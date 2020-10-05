@@ -86,7 +86,7 @@ PROG_init          (int a_argc, char *a_argv[])
    DEBUG_PROG   yLOG_note    ("run sub initialization functions");
    poly_proj_init    ();
    poly_files_init   ();
-   poly_tags_init    ();
+   poly_func_init    ();
    poly_extern_init  ();
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
@@ -232,7 +232,7 @@ PROG_summarize          (tPROJ *a_proj)
    char        rce         =  -10;
    char        rc          =    0;
    tFILE      *x_file      = NULL;
-   tTAG       *x_tag       = NULL;
+   tFUNC      *x_tag       = NULL;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
@@ -248,7 +248,7 @@ PROG_summarize          (tPROJ *a_proj)
    else                                strlcpy (a_proj->codesize, "g.gargantuan   >= 1,000,000 slocl"      , LEN_DESC);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
-   a_proj->ntags = 0;
+   a_proj->funcs = 0;
    x_file = a_proj->head;
    while (x_file != NULL) {
       x_tag = x_file->head;
@@ -256,7 +256,7 @@ PROG_summarize          (tPROJ *a_proj)
          poly_cats_tagsumm (x_tag);
          x_tag = x_tag->next;
       }
-      a_proj->ntags += x_file->count;
+      a_proj->funcs += x_file->count;
       x_file = x_file->next;
    }
    /*---(prepare for use)----------------*/
@@ -279,7 +279,7 @@ PROG_end             (void)
    /*---(wrap-up)------------------------*/
    poly_proj_purge   ();
    poly_extern_wrap  ();
-   poly_tags_wrap    ();
+   poly_func_wrap    ();
    poly_files_wrap   ();
    poly_proj_wrap    ();
    /*---(remove global files)------------*/

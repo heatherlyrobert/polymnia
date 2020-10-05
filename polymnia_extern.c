@@ -382,8 +382,8 @@ poly_extern_review      (void)
    int         x_flen      =    0;
    int         x_line      =    0;
    tFILE      *x_file      =    0;
-   tTAG       *x_src       = NULL;
-   tTAG       *x_dst       = NULL;
+   tFUNC      *x_src       = NULL;
+   tFUNC      *x_dst       = NULL;
    tEXTERN    *x_extern    = NULL;
    int         c           =    0;
    char        x_cat       =  ' ';
@@ -479,7 +479,7 @@ poly_extern_review      (void)
          continue;
       }
       /*---(get destination tag)---------*/
-      x_dst    = (tTAG *)    poly_btree_search  (B_TAGS, x_funcname);
+      x_dst    = (tFUNC *)    poly_btree_search  (B_FUNCS, x_funcname);
       DEBUG_INPT   yLOG_point   ("x_dst"     , x_dst);
       x_extern = (tEXTERN *) poly_extern_search (x_funcname);
       DEBUG_INPT   yLOG_point   ("x_extern"  , x_extern);

@@ -4,31 +4,41 @@
 
 
 /*====================------------------------------------====================*/
-/*===----                     creation/destruction                     ----===*/
+/*===----                     small supporters                         ----===*/
 /*====================------------------------------------====================*/
-static void  o___EXISTANCE_______o () { return; }
+static void  o___SUPPORT_________o () { return; }
 
 char
-poly_files__wipe   (tFILE *a_dst)
+poly_file__wipe    (tFILE *a_dst)
 {
    if (a_dst == NULL)  return -1;
    /*---(master)------------*/
    a_dst->type     = '-';
+   a_dst->name [0] = '\0';
+   a_dst->sort [0] = '\0';
    /*---(stats)-------------*/
    poly_cats_counts_clear (a_dst->counts);
    /*---(tags)--------------*/
    a_dst->proj     = NULL;
-   a_dst->next     = NULL;
    a_dst->prev     = NULL;
+   a_dst->next     = NULL;
    a_dst->head     = NULL;
    a_dst->tail     = NULL;
    a_dst->count    = 0;
+   a_dst->btree    = NULL;
    /*---(tags)--------------*/
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                     creation/destruction                     ----===*/
+/*====================------------------------------------====================*/
+static void  o___EXISTANCE_______o () { return; }
+
 tFILE*
-poly_files_new           (void)
+poly_file_new           (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -49,14 +59,14 @@ poly_files_new           (void)
    }
    /*---(wipe clean)---------------------*/
    DEBUG_DATA   yLOG_note    ("wipe clean");
-   poly_files__wipe (x_new);
+   poly_file__wipe (x_new);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return x_new;
 }
 
 char
-poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file)
+poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -91,7 +101,7 @@ poly_files_add          (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
       }
    }
    /*---(create file)--------------------*/
-   x_new = poly_files_new ();
+   x_new = poly_file_new ();
    DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
    --rce;  if (x_new == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -150,7 +160,7 @@ poly_files_del          (tFILE **a_file)
    }
    DEBUG_DATA   yLOG_info    ("->name"    , x_file->name);
    /*---(purge assigned tags)------------*/
-   rc = poly_tags_purge_file (x_file);
+   rc = poly_func_purge (x_file);
    DEBUG_DATA   yLOG_value   ("purge"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -239,8 +249,8 @@ poly_files_purge_proj   (tPROJ *a_proj)
       x_next = x_file->next;
       DEBUG_DATA   yLOG_point   ("x_file"    , x_file);
       DEBUG_DATA   yLOG_info    ("->name"    , x_file->name);
-      rc = poly_tags_purge_file (x_file);
-      rc = poly_files_del       (&x_file);
+      rc = poly_func_purge (x_file);
+      rc = poly_files_del  (&x_file);
       x_file = x_next;
    }
    /*---(check)--------------------------*/
@@ -432,7 +442,7 @@ poly_files_review  (tPROJ *a_proj)
          continue;
       }
       /*---(save)------------------------*/
-      poly_files_add (a_proj, x_name, x_type, NULL);
+      poly_file_add (a_proj, x_name, x_type, NULL);
       ++x_good;
       DEBUG_INPT   yLOG_note    ("added to inventory");
       /*---(done)------------------------*/
@@ -492,85 +502,9 @@ char    poly_files_list    (void)         { return poly_btree_list (B_FILES); }
 /*====================------------------------------------====================*/
 static void  o___TAGS____________o () { return; }
 
-char
-poly_files_tag_hook     (tFILE *a_file, tTAG *a_tag)
-{
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_file);
-   if (a_file == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
-      return -1;
-   }
-   DEBUG_DATA   yLOG_spoint  (a_tag);
-   if (a_tag == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
-      return -1;
-   }
-   /*---(into linked list)---------------*/
-   DEBUG_DATA   yLOG_spoint  (a_file->head);
-   DEBUG_DATA   yLOG_spoint  (a_file->tail);
-   if (a_file->head  == NULL) {
-      DEBUG_DATA   yLOG_snote   ("first");
-      a_file->head  = a_file->tail  = a_tag;
-   } else {
-      DEBUG_DATA   yLOG_snote   ("append");
-      a_tag->prev         = a_file->tail;
-      a_file->tail->next = a_tag;
-      a_file->tail        = a_tag;
-   }
-   /*---(tie tag back to file)-----------*/
-   a_tag->file  = a_file;
-   /*---(update count)-------------------*/
-   ++(a_file->count);
-   ++(a_file->proj->ntags);
-   DEBUG_DATA   yLOG_sint    (a_file->count);
-   if (a_tag->type == 'f')  {
-      ++(a_file->COUNT_FUNCS);
-      ++(a_file->proj->COUNT_FUNCS);
-   }
-   /*---(complete)------------------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
 
 char
-poly_files_tag_unhook   (tTAG *a_tag)
-{
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_tag);
-   if (a_tag == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
-      return -1;
-   }
-   /*---(out of linked list)-------------*/
-   DEBUG_DATA   yLOG_spoint  (a_tag->file->head);
-   DEBUG_DATA   yLOG_spoint  (a_tag->file->tail);
-   DEBUG_DATA   yLOG_note    ("unlink");
-   if (a_tag->next != NULL)   a_tag->next->prev = a_tag->prev;
-   else                       a_tag->file->tail = a_tag->prev;
-   if (a_tag->prev != NULL)   a_tag->prev->next = a_tag->next;
-   else                       a_tag->file->head = a_tag->next;
-   /*---(update count)-------------------*/
-   --(a_tag->file->count);
-   --(a_tag->file->proj->ntags);
-   DEBUG_DATA   yLOG_sint    (a_tag->file->count);
-   if (a_tag->type == 'f')  {
-      --(a_tag->file->COUNT_FUNCS);
-      --(a_tag->file->proj->COUNT_FUNCS);
-   }
-   /*---(untie tag from file)------------*/
-   a_tag->file  = NULL;
-   /*---(complete)------------------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_files_nexttag      (tFILE *a_file, tTAG **a_tag)
+poly_files_nexttag      (tFILE *a_file, tFUNC **a_tag)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -628,7 +562,7 @@ poly_files__unit     (char *a_question, int i)
    char        s           [LEN_RECD] = "[]";
    char        r           [LEN_RECD] = "[]";
    tFILE      *u           = NULL;
-   tTAG       *v           = NULL;
+   tFUNC      *v           = NULL;
    int         x_fore      =    0;
    int         x_back      =    0;
    /*---(defense)------------------------*/
@@ -646,12 +580,12 @@ poly_files__unit     (char *a_question, int i)
       u = (tFILE *) poly_btree_entry (B_FILES, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : %-22.22s   %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FUNCS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
+         snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : %-22.22s     · %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FUNCS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
       } else {
-         snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : []                         -     -   -   -   -   -   -", i);
+         snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : []                         ·   -     -   -   -   -   -   -", i);
       }
    }
-   else if (strcmp (a_question, "tags"      )     == 0) {
+   else if (strcmp (a_question, "funcs"     )     == 0) {
       u = (tFILE *) poly_btree_entry (B_FILES, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
@@ -661,9 +595,9 @@ poly_files__unit     (char *a_question, int i)
             v = u->head; while (v != NULL) { ++x_fore; v = v->next; }
             v = u->tail; while (v != NULL) { ++x_back; v = v->prev; }
          }
-         snprintf (unit_answer, LEN_RECD, "FILE tags   (%2d) : %-22.22s   %3dc %3df %3db   %-17.17s %s", i, t, u->count, x_fore, x_back, s, r);
+         snprintf (unit_answer, LEN_RECD, "FILE funcs  (%2d) : %-22.22s   %3dc %3df %3db   %-17.17s %s", i, t, u->count, x_fore, x_back, s, r);
       } else {
-         snprintf (unit_answer, LEN_RECD, "FILE tags   (%2d) : []                         -c   -f   -b   []                []", i);
+         snprintf (unit_answer, LEN_RECD, "FILE funcs  (%2d) : []                         -c   -f   -b   []                []", i);
       }
    }
    /*---(complete)-----------------------*/

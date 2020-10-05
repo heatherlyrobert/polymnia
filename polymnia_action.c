@@ -250,7 +250,7 @@ poly_action_about       (void)
    strl4comma (x_proj->COUNT_FILES, t, 0, 'c', '-', LEN_LABEL);
    printf("files     : %10.10s\n", t);
    strl4comma (x_proj->COUNT_FUNCS, t, 0, 'c', '-', LEN_LABEL);
-   printf("funcs     : %10.10s    %d\n", t, x_proj->ntags);
+   printf("funcs     : %10.10s    %d\n", t, x_proj->funcs);
    strl4comma (x_proj->COUNT_LINES, t, 0, 'c', '-', LEN_LABEL);
    printf("lines     : %10.10s    %4.2f\n", t, 1.00);
    strl4comma (x_proj->COUNT_EMPTY, t, 0, 'c', '-', LEN_LABEL);

@@ -44,7 +44,7 @@ struct      cROOTS {
 } s_trees [MAX_BTREE] = {
    { B_PROJ    , "proj"      , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
    { B_FILES   , "files"     , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
-   { B_TAGS    , "tags"      , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_FUNCS   , "funcs"     , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
    { B_EXTERN  , "extern"    , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
    { B_PROTO   , "proto"     , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
    { B_UNIT    , "unit"      , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
@@ -356,13 +356,13 @@ poly_btree_prepare_all  (void)
    }
    /*---(prepare tags)-------------------*/
    DEBUG_PROG   yLOG_note    ("prepare tags for use");
-   rc = poly_btree_dgnome   (B_TAGS);
+   rc = poly_btree_dgnome   (B_FUNCS);
    DEBUG_PROG   yLOG_value   ("dgnome"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = poly_btree_build (B_TAGS);
+   rc = poly_btree_build (B_FUNCS);
    DEBUG_PROG   yLOG_value   ("build"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -399,7 +399,7 @@ poly_btree_purge_all    (void)
    }
    /*---(prepare tags)-------------------*/
    DEBUG_PROG   yLOG_note    ("clear tags fully");
-   rc = poly_btree_purge    (B_TAGS);
+   rc = poly_btree_purge    (B_FUNCS);
    DEBUG_PROG   yLOG_value   ("dgnome"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

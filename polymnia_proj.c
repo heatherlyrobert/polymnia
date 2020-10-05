@@ -96,7 +96,7 @@ poly_proj__wipe    (tPROJ *a_dst)
    a_dst->vernum   [0] = '\0';
    a_dst->vertxt   [0] = '\0';
    /*---(stats)-------------*/
-   a_dst->ntags     = 0;
+   a_dst->funcs     = 0;
    poly_cats_counts_clear (a_dst->counts);
    /*---(files)-------------*/
    a_dst->head      = NULL;

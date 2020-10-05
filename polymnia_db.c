@@ -9,7 +9,7 @@
 static void  o___WRITING_________o () { return; }
 
 char         /*===[[ write binary file ]]=================[ ------ [ ------ ]=*/
-poly_db_write_ylib    (tTAG *a_tag)
+poly_db_write_ylib    (tFUNC *a_tag)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -39,7 +39,7 @@ poly_db_write_tag     (tFILE *x_file)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   tTAG       *x_tag       = NULL;
+   tFUNC      *x_tag       = NULL;
    /*---(header)-------------------------*/
    DEBUG_OUTP   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
@@ -49,7 +49,7 @@ poly_db_write_tag     (tFILE *x_file)
    while (x_tag != NULL) {
       /*---(write)-----------------------*/
       DEBUG_OUTP   yLOG_info    ("tag"       , x_tag->name);
-      fwrite (x_tag  , sizeof (tTAG), 1, my.f_db);
+      fwrite (x_tag  , sizeof (tFUNC), 1, my.f_db);
       /*---(dive)------------------------*/
       rc = poly_db_write_ylib (x_tag);
       if (rc < 0) {
@@ -220,7 +220,7 @@ poly_db_read_tag      (tFILE *a_file, int a_count)
    char        rce         =  -10;
    char        rc          =    0;
    int         i           =    0;
-   tTAG       *x_tag       = NULL;
+   tFUNC      *x_tag       = NULL;
    int         x_nylib     =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -228,14 +228,14 @@ poly_db_read_tag      (tFILE *a_file, int a_count)
    DEBUG_INPT   yLOG_value   ("tag count" , a_count);
    for (i = 0; i < a_count; ++i) {
       /*---(allocate)-----------------------*/
-      x_tag = poly_tags_new ();
+      rc = poly_func_new (&x_tag);
       DEBUG_INPT   yLOG_point   ("x_tag"    , x_tag);
-      --rce;  if (x_tag == NULL) {
+      --rce;  if (rc < 0 || x_tag == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       /*---(read)---------------------------*/
-      fread  (x_tag, sizeof (tTAG), 1, my.f_db);
+      fread  (x_tag, sizeof (tFUNC), 1, my.f_db);
       DEBUG_INPT   yLOG_info    ("tag"       , x_tag->name);
       /*---(clear the pointers)-------------*/
       x_nylib      = x_tag->count;
@@ -246,14 +246,14 @@ poly_db_read_tag      (tFILE *a_file, int a_count)
       x_tag->work  = NULL;
       x_tag->btree = NULL;
       /*---(add to project)-----------------*/
-      rc = poly_files_tag_hook   (a_file, x_tag);
+      rc = poly_func_hook (a_file, x_tag);
       DEBUG_INPT   yLOG_value   ("addtag"    , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       /*---(into btree)---------------------*/
-      rc = poly_btree_hook (B_TAGS, x_tag, x_tag->name, &x_tag->btree);
+      rc = poly_btree_hook (B_FUNCS, x_tag, x_tag->name, &x_tag->btree);
       DEBUG_INPT   yLOG_value   ("btree"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -287,7 +287,7 @@ poly_db_read_file     (tPROJ *a_proj, int a_count)
    DEBUG_INPT   yLOG_value   ("file count", a_count);
    for (i = 0; i < a_count; ++i) {
       /*---(allocate)-----------------------*/
-      x_file = poly_files_new ();
+      x_file = poly_file_new ();
       DEBUG_INPT   yLOG_point   ("x_file"    , x_file);
       --rce;  if (x_file == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);

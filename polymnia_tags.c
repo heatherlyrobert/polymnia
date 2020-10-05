@@ -3,383 +3,105 @@
 
 
 
-#define   MAX_MACRO     26
-struct cMACRO {
-   char        name        [LEN_LABEL];
-   char        abbr;
-} s_macros [MAX_MACRO] = {
-
-   { "TOPS"    , 't' },
-   { "SUMM"    , 'r' },
-   { "VERB"    , 'v' },
-
-   { "ARGS"    , 'a' },
-   { "CONF"    , 'c' },
-   { "PROG"    , 'p' },
-
-   { "INPT"    , 'i' },
-   { "OUTP"    , 'o' },
-   { "SQLS"    , 'q' },
-
-   { "LOOP"    , 'l' },
-   { "USER"    , 'u' },
-   { "APIS"    , 'z' },
-   { "SIGN"    , 'x' },
-   { "SCRP"    , 'b' },
-   { "HIST"    , 'h' },
-
-   { "GRAF"    , 'g' },
-   { "WIND"    , 'w' },
-   { "DATA"    , 'd' },
-   { "ENVI"    , 'e' },
-   { "SORT"    , 's' },
-
-};
-
-
-
-/*====================------------------------------------====================*/
-/*===----                       tag working area                       ----===*/
-/*====================------------------------------------====================*/
-static void  o___WORK_AREA_______o () { return; }
-
-char
-poly_tags__wipe_work    (tWORK *a_dst)
-{
-   int         i           =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(positioning)--------------------*/
-   a_dst->beg      = -1;
-   a_dst->end      = -1;
-   for (i = 0; i < MAX_TEMPS; ++i)  a_dst->temp [i] = 0;
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-tWORK*
-poly_tags__new_work     (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tWORK      *x_new       = NULL;
-   int         x_tries     =    0;
-   /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(create cell)--------------------*/
-   while (x_new == NULL) {
-      ++x_tries;
-      x_new = (tWORK *) malloc (sizeof (tWORK));
-      if (x_tries > 10)   break;
-   }
-   DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
-   --rce;  if (x_new == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
-   }
-   /*---(populate)-----------------------*/
-   DEBUG_DATA   yLOG_note    ("wipe clean");
-   poly_tags__wipe_work (x_new);
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return x_new;
-}
-
-
 
 /*====================------------------------------------====================*/
 /*===----                     creation/destruction                     ----===*/
 /*====================------------------------------------====================*/
 static void  o___EXISTANCE_______o () { return; }
+/*>                                                                                                <* 
+ *> char                                                                                           <* 
+ *> poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, tFUNC **a_tag)   <* 
+ *> {                                                                                              <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                    <* 
+ *>    char        rce         =  -10;                                                             <* 
+ *>    char        rc          =    0;                                                             <* 
+ *>    tFUNC       *x_new       = NULL;                                                             <* 
+ *>    int         x_tries     =    0;                                                             <* 
+ *>    int         x_len       =    0;                                                             <* 
+ *>    /+---(begin)--------------------------+/                                                    <* 
+ *>    DEBUG_DATA   yLOG_enter   (__FUNCTION__);                                                   <* 
+ *>    /+---(defense)------------------------+/                                                    <* 
+ *>    DEBUG_DATA   yLOG_point   ("a_file"    , a_file);                                           <* 
+ *>    --rce;  if (a_file == NULL) {                                                               <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    DEBUG_DATA   yLOG_point   ("a_name"    , a_name);                                           <* 
+ *>    --rce;  if (a_name == NULL) {                                                               <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    DEBUG_DATA   yLOG_info    ("a_name"    , a_name);                                           <* 
+ *>    DEBUG_DATA   yLOG_char    ("a_type"    , a_type);                                           <* 
+ *>    --rce;  if (a_type == '\0' || strchr ("f_", a_type) == NULL) {                              <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    DEBUG_DATA   yLOG_value   ("a_line"    , a_line);                                           <* 
+ *>    --rce;  if (a_line <= 0) {                                                                  <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);                                            <* 
+ *>    /+---(check return)-------------------+/                                                    <* 
+ *>    DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);                                            <* 
+ *>    DEBUG_DATA   yLOG_point   ("*a_tag"    , *a_tag);                                           <* 
+ *>    --rce;  if (a_tag != NULL) {                                                                <* 
+ *>       if (*a_tag != NULL) {                                                                    <* 
+ *>          DEBUG_DATA   yLOG_note    ("already set to a particular tag");                        <* 
+ *>          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                        <* 
+ *>          return rce;                                                                           <* 
+ *>       }                                                                                        <* 
+ *>    }                                                                                           <* 
+ *>    /+---(create tag)---------------------+/                                                    <* 
+ *>    x_new = poly_func_new ();                                                                   <* 
+ *>    DEBUG_DATA   yLOG_point   ("x_new"     , x_new);                                            <* 
+ *>    --rce;  if (x_new == NULL) {                                                                <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    /+---(create cell)--------------------+/                                                    <* 
+ *>    x_new->work = poly_tags__new_work ();                                                       <* 
+ *>    DEBUG_DATA   yLOG_point   ("->work"    , x_new->work);                                      <* 
+ *>    --rce;  if (x_new->work == NULL) {                                                          <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    /+---(populate)-----------------------+/                                                    <* 
+ *>    DEBUG_DATA   yLOG_note    ("populate");                                                     <* 
+ *>    x_new->file   = a_file;                                                                     <* 
+ *>    strlcpy (x_new->name, a_name, LEN_TITLE);                                                   <* 
+ *>    x_new->type   = a_type;                                                                     <* 
+ *>    x_new->line   = a_line;                                                                     <* 
+ *>    /+---(into file list)-----------------+/                                                    <* 
+ *>    rc = poly_files_tag_hook   (a_file, x_new);                                                 <* 
+ *>    DEBUG_DATA   yLOG_value   ("addtag"    , rc);                                               <* 
+ *>    --rce;  if (rc < 0) {                                                                       <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    /+---(into btree)---------------------+/                                                    <* 
+ *>    rc = poly_btree_hook (B_FUNCS, x_new, x_new->name, &x_new->btree);                           <* 
+ *>    DEBUG_DATA   yLOG_value   ("btree"     , rc);                                               <* 
+ *>    --rce;  if (rc < 0) {                                                                       <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    /+---(create hint)--------------------+/                                                    <* 
+ *>    rc = poly_func__hint    (poly_btree_count (B_FUNCS) - 1, x_new->hint);                        <* 
+ *>    DEBUG_DATA   yLOG_value   ("hint"      , rc);                                               <* 
+ *>    --rce;  if (rc < 0) {                                                                       <* 
+ *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                           <* 
+ *>       return rce;                                                                              <* 
+ *>    }                                                                                           <* 
+ *>    DEBUG_DATA   yLOG_info    ("hint"      , x_new->hint);                                      <* 
+ *>    /+---(save)---------------------------+/                                                    <* 
+ *>    if (a_tag != NULL)  *a_tag = x_new;                                                         <* 
+ *>    /+---(complete)-----------------------+/                                                    <* 
+ *>    DEBUG_DATA   yLOG_exit    (__FUNCTION__);                                                   <* 
+ *>    return 0;                                                                                   <* 
+ *> }                                                                                              <*/
 
-char
-poly_tags__wipe    (tTAG *a_dst)
-{
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(master)-------------------------*/
-   a_dst->type     = '-';
-   a_dst->name [0] = '\0';
-   a_dst->line     = -1;
-   a_dst->hint [0] = '\0';
-   a_dst->image[0] = '\0';
-   a_dst->desc [0] = '\0';
-   a_dst->ready    = '?';
-   /*---(pointers)-----------------------*/
-   a_dst->file     = NULL;
-   a_dst->prev     = NULL;
-   a_dst->next     = NULL;
-   a_dst->work     = NULL;
-   a_dst->head     = NULL;
-   a_dst->tail     = NULL;
-   a_dst->count    = 0;
-   /*---(clear counts/stats)-------------*/
-   poly_cats_counts_clear (a_dst->counts);
-   poly_cats_stats_clear  (a_dst->stats);
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-tTAG*
-poly_tags_new           (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tTAG       *x_new       = NULL;
-   int         x_tries     =    0;
-   /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(create cell)--------------------*/
-   while (x_new == NULL) {
-      ++x_tries;
-      x_new = (tTAG *) malloc (sizeof (tTAG));
-      if (x_tries > 10)   break;
-   }
-   DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
-   --rce;  if (x_new == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
-   }
-   /*---(populate)-----------------------*/
-   DEBUG_DATA   yLOG_note    ("wipe clean");
-   poly_tags__wipe (x_new);
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return x_new;
-}
-
-char
-poly_tags_add           (tFILE *a_file, char *a_name, char a_type, int a_line, tTAG **a_tag)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tTAG       *x_new       = NULL;
-   int         x_tries     =    0;
-   int         x_len       =    0;
-   /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_point   ("a_file"    , a_file);
-   --rce;  if (a_file == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_point   ("a_name"    , a_name);
-   --rce;  if (a_name == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
-   DEBUG_DATA   yLOG_char    ("a_type"    , a_type);
-   --rce;  if (a_type == '\0' || strchr ("f_", a_type) == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_value   ("a_line"    , a_line);
-   --rce;  if (a_line <= 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);
-   DEBUG_DATA   yLOG_point   ("*a_tag"    , *a_tag);
-   --rce;  if (a_tag != NULL) {
-      if (*a_tag != NULL) {
-         DEBUG_DATA   yLOG_note    ("already set to a particular tag");
-         DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
-   }
-   /*---(create tag)---------------------*/
-   x_new = poly_tags_new ();
-   DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
-   --rce;  if (x_new == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(create cell)--------------------*/
-   x_new->work = poly_tags__new_work ();
-   DEBUG_DATA   yLOG_point   ("->work"    , x_new->work);
-   --rce;  if (x_new->work == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(populate)-----------------------*/
-   DEBUG_DATA   yLOG_note    ("populate");
-   x_new->file   = a_file;
-   strlcpy (x_new->name, a_name, LEN_TITLE);
-   x_new->type   = a_type;
-   x_new->line   = a_line;
-   /*---(into file list)-----------------*/
-   rc = poly_files_tag_hook   (a_file, x_new);
-   DEBUG_DATA   yLOG_value   ("addtag"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(into btree)---------------------*/
-   rc = poly_btree_hook (B_TAGS, x_new, x_new->name, &x_new->btree);
-   DEBUG_DATA   yLOG_value   ("btree"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(create hint)--------------------*/
-   rc = poly_tags__hint   (poly_btree_count (B_TAGS) - 1, x_new->hint);
-   DEBUG_DATA   yLOG_value   ("hint"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_info    ("hint"      , x_new->hint);
-   /*---(save)---------------------------*/
-   if (a_tag != NULL)  *a_tag = x_new;
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_tags_del           (tTAG **a_tag)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tTAG       *x_tag       = NULL;
-   /*---(beginning)----------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   DEBUG_DATA   yLOG_point   ("a_tag"     , a_tag);
-   --rce;  if (a_tag == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   x_tag = *a_tag;
-   DEBUG_DATA   yLOG_point   ("x_tag"     , x_tag);
-   --rce;  if (x_tag == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_note    (x_tag->name);
-   /*---(out of linked list)-------------*/
-   rc = poly_files_tag_unhook (x_tag);
-   DEBUG_DATA   yLOG_value   ("unhook"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(btree)--------------------------*/
-   rc = poly_btree_unhook (&x_tag->btree);
-   DEBUG_DATA   yLOG_value   ("unhook"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(free work)----------------------*/
-   DEBUG_DATA   yLOG_point   ("work"      , x_tag->work);
-   if (x_tag->work != NULL)  free (x_tag->work);
-   /*---(purge ylib links)---------------*/
-   rc = poly_ylib_purge_tag  (x_tag);
-   DEBUG_DATA   yLOG_value   ("purge ylib", rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(free main)----------------------*/
-   DEBUG_DATA   yLOG_note    ("free");
-   free (x_tag);
-   *a_tag = NULL;
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                        program level                         ----===*/
-/*====================------------------------------------====================*/
-static void  o___PROGRAM_________o () { return; }
-
-char
-poly_tags_init          (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(initialize)---------------------*/
-   rc = poly_btree_init (B_TAGS);
-   DEBUG_PROG   yLOG_value   ("init"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_tags_purge_file    (tFILE *a_file)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tTAG       *x_tag       = NULL;
-   tTAG       *x_next      = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_point   ("a_file"    , a_file);
-   --rce;  if (a_file == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(walk-through)-------------------*/
-   DEBUG_DATA   yLOG_value   ("->count"   , a_file->count);
-   x_tag = a_file->head;
-   while (x_tag != NULL) {
-      x_next = x_tag->next;
-      DEBUG_DATA   yLOG_point   ("x_tag"     , x_tag);
-      DEBUG_DATA   yLOG_info    ("->name"    , x_tag->name);
-      rc = poly_tags_del (&x_tag);
-      x_tag = x_next;
-   }
-   /*---(check)--------------------------*/
-   DEBUG_DATA   yLOG_value   ("->count"   , a_file->count);
-   --rce;  if (a_file->count > 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_tags_wrap          (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(walk through list)--------------*/
-   /*> rc = poly_btree_purge (B_TAGS);                                                <* 
-    *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
-    *> --rce;  if (rc < 0) {                                                          <* 
-    *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
-    *>    return rce;                                                                 <* 
-    *> }                                                                              <*/
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
 
 
 /*====================------------------------------------====================*/
@@ -387,62 +109,13 @@ poly_tags_wrap          (void)
 /*====================------------------------------------====================*/
 static void  o___SUPPORT_________o () { return; }
 
-char
-poly_tags_macro    (char *a_macro)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;           /* return code for errors         */
-   char        i           =    0;           /* return code for errors         */
-   static char x_macro     [LEN_LABEL] = "";
-   static char n           =   -1;
-   if (a_macro == NULL)  return '?';
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_senter  (__FUNCTION__);
-   if (strcmp (a_macro, x_macro) == 0) {
-      DEBUG_PROG   yLOG_snote   ("short-cut");
-      DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
-      return n;
-   }
-   DEBUG_PROG   yLOG_snote   (a_macro);
-   for (i = 0; i < MAX_MACRO; ++i) {
-      if (s_macros [i].name [0] != a_macro [0])            continue;
-      if (strncmp (s_macros [i].name, a_macro, 4) != 0)    continue;
-      strlcpy (x_macro, a_macro, LEN_LABEL);
-      n = i;
-      DEBUG_PROG   yLOG_schar   (s_macros [i].abbr);
-      DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
-      return s_macros [i].abbr;
-   }
-   DEBUG_PROG   yLOG_schar   ('?');
-   DEBUG_PROG   yLOG_sexitr  (__FUNCTION__, -1);
-   return '?';
-}
 
-char
-poly_tags__hint    (int n, char *a_label)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;           /* return code for errors         */
-   char       *x_1st       = "abcdefghijklmnopqrstuvwxyz";
-   int         x_1len      = strlen (x_1st);
-   char       *x_2nd       = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-   int         x_2len      = strlen (x_2nd);
-   --rce;  if (a_label == NULL)  return rce;
-   strlcpy (a_label, "··", LEN_LABEL);
-   --rce;  if (n < 0)            return rce;
-   --rce;  if (n > 1351)         return rce;
-   a_label [0] = x_1st [n / x_2len];
-   a_label [1] = x_2nd [n % x_2len];
-   a_label [2] = '\0';
-   return 0;
-}
-
-tTAG*
+tFUNC*
 poly_tags_byline        (tFILE *a_file, int a_line)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
-   tTAG       *u           = NULL;
+   tFUNC       *u           = NULL;
    int         c           =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_senter  (__FUNCTION__);
@@ -636,7 +309,7 @@ poly_tags_inventory     (tFILE *a_file)
       x_line = atoi (p);
       DEBUG_INPT   yLOG_value   ("line"      , x_line);
       /*---(done)------------------------*/
-      poly_tags_add (a_file, x_name, x_type, x_line, NULL);
+      poly_func_add (a_file, x_name, x_type, x_line, NULL);
       ++c;
    }
    rc = fclose (my.f_tags);
@@ -655,7 +328,7 @@ poly_tags_inventory     (tFILE *a_file)
    }
    /*---(summary)------------------------*/
    DEBUG_INPT   yLOG_value   ("c"         , c);
-   DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_TAGS));
+   DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_FUNCS));
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -669,7 +342,7 @@ poly_tags_inventory     (tFILE *a_file)
 static void  o___REVIEW__________o () { return; }
 
 char         /*-> extract the function desc ----------[ ------ [ge.850.137.A4]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_tags__desc         (tTAG *a_tag, char *a_beg)
+poly_tags__desc         (tFUNC *a_tag, char *a_beg)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -756,7 +429,7 @@ poly_tags__desc         (tTAG *a_tag, char *a_beg)
 }
 
 char
-poly_tags__scope        (tTAG *a_tag, int a_line)
+poly_tags__scope        (tFUNC *a_tag, int a_line)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -847,7 +520,7 @@ poly_tags__scope        (tTAG *a_tag, int a_line)
 }
 
 char
-poly_tags__linetype     (tFILE *a_file, tTAG *a_tag)
+poly_tags__linetype     (tFILE *a_file, tFUNC *a_tag)
 {
    /*---(locals)-----------+-----------+-*/
    int         i           =    0;
@@ -864,7 +537,7 @@ poly_tags__linetype     (tFILE *a_file, tTAG *a_tag)
       DEBUG_INPT   yLOG_note    ("debug type");
       ++a_tag->WORK_DCOUNT;
       poly_cats_lines (a_file, a_tag, 'D');
-      x_macro = poly_tags_macro (x_recd + 6);
+      x_macro = poly_debug__macro (x_recd + 6);
       if (a_tag != NULL) {
          if (a_tag->STATS_DMACRO == '-')         a_tag->STATS_DMACRO = x_macro;
          else if (a_tag->STATS_DMACRO != x_macro) {
@@ -910,13 +583,13 @@ poly_tags__linetype     (tFILE *a_file, tTAG *a_tag)
 }
 
 char
-poly_tags_readline      (tFILE *a_file, int *a_line, tTAG **a_tag)
+poly_tags_readline      (tFILE *a_file, int *a_line, tFUNC **a_tag)
 {
    /*---(locals)-----------+-----------+-*/
    int         rc          =    0;          /* generic return code            */
    char        rce         =  -10;          /* return code for errors         */
    int         x_len       =    0;          /* length of input record         */
-   static tTAG  *a_ptag    = NULL;
+   static tFUNC  *a_ptag    = NULL;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -1038,7 +711,7 @@ poly_tags_review        (tFILE *a_file)
    char        x_recd      [LEN_RECD];      /* input record                   */
    int         x_len       =    0;          /* length of input record         */
    int         x_line      =    0;
-   tTAG       *x_tag       = NULL;
+   tFUNC       *x_tag       = NULL;
    char       *p           = NULL;
    char       *q           = NULL;
    /*---(header)-------------------------*/
@@ -1130,7 +803,7 @@ poly_tags_review        (tFILE *a_file)
 }
 
 char
-poly_tags_addylib       (tTAG *a_tag, tYLIB *a_ylib)
+poly_tags_addylib       (tFUNC *a_tag, tYLIB *a_ylib)
 {
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
@@ -1179,12 +852,12 @@ poly_tags__unit      (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
    char        t           [LEN_RECD] = "[]";
-   tTAG       *u           = NULL;
+   tFUNC       *u           = NULL;
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "TAGS unit        : tags number unknown");
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "TAGS count       : %3d", poly_btree_count (B_TAGS));
+      snprintf (unit_answer, LEN_RECD, "TAGS count       : %3d", poly_btree_count (B_FUNCS));
       return unit_answer;
    }
    if (strncmp (unit_answer, "TAGS unit        :", 18) != 0)  return unit_answer;
@@ -1192,20 +865,20 @@ poly_tags__unit      (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "TAGS unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "entry"     )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_TAGS, i);
+      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         if (u->work != NULL)  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  work = y  %3d  %3d", i, t, u->line, u->WORK_BEG, u->WORK_END);
-         else                  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  NOWORK      -    -", i, t, u->line);
-      } else                   snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s   -  n/a         -    -", i, t);
+         if (u->work != NULL)  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->line, u->type, u->WORK_BEG, u->WORK_END);
+         else                  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  %c  non      -    -", i, t, u->line, u->type);
+      } else                   snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s   -  -  -        -    -", i, t);
    }
-   else if (strcmp (a_question, "lines"     )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_TAGS, i);
+   else if (strcmp (a_question, "stats"     )     == 0) {
+      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         snprintf (unit_answer, LEN_RECD, "TAGS lines  (%2d) : %-22.22s %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
+         snprintf (unit_answer, LEN_RECD, "TAGS stats  (%2d) : %-22.22s     ·   ·   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
       }  else
-         snprintf (unit_answer, LEN_RECD, "TAGS lines  (%2d) : %-22.22s   -   -   -   -   -   -", i, t, 0, 0, 0, 0, 0, 0);
+         snprintf (unit_answer, LEN_RECD, "TAGS stats  (%2d) : %-22.22s     ·   ·     -   -   -   -   -   -", i, t, 0, 0, 0, 0, 0, 0);
    }
    /*---(complete)-----------------------*/
    return unit_answer;

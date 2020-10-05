@@ -267,7 +267,7 @@ static void  o___ADDING__________o () { return; }
 #define  IN_TAG  if (a_tag != NULL && a_tag->work != NULL && (a_tag->STATS_SINGLE == 'y' || (a_tag->WORK_BEG >= 0 && a_tag->WORK_END < 0))) 
 
 char
-poly_cats_logic    (tTAG *a_tag, char a_type)
+poly_cats_logic    (tFUNC *a_tag, char a_type)
 {
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    switch (a_type) {
@@ -285,7 +285,7 @@ poly_cats_logic    (tTAG *a_tag, char a_type)
 #define  IN_TAGLINES  if (a_tag != NULL && a_tag->work != NULL && a_tag->WORK_BEG >= 0 && a_tag->WORK_END < 0) 
 
 char
-poly_cats_lines    (tFILE *a_file, tTAG *a_tag, char a_type)
+poly_cats_lines    (tFILE *a_file, tFUNC *a_tag, char a_type)
 {
    int         c           =     0;
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
@@ -356,10 +356,10 @@ poly_cats_lines    (tFILE *a_file, tTAG *a_tag, char a_type)
 static void  o___SUMMARY_________o () { return; }
 
 char
-poly_cats_debug    (tTAG *a_tag)
+poly_cats_debug    (tFUNC *a_tag)
 {
    /*---(style)--------------------------*/
-   if      (a_tag->WORK_DLONG   > 0 && a_tag->WORK_DSHORT  > 0)  a_tag->STATS_DSTYLE = 'b';
+   if      (a_tag->WORK_DLONG   > 0 && a_tag->WORK_DSHORT  > 0)   a_tag->STATS_DSTYLE = 'b';
    else if (a_tag->WORK_DLONG   > 0)                              a_tag->STATS_DSTYLE = 'l';
    else if (a_tag->WORK_DSHORT  > 0)                              a_tag->STATS_DSTYLE = 's';
    if (a_tag->WORK_DLONG + a_tag->WORK_DSHORT < a_tag->WORK_DCOUNT) {
@@ -403,7 +403,7 @@ poly_cats_debug    (tTAG *a_tag)
 }
 
 char
-poly_cats_tagsumm  (tTAG *a_tag)
+poly_cats_tagsumm  (tFUNC *a_tag)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =    0;
@@ -485,12 +485,12 @@ poly_cats__unit      (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
    char        t           [LEN_RECD] = "[]";
-   tTAG       *u           = NULL;
+   tFUNC      *u           = NULL;
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "CATS unit        : tag number unknown");
    if (i <  0)       return unit_answer;
    /*---(prepare)------------------------*/
-   u = (tTAG *) poly_btree_entry (B_TAGS, i);
+   u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
    if (u != NULL)  sprintf  (t, "[%.20s]", u->name);
    /*---(simple)-------------------------*/
    if        (strcmp (a_question, "complex"   )     == 0) {
@@ -505,30 +505,29 @@ poly_cats__unit      (char *a_question, int i)
                i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');
       }
    }
-   else if   (strcmp (a_question, "connect"   )     == 0) {
+   else if   (strcmp (a_question, "integ"     )     == 0) {
       if (u != NULL) {
-         snprintf (unit_answer, LEN_RECD, "CATS connect(%2d) : %-21.21s %c [%c%c.%c%c%c%c%c.%c%c%c%c]",
+         snprintf (unit_answer, LEN_RECD, "CATS integ  (%2d) : %-21.21s %c [%c%c.%c%c%c%c%c.%c%c%c%c]",
                i, t, u->STATS_SINGLE,
                u->STATS_LCALLS, u->STATS_GCALLS,
                u->STATS_FUNCS, u->STATS_INTERN, u->STATS_CSTD  , u->STATS_YLIB  , u->STATS_MSTRY,
                u->STATS_READ , u->STATS_WRITE , u->STATS_SYSTEM, u->STATS_RECURS);
       } else {
-         snprintf (unit_answer, LEN_RECD, "CATS connect(%2d) : %-21.21s %c [%c%c.%c%c%c%c%c.%c%c%c%c]",
+         snprintf (unit_answer, LEN_RECD, "CATS integ  (%2d) : %-21.21s %c [%c%c.%c%c%c%c%c.%c%c%c%c]",
                i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');
       }
    }
-   else if   (strcmp (a_question, "future"    )     == 0) {
+   else if   (strcmp (a_question, "watch"     )     == 0) {
       if (u != NULL) {
-         snprintf (unit_answer, LEN_RECD, "CATS future (%2d) : %-22.22s  [%c%c%c%c.%c%c%c.%c%c%c%c]",
-               i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');
+         snprintf (unit_answer, LEN_RECD, "CATS watch  (%2d) : %-22.22s  [%c%c%c.%c%c%c%c.%c%c%c%c]",
+               i, t, u->STATS_DSTYLE, u->STATS_DMACRO, u->STATS_DMATCH, u->STATS_NCURSE, u->STATS_OPENGL, u->STATS_WINDOW, u->STATS_MYX, u->STATS_PROTO, u->STATS_ECALLS, u->STATS_PTWO, u->STATS_PNUM);
       } else {
-         snprintf (unit_answer, LEN_RECD, "CATS future (%2d) : %-22.22s  [%c%c%c%c.%c%c%c.%c%c%c%c]",
+         snprintf (unit_answer, LEN_RECD, "CATS watch  (%2d) : %-22.22s  [%c%c%c.%c%c%c%c.%c%c%c%c]",
                i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');
       }
    }
    /*---(complete)-----------------------*/
    return unit_answer;
 }
-
 
 
