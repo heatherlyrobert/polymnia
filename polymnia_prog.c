@@ -75,7 +75,6 @@ PROG_init          (int a_argc, char *a_argv[])
    DEBUG_PROG   yLOG_note    ("initialize file pointers");
    my.f_db        = NULL;
    my.f_prog      = NULL;
-   my.f_tags      = NULL;
    my.f_flow      = NULL;
    my.f_extern    = NULL;
    my.f_mystry    = NULL;

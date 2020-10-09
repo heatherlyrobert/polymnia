@@ -555,7 +555,7 @@ poly_files_nexttag      (tFILE *a_file, tFUNC **a_tag)
 static void  o___UNITTEST________o () { return; }
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_files__unit     (char *a_question, int i)
+poly_file__unit         (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
    char        t           [LEN_RECD] = "[]";

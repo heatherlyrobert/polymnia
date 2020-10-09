@@ -14,21 +14,21 @@ poly_func__wipe         (tFUNC *a_dst)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(master)-------------------------*/
-   a_dst->type     = '-';
-   a_dst->name [0] = '\0';
-   a_dst->line     = -1;
-   a_dst->hint [0] = '\0';
-   a_dst->image[0] = '\0';
-   a_dst->desc [0] = '\0';
-   a_dst->ready    = '?';
+   a_dst->type        = '-';
+   a_dst->name [0]    = '\0';
+   a_dst->line        = -1;
+   a_dst->hint [0]    = '\0';
+   a_dst->image[0]    = '\0';
+   a_dst->purpose [0] = '\0';
+   a_dst->ready       = '?';
    /*---(pointers)-----------------------*/
-   a_dst->file     = NULL;
-   a_dst->prev     = NULL;
-   a_dst->next     = NULL;
-   a_dst->work     = NULL;
-   a_dst->head     = NULL;
-   a_dst->tail     = NULL;
-   a_dst->count    = 0;
+   a_dst->file        = NULL;
+   a_dst->prev        = NULL;
+   a_dst->next        = NULL;
+   a_dst->work        = NULL;
+   a_dst->head        = NULL;
+   a_dst->tail        = NULL;
+   a_dst->count       = 0;
    /*---(clear counts/stats)-------------*/
    poly_cats_counts_clear (a_dst->counts);
    poly_cats_stats_clear  (a_dst->stats);
@@ -329,8 +329,8 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
    }
    /*---(check return)-------------------*/
    DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
-   DEBUG_DATA   yLOG_point   ("*a_func"   , *a_func);
    --rce;  if (a_func != NULL) {
+      DEBUG_DATA   yLOG_point   ("*a_func"   , *a_func);
       if (*a_func != NULL) {
          DEBUG_DATA   yLOG_note    ("already set to a particular function");
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -626,6 +626,392 @@ poly_func_wrap          (void)
 
 
 /*====================------------------------------------====================*/
+/*===----                     reading from source                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___SOURCE__________o () { return; }
+
+char
+poly_func__purpose_copy (tFUNC *a_func, char *a_recd, int a_beg)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char       t            [LEN_RECD];
+   int        i            =    0;
+   int        j            =    0;
+   int        x_len        =    0;
+   /*---(prepare)------------------------*/
+   strlcpy (t, a_recd + a_beg, LEN_RECD);
+   x_len = strlen (t);
+   /*---(very end)-----------------------*/
+   for (i = 0; i < x_len; ++i)  {
+      if (strchr ("*=()[]", t [i]) != NULL) {
+         t [i] = '\0';
+         break;
+      }
+      if (t [i] == '-' && t [i + 1] == '-') {
+         t [i] = '\0';
+         break;
+      }
+   }
+   /*---(search)-------------------------*/
+   for (j = i; j > 0; --j)  {
+      if (strchr (" -=]", t [j]) == NULL)   break;
+      t [j] = '\0';
+   }
+   /*---(save)---------------------------*/
+   strlcpy (a_func->purpose, t, 36);
+   a_func->ready = 'y';
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char         /*-> extract the function purpose -------[ ------ [ge.850.137.A4]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+poly_func_purpose       (tFUNC *a_func, char *a_recd)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        t           [LEN_RECD];
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (a_func);
+   --rce;  if (a_func == NULL) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   strlcpy (a_func->purpose, "", 36);
+   DEBUG_DATA   yLOG_spoint  (a_recd);
+   --rce;  if (a_recd == NULL) {
+      a_func->ready = 'e';
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(current style)------------------*/
+   if (strncmp (a_recd, "/*-> ", 5) == 0) {
+      DEBUG_INPT   yLOG_snote   ("current format");
+      poly_func__purpose_copy (a_func, a_recd, 5);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(previous style)-----------------*/
+   if (strncmp (a_recd, "/*--> ",  6) == 0) {
+      DEBUG_INPT   yLOG_snote   ("previous 1 format");
+      poly_func__purpose_copy (a_func, a_recd, 6);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(previous style)-----------------*/
+   if (strncmp (a_recd, "/* ---- : ", 10) == 0) {
+      DEBUG_INPT   yLOG_snote   ("previous 2 format");
+      poly_func__purpose_copy (a_func, a_recd, 10);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(previous style)-----------------*/
+   if (strncmp (a_recd, "/*----: ",  8) == 0) {
+      DEBUG_INPT   yLOG_snote   ("previous 3 format");
+      poly_func__purpose_copy (a_func, a_recd, 8);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(previous style)-----------------*/
+   if (strncmp (a_recd, "/*===[[ ",  8) == 0) {
+      DEBUG_INPT   yLOG_snote   ("previous 3 format");
+      poly_func__purpose_copy (a_func, a_recd, 8);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(terse format)-------------------*/
+   if (strncmp (a_recd, "/* ",  3) == 0) {
+      DEBUG_INPT   yLOG_snote   ("terse format");
+      poly_func__purpose_copy (a_func, a_recd, 3);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(complete)-----------------------*/
+   a_func->ready = 'e';
+   --rce;
+   DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+   return rce;
+}
+
+char
+poly_func_return        (tFUNC *a_func, char *a_recd, char *a_prev)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        x_return    [LEN_RECD];
+   int         x_len       =    0;
+   char       *p           = NULL;
+   char       *r           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (a_func);
+   --rce;  if (a_func == NULL) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   a_func->STATS_SINGLE = '-';
+   a_func->STATS_SCOPE  = '-';
+   a_func->STATS_RTYPE  = '-';
+   DEBUG_DATA   yLOG_spoint  (a_recd);
+   --rce;  if (a_recd == NULL) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_spoint  (a_prev);
+   /*---(find name)----------------------*/
+   p = strstr (a_recd, a_func->name);
+   DEBUG_DATA   yLOG_spoint  (p);
+   /*---(figure spacing)-----------------*/
+   x_len = p - a_recd;
+   DEBUG_DATA   yLOG_sint    (x_len);
+   /*---(set single)---------------------*/
+   if (x_len == 0)   a_func->STATS_SINGLE = '-';
+   else              a_func->STATS_SINGLE = 'y';
+   DEBUG_DATA   yLOG_schar   (a_func->STATS_SINGLE);
+   /*---(oneline return type)------------*/
+   --rce;  if (a_func->STATS_SINGLE == 'y') {
+      strlcpy (x_return, a_recd, x_len);
+   }
+   /*---(multiline return type)----------*/
+   else {
+      if (a_prev == NULL) {
+         DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+         return rce;
+      }
+      r = strstr (a_prev, "/*");
+      if (r == NULL)  x_len = strlen (a_prev);
+      else            x_len = r - a_prev;
+      strlcpy (x_return, a_prev, x_len + 1);
+   }
+   strltrim (x_return, ySTR_SINGLE, LEN_RECD);
+   DEBUG_DATA   yLOG_snote   (x_return);
+   /*---(remove static)------------------*/
+   r = strstr (x_return, "static");
+   if (r == x_return) {
+      strlcpy  (x_return, x_return  + 7, LEN_RECD);
+      strltrim (x_return, ySTR_SINGLE, LEN_RECD);
+      a_func->STATS_SCOPE = 's';
+   }
+   /*---(classify scope)-----------------*/
+   else if (strstr (a_func->name, "__unit") != NULL)  a_func->STATS_SCOPE = 'u';
+   else if (strstr (a_func->name, "__test") != NULL)  a_func->STATS_SCOPE = 'u';
+   else if (strstr (a_func->name, "__"    ) != NULL)  a_func->STATS_SCOPE = 's';
+   else                                               a_func->STATS_SCOPE = 'g';
+   DEBUG_DATA   yLOG_schar   (a_func->STATS_SCOPE);
+   /*---(classify return type)-----------*/
+   if      (strcmp (x_return   , "char*"  ) == 0   )  a_func->STATS_RTYPE = 's';
+   else if (strcmp (x_return   , "char *" ) == 0   )  a_func->STATS_RTYPE = 's';
+   else if (strcmp (x_return   , "char"   ) == 0   )  a_func->STATS_RTYPE = 'c';
+   else if (strcmp (x_return   , "void"   ) == 0   )  a_func->STATS_RTYPE = 'v';
+   else if (strstr (x_return   , "*"      ) != NULL)  a_func->STATS_RTYPE = 'p';
+   else if (strcmp (x_return   , "short"  ) == 0   )  a_func->STATS_RTYPE = 'n';
+   else if (strcmp (x_return   , "int"    ) == 0   )  a_func->STATS_RTYPE = 'n';
+   else if (strcmp (x_return   , "long"   ) == 0   )  a_func->STATS_RTYPE = 'n';
+   else if (strcmp (x_return   , "float"  ) == 0   )  a_func->STATS_RTYPE = 'n';
+   else if (strcmp (x_return   , "double" ) == 0   )  a_func->STATS_RTYPE = 'n';
+   else                                               a_func->STATS_RTYPE = 'o';
+   DEBUG_DATA   yLOG_schar   (a_func->STATS_RTYPE);
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_func_params        (tFUNC *a_func, char *a_recd)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        t           [LEN_RECD]  = "";
+   char       *p           = NULL;
+   char       *r           = NULL;
+   char       *b           = NULL;
+   char       *e           = NULL;
+   int        x_len        =    0;
+   char       x_return     [LEN_RECD];
+   char       x_params     [LEN_RECD];
+   char       x_body       [LEN_RECD];
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (a_func);
+   --rce;  if (a_func == NULL) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   a_func->WORK_PARAMS  = 0;
+   a_func->STATS_PARAMS = '-';
+   a_func->STATS_PTWO   = '-';
+   a_func->STATS_PNUM   = '-';
+   DEBUG_DATA   yLOG_spoint  (a_recd);
+   --rce;  if (a_recd == NULL) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   strlcpy (t, a_recd, LEN_RECD);
+   /*---(isolate parms)------------------*/
+   b = strchr (a_recd, '(');
+   if (b != NULL) {
+      DEBUG_DATA   yLOG_note    ("found open paren");
+      e = strchr (a_recd, '{');
+      if (e == NULL)  x_len = LEN_RECD;
+      else            x_len = e - b;
+      strlcpy  (x_params, b, x_len);
+      strltrim (x_params, ySTR_EVERY , x_len);
+   }
+   /*---(get count)----------------------*/
+   if (b != NULL) {
+      a_func->WORK_PARAMS = -3;
+      if      (strcmp (x_params, "()")       == 0)  a_func->WORK_PARAMS = -2;
+      else if (strcmp (x_params, "( )")      == 0)  a_func->WORK_PARAMS = -2;
+      else if (strcmp (x_params, "(void)")   == 0)  a_func->WORK_PARAMS =  0;
+      else if (strcmp (x_params, "( void)")  == 0)  a_func->WORK_PARAMS =  0;
+      else if (strcmp (x_params, "(void )")  == 0)  a_func->WORK_PARAMS =  0;
+      else if (strcmp (x_params, "( void )") == 0)  a_func->WORK_PARAMS =  0;
+      else    a_func->WORK_PARAMS = strldcnt (x_params, ',', x_len) + 1;
+   }
+   /*---(find pointers)------------------*/
+   if (b != NULL) {
+      if      (strstr (x_params, "**"       ) != NULL)  a_func->STATS_PTWO = '#';
+      if      (strstr (x_params, "float*"   ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "float *"  ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "double*"  ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "double *" ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "short*"   ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "short *"  ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "int*"     ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "int *"    ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "long*"    ) != NULL)  a_func->STATS_PNUM = '#';
+      else if (strstr (x_params, "long *"   ) != NULL)  a_func->STATS_PNUM = '#';
+   }
+   /*---(no parameters)------------------*/
+   --rce;  if (b == NULL) {
+      a_func->WORK_PARAMS  = -2;
+      a_func->STATS_PARAMS = '?';
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(create statistic)---------------*/
+   poly_cats_exact   ("nparam"  , a_func->WORK_PARAMS  , &a_func->STATS_PARAMS, '0');
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_func_scope         (tFUNC *a_func, char *a_recd, char *a_prev)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char       *p           = NULL;
+   char       *r           = NULL;
+   char       *a           = NULL;
+   char       *b           = NULL;
+   int        x_len        =    0;
+   char       x_return     [LEN_RECD];
+   char       x_params     [LEN_RECD];
+   char       x_body       [LEN_RECD];
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
+   --rce;  if (a_func == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_point   ("a_recd"    , a_recd);
+   --rce;  if (a_recd == NULL) {
+      a_func->ready = 'e';
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(oneline)------------------------*/
+   x_len = poly_func_return (a_func, a_recd, a_prev);
+   /*> p = strstr (a_recd, a_func->name);                                             <* 
+    *> DEBUG_DATA   yLOG_point   ("p"         , p);                                   <* 
+    *> x_len = p - a_recd;                                                            <* 
+    *> DEBUG_DATA   yLOG_value   ("x_len"     , x_len);                               <* 
+    *> if (x_len == 0)   a_func->STATS_SINGLE = '-';                                  <* 
+    *> else              a_func->STATS_SINGLE = 'y';                                  <*/
+   DEBUG_DATA   yLOG_char    ("oneline"   , a_func->STATS_SINGLE);
+   /*---(oneline return type)------------*/
+   if (a_func->STATS_SINGLE == 'y') {
+      strlcpy (x_return, a_recd, x_len);
+      a_func->ready = ' ';
+   }
+   /*---(multiline return type)----------*/
+   else {
+      r = strstr (a_prev, "/*");
+      if (r == NULL)  x_len = strlen (a_prev);
+      else            x_len = r - a_prev;
+      strlcpy (x_return, a_prev, x_len + 1);
+      poly_func_purpose (a_func, r);
+   }
+   strltrim (x_return, ySTR_SINGLE, LEN_RECD);
+   DEBUG_DATA   yLOG_info    ("x_return"  , x_return);
+   /*---(classify return type)-----------*/
+   if      (strstr (x_return   , "char*" ) != NULL)  a_func->STATS_RTYPE = 's';
+   else if (strstr (x_return   , "char"  ) != NULL)  a_func->STATS_RTYPE = 'c';
+   else if (strstr (x_return   , "void"  ) != NULL)  a_func->STATS_RTYPE = 'v';
+   else if (strstr (x_return   , "*"     ) != NULL)  a_func->STATS_RTYPE = 'p';
+   else if (strstr (x_return   , "short" ) != NULL)  a_func->STATS_RTYPE = 'i';
+   else if (strstr (x_return   , "int"   ) != NULL)  a_func->STATS_RTYPE = 'i';
+   else if (strstr (x_return   , "long"  ) != NULL)  a_func->STATS_RTYPE = 'i';
+   else if (strstr (x_return   , "float" ) != NULL)  a_func->STATS_RTYPE = 'r';
+   else if (strstr (x_return   , "double") != NULL)  a_func->STATS_RTYPE = 'r';
+   else                                              a_func->STATS_RTYPE = 'o';
+   DEBUG_DATA   yLOG_char    ("rtype"     , a_func->STATS_RTYPE);
+   /*---(classify scope)-----------------*/
+   if      (strstr (a_func->name, "__unit") != NULL)  a_func->STATS_SCOPE = 'u';
+   else if (strstr (a_func->name, "__test") != NULL)  a_func->STATS_SCOPE = 'u';
+   else if (strstr (x_return   , "static") != NULL)  a_func->STATS_SCOPE = 's';
+   else if (strstr (a_func->name, "__"    ) != NULL)  a_func->STATS_SCOPE = 'f';
+   else                                              a_func->STATS_SCOPE = 'g';
+   DEBUG_DATA   yLOG_char    ("scope"     , a_func->STATS_SCOPE);
+   /*---(parms)--------------------------*/
+   a = strchr (p, '(');
+   if (a != NULL) {
+      DEBUG_DATA   yLOG_note    ("found open paren");
+      b = strchr (p, '{');
+      if (b == NULL)  x_len = LEN_RECD;
+      else            x_len = b - a;
+      strlcpy  (x_params         , a, x_len);
+      strltrim (x_params         , ySTR_EVERY , x_len);
+      a_func->WORK_PARAMS = -3;
+      if      (strcmp (x_params, "()")     == 0)  a_func->WORK_PARAMS = -2;
+      else if (strcmp (x_params, "(void)") == 0)  a_func->WORK_PARAMS =  0;
+      else    a_func->WORK_PARAMS = strldcnt (x_params, ',', x_len) + 1;
+      if (strstr (x_params, "**"       ) != NULL)  a_func->STATS_PTWO = '#';
+      if (strstr (x_params, "float*"   ) != NULL)  a_func->STATS_PNUM = '#';
+      if (strstr (x_params, "double*"  ) != NULL)  a_func->STATS_PNUM = '#';
+      if (strstr (x_params, "short*"   ) != NULL)  a_func->STATS_PNUM = '#';
+      if (strstr (x_params, "int*"     ) != NULL)  a_func->STATS_PNUM = '#';
+      if (strstr (x_params, "long*"    ) != NULL)  a_func->STATS_PNUM = '#';
+   } else {
+      a_func->WORK_PARAMS = -2;
+   }
+   poly_cats_exact   ("nparam"  , a_func->WORK_PARAMS  , &a_func->STATS_PARAMS, '0');
+   /*---(one-liner)----------------------*/
+   if (a_func->STATS_SINGLE == 'y') {
+      if (b != NULL) {
+         p = strchr (b, '}');
+         x_len = p - b;
+         strlcpy  (x_body, b, x_len);
+         strltrim (x_body, ySTR_EVERY , x_len);
+      }
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
@@ -635,8 +1021,9 @@ poly_func__unit         (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
    char        t           [LEN_RECD] = "[]";
-   char        r           [LEN_TERSE]= "   -";
-   char        s           [LEN_TERSE]= "   -";
+   char        r           [LEN_TERSE]= "  -";
+   char        s           [LEN_TERSE]= "  -";
+   char        q           [LEN_TERSE]= "  -";
    tFUNC      *u           = NULL;
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "FUNC unit        : function number unknown");
@@ -661,11 +1048,12 @@ poly_func__unit         (char *a_question, int i)
       u = (tFILE *) poly_btree_entry (B_FUNCS, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         if (u->WORK_BEG >= 0)  sprintf  (r, "%4d",     u->WORK_BEG);
-         if (u->WORK_END >= 0)  sprintf  (s, "%4d",     u->WORK_END);
-         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     �   �   %3d %3d %3d %3d %3d %3d   %4d %s %s", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL, u->line, r, s);
+         if (u->WORK_BEG    >= 0)  sprintf  (r, "%3d",     u->WORK_BEG);
+         if (u->WORK_END    >= 0)  sprintf  (s, "%3d",     u->WORK_END);
+         if (u->WORK_LOCALS >  0)  sprintf  (q, "%3d",     u->WORK_LOCALS);
+         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     �   �   %3d %3d %3d %3d %3d %3d   %3d %s %s   %s", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL, u->line, r, s, q);
       }  else
-         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     �   �     -   -   -   -   -   -      -    -    -", i, t);
+         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     �   �     -   -   -   -   -   -     -   -   -     -", i, t);
    }
    /*---(complete)-----------------------*/
    return unit_answer;

@@ -127,7 +127,7 @@ poly_rptg__dump_line    (tFUNC *a_tag)
    /*---(statistics)---------------------*/
    poly_rptg__stats  (a_tag);
    /*---(suffix)-------------------------*/
-   printf ("%-8.8s   %c   %-35.35s\n"  , a_tag->image, a_tag->ready, a_tag->desc);
+   printf ("%-8.8s   %c   %-35.35s\n"  , a_tag->image, a_tag->ready, a_tag->purpose);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -554,7 +554,7 @@ poly_rptg_htags         (tPROJ *a_proj)
          printf ("%-2s  %-25.25s   ", x_tag->hint  , x_tag->name);
          poly_rptg__stats (x_tag);
          printf ("%-25.25s     %-4d      ", x_tag->file->name, x_tag->line);
-         printf ("%-6.6s    %c    %-35.35s", x_tag->image, x_tag->ready, x_tag->desc);
+         printf ("%-6.6s    %c    %-35.35s", x_tag->image, x_tag->ready, x_tag->purpose);
          printf ("\n");
          rc = poly_files_nexttag (x_file, &x_tag);
          DEBUG_PROG   yLOG_value   ("nexttag"   , rc);

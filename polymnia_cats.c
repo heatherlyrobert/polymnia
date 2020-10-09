@@ -3,7 +3,6 @@
 
 
 
-
 #define     MAX_POS     50
 static struct cPOS    {
    char        grp;                         /* major groups of 11 stats       */
@@ -277,6 +276,12 @@ poly_cats_logic    (tFUNC *a_tag, char a_type)
    case 'c' :
       IN_TAG  ++(a_tag->WORK_CHOICE);
       break;
+   case 'C' :
+      IN_TAG  ++(a_tag->WORK_CHOICE);
+      a_tag->file->COUNT_SLOCL -= 2;
+      a_tag->file->proj->COUNT_SLOCL -= 2;
+      IN_TAG  (a_tag->COUNT_SLOCL) -= 2;
+      break;
    }
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -338,7 +343,6 @@ poly_cats_lines    (tFILE *a_file, tFUNC *a_tag, char a_type)
       DEBUG_DATA   yLOG_sint    (c);
       if (c < 0)  c = 0;
       DEBUG_DATA   yLOG_snote   ("slocl");
-      my.COUNT_SLOCL += c;
       a_file->COUNT_SLOCL += c;
       a_file->proj->COUNT_SLOCL += c;
       IN_TAGLINES  a_tag->COUNT_SLOCL += c;
@@ -520,7 +524,9 @@ poly_cats__unit      (char *a_question, int i)
    else if   (strcmp (a_question, "watch"     )     == 0) {
       if (u != NULL) {
          snprintf (unit_answer, LEN_RECD, "CATS watch  (%2d) : %-22.22s  [%c%c%c.%c%c%c%c.%c%c%c%c]",
-               i, t, u->STATS_DSTYLE, u->STATS_DMACRO, u->STATS_DMATCH, u->STATS_NCURSE, u->STATS_OPENGL, u->STATS_WINDOW, u->STATS_MYX, u->STATS_PROTO, u->STATS_ECALLS, u->STATS_PTWO, u->STATS_PNUM);
+               i, t, u->STATS_DSTYLE, u->STATS_DMACRO, u->STATS_DMATCH, u->STATS_NCURSE,
+               u->STATS_OPENGL, u->STATS_WINDOW, u->STATS_MYX, u->STATS_PROTO, u->STATS_ECALLS,
+               u->STATS_PTWO, u->STATS_PNUM);
       } else {
          snprintf (unit_answer, LEN_RECD, "CATS watch  (%2d) : %-22.22s  [%c%c%c.%c%c%c%c.%c%c%c%c]",
                i, t, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-');

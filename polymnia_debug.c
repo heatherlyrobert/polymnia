@@ -108,12 +108,20 @@ poly_debug__macro       (char *a_macro)
 static void  o___CHECKING________o () { return; }
 
 char
-poly_debug__counts      (tFUNC *a_func, char a_type)
+poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type)
 {
-   char        x_inside        = -1;
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        x_inside    =   -1;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_spoint  (a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(checking)-----------------------*/
    DEBUG_DATA   yLOG_spoint  (a_func);
    if (a_func == NULL) {
       DEBUG_DATA   yLOG_snote   ("function is null");
@@ -124,19 +132,19 @@ poly_debug__counts      (tFUNC *a_func, char a_type)
       } else {
          DEBUG_DATA   yLOG_sint    (a_func->WORK_BEG);
          DEBUG_DATA   yLOG_sint    (a_func->WORK_END);
+         x_inside = poly_func_inside (a_func);
       }
    }
-   x_inside = poly_func_inside (a_func);
    if (x_inside == 0)    DEBUG_DATA   yLOG_snote   ("inside a function");
    /*---(line counts)--------------------*/
-   ++a_func->file->proj->COUNT_LINES;
-   ++a_func->file->COUNT_LINES;
+   ++a_file->proj->COUNT_LINES;
+   ++a_file->COUNT_LINES;
    if (x_inside == 0) ++a_func->COUNT_LINES;
    /*---(debug counts)-------------------*/
    switch (a_type) {
    case 'n' :  case 'f' :
-      ++a_func->file->proj->COUNT_DEBUG;
-      ++a_func->file->COUNT_DEBUG;
+      ++a_file->proj->COUNT_DEBUG;
+      ++a_file->COUNT_DEBUG;
       if (x_inside == 0) {
          ++a_func->COUNT_DEBUG;
          ++a_func->WORK_DCOUNT;
@@ -144,13 +152,13 @@ poly_debug__counts      (tFUNC *a_func, char a_type)
       }
       break;
    case 'd' :
-      ++a_func->file->proj->COUNT_DOCS;
-      ++a_func->file->COUNT_DOCS;
+      ++a_file->proj->COUNT_DOCS;
+      ++a_file->COUNT_DOCS;
       if (x_inside == 0) ++a_func->COUNT_DOCS;
       break;
    case 'e' :
-      ++a_func->file->proj->COUNT_EMPTY;
-      ++a_func->file->COUNT_EMPTY;
+      ++a_file->proj->COUNT_EMPTY;
+      ++a_file->COUNT_EMPTY;
       if (x_inside == 0) ++a_func->COUNT_EMPTY;
       break;
    }
@@ -160,24 +168,20 @@ poly_debug__counts      (tFUNC *a_func, char a_type)
 }
 
 char
-poly_debug_line         (tFUNC *a_func, char *a_recd)
+poly_debug_line         (tFILE *a_file, tFUNC *a_func, char *a_recd)
 {
    /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;           /* return code for errors         */
+   char        rce         =  -10;
    char        x_macro     =  '-';
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    DEBUG_INPT   yLOG_point   ("a_func"    , a_func);
-   --rce;  if (a_func  == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("file"      , a_func->file);
-   --rce;  if (a_func->file == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
    DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
    --rce;  if (a_recd == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -193,15 +197,18 @@ poly_debug_line         (tFUNC *a_func, char *a_recd)
          return rce;
       }
       DEBUG_INPT   yLOG_note    ("valid DEBUG debugging macro line");
-      poly_debug__counts (a_func, 'n');
-      /*---(get type)--------------------*/
-      x_macro = poly_debug__macro (a_recd + 6);
-      /*---(first debug)-----------------*/
-      if (a_func->STATS_DMACRO == '-')    a_func->STATS_DMACRO = x_macro;
-      /*---(additional debug)------------*/
-      else if (a_func->STATS_DMACRO != x_macro) {
-         if      (a_func->STATS_DMACRO == 't') a_func->STATS_DMACRO = x_macro;
-         else if (x_macro              != 't') a_func->STATS_DMACRO = '!';
+      poly_debug__counts (a_file, a_func, 'n');
+      /*---(function level)--------------*/
+      if (a_func != NULL) {
+         /*---(type)---------------------*/
+         x_macro = poly_debug__macro (a_recd + 6);
+         /*---(first debug)--------------*/
+         if (a_func->STATS_DMACRO == '-')    a_func->STATS_DMACRO = x_macro;
+         /*---(additional debug)---------*/
+         else if (a_func->STATS_DMACRO != x_macro) {
+            if      (a_func->STATS_DMACRO == 't') a_func->STATS_DMACRO = x_macro;
+            else if (x_macro              != 't') a_func->STATS_DMACRO = '!';
+         }
       }
       /*---(done)------------------------*/
    }
@@ -213,18 +220,18 @@ poly_debug_line         (tFUNC *a_func, char *a_recd)
          return rce;
       }
       DEBUG_INPT   yLOG_note    ("valid yLOG non-macro debugging line");
-      poly_debug__counts (a_func, 'f');
+      poly_debug__counts (a_file, a_func, 'f');
    }
    /*---(check comments)-----------------*/
    else  if (a_recd [0] == '/' && a_recd [1] == '*') {
-      poly_debug__counts (a_func, 'd');
+      poly_debug__counts (a_file, a_func, 'd');
    }
    else  if (a_recd [0] == '*' && strchr (" >/", a_recd [1]) != NULL) {
-      poly_debug__counts (a_func, 'd');
+      poly_debug__counts (a_file, a_func, 'd');
    }
    /*---(check empties)------------------*/
    else if (strlen  (a_recd) == 0) {
-      poly_debug__counts (a_func, 'e');
+      poly_debug__counts (a_file, a_func, 'e');
    }
    /*---(other)--------------------------*/
    else {

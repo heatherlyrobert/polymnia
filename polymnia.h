@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8c"
-#define     P_VERTXT    "broke out debugging, comments, and empties into separate file"
+#define     P_VERNUM    "0.8d"
+#define     P_VERTXT    "revised, improved, and unit tested function returns, scope, and params"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -141,8 +141,8 @@
 #include    <string.h>       /* CLIBC   standard string handling              */
 #include    <unistd.h>       /* CLIBC   standard unix system handling         */
 #include    <math.h>         /* CLIBC   standard expanded mathematics         */
-
-#include  <dirent.h>
+#include    <dirent.h>
+#include    <sys/stat.h>
 
 
 /*---(heatherly made)--------------------*/
@@ -158,6 +158,7 @@
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 typedef     struct      dirent      tDIRENT;
+typedef     struct      stat        tSTAT;
 
 typedef     struct      cMY         tMY;
 typedef     struct      cPROJ       tPROJ;
@@ -199,7 +200,6 @@ typedef     struct      cEXTERN     tEXTERN;
 
 
 #define     F_DB        "/var/lib/polymnia/polymnia.db"
-#define     F_CTAGS     "polymnia.ctag"
 #define     F_CFLOW     "polymnia.cflow"
 #define     F_EXTERN    "/var/lib/polymnia/external.txt"
 #define     F_MYSTRY    "polymnia.mystry"
@@ -233,7 +233,6 @@ struct cMY {
    /*---(files)---------------*/
    FILE       *f_db;                   /* shared database of tags             */
    FILE       *f_prog;                 /* current program source file         */
-   FILE       *f_tags;                 /* ctags input file                    */
    FILE       *f_flow;                 /* cflow input file                    */
    FILE       *f_extern;               /* shared external function list       */
    FILE       *f_mystry;               /* local mystery external calls        */
@@ -363,12 +362,12 @@ struct cFILE {
 
 struct cFUNC {
    /*---(master)-------------------------*/
-   char        type;
-   char        name        [LEN_TITLE];
-   int         line;
-   char        hint        [3];
-   char        image       [10];
-   char        desc        [40];
+   char        type;                        /* 'f' normal, '_' separator      */
+   char        name        [LEN_TITLE];     /* c function name                */
+   int         line;                        /* line in source file            */
+   char        hint        [LEN_SHORT];     /* two-char navigation hint       */
+   char        image       [LEN_TERSE];     /* function end-use image         */
+   char        purpose     [LEN_DESC];      /* short description of purpose   */
    char        ready;
    /*---(new stats interface)------------*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
@@ -521,12 +520,11 @@ char        poly_files_list         (void);
 tFILE*      poly_files_search       (char *a_name);
 /*---(tags)-----------------*/
 char        poly_files_nexttag      (tFILE *a_file, tFUNC **a_tag);
-char*       poly_files__unit        (char *a_question, int n);
+char*       poly_file__unit         (char *a_question, int n);
 
 tFUNC*      poly_tags_byline        (tFILE *a_file, int a_line);
 char        poly_tags_inventory     (tFILE *a_file);
 char        poly_tags_readline      (tFILE *a_file, int *a_line, tFUNC **a_tag);
-char        poly_tags_review        (tFILE *a_file);
 char        poly_tags_addylib       (tFUNC *a_tag, tYLIB *a_ylib);
 char*       poly_tags__unit         (char *a_question, int n);
 
@@ -617,8 +615,8 @@ char        poly_ylib_purge_tag     (tFUNC *a_tag);
 /*---(support)--------------*/
 char        poly_debug__macro       (char *a_macro);
 /*---(checking)-------------*/
-char        poly_debug_line         (tFUNC *a_func, char *a_recd);
-char        poly_debug__counts      (tFUNC *a_func, char a_type);
+char        poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type);
+char        poly_debug_line         (tFILE *a_file, tFUNC *a_func, char *a_recd);
 /*---(stats)----------------*/
 char        poly_debug_cflow        (tFUNC *a_func, char a_type, char a_more);
 char        poly_debug_function     (tFUNC *a_func);
@@ -648,7 +646,26 @@ char        poly_func_current       (tFILE *a_file, int a_line, tFUNC **a_func);
 char        poly_func_init          (void);
 char        poly_func_purge         (tFILE *a_file);
 char        poly_func_wrap          (void);
+/*---(source)---------------*/
+char        poly_func_purpose       (tFUNC *a_func, char *a_recd);
+char        poly_func_return        (tFUNC *a_func, char *a_recd, char *a_prev);
+char        poly_func_params        (tFUNC *a_func, char *a_recd);
+char        poly_func_scope         (tFUNC *a_func, char *a_recd, char *a_prev);
 /*---(unittest)-------------*/
 char*       poly_func__unit         (char *a_question, int i);
+
+
+
+char        poly_code__unquote      (char *a_dst, char *a_src, int a_max);
+char        poly_code__oneliners    (tFILE *a_file, char *a_recd);
+char        poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd);
+char        poly_code__indent       (tFUNC *a_func, char *a_recd);
+char        poly_code_review        (tFILE *a_file);
+
+
+char        poly_tags__create       (tFILE *a_file);
+char        poly_tags__cleanup      (void);
+char        poly_tags__handler      (tFILE *a_file, char *a_recd);
+char        poly_tags_inventory     (tFILE *a_file);
 
 

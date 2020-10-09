@@ -79,7 +79,7 @@ poly_action_generate    (void)
    while (x_file != NULL) {
       rc = poly_tags_inventory (x_file);
       DEBUG_PROG   yLOG_value   ("inventory" , rc);
-      rc = poly_tags_review    (x_file);
+      rc = poly_code_review    (x_file);
       DEBUG_PROG   yLOG_value   ("review"    , rc);
       x_file = x_file->next;
       DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
