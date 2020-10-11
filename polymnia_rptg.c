@@ -529,12 +529,12 @@ poly_rptg_htags         (tPROJ *a_proj)
       DEBUG_PROG   yLOG_info    ("file name" , x_file->name);
       printf ("%-29.29s   FILE\n", x_file->name);
       if (my.g_mode == MODE_HTAGS) {
-         sprintf (a, "lines : %4d  %5d", x_file->COUNT_LINES, my.COUNT_LINES);
-         sprintf (b, "empty : %4d  %5d", x_file->COUNT_EMPTY, my.COUNT_EMPTY);
-         sprintf (c, "docs  : %4d  %5d", x_file->COUNT_DOCS , my.COUNT_DOCS );
-         sprintf (d, "debug : %4d  %5d", x_file->COUNT_DEBUG, my.COUNT_DEBUG);
-         sprintf (e, "code  : %4d  %5d", x_file->COUNT_CODE , my.COUNT_CODE );
-         sprintf (f, "slocl : %4d  %5d", x_file->COUNT_SLOCL, my.COUNT_SLOCL);
+         sprintf (a, "lines : %4d  %5d", x_file->COUNT_LINES, x_file->proj->COUNT_LINES);
+         sprintf (b, "empty : %4d  %5d", x_file->COUNT_EMPTY, x_file->proj->COUNT_EMPTY);
+         sprintf (c, "docs  : %4d  %5d", x_file->COUNT_DOCS , x_file->proj->COUNT_DOCS );
+         sprintf (d, "debug : %4d  %5d", x_file->COUNT_DEBUG, x_file->proj->COUNT_DEBUG);
+         sprintf (e, "code  : %4d  %5d", x_file->COUNT_CODE , x_file->proj->COUNT_CODE );
+         sprintf (f, "slocl : %4d  %5d", x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL);
          sprintf (g, "function (%d)"   , x_file->count);
          printf ("%-29.29s   o                   c                                                          \n", a);
          printf ("%-29.29s   n                 l h r i m          i     m        r   d d d  c o w      e    \n", b);
@@ -546,7 +546,7 @@ poly_rptg_htags         (tPROJ *a_proj)
          printf ("%-29.29s      [------complexity-------] [------integration------] [----watch-points-------]  [-complexity--] [-integration-] [-watch-point-]  [----source-file----------]   [line]    [-type-] [rdy] [-----------description-------------]\n", g);
       }
       x_tag = NULL;
-      rc = poly_files_nexttag (x_file, &x_tag);
+      rc = poly_code_nextfunc (x_file, &x_tag);
       DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
       DEBUG_PROG   yLOG_point   ("x_tag"     , x_tag);
       while (rc >= 0)  {
@@ -556,7 +556,7 @@ poly_rptg_htags         (tPROJ *a_proj)
          printf ("%-25.25s     %-4d      ", x_tag->file->name, x_tag->line);
          printf ("%-6.6s    %c    %-35.35s", x_tag->image, x_tag->ready, x_tag->purpose);
          printf ("\n");
-         rc = poly_files_nexttag (x_file, &x_tag);
+         rc = poly_code_nextfunc (x_file, &x_tag);
          DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
          DEBUG_PROG   yLOG_point   ("x_tag"     , x_tag);
       }

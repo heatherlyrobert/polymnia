@@ -449,6 +449,8 @@ poly_func_enter         (tFUNC *a_func, int a_line)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_note    (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (a_func       == NULL)             return rce;
    --rce;  if (a_func->work == NULL)             return rce;
@@ -476,6 +478,8 @@ poly_func_exit          (tFUNC *a_func, int a_line)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_note    (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (a_func       == NULL)             return rce;
    --rce;  if (a_func->work == NULL)             return rce;
@@ -502,9 +506,15 @@ poly_func_inside        (tFUNC *a_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_note    (__FUNCTION__);
    /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
    --rce;  if (a_func       == NULL)   return rce;
+   /*---(filter)-------------------------*/
+   DEBUG_DATA   yLOG_point   ("work"      , a_func->work);
    --rce;  if (a_func->work == NULL)   return rce;
+   DEBUG_DATA   yLOG_complex ("beg/end"   , "%3d, %3d", a_func->WORK_BEG, a_func->WORK_END);
    --rce;  if (a_func->WORK_BEG <  0)  return rce;
    --rce;  if (a_func->WORK_END >  0)  return rce;
    /*---(complete)-----------------------*/
@@ -876,6 +886,8 @@ poly_func_params        (tFUNC *a_func, char *a_recd)
    /*---(find pointers)------------------*/
    if (b != NULL) {
       if      (strstr (x_params, "**"       ) != NULL)  a_func->STATS_PTWO = '#';
+      else if (strstr (x_params, "[]"       ) != NULL)  a_func->STATS_PTWO = '#';
+      else if (strstr (x_params, "[ ]"      ) != NULL)  a_func->STATS_PTWO = '#';
       if      (strstr (x_params, "float*"   ) != NULL)  a_func->STATS_PNUM = '#';
       else if (strstr (x_params, "float *"  ) != NULL)  a_func->STATS_PNUM = '#';
       else if (strstr (x_params, "double*"  ) != NULL)  a_func->STATS_PNUM = '#';
@@ -898,114 +910,6 @@ poly_func_params        (tFUNC *a_func, char *a_recd)
    poly_cats_exact   ("nparam"  , a_func->WORK_PARAMS  , &a_func->STATS_PARAMS, '0');
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_func_scope         (tFUNC *a_func, char *a_recd, char *a_prev)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   char       *p           = NULL;
-   char       *r           = NULL;
-   char       *a           = NULL;
-   char       *b           = NULL;
-   int        x_len        =    0;
-   char       x_return     [LEN_RECD];
-   char       x_params     [LEN_RECD];
-   char       x_body       [LEN_RECD];
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_point   ("a_recd"    , a_recd);
-   --rce;  if (a_recd == NULL) {
-      a_func->ready = 'e';
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(oneline)------------------------*/
-   x_len = poly_func_return (a_func, a_recd, a_prev);
-   /*> p = strstr (a_recd, a_func->name);                                             <* 
-    *> DEBUG_DATA   yLOG_point   ("p"         , p);                                   <* 
-    *> x_len = p - a_recd;                                                            <* 
-    *> DEBUG_DATA   yLOG_value   ("x_len"     , x_len);                               <* 
-    *> if (x_len == 0)   a_func->STATS_SINGLE = '-';                                  <* 
-    *> else              a_func->STATS_SINGLE = 'y';                                  <*/
-   DEBUG_DATA   yLOG_char    ("oneline"   , a_func->STATS_SINGLE);
-   /*---(oneline return type)------------*/
-   if (a_func->STATS_SINGLE == 'y') {
-      strlcpy (x_return, a_recd, x_len);
-      a_func->ready = ' ';
-   }
-   /*---(multiline return type)----------*/
-   else {
-      r = strstr (a_prev, "/*");
-      if (r == NULL)  x_len = strlen (a_prev);
-      else            x_len = r - a_prev;
-      strlcpy (x_return, a_prev, x_len + 1);
-      poly_func_purpose (a_func, r);
-   }
-   strltrim (x_return, ySTR_SINGLE, LEN_RECD);
-   DEBUG_DATA   yLOG_info    ("x_return"  , x_return);
-   /*---(classify return type)-----------*/
-   if      (strstr (x_return   , "char*" ) != NULL)  a_func->STATS_RTYPE = 's';
-   else if (strstr (x_return   , "char"  ) != NULL)  a_func->STATS_RTYPE = 'c';
-   else if (strstr (x_return   , "void"  ) != NULL)  a_func->STATS_RTYPE = 'v';
-   else if (strstr (x_return   , "*"     ) != NULL)  a_func->STATS_RTYPE = 'p';
-   else if (strstr (x_return   , "short" ) != NULL)  a_func->STATS_RTYPE = 'i';
-   else if (strstr (x_return   , "int"   ) != NULL)  a_func->STATS_RTYPE = 'i';
-   else if (strstr (x_return   , "long"  ) != NULL)  a_func->STATS_RTYPE = 'i';
-   else if (strstr (x_return   , "float" ) != NULL)  a_func->STATS_RTYPE = 'r';
-   else if (strstr (x_return   , "double") != NULL)  a_func->STATS_RTYPE = 'r';
-   else                                              a_func->STATS_RTYPE = 'o';
-   DEBUG_DATA   yLOG_char    ("rtype"     , a_func->STATS_RTYPE);
-   /*---(classify scope)-----------------*/
-   if      (strstr (a_func->name, "__unit") != NULL)  a_func->STATS_SCOPE = 'u';
-   else if (strstr (a_func->name, "__test") != NULL)  a_func->STATS_SCOPE = 'u';
-   else if (strstr (x_return   , "static") != NULL)  a_func->STATS_SCOPE = 's';
-   else if (strstr (a_func->name, "__"    ) != NULL)  a_func->STATS_SCOPE = 'f';
-   else                                              a_func->STATS_SCOPE = 'g';
-   DEBUG_DATA   yLOG_char    ("scope"     , a_func->STATS_SCOPE);
-   /*---(parms)--------------------------*/
-   a = strchr (p, '(');
-   if (a != NULL) {
-      DEBUG_DATA   yLOG_note    ("found open paren");
-      b = strchr (p, '{');
-      if (b == NULL)  x_len = LEN_RECD;
-      else            x_len = b - a;
-      strlcpy  (x_params         , a, x_len);
-      strltrim (x_params         , ySTR_EVERY , x_len);
-      a_func->WORK_PARAMS = -3;
-      if      (strcmp (x_params, "()")     == 0)  a_func->WORK_PARAMS = -2;
-      else if (strcmp (x_params, "(void)") == 0)  a_func->WORK_PARAMS =  0;
-      else    a_func->WORK_PARAMS = strldcnt (x_params, ',', x_len) + 1;
-      if (strstr (x_params, "**"       ) != NULL)  a_func->STATS_PTWO = '#';
-      if (strstr (x_params, "float*"   ) != NULL)  a_func->STATS_PNUM = '#';
-      if (strstr (x_params, "double*"  ) != NULL)  a_func->STATS_PNUM = '#';
-      if (strstr (x_params, "short*"   ) != NULL)  a_func->STATS_PNUM = '#';
-      if (strstr (x_params, "int*"     ) != NULL)  a_func->STATS_PNUM = '#';
-      if (strstr (x_params, "long*"    ) != NULL)  a_func->STATS_PNUM = '#';
-   } else {
-      a_func->WORK_PARAMS = -2;
-   }
-   poly_cats_exact   ("nparam"  , a_func->WORK_PARAMS  , &a_func->STATS_PARAMS, '0');
-   /*---(one-liner)----------------------*/
-   if (a_func->STATS_SINGLE == 'y') {
-      if (b != NULL) {
-         p = strchr (b, '}');
-         x_len = p - b;
-         strlcpy  (x_body, b, x_len);
-         strltrim (x_body, ySTR_EVERY , x_len);
-      }
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -1036,7 +940,17 @@ poly_func__unit         (char *a_question, int i)
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "FUNC unit        : question unknown");
    /*---(complex)------------------------*/
-   if (strcmp (a_question, "entry"     )     == 0) {
+   if (strcmp (a_question, "head"      )     == 0) {
+      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
+      if (u != NULL) {
+         sprintf  (t, "[%.20s]", u->name);
+         sprintf  (s, "[%.6s]" , u->image);
+         sprintf  (r, "[%.40s]", u->purpose);
+         snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : %-22.22s %-8.8s  %2d%-42.42s  %c", i, t, s, strlen (u->purpose), r, u->ready);
+      }  else
+         snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : []                     []         0[]                                          -", i);
+   }
+   else if (strcmp (a_question, "entry"     )     == 0) {
       u = (tFILE *) poly_btree_entry (B_FUNCS, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);

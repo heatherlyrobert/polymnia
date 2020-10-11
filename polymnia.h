@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8d"
-#define     P_VERTXT    "revised, improved, and unit tested function returns, scope, and params"
+#define     P_VERNUM    "0.8e"
+#define     P_VERTXT    "code module unit tested and so htags is back and beautiful"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -519,7 +519,7 @@ char        poly_files_review       (tPROJ *a_proj);
 char        poly_files_list         (void);
 tFILE*      poly_files_search       (char *a_name);
 /*---(tags)-----------------*/
-char        poly_files_nexttag      (tFILE *a_file, tFUNC **a_tag);
+/*---(unittest)-------------*/
 char*       poly_file__unit         (char *a_question, int n);
 
 tFUNC*      poly_tags_byline        (tFILE *a_file, int a_line);
@@ -650,7 +650,6 @@ char        poly_func_wrap          (void);
 char        poly_func_purpose       (tFUNC *a_func, char *a_recd);
 char        poly_func_return        (tFUNC *a_func, char *a_recd, char *a_prev);
 char        poly_func_params        (tFUNC *a_func, char *a_recd);
-char        poly_func_scope         (tFUNC *a_func, char *a_recd, char *a_prev);
 /*---(unittest)-------------*/
 char*       poly_func__unit         (char *a_question, int i);
 
@@ -660,6 +659,14 @@ char        poly_code__unquote      (char *a_dst, char *a_src, int a_max);
 char        poly_code__oneliners    (tFILE *a_file, char *a_recd);
 char        poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd);
 char        poly_code__indent       (tFUNC *a_func, char *a_recd);
+char        poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev);
+char        poly_code_nextfunc      (tFILE *a_file, tFUNC **a_func);
+char        poly_code__open         (tFILE *a_file);
+char        poly_code__read         (int *a_line, char *a_curr, char *a_prev);
+char        poly_code__close        (void);
+char        poly_code__before       (tFILE *a_file, tFUNC **a_func);
+char        poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr, char *a_prev);
+char        poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr);
 char        poly_code_review        (tFILE *a_file);
 
 

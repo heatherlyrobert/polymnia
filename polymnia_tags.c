@@ -331,184 +331,6 @@ poly_tags_inventory     (tFILE *a_file)
 /*====================------------------------------------====================*/
 static void  o___REVIEW__________o () { return; }
 
-/*> char         /+-> extract the function desc ----------[ ------ [ge.850.137.A4]+/ /+-[02.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
- *> poly_tags__desc         (tFUNC *a_tag, char *a_beg)                                                                            <* 
- *> {                                                                                                                              <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                    <* 
- *>    char        rce         =  -10;                                                                                             <* 
- *>    char       x_desc       [LEN_RECD];                                                                                         <* 
- *>    int        i            =    0;                                                                                             <* 
- *>    /+---(defense)------------------------+/                                                                                    <* 
- *>    --rce;  if (a_beg == NULL) {                                                                                                <* 
- *>       a_tag->ready = 'e';                                                                                                      <* 
- *>       return rce;                                                                                                              <* 
- *>    }                                                                                                                           <* 
- *>    --rce;  if (strlen (my.s_prev) < 70) {                                                                                      <* 
- *>       return rce;                                                                                                              <* 
- *>    }                                                                                                                           <* 
- *>    /+---(header)-------------------------+/                                                                                    <* 
- *>    DEBUG_DATA   yLOG_senter  (__FUNCTION__);                                                                                   <* 
- *>    /+---(current style)------------------+/                                                                                    <* 
- *>    if (strncmp (a_beg, "/+-> ", 5) == 0) {                                                                                     <* 
- *>       DEBUG_INPT   yLOG_snote   ("current format");                                                                            <* 
- *>       strlcpy (x_desc, a_beg + 5, 35);                                                                                         <* 
- *>       for (i = 35; i > 0; --i)  {                                                                                              <* 
- *>          if (strchr (" -=]", x_desc [i]) == NULL)   break;                                                                     <* 
- *>          x_desc [i] = '\0';                                                                                                    <* 
- *>       }                                                                                                                        <* 
- *>       strlcpy (a_tag->desc, x_desc, 35);                                                                                       <* 
- *>       a_tag->ready = 'y';                                                                                                      <* 
- *>       DEBUG_INPT   yLOG_sexit   (__FUNCTION__);                                                                                <* 
- *>       return 0;                                                                                                                <* 
- *>    }                                                                                                                           <* 
- *>    /+---(previous style)-----------------+/                                                                                    <* 
- *>    if (strncmp (a_beg, "/+--> ",  6) == 0) {                                                                                   <* 
- *>       DEBUG_INPT   yLOG_snote   ("previous 1 format");                                                                         <* 
- *>       strlcpy (x_desc, a_beg +  6, 35);                                                                                        <* 
- *>       for (i = 35; i > 0; --i)  {                                                                                              <* 
- *>          if (strchr (" -=]", x_desc [i]) == NULL)   break;                                                                     <* 
- *>          x_desc [i] = '\0';                                                                                                    <* 
- *>       }                                                                                                                        <* 
- *>       strlcpy (a_tag->desc, x_desc, 35);                                                                                       <* 
- *>       a_tag->ready = 'y';                                                                                                      <* 
- *>       DEBUG_INPT   yLOG_sexit   (__FUNCTION__);                                                                                <* 
- *>       return 0;                                                                                                                <* 
- *>    }                                                                                                                           <* 
- *>    /+---(previous style)-----------------+/                                                                                    <* 
- *>    if (strncmp (a_beg, "/+ ---- : ", 10) == 0) {                                                                               <* 
- *>       DEBUG_INPT   yLOG_snote   ("previous 2 format");                                                                         <* 
- *>       strlcpy (x_desc, a_beg + 10, 35);                                                                                        <* 
- *>       for (i = 35; i > 0; --i)  {                                                                                              <* 
- *>          if (strchr (" -=]", x_desc [i]) == NULL)   break;                                                                     <* 
- *>          x_desc [i] = '\0';                                                                                                    <* 
- *>       }                                                                                                                        <* 
- *>       strlcpy (a_tag->desc, x_desc, 35);                                                                                       <* 
- *>       a_tag->ready = 'y';                                                                                                      <* 
- *>       DEBUG_INPT   yLOG_sexit   (__FUNCTION__);                                                                                <* 
- *>       return 0;                                                                                                                <* 
- *>    }                                                                                                                           <* 
- *>    /+---(previous style)-----------------+/                                                                                    <* 
- *>    if (strncmp (a_beg, "/+----: ",  8) == 0) {                                                                                 <* 
- *>       DEBUG_INPT   yLOG_snote   ("previous 3 format");                                                                         <* 
- *>       strlcpy (x_desc, a_beg +  8, 35);                                                                                        <* 
- *>       for (i = 35; i > 0; --i)  {                                                                                              <* 
- *>          if (strchr (" -=]", x_desc [i]) == NULL)   break;                                                                     <* 
- *>          x_desc [i] = '\0';                                                                                                    <* 
- *>       }                                                                                                                        <* 
- *>       strlcpy (a_tag->desc, x_desc, 35);                                                                                       <* 
- *>       a_tag->ready = 'y';                                                                                                      <* 
- *>       DEBUG_INPT   yLOG_sexit   (__FUNCTION__);                                                                                <* 
- *>       return 0;                                                                                                                <* 
- *>    }                                                                                                                           <* 
- *>    /+---(previous style)-----------------+/                                                                                    <* 
- *>    if (strncmp (a_beg, "/+===[[ ",  8) == 0) {                                                                                 <* 
- *>       DEBUG_INPT   yLOG_snote   ("previous 3 format");                                                                         <* 
- *>       strlcpy (x_desc, a_beg +  8, 35);                                                                                        <* 
- *>       for (i = 35; i > 0; --i)  {                                                                                              <* 
- *>          if (strchr (" -=]", x_desc [i]) == NULL)   break;                                                                     <* 
- *>          x_desc [i] = '\0';                                                                                                    <* 
- *>       }                                                                                                                        <* 
- *>       strlcpy (a_tag->desc, x_desc, 35);                                                                                       <* 
- *>       a_tag->ready = 'y';                                                                                                      <* 
- *>       DEBUG_INPT   yLOG_sexit   (__FUNCTION__);                                                                                <* 
- *>       return 0;                                                                                                                <* 
- *>    }                                                                                                                           <* 
- *>    /+---(complete)-----------------------+/                                                                                    <* 
- *>    DEBUG_INPT   yLOG_sexit   (__FUNCTION__);                                                                                   <* 
- *>    return 0;                                                                                                                   <* 
- *> }                                                                                                                              <*/
-
-/*> char                                                                                  <* 
- *> poly_tags__scope        (tFUNC *a_tag, int a_line)                                    <* 
- *> {                                                                                     <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                           <* 
- *>    char        rce         =  -10;                                                    <* 
- *>    char        rc          =    0;                                                    <* 
- *>    char       *p           = NULL;                                                    <* 
- *>    char       *r           = NULL;                                                    <* 
- *>    char       *a           = NULL;                                                    <* 
- *>    char       *b           = NULL;                                                    <* 
- *>    int        x_len        =    0;                                                    <* 
- *>    char       x_return     [LEN_RECD];                                                <* 
- *>    char       x_params     [LEN_RECD];                                                <* 
- *>    char       x_body       [LEN_RECD];                                                <* 
- *>    /+---(header)-------------------------+/                                           <* 
- *>    DEBUG_DATA   yLOG_enter   (__FUNCTION__);                                          <* 
- *>    DEBUG_DATA   yLOG_value   ("a_line"    , a_line);                                  <* 
- *>    /+---(oneline)------------------------+/                                           <* 
- *>    p = strstr (my.s_curr, a_tag->name);                                               <* 
- *>    DEBUG_DATA   yLOG_point   ("p"         , p);                                       <* 
- *>    x_len = p - my.s_curr;                                                             <* 
- *>    DEBUG_DATA   yLOG_value   ("x_len"     , x_len);                                   <* 
- *>    if (x_len == 0)   a_tag->STATS_SINGLE = '-';                                       <* 
- *>    else              a_tag->STATS_SINGLE = 'y';                                       <* 
- *>    DEBUG_DATA   yLOG_char    ("oneline"   , a_tag->STATS_SINGLE);                     <* 
- *>    /+---(oneline return type)------------+/                                           <* 
- *>    if (a_tag->STATS_SINGLE == 'y') {                                                  <* 
- *>       strlcpy (x_return, my.s_curr, x_len);                                           <* 
- *>       a_tag->ready = ' ';                                                             <* 
- *>    }                                                                                  <* 
- *>    /+---(multiline return type)----------+/                                           <* 
- *>    else {                                                                             <* 
- *>       r = strstr (my.s_prev, "/+");                                                   <* 
- *>       if (r == NULL)  x_len = strlen (my.s_prev);                                     <* 
- *>       else            x_len = r - my.s_prev;                                          <* 
- *>       strlcpy (x_return, my.s_prev, x_len + 1);                                       <* 
- *>       poly_func_purpose (a_tag, r);                                                  <* 
- *>    }                                                                                  <* 
- *>    strltrim (x_return, ySTR_SINGLE, LEN_RECD);                                        <* 
- *>    DEBUG_DATA   yLOG_info    ("x_return"  , x_return);                                <* 
- *>    /+---(classify return type)-----------+/                                           <* 
- *>    if      (strstr (x_return   , "char*" ) != NULL)  a_tag->STATS_RTYPE = 's';        <* 
- *>    else if (strstr (x_return   , "char"  ) != NULL)  a_tag->STATS_RTYPE = 'c';        <* 
- *>    else if (strstr (x_return   , "void"  ) != NULL)  a_tag->STATS_RTYPE = 'v';        <* 
- *>    else if (strstr (x_return   , "*"     ) != NULL)  a_tag->STATS_RTYPE = 'p';        <* 
- *>    else                                              a_tag->STATS_RTYPE = 'n';        <* 
- *>    DEBUG_DATA   yLOG_char    ("rtype"     , a_tag->STATS_RTYPE);                      <* 
- *>    /+---(classify scope)-----------------+/                                           <* 
- *>    if      (strstr (a_tag->name, "__unit") != NULL)  a_tag->STATS_SCOPE = 'u';        <* 
- *>    else if (strstr (a_tag->name, "__test") != NULL)  a_tag->STATS_SCOPE = 'u';        <* 
- *>    else if (strstr (x_return   , "static") != NULL)  a_tag->STATS_SCOPE = 's';        <* 
- *>    else if (strstr (a_tag->name, "__"    ) != NULL)  a_tag->STATS_SCOPE = 'f';        <* 
- *>    else                                              a_tag->STATS_SCOPE = 'g';        <* 
- *>    DEBUG_DATA   yLOG_char    ("scope"     , a_tag->STATS_SCOPE);                      <* 
- *>    /+---(parms)--------------------------+/                                           <* 
- *>    a = strchr (p, '(');                                                               <* 
- *>    if (a != NULL) {                                                                   <* 
- *>       DEBUG_DATA   yLOG_note    ("found open paren");                                 <* 
- *>       b = strchr (p, '{');                                                            <* 
- *>       if (b == NULL)  x_len = LEN_RECD;                                               <* 
- *>       else            x_len = b - a;                                                  <* 
- *>       strlcpy  (x_params         , a, x_len);                                         <* 
- *>       strltrim (x_params         , ySTR_EVERY , x_len);                               <* 
- *>       a_tag->WORK_PARAMS = -3;                                                        <* 
- *>       if      (strcmp (x_params, "()")     == 0)  a_tag->WORK_PARAMS = -2;            <* 
- *>       else if (strcmp (x_params, "(void)") == 0)  a_tag->WORK_PARAMS =  0;            <* 
- *>       else    a_tag->WORK_PARAMS = strldcnt (x_params, ',', x_len) + 1;               <* 
- *>       if (strstr (x_params, "**"       ) != NULL)  a_tag->STATS_PTWO = '#';           <* 
- *>       if (strstr (x_params, "float*"   ) != NULL)  a_tag->STATS_PNUM = '#';           <* 
- *>       if (strstr (x_params, "double*"  ) != NULL)  a_tag->STATS_PNUM = '#';           <* 
- *>       if (strstr (x_params, "short*"   ) != NULL)  a_tag->STATS_PNUM = '#';           <* 
- *>       if (strstr (x_params, "int*"     ) != NULL)  a_tag->STATS_PNUM = '#';           <* 
- *>       if (strstr (x_params, "long*"    ) != NULL)  a_tag->STATS_PNUM = '#';           <* 
- *>    } else {                                                                           <* 
- *>       a_tag->WORK_PARAMS = -2;                                                        <* 
- *>    }                                                                                  <* 
- *>    poly_cats_exact   ("nparam"  , a_tag->WORK_PARAMS  , &a_tag->STATS_PARAMS, '0');   <* 
- *>    /+---(one-liner)----------------------+/                                           <* 
- *>    if (a_tag->STATS_SINGLE == 'y') {                                                  <* 
- *>       if (b != NULL) {                                                                <* 
- *>          p = strchr (b, '}');                                                         <* 
- *>          x_len = p - b;                                                               <* 
- *>          strlcpy  (x_body, b, x_len);                                                 <* 
- *>          strltrim (x_body, ySTR_EVERY , x_len);                                       <* 
- *>       }                                                                               <* 
- *>    }                                                                                  <* 
- *>    /+---(complete)-----------------------+/                                           <* 
- *>    DEBUG_DATA   yLOG_exit    (__FUNCTION__);                                          <* 
- *>    return 0;                                                                          <* 
- *> }                                                                                     <*/
-
 char
 poly_tags__linetype     (tFILE *a_file, tFUNC *a_tag)
 {
@@ -601,7 +423,7 @@ poly_tags_readline      (tFILE *a_file, int *a_line, tFUNC **a_tag)
    /*---(first tag)-------------------*/
    --rce;  if (*a_tag == NULL) {
       a_ptag = *a_tag;
-      rc = poly_files_nexttag (a_file, a_tag);
+      rc = poly_code_nextfunc (a_file, a_tag);
       if (rc < 0) {
          DEBUG_INPT   yLOG_note    ("no tags in file");
          poly_tags__linetype (a_file, *a_tag);
@@ -612,7 +434,7 @@ poly_tags_readline      (tFILE *a_file, int *a_line, tFUNC **a_tag)
    /*---(next tag)--------------------*/
    else if (*a_line > (*a_tag)->line) {
       a_ptag  = *a_tag;
-      rc = poly_files_nexttag (a_file, a_tag);
+      rc = poly_code_nextfunc (a_file, a_tag);
    }
    DEBUG_INPT   yLOG_value   ("line"      , (*a_tag)->line);
    DEBUG_INPT   yLOG_info    ("name"      , (*a_tag)->name);
@@ -626,7 +448,7 @@ poly_tags_readline      (tFILE *a_file, int *a_line, tFUNC **a_tag)
    /*---(found)-----------------------*/
    if (*a_line == (*a_tag)->line) {
       DEBUG_INPT   yLOG_note    ("TAG FOUND");
-      poly_func_scope  (*a_tag, *a_line, my.s_prev);
+      poly_code_function (*a_tag, *a_line, my.s_prev);
       /*---(oneliner)-----------------*/
       if ((*a_tag)->STATS_SINGLE == 'y') {
          DEBUG_DATA   yLOG_note    ("processing a one liner");

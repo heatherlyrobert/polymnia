@@ -498,58 +498,6 @@ char    poly_files_list    (void)         { return poly_btree_list (B_FILES); }
 
 
 /*====================------------------------------------====================*/
-/*===----                         tag inventory                        ----===*/
-/*====================------------------------------------====================*/
-static void  o___TAGS____________o () { return; }
-
-
-char
-poly_files_nexttag      (tFILE *a_file, tFUNC **a_tag)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_file);
-   --rce;  if (a_file == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_spoint  (a_tag);
-   --rce;  if (a_tag == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_spoint  (*a_tag);
-   /*---(first time)---------------------*/
-   --rce;  if (*a_tag == NULL) {
-      DEBUG_DATA   yLOG_snote   ("first");
-      if (a_file->head  == NULL) {
-         DEBUG_DATA   yLOG_snote   ("head is null");
-         DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-         return rce;
-      }
-      *a_tag = a_file->head ;
-   }
-   /*---(next time)----------------------*/
-   else { 
-      DEBUG_DATA   yLOG_snote   ("next");
-      if ((*a_tag)->next == NULL) {
-         DEBUG_DATA   yLOG_snote   ("next is null");
-         DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-         return rce;
-      }
-      *a_tag = (*a_tag)->next;
-   }
-   DEBUG_DATA   yLOG_spoint  (*a_tag);
-   /*---(complete)------------------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-
-/*====================------------------------------------====================*/
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
