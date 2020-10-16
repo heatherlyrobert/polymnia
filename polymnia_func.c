@@ -18,7 +18,6 @@ poly_func__wipe         (tFUNC *a_dst)
    a_dst->name [0]    = '\0';
    a_dst->line        = -1;
    a_dst->hint [0]    = '\0';
-   a_dst->image[0]    = '\0';
    a_dst->purpose [0] = '\0';
    a_dst->ready       = '?';
    /*---(pointers)-----------------------*/
@@ -522,7 +521,7 @@ poly_func_inside        (tFUNC *a_func)
 }
 
 char
-poly_func_current       (tFILE *a_file, int a_line, tFUNC **a_func)
+poly_func_search        (tFILE *a_file, int a_line, tFUNC **a_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -941,17 +940,16 @@ poly_func__unit         (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "FUNC unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "head"      )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
+      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         sprintf  (s, "[%.6s]" , u->image);
          sprintf  (r, "[%.40s]", u->purpose);
          snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : %-22.22s %-8.8s  %2d%-42.42s  %c", i, t, s, strlen (u->purpose), r, u->ready);
       }  else
          snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : []                     []         0[]                                          -", i);
    }
    else if (strcmp (a_question, "entry"     )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
+      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          if (u->work != NULL)  snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->line, u->type, u->WORK_BEG, u->WORK_END);
@@ -959,12 +957,12 @@ poly_func__unit         (char *a_question, int i)
       } else                   snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s   -  -  -        -    -", i, t);
    }
    else if (strcmp (a_question, "stats"     )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
+      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          if (u->WORK_BEG    >= 0)  sprintf  (r, "%3d",     u->WORK_BEG);
          if (u->WORK_END    >= 0)  sprintf  (s, "%3d",     u->WORK_END);
-         if (u->WORK_LOCALS >  0)  sprintf  (q, "%3d",     u->WORK_LOCALS);
+         if (u->WORK_LVARS  >  0)  sprintf  (q, "%3d",     u->WORK_LVARS );
          snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   ·   %3d %3d %3d %3d %3d %3d   %3d %s %s   %s", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL, u->line, r, s, q);
       }  else
          snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   ·     -   -   -   -   -   -     -   -   -     -", i, t);

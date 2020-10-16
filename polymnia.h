@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8e"
-#define     P_VERTXT    "code module unit tested and so htags is back and beautiful"
+#define     P_VERNUM    "0.8g"
+#define     P_VERTXT    "htags reporting updated and working with vim-ide, unit testing on format"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -199,9 +199,10 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     FILTER_LINUX      'l'
 
 
-#define     F_DB        "/var/lib/polymnia/polymnia.db"
+#define     F_CTAGS     "polymnia.ctag"
 #define     F_CFLOW     "polymnia.cflow"
 #define     F_EXTERN    "/var/lib/polymnia/external.txt"
+#define     F_DB        "/var/lib/polymnia/polymnia.db"
 #define     F_MYSTRY    "polymnia.mystry"
 
 
@@ -232,8 +233,9 @@ struct cMY {
    char        g_libuse    [LEN_RECD]; /* extern library for filtering        */
    /*---(files)---------------*/
    FILE       *f_db;                   /* shared database of tags             */
-   FILE       *f_prog;                 /* current program source file         */
-   FILE       *f_flow;                 /* cflow input file                    */
+   FILE       *f_code;                 /* current program source file         */
+   FILE       *f_ctags;                /* ctags input file                    */
+   FILE       *f_cflow;                /* cflow input file                    */
    FILE       *f_extern;               /* shared external function list       */
    FILE       *f_mystry;               /* local mystery external calls        */
    /*---(new stats interface)-*/
@@ -320,43 +322,54 @@ struct cFILE {
 
 #define     MAX_STATS      50
 
-#define     STATS_SINGLE   stats [0]
-
-#define     STATS_SCOPE    stats [1]
-#define     STATS_RTYPE    stats [2]
-#define     STATS_PARAMS   stats [3]
-#define     STATS_TOTAL    stats [4]
-#define     STATS_DEBUG    stats [5]
-#define     STATS_SLOCL    stats [6]
-#define     STATS_LOCALS   stats [7]
-#define     STATS_CHOICE   stats [8]
-#define     STATS_RETURN   stats [9]
-#define     STATS_INDENT   stats [10]
-#define     STATS_MEMORY   stats [11]
-
-#define     STATS_GCALLS   stats [12]
-#define     STATS_LCALLS   stats [13]
-#define     STATS_FUNCS    stats [14]
-#define     STATS_INTERN   stats [15]
-#define     STATS_CSTD     stats [16]
-#define     STATS_YLIB     stats [17]
-#define     STATS_MSTRY    stats [18]
-#define     STATS_READ     stats [19]
-#define     STATS_WRITE    stats [20]
-#define     STATS_SYSTEM   stats [21]
-#define     STATS_RECURS   stats [22]
-
-#define     STATS_DSTYLE   stats [23]
-#define     STATS_DMACRO   stats [24]
-#define     STATS_DMATCH   stats [25]
-#define     STATS_NCURSE   stats [26]
-#define     STATS_OPENGL   stats [27]
-#define     STATS_WINDOW   stats [28]
-#define     STATS_MYX      stats [29]
-#define     STATS_PROTO    stats [30]
-#define     STATS_ECALLS   stats [31]
-#define     STATS_PTWO     stats [32]
-#define     STATS_PNUM     stats [33]
+#define     STATS_SINGLE   stats [ 0]
+/*---(group one.a)--------------------*/
+#define     STATS_SCOPE    stats [ 1]
+#define     STATS_RTYPE    stats [ 2]
+#define     STATS_PARAMS   stats [ 3]
+#define     STATS_PTWO     stats [ 4]
+#define     STATS_PNUM     stats [ 5]
+#define     STATS_PROTO    stats [ 6]
+/*---(group one.b)--------------------*/
+#define     STATS_TOTAL    stats [ 7]
+#define     STATS_DEBUG    stats [ 8]
+#define     STATS_SLOCL    stats [ 9]
+/*---(group one.c)--------------------*/
+#define     STATS_LVARS    stats [10]
+#define     STATS_FVARS    stats [11]
+#define     STATS_GVARS    stats [12]
+/*---(group one.d)--------------------*/
+#define     STATS_CHOICE   stats [13]
+#define     STATS_RETURN   stats [14]
+#define     STATS_INDENT   stats [15]
+#define     STATS_MEMORY   stats [16]
+/*---(group two.a)--------------------*/
+#define     STATS_LCALLS   stats [17]
+#define     STATS_GCALLS   stats [18]
+#define     STATS_ECALLS   stats [19]
+#define     STATS_RECURS   stats [20]
+/*---(group two.b)--------------------*/
+#define     STATS_FUNCS    stats [21]
+#define     STATS_DFUNCS   stats [22]
+#define     STATS_LFUNCS   stats [23]
+#define     STATS_GFUNCS   stats [24]
+#define     STATS_CSTD     stats [25]
+#define     STATS_YLIB     stats [26]
+#define     STATS_OFUNCS   stats [27]
+#define     STATS_MYSTRY   stats [28]
+/*---(group two.c)--------------------*/
+#define     STATS_READ     stats [29]
+#define     STATS_WRITE    stats [30]
+#define     STATS_SYSTEM   stats [31]
+/*---(group two.d)--------------------*/
+#define     STATS_NCURSE   stats [32]
+#define     STATS_OPENGL   stats [33]
+#define     STATS_WINDOW   stats [34]
+#define     STATS_MYX      stats [35]
+/*---(group three)--------------------*/
+#define     STATS_DSTYLE   stats [36]
+#define     STATS_DMACRO   stats [37]
+#define     STATS_DMATCH   stats [38]
 
 
 
@@ -366,7 +379,6 @@ struct cFUNC {
    char        name        [LEN_TITLE];     /* c function name                */
    int         line;                        /* line in source file            */
    char        hint        [LEN_SHORT];     /* two-char navigation hint       */
-   char        image       [LEN_TERSE];     /* function end-use image         */
    char        purpose     [LEN_DESC];      /* short description of purpose   */
    char        ready;
    /*---(new stats interface)------------*/
@@ -402,50 +414,61 @@ struct cYLIB {
    /*---(done)--------------*/
 };
 
+/*---(location)-----------------------*/
 #define     WORK_BEG       work->beg
 #define     WORK_END       work->end
-
-#define     WORK_PARAMS    work->temp  [0]
-#define     WORK_LOCALS    work->temp  [1]
-#define     WORK_CHOICE    work->temp  [2]
-#define     WORK_RETURN    work->temp  [3]
-#define     WORK_INDENT    work->temp  [4]
-#define     WORK_MEMORY    work->temp  [5]
-
-#define     WORK_GCALLS    work->temp  [6]
-#define     WORK_LCALLS    work->temp  [7]
-#define     WORK_FUNCS     work->temp  [8]
-#define     WORK_INTERN    work->temp  [9]
-#define     WORK_CSTD      work->temp  [10]
-#define     WORK_YLIB      work->temp  [11]
-#define     WORK_MYSTRY    work->temp  [12]
-#define     WORK_INPUT     work->temp  [13]
-#define     WORK_READ      work->temp  [14]
-#define     WORK_BREAD     work->temp  [15]
-#define     WORK_OUTPUT    work->temp  [16]
-#define     WORK_WRITE     work->temp  [17]
-#define     WORK_BWRITE    work->temp  [18]
-#define     WORK_PROCS     work->temp  [19]
-#define     WORK_SYSTEM    work->temp  [20]
-#define     WORK_FILESYS   work->temp  [21]
-#define     WORK_RECURS    work->temp  [22]
-
-#define     WORK_DCOUNT    work->temp  [23]
-#define     WORK_DLONG     work->temp  [24]
-#define     WORK_DSHORT    work->temp  [25]
-#define     WORK_DENTER    work->temp  [26]
-#define     WORK_DEXIT     work->temp  [27]
-#define     WORK_DFREE     work->temp  [28]
+/*---(group one.b)--------------------*/
+#define     WORK_PARAMS    work->temp  [ 0]
+/*---(group one.c)--------------------*/
+#define     WORK_LVARS     work->temp  [ 1]
+#define     WORK_FVARS     work->temp  [ 2]
+#define     WORK_GVARS     work->temp  [ 3]
+/*---(group one.d)--------------------*/
+#define     WORK_CHOICE    work->temp  [ 4]
+#define     WORK_RETURN    work->temp  [ 5]
+#define     WORK_INDENT    work->temp  [ 6]
+#define     WORK_MEMORY    work->temp  [ 7]
+/*---(group two.a)--------------------*/
+#define     WORK_LCALLS    work->temp  [ 8]
+#define     WORK_GCALLS    work->temp  [ 9]
+#define     WORK_ECALLS    work->temp  [10]
+#define     WORK_RECURS    work->temp  [11]
+/*---(group two.b)--------------------*/
+#define     WORK_FUNCS     work->temp  [12]
+#define     WORK_DFUNCS    work->temp  [13]
+#define     WORK_LFUNCS    work->temp  [14]
+#define     WORK_GFUNCS    work->temp  [15]
+#define     WORK_CSTD      work->temp  [16]
+#define     WORK_YLIB      work->temp  [17]
+#define     WORK_OFUNCS    work->temp  [18]
+#define     WORK_MYSTRY    work->temp  [19]
+/*---(group two.c)--------------------*/
+#define     WORK_INPUT     work->temp  [20]
+#define     WORK_READ      work->temp  [21]
+#define     WORK_BREAD     work->temp  [22]
+#define     WORK_OUTPUT    work->temp  [23]
+#define     WORK_WRITE     work->temp  [24]
+#define     WORK_BWRITE    work->temp  [25]
+#define     WORK_PROCS     work->temp  [26]
+#define     WORK_SYSTEM    work->temp  [27]
+#define     WORK_FILESYS   work->temp  [28]
+/*---(group two.d)--------------------*/
 #define     WORK_NCURSE    work->temp  [29]
 #define     WORK_OPENGL    work->temp  [30]
-#define     WORK_MYX       work->temp  [31]
-#define     WORK_WINDOW    work->temp  [32]
-#define     WORK_ECALLS    work->temp  [33]
+#define     WORK_WINDOW    work->temp  [31]
+#define     WORK_MYX       work->temp  [32]
+/*---(group three)--------------------*/
+#define     WORK_DCOUNT    work->temp  [33]
+#define     WORK_DLONG     work->temp  [34]
+#define     WORK_DSHORT    work->temp  [35]
+#define     WORK_DENTER    work->temp  [36]
+#define     WORK_DEXIT     work->temp  [37]
+#define     WORK_DFREE     work->temp  [38]
 
 
 
 
-#define     MAX_TEMPS      35
+#define     MAX_TEMPS      40
 struct cWORK {
    /*---(positioning)--------------------*/
    int         beg;
@@ -507,8 +530,6 @@ extern char      unit_answer [LEN_RECD];
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
-char        poly_cats_tagsumm       (tFUNC *a_tag);
-
 char        poly_files_init         (void);
 char        poly_files_wrap         (void);
 tFILE*      poly_file_new           (void);
@@ -522,9 +543,7 @@ tFILE*      poly_files_search       (char *a_name);
 /*---(unittest)-------------*/
 char*       poly_file__unit         (char *a_question, int n);
 
-tFUNC*      poly_tags_byline        (tFILE *a_file, int a_line);
 char        poly_tags_inventory     (tFILE *a_file);
-char        poly_tags_readline      (tFILE *a_file, int *a_line, tFUNC **a_tag);
 char        poly_tags_addylib       (tFUNC *a_tag, tYLIB *a_ylib);
 char*       poly_tags__unit         (char *a_question, int n);
 
@@ -535,7 +554,21 @@ char        poly_cats_exists        (char *a_label, int a_src, char *a_dst, char
 char        poly_cats_exact         (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_scaled        (char *a_label, int a_src, char *a_dst, char a_zero);
 char        poly_cats_logic         (tFUNC *a_tag, char a_type);
-char        poly_cats_lines         (tFILE *a_file, tFUNC *a_tag, char a_type);
+char        poly_cats__group_1a     (tFUNC *a_func);
+char        poly_cats__group_1b     (tFUNC *a_func);
+char        poly_cats__group_1c     (tFUNC *a_func);
+char        poly_cats__group_1d     (tFUNC *a_func);
+char        poly_cats__complexity   (char a_style, tFUNC *a_func, char a_update, char *a_out);
+char        poly_cats__group_2a     (tFUNC *a_func);
+char        poly_cats__group_2b     (tFUNC *a_func);
+char        poly_cats__group_2c     (tFUNC *a_func);
+char        poly_cats__group_2d     (tFUNC *a_func);
+char        poly_cats__integration  (char a_style, tFUNC *a_func, char a_update, char *a_out);
+char        poly_cats__group_3a     (tFUNC *a_func);
+char        poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out);
+char        poly_cats_function      (tFUNC *a_func);
+char*       poly_cats_header        (int n, char *a_out);
+char*       poly_cats_full          (tFUNC *a_func, char *a_out);
 char*       poly_cats__unit         (char *a_question, int n);
 
 char        PROG_prepare            (void);
@@ -548,7 +581,10 @@ char        poly_extern_init        (void);
 char        poly_extern_wrap        (void);
 char        poly_extern__add        (char *a_lib, char *a_name, char a_type, char a_more);
 char        poly_extern_load        (void);
-char        poly_extern_check       (char *a_name);
+char        poly_extern__read       (char *a_curr);
+char        poly_extern__parse      (char *a_curr, char *a_func, char *a_file, int *a_line);
+char        poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, tFUNC **a_dst, tEXTERN **a_ext);
+char        poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line);
 char        poly_extern_review      (void);
 char        poly_extern_list        (void);
 tEXTERN*    poly_extern_search      (char *a_name);
@@ -641,7 +677,7 @@ char        poly_func_del           (tFUNC **a_tag);
 char        poly_func_enter         (tFUNC *a_func, int a_line);
 char        poly_func_exit          (tFUNC *a_func, int a_line);
 char        poly_func_inside        (tFUNC *a_func);
-char        poly_func_current       (tFILE *a_file, int a_line, tFUNC **a_func);
+char        poly_func_search        (tFILE *a_file, int a_line, tFUNC **a_func);
 /*---(program)--------------*/
 char        poly_func_init          (void);
 char        poly_func_purge         (tFILE *a_file);
@@ -674,5 +710,11 @@ char        poly_tags__create       (tFILE *a_file);
 char        poly_tags__cleanup      (void);
 char        poly_tags__handler      (tFILE *a_file, char *a_recd);
 char        poly_tags_inventory     (tFILE *a_file);
+
+
+char        poly_shared_open        (char a_type, char *a_focus);
+char        poly_shared_close       (char a_type);
+char*       poly_shared__unit       (char *a_question);
+
 
 

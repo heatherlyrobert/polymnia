@@ -160,6 +160,7 @@ poly_code__indent       (tFUNC *a_func, char *a_recd)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_INPT   yLOG_info    ("->name"    , a_func->name);
    DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
    --rce;  if (a_recd == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -180,6 +181,7 @@ poly_code__indent       (tFUNC *a_func, char *a_recd)
       if (i > a_func->WORK_INDENT) a_func->WORK_INDENT = i;
       break;
    }
+   DEBUG_INPT   yLOG_value   ("indent"    , a_func->WORK_INDENT);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -676,109 +678,6 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
    return 0;
 }
 
-/*> char                                                                                        <* 
- *> poly_code_line          (tFILE *a_file, int *a_line, tFUNC **a_func)                        <* 
- *> {                                                                                           <* 
- *>    /+---(locals)-----------+-----------+-+/                                                 <* 
- *>    int         rc          =    0;          /+ generic return code            +/            <* 
- *>    char        rce         =  -10;          /+ return code for errors         +/            <* 
- *>    int         x_len       =    0;          /+ length of input record         +/            <* 
- *>    static tFUNC  *a_ptag    = NULL;                                                         <* 
- *>    /+---(header)-------------------------+/                                                 <* 
- *>    DEBUG_INPT   yLOG_enter   (__FUNCTION__);                                                <* 
- *>    /+---(defense)------------------------+/                                                 <* 
- *>    DEBUG_INPT   yLOG_point   ("a_file"    , a_file);                                        <* 
- *>    --rce;  if (a_file == NULL) {                                                            <* 
- *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                        <* 
- *>       return  rce;                                                                          <* 
- *>    }                                                                                        <* 
- *>    DEBUG_INPT   yLOG_info    ("name"      , a_file->name);                                  <* 
- *>    DEBUG_INPT   yLOG_point   ("a_func"     , a_func);                                       <* 
- *>    --rce;  if (a_func == NULL) {                                                            <* 
- *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                        <* 
- *>       return  rce;                                                                          <* 
- *>    }                                                                                        <* 
- *>    DEBUG_INPT   yLOG_point   ("*a_func"    , *a_func);                                      <* 
- *>    /+---(update line)-----------------+/                                                    <* 
- *>    ++(*a_line);                                                                             <* 
- *>    DEBUG_INPT   yLOG_value   ("line"      , *a_line);                                       <* 
- *>    /+---(first tag)-------------------+/                                                    <* 
- *>    --rce;  if (*a_func == NULL) {                                                           <* 
- *>       a_ptag = *a_func;                                                                     <* 
- *>       rc = poly_code_nextfunc (a_file, a_func);                                             <* 
- *>       if (rc < 0) {                                                                         <* 
- *>          DEBUG_INPT   yLOG_note    ("no tags in file");                                     <* 
- *>          poly_tags__linetype (a_file, *a_func);                                             <* 
- *>          DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                          <* 
- *>          return 0;                                                                          <* 
- *>       }                                                                                     <* 
- *>    }                                                                                        <* 
- *>    /+---(next tag)--------------------+/                                                    <* 
- *>    else if (*a_line > (*a_func)->line) {                                                    <* 
- *>       a_ptag  = *a_func;                                                                    <* 
- *>       rc = poly_code_nextfunc (a_file, a_func);                                             <* 
- *>    }                                                                                        <* 
- *>    DEBUG_INPT   yLOG_value   ("line"      , (*a_func)->line);                               <* 
- *>    DEBUG_INPT   yLOG_info    ("name"      , (*a_func)->name);                               <* 
- *>    /+---(after all tags)--------------+/                                                    <* 
- *>    if (*a_func == a_ptag && a_ptag->WORK_END > 0) {                                         <* 
- *>       poly_tags__linetype (a_file, *a_func);                                                <* 
- *>       DEBUG_INPT   yLOG_note    ("after last tag");                                         <* 
- *>       DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                             <* 
- *>       return 0;                                                                             <* 
- *>    }                                                                                        <* 
- *>    /+---(found)-----------------------+/                                                    <* 
- *>    if (*a_line == (*a_func)->line) {                                                        <* 
- *>       DEBUG_INPT   yLOG_note    ("TAG FOUND");                                              <* 
- *>       poly_code_function (*a_func, *a_line, my.s_prev);                                     <* 
- *>       /+---(oneliner)-----------------+/                                                    <* 
- *>       if ((*a_func)->STATS_SINGLE == 'y') {                                                 <* 
- *>          DEBUG_DATA   yLOG_note    ("processing a one liner");                              <* 
- *>          (*a_func)->WORK_BEG  = *a_line;                                                    <* 
- *>          poly_tags__linetype (a_file, *a_func);                                             <* 
- *>          (*a_func)->WORK_END  = *a_line;                                                    <* 
- *>          DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                          <* 
- *>          return 1;                                                                          <* 
- *>       }                                                                                     <* 
- *>       DEBUG_DATA   yLOG_note    ("processing a multi-line header");                         <* 
- *>       poly_tags__linetype (a_file, a_ptag);                                                 <* 
- *>       DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                             <* 
- *>       return 1;                                                                             <* 
- *>    }                                                                                        <* 
- *>    /+---(process line)----------------+/                                                    <* 
- *>    poly_tags__linetype (a_file, a_ptag);                                                    <* 
- *>    /+---(before all tags)-------------+/                                                    <* 
- *>    if (a_ptag == NULL) {                                                                    <* 
- *>       DEBUG_INPT   yLOG_note    ("before first tag");                                       <* 
- *>       DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                             <* 
- *>       return 0;                                                                             <* 
- *>    }                                                                                        <* 
- *>    /+---(beginning)-------------------+/                                                    <* 
- *>    else if (a_ptag->WORK_BEG <  0) {                                                        <* 
- *>       if (my.s_curr [0] == '{')  {                                                          <* 
- *>          DEBUG_INPT   yLOG_note    ("beg brace");                                           <* 
- *>          a_ptag->WORK_BEG = *a_line;                                                        <* 
- *>       }                                                                                     <* 
- *>    }                                                                                        <* 
- *>    /+---(ending)----------------------+/                                                    <* 
- *>    else if (a_ptag->WORK_END <  0) {                                                        <* 
- *>       if (my.s_curr [0] == '}') {                                                           <* 
- *>          DEBUG_INPT   yLOG_note    ("end brace");                                           <* 
- *>          a_ptag->WORK_END = *a_line;                                                        <* 
- *>          --a_ptag->COUNT_LINES;                                                             <* 
- *>          --a_ptag->COUNT_CODE;                                                              <* 
- *>          DEBUG_INPT   yLOG_note    ("function end");                                        <* 
- *>          DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                          <* 
- *>          /+> poly_cats_tagsumm   (a_ptag);                                            <+/   <* 
- *>          return 0;                                                                          <* 
- *>       }                                                                                     <* 
- *>    }                                                                                        <* 
- *>    /+---(complete)-----------------------+/                                                 <* 
- *>    DEBUG_INPT   yLOG_note    ("normal line");                                               <* 
- *>    DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                                <* 
- *>    return 0;                                                                                <* 
- *> }                                                                                           <*/
-
 char
 poly_code_review        (tFILE *a_file)
 {
@@ -848,7 +747,7 @@ poly_code__unit         (char *a_question, int i)
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "CODE unit        : function number unknown");
    if (strcmp (a_question, "work"      )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
+      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          if (u->WORK_CHOICE > 0)  sprintf (s, " %3dc", u->WORK_CHOICE);

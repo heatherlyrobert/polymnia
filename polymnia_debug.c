@@ -348,7 +348,7 @@ poly_debug_function     (tFUNC *a_func)
       a_func->STATS_DMATCH = 'x';
    if (a_func->STATS_DMATCH != '-')   return 0;
    /*---(find short troubles)------------*/
-   if (a_func->STATS_DSTYLE == 's' && a_func->WORK_INTERN > 0)
+   if (a_func->STATS_DSTYLE == 's' && a_func->WORK_GFUNCS > 0)
       a_func->STATS_DMATCH = '?';
    if (a_func->STATS_DSTYLE == 's' && a_func->WORK_YLIB   > 0)
       a_func->STATS_DMATCH = '!';
@@ -372,7 +372,7 @@ poly_debug__fake        (tFUNC *a_func, int a_return, int a_intern, int a_ylib)
    char        rce         =  -10;
    --rce;  if (a_func == NULL)  return rce;
    a_func->WORK_RETURN  = a_return;
-   a_func->WORK_INTERN  = a_intern;
+   a_func->WORK_GFUNCS  = a_intern;
    a_func->WORK_YLIB    = a_ylib;
    return 0;
 }

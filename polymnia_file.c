@@ -92,8 +92,8 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
    /*---(check return)-------------------*/
    DEBUG_DATA   yLOG_point   ("a_file"    , a_file);
-   DEBUG_DATA   yLOG_point   ("*a_file"   , *a_file);
    --rce;  if (a_file != NULL) {
+      DEBUG_DATA   yLOG_point   ("*a_file"   , *a_file);
       if (*a_file != NULL) {
          DEBUG_DATA   yLOG_note    ("already set to a particular file");
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);

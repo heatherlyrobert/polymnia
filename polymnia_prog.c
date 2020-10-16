@@ -74,8 +74,9 @@ PROG_init          (int a_argc, char *a_argv[])
    /*---(files)--------------------------*/
    DEBUG_PROG   yLOG_note    ("initialize file pointers");
    my.f_db        = NULL;
-   my.f_prog      = NULL;
-   my.f_flow      = NULL;
+   my.f_code      = NULL;
+   my.f_ctags     = NULL;
+   my.f_cflow     = NULL;
    my.f_extern    = NULL;
    my.f_mystry    = NULL;
    /*---(global counts)------------------*/
@@ -252,7 +253,7 @@ PROG_summarize          (tPROJ *a_proj)
    while (x_file != NULL) {
       x_tag = x_file->head;
       while (x_tag != NULL)  {
-         poly_cats_tagsumm (x_tag);
+         poly_cats_function (x_tag);
          x_tag = x_tag->next;
       }
       a_proj->funcs += x_file->count;

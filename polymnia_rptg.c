@@ -91,9 +91,9 @@ poly_rptg__stats        (tFUNC *a_tag)
       printf ("%c %c %c  %c %c %c  %c %c %c %c %c   %c %c  %c %c %c %c %c  %c %c %c %c   %c %c %c  %c %c %c %c  %c %c %c %c   ",
             a_tag->STATS_SCOPE , a_tag->STATS_RTYPE , a_tag->STATS_PARAMS,
             a_tag->STATS_TOTAL , a_tag->STATS_DEBUG , a_tag->STATS_SLOCL ,
-            a_tag->STATS_LOCALS, a_tag->STATS_CHOICE, a_tag->STATS_RETURN, a_tag->STATS_INDENT, a_tag->STATS_MEMORY ,
+            a_tag->STATS_LVARS , a_tag->STATS_CHOICE, a_tag->STATS_RETURN, a_tag->STATS_INDENT, a_tag->STATS_MEMORY ,
             a_tag->STATS_GCALLS, a_tag->STATS_LCALLS,
-            a_tag->STATS_FUNCS , a_tag->STATS_INTERN, a_tag->STATS_CSTD  , a_tag->STATS_YLIB  , a_tag->STATS_MSTRY ,
+            a_tag->STATS_FUNCS , a_tag->STATS_GFUNCS, a_tag->STATS_CSTD  , a_tag->STATS_YLIB  , a_tag->STATS_MYSTRY ,
             a_tag->STATS_READ  , a_tag->STATS_WRITE , a_tag->STATS_SYSTEM, a_tag->STATS_RECURS,
             a_tag->STATS_DSTYLE, a_tag->STATS_DMACRO, a_tag->STATS_DMATCH,
             a_tag->STATS_NCURSE, a_tag->STATS_OPENGL, a_tag->STATS_WINDOW, a_tag->STATS_MYX   ,
@@ -101,9 +101,9 @@ poly_rptg__stats        (tFUNC *a_tag)
       printf ("[%c%c%c.%c%c%c.%c%c%c%c%c] [%c%c.%c%c%c%c%c.%c%c%c%c] [%c%c%c.%c%c%c%c.%c%c%c%c]   ",
             a_tag->STATS_SCOPE , a_tag->STATS_RTYPE , a_tag->STATS_PARAMS,
             a_tag->STATS_TOTAL , a_tag->STATS_DEBUG , a_tag->STATS_SLOCL ,
-            a_tag->STATS_LOCALS, a_tag->STATS_CHOICE, a_tag->STATS_RETURN, a_tag->STATS_INDENT, a_tag->STATS_MEMORY ,
+            a_tag->STATS_LVARS , a_tag->STATS_CHOICE, a_tag->STATS_RETURN, a_tag->STATS_INDENT, a_tag->STATS_MEMORY ,
             a_tag->STATS_GCALLS, a_tag->STATS_LCALLS,
-            a_tag->STATS_FUNCS , a_tag->STATS_INTERN, a_tag->STATS_CSTD  , a_tag->STATS_YLIB  , a_tag->STATS_MSTRY ,
+            a_tag->STATS_FUNCS , a_tag->STATS_GFUNCS, a_tag->STATS_CSTD  , a_tag->STATS_YLIB  , a_tag->STATS_MYSTRY ,
             a_tag->STATS_READ  , a_tag->STATS_WRITE , a_tag->STATS_SYSTEM, a_tag->STATS_RECURS,
             a_tag->STATS_DSTYLE, a_tag->STATS_DMACRO, a_tag->STATS_DMATCH,
             a_tag->STATS_NCURSE, a_tag->STATS_OPENGL, a_tag->STATS_WINDOW, a_tag->STATS_MYX   ,
@@ -127,7 +127,7 @@ poly_rptg__dump_line    (tFUNC *a_tag)
    /*---(statistics)---------------------*/
    poly_rptg__stats  (a_tag);
    /*---(suffix)-------------------------*/
-   printf ("%-8.8s   %c   %-35.35s\n"  , a_tag->image, a_tag->ready, a_tag->purpose);
+   printf ("%-8.8s   %c   %-35.35s\n"  , ""          , a_tag->ready, a_tag->purpose);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -471,6 +471,7 @@ poly_rptg_htags         (tPROJ *a_proj)
    char        e           [LEN_LABEL];
    char        f           [LEN_LABEL];
    char        g           [LEN_LABEL];
+   char        t           [LEN_RECD];
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -536,14 +537,22 @@ poly_rptg_htags         (tPROJ *a_proj)
          sprintf (e, "code  : %4d  %5d", x_file->COUNT_CODE , x_file->proj->COUNT_CODE );
          sprintf (f, "slocl : %4d  %5d", x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL);
          sprintf (g, "function (%d)"   , x_file->count);
-         printf ("%-29.29s   o                   c                                                          \n", a);
-         printf ("%-29.29s   n                 l h r i m          i     m        r   d d d  c o w      e    \n", b);
-         printf ("%-29.29s   e   s r p  l d s  o o e n e   g l  c n     y    w l e   s m m  u p i    p x    \n", c);
-         printf ("%-29.29s   l   c c a  i e l  c i t d m   c c  a t c y s  r r i c   t a a  r e n    r t    \n", d);
-         printf ("%-29.29s   i   o o r  n b o  a c u e o   a a  l e s l t  e i n u   y c t  s n d m  o e    \n", e);
-         printf ("%-29.29s   n   p d a  e u c  l e r n r   l l  l r t i r  a t u r   l r c  e g o y  t r    \n", f);
-         printf ("%-29.29s   e   e e m  s g l  s s n t y   l l  s n d b y  d e x s   e o h  s l w x  o n - -   ------------------staging area-----------------  -------------location---------------    ------------------extended-data---------------------\n", "");
-         printf ("%-29.29s      [------complexity-------] [------integration------] [----watch-points-------]  [-complexity--] [-integration-] [-watch-point-]  [----source-file----------]   [line]    [-type-] [rdy] [-----------description-------------]\n", g);
+         /*> printf ("%-29.29s   o                         c                                                   g   p p\n", a);                                                                                                                                                    <* 
+          *> printf ("%-29.29s   n       n               l h r i m          i     m        r   d d d  c o w    l e t t\n", b);                                                                                                                                                    <* 
+          *> printf ("%-29.29s   e   s r p p      l d s  o o e n e   g l  c n     y    w l e   s m m  u p i    o x r r\n", c);                                                                                                                                                    <* 
+          *> printf ("%-29.29s   l   c c a .      i e l  c i t d m   c c  a t c y s  r r i c   t a a  r e n    b t . .\n", d);                                                                                                                                                    <* 
+          *> printf ("%-29.29s   i   o o r        n b o  a c u e o   a a  l e s l t  e i n u   y c t  s n d m  a e t n\n", e);                                                                                                                                                    <* 
+          *> printf ("%-29.29s   n   p d a        e u c  l e r n r   l l  l r t i r  a t u r   l r c  e g o y  l r w u\n", f);                                                                                                                                                    <* 
+          *> printf ("%-29.29s   e   e e m        s g l  s s n t y   l l  s n d b y  d e x s   e o h  s l w x  s n o m   ------------------staging area-----------------  -------------location---------------    ------------------extended-data---------------------\n", "");   <* 
+          *> printf ("%-29.29s      [-----      -complexity-------] [------integration------] [----watch-points-------]  [-complexity--] [-integration-] [-watch-point-]  [----source-file----------]   [line]    [-type-] [rdy] [-----------description-------------]\n", g);    <*/
+         printf ("%-29.29s   %s\n", a, poly_cats_header (7, t));
+         printf ("%-29.29s   %s\n", b, poly_cats_header (6, t));
+         printf ("%-29.29s   %s\n", c, poly_cats_header (5, t));
+         printf ("%-29.29s   %s\n", d, poly_cats_header (4, t));
+         printf ("%-29.29s   %s\n", e, poly_cats_header (3, t));
+         printf ("%-29.29s   %s\n", f, poly_cats_header (2, t));
+         printf ("%-29.29s   %s  ------------------staging area-----------------  -------------location---------------    ------------------extended-data---------------------\n", "", poly_cats_header (1, t));
+         printf ("%-29.29s   %s  [----source-file----------]   [line]    [-type-] [rdy] [-----------description-------------]\n", g, poly_cats_header (0, t));
       }
       x_tag = NULL;
       rc = poly_code_nextfunc (x_file, &x_tag);
@@ -551,10 +560,10 @@ poly_rptg_htags         (tPROJ *a_proj)
       DEBUG_PROG   yLOG_point   ("x_tag"     , x_tag);
       while (rc >= 0)  {
          DEBUG_PROG   yLOG_info    ("tag name"  , x_tag->name);
-         printf ("%-2s  %-25.25s   ", x_tag->hint  , x_tag->name);
-         poly_rptg__stats (x_tag);
+         printf ("%-2s  %-25.25s   %s ", x_tag->hint  , x_tag->name, poly_cats_full (x_tag, t));
+         /*> poly_rptg__stats (x_tag);                                                <*/
          printf ("%-25.25s     %-4d      ", x_tag->file->name, x_tag->line);
-         printf ("%-6.6s    %c    %-35.35s", x_tag->image, x_tag->ready, x_tag->purpose);
+         printf ("%-6.6s    %c    %-35.35s", ""          , x_tag->ready, x_tag->purpose);
          printf ("\n");
          rc = poly_code_nextfunc (x_file, &x_tag);
          DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
