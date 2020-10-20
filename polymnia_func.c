@@ -467,7 +467,8 @@ poly_func_enter         (tFUNC *a_func, int a_line)
       if (a_func->next->line     <= a_line)      return rce;
    }
    /*---(update)-------------------------*/
-   a_func->WORK_BEG  = a_line;
+   a_func->WORK_BEG   = a_line;
+   poly_vars_reset (a_func);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -663,11 +664,11 @@ poly_func__purpose_copy (tFUNC *a_func, char *a_recd, int a_beg)
    }
    /*---(search)-------------------------*/
    for (j = i; j > 0; --j)  {
-      if (strchr (" -=]", t [j]) == NULL)   break;
+      if (strchr (" -=][", t [j]) == NULL)   break;
       t [j] = '\0';
    }
    /*---(save)---------------------------*/
-   strlcpy (a_func->purpose, t, 36);
+   strlcpy (a_func->purpose, t, 41);
    a_func->ready = 'y';
    /*---(complete)-----------------------*/
    return 0;
@@ -688,12 +689,19 @@ poly_func_purpose       (tFUNC *a_func, char *a_recd)
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_func->purpose, "", 36);
+   strlcpy (a_func->purpose, "", 41);
    DEBUG_DATA   yLOG_spoint  (a_recd);
    --rce;  if (a_recd == NULL) {
       a_func->ready = 'e';
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
+   }
+   /*---(modern style)-------------------*/
+   if (strncmp (a_recd, "/*-[ ", 5) == 0) {
+      DEBUG_INPT   yLOG_snote   ("current format");
+      poly_func__purpose_copy (a_func, a_recd, 5);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 0;
    }
    /*---(current style)------------------*/
    if (strncmp (a_recd, "/*-> ", 5) == 0) {
@@ -807,7 +815,7 @@ poly_func_return        (tFUNC *a_func, char *a_recd, char *a_prev)
    /*---(classify scope)-----------------*/
    else if (strstr (a_func->name, "__unit") != NULL)  a_func->STATS_SCOPE = 'u';
    else if (strstr (a_func->name, "__test") != NULL)  a_func->STATS_SCOPE = 'u';
-   else if (strstr (a_func->name, "__"    ) != NULL)  a_func->STATS_SCOPE = 's';
+   else if (strstr (a_func->name, "__"    ) != NULL)  a_func->STATS_SCOPE = 'f';
    else                                               a_func->STATS_SCOPE = 'g';
    DEBUG_DATA   yLOG_schar   (a_func->STATS_SCOPE);
    /*---(classify return type)-----------*/
@@ -944,7 +952,7 @@ poly_func__unit         (char *a_question, int i)
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          sprintf  (r, "[%.40s]", u->purpose);
-         snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : %-22.22s %-8.8s  %2d%-42.42s  %c", i, t, s, strlen (u->purpose), r, u->ready);
+         snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : %-22.22s %2d%-42.42s  %c", i, t, strlen (u->purpose), r, u->ready);
       }  else
          snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : []                     []         0[]                                          -", i);
    }

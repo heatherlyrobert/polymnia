@@ -25,15 +25,15 @@
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
 #define     P_CODESIZE  "small       (appoximately 1,000 slocl)"
+#define     P_DEPENDS   "ySTR"
 
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2019-01"
-#define     P_DEPENDS   "ySTR"
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8g"
-#define     P_VERTXT    "htags reporting updated and working with vim-ide, unit testing on format"
+#define     P_VERNUM    "0.8i"
+#define     P_VERTXT    "isolated and unit tested project reporting lines in new function"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -41,6 +41,7 @@
 
 /*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
 /*===[[ END ONE_LINERS ]]=====================================================*/
+
 
 
 #define     P_SUMMARY   \
@@ -201,9 +202,10 @@ typedef     struct      cEXTERN     tEXTERN;
 
 #define     F_CTAGS     "polymnia.ctag"
 #define     F_CFLOW     "polymnia.cflow"
+#define     F_MYSTRY    "polymnia.mystry"
+#define     F_VARS      "polymnia.vars"
 #define     F_EXTERN    "/var/lib/polymnia/external.txt"
 #define     F_DB        "/var/lib/polymnia/polymnia.db"
-#define     F_MYSTRY    "polymnia.mystry"
 
 
 
@@ -238,6 +240,7 @@ struct cMY {
    FILE       *f_cflow;                /* cflow input file                    */
    FILE       *f_extern;               /* shared external function list       */
    FILE       *f_mystry;               /* local mystery external calls        */
+   FILE       *f_vars;                 /* global/file variables               */
    /*---(new stats interface)-*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(content)-------------*/
@@ -253,10 +256,12 @@ extern      tMY         my;
 
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct cPROJ {
-   /*---(master)------------*/
+   /*---(overall)-----------*/
    char        name        [LEN_TITLE];
-   char        focus       [LEN_TITLE];
-   char        niche       [LEN_TITLE];
+   char        header      [LEN_DESC];      /* flags on each header onelineer */
+   /*---(master)------------*/
+   char        focus       [LEN_DESC]; 
+   char        niche       [LEN_DESC]; 
    char        subject     [LEN_TITLE];
    char        purpose     [LEN_HUND];
    /*---(greek)-------------*/
@@ -266,19 +271,19 @@ struct cPROJ {
    char        reason      [LEN_HUND];
    char        oneline     [LEN_HUND];
    /*---(location)----------*/
-   char        progname    [LEN_TITLE];
    char        homedir     [LEN_HUND];
+   char        progname    [LEN_TITLE];
    char        fullpath    [LEN_HUND];
    char        suffix      [LEN_LABEL];
    char        content     [LEN_TITLE];
-   /*---(chars)-------------*/
+   /*---(system)------------*/
    char        systems     [LEN_HUND];
    char        language    [LEN_HUND];
    char        codesize    [LEN_DESC];
-   /*---(when)--------------*/
+   char        depends     [LEN_HUND];
+   /*---(author)------------*/
    char        author      [LEN_TITLE];
    char        created     [LEN_LABEL];
-   char        depends     [LEN_HUND];
    /*---(versioning)--------*/
    char        vermajor    [LEN_HUND];
    char        verminor    [LEN_HUND];
@@ -344,32 +349,42 @@ struct cFILE {
 #define     STATS_INDENT   stats [15]
 #define     STATS_MEMORY   stats [16]
 /*---(group two.a)--------------------*/
-#define     STATS_LCALLS   stats [17]
-#define     STATS_GCALLS   stats [18]
-#define     STATS_ECALLS   stats [19]
-#define     STATS_RECURS   stats [20]
+#define     STATS_ACALLS   stats [17]
+#define     STATS_LCALLS   stats [18]
+#define     STATS_GCALLS   stats [19]
+#define     STATS_ECALLS   stats [20]
+#define     STATS_RECURS   stats [21]
 /*---(group two.b)--------------------*/
-#define     STATS_FUNCS    stats [21]
-#define     STATS_DFUNCS   stats [22]
-#define     STATS_LFUNCS   stats [23]
-#define     STATS_GFUNCS   stats [24]
-#define     STATS_CSTD     stats [25]
-#define     STATS_YLIB     stats [26]
-#define     STATS_OFUNCS   stats [27]
-#define     STATS_MYSTRY   stats [28]
+#define     STATS_FUNCS    stats [22]
+#define     STATS_DFUNCS   stats [23]
+#define     STATS_RFUNCS   stats [24]
+#define     STATS_LFUNCS   stats [25]
+#define     STATS_GFUNCS   stats [26]
+#define     STATS_CSTD     stats [27]
+#define     STATS_YLIB     stats [28]
+#define     STATS_OFUNCS   stats [29]
+#define     STATS_MYSTRY   stats [30]
 /*---(group two.c)--------------------*/
-#define     STATS_READ     stats [29]
-#define     STATS_WRITE    stats [30]
-#define     STATS_SYSTEM   stats [31]
+#define     STATS_READ     stats [31]
+#define     STATS_WRITE    stats [32]
+#define     STATS_SYSTEM   stats [33]
 /*---(group two.d)--------------------*/
-#define     STATS_NCURSE   stats [32]
-#define     STATS_OPENGL   stats [33]
-#define     STATS_WINDOW   stats [34]
-#define     STATS_MYX      stats [35]
-/*---(group three)--------------------*/
-#define     STATS_DSTYLE   stats [36]
-#define     STATS_DMACRO   stats [37]
-#define     STATS_DMATCH   stats [38]
+#define     STATS_NCURSE   stats [34]
+#define     STATS_OPENGL   stats [35]
+#define     STATS_WINDOW   stats [36]
+#define     STATS_MYX      stats [37]
+/*---(group three.a)------------------*/
+#define     STATS_DSTYLE   stats [38]
+#define     STATS_DMACRO   stats [39]
+#define     STATS_DMATCH   stats [40]
+#define     STATS_DWARN    stats [41]
+/*---(group three.b)------------------*/
+#define     STATS_PUSE     stats [42]
+#define     STATS_FUSE     stats [43]
+#define     STATS_GUSE     stats [44]
+#define     STATS_CUSE     stats [45]
+#define     STATS_YUSE     stats [46]
+#define     STATS_OUSE     stats [47]
 
 
 
@@ -429,46 +444,55 @@ struct cYLIB {
 #define     WORK_INDENT    work->temp  [ 6]
 #define     WORK_MEMORY    work->temp  [ 7]
 /*---(group two.a)--------------------*/
-#define     WORK_LCALLS    work->temp  [ 8]
-#define     WORK_GCALLS    work->temp  [ 9]
-#define     WORK_ECALLS    work->temp  [10]
-#define     WORK_RECURS    work->temp  [11]
+#define     WORK_ACALLS    work->temp  [ 8]
+#define     WORK_LCALLS    work->temp  [ 9]
+#define     WORK_GCALLS    work->temp  [10]
+#define     WORK_ECALLS    work->temp  [11]
+#define     WORK_RECURS    work->temp  [12]
 /*---(group two.b)--------------------*/
-#define     WORK_FUNCS     work->temp  [12]
-#define     WORK_DFUNCS    work->temp  [13]
-#define     WORK_LFUNCS    work->temp  [14]
-#define     WORK_GFUNCS    work->temp  [15]
-#define     WORK_CSTD      work->temp  [16]
-#define     WORK_YLIB      work->temp  [17]
-#define     WORK_OFUNCS    work->temp  [18]
-#define     WORK_MYSTRY    work->temp  [19]
+#define     WORK_FUNCS     work->temp  [13]
+#define     WORK_DFUNCS    work->temp  [14]
+#define     WORK_RFUNCS    work->temp  [15]
+#define     WORK_LFUNCS    work->temp  [16]
+#define     WORK_GFUNCS    work->temp  [17]
+#define     WORK_CSTD      work->temp  [18]
+#define     WORK_YLIB      work->temp  [19]
+#define     WORK_OFUNCS    work->temp  [20]
+#define     WORK_MYSTRY    work->temp  [21]
 /*---(group two.c)--------------------*/
-#define     WORK_INPUT     work->temp  [20]
-#define     WORK_READ      work->temp  [21]
-#define     WORK_BREAD     work->temp  [22]
-#define     WORK_OUTPUT    work->temp  [23]
-#define     WORK_WRITE     work->temp  [24]
-#define     WORK_BWRITE    work->temp  [25]
-#define     WORK_PROCS     work->temp  [26]
-#define     WORK_SYSTEM    work->temp  [27]
-#define     WORK_FILESYS   work->temp  [28]
+#define     WORK_INPUT     work->temp  [22]
+#define     WORK_TREAD     work->temp  [23]
+#define     WORK_BREAD     work->temp  [24]
+#define     WORK_OUTPUT    work->temp  [25]
+#define     WORK_TWRITE    work->temp  [26]
+#define     WORK_BWRITE    work->temp  [27]
+#define     WORK_PROCS     work->temp  [28]
+#define     WORK_OPSYS     work->temp  [29]
+#define     WORK_FILESYS   work->temp  [30]
 /*---(group two.d)--------------------*/
-#define     WORK_NCURSE    work->temp  [29]
-#define     WORK_OPENGL    work->temp  [30]
-#define     WORK_WINDOW    work->temp  [31]
-#define     WORK_MYX       work->temp  [32]
-/*---(group three)--------------------*/
-#define     WORK_DCOUNT    work->temp  [33]
-#define     WORK_DLONG     work->temp  [34]
-#define     WORK_DSHORT    work->temp  [35]
-#define     WORK_DENTER    work->temp  [36]
-#define     WORK_DEXIT     work->temp  [37]
-#define     WORK_DFREE     work->temp  [38]
+#define     WORK_NCURSE    work->temp  [31]
+#define     WORK_OPENGL    work->temp  [32]
+#define     WORK_WINDOW    work->temp  [33]
+#define     WORK_MYX       work->temp  [34]
+/*---(group three.a)------------------*/
+#define     WORK_DCOUNT    work->temp  [35]
+#define     WORK_DLONG     work->temp  [36]
+#define     WORK_DSHORT    work->temp  [37]
+#define     WORK_DENTER    work->temp  [38]
+#define     WORK_DEXIT     work->temp  [39]
+#define     WORK_DFREE     work->temp  [40]
+/*---(group three.b)------------------*/
+#define     WORK_PUSE      work->temp  [41]
+#define     WORK_FUSE      work->temp  [42]
+#define     WORK_GUSE      work->temp  [43]
+#define     WORK_CUSE      work->temp  [44]
+#define     WORK_YUSE      work->temp  [45]
+#define     WORK_OUSE      work->temp  [46]
 
 
 
 
-#define     MAX_TEMPS      40
+#define     MAX_TEMPS      50
 struct cWORK {
    /*---(positioning)--------------------*/
    int         beg;
@@ -527,6 +551,7 @@ extern char  g_path    [LEN_HUND];
 
 
 extern char      unit_answer [LEN_RECD];
+
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
@@ -627,10 +652,14 @@ char        poly_proj_file_unhook   (tFILE *a_file);
 char        poly_proj_nextfile      (tPROJ *a_proj, tFILE **a_file);
 char        poly_proj_prepare       (void);
 char        poly_proj_system        (char *a_path);
+char        poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
+char        poly_proj_header        (tPROJ *a_proj);
+char        poly_proj_line          (tPROJ *a_proj, char a_style, int c, char a_print);
 
 char        poly_db_write           (void);
 char        poly_db_read            (void);
 
+char        poly_rptg_projects      (void);
 char        poly_rptg_htags         (tPROJ *x_proj);
 char        poly_rptg_dump          (void);
 char        poly_rptg_extern        (tEXTERN *a_extern);
@@ -716,5 +745,13 @@ char        poly_shared_open        (char a_type, char *a_focus);
 char        poly_shared_close       (char a_type);
 char*       poly_shared__unit       (char *a_question);
 
+
+char        poly_vars_init          (void);
+char        poly_vars__push         (tFILE *a_file, char *a_name, char a_type);
+char        poly_vars__pop_file     (void);
+char        poly_vars_reset         (tFUNC *a_func);
+char        poly_vars_find          (tFUNC *a_func, char *a_recd);
+char        poly_vars_inventory     (tFILE *a_file);
+char*       poly_vars__unit         (char *a_question, int i);
 
 

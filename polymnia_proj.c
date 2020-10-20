@@ -6,6 +6,7 @@
 tPROJ      *g_head      = NULL;
 tPROJ      *g_tail      = NULL;
 int         g_count     =    0;;
+static char s_print     [LEN_RECD] = "";
 
 
 
@@ -64,8 +65,10 @@ char
 poly_proj__wipe    (tPROJ *a_dst)
 {
    if (a_dst == NULL)  return -1;
-   /*---(master)------------*/
+   /*---(overall)-----------*/
    a_dst->name     [0] = '\0';
+   strlcpy (a_dst->header, "-.-----.-----.-----.----.--.----.-", LEN_DESC);
+   /*---(master)------------*/
    a_dst->focus    [0] = '\0';
    a_dst->niche    [0] = '\0';
    a_dst->subject  [0] = '\0';
@@ -671,6 +674,226 @@ poly_proj_system        (char *a_path)
 
 
 /*====================------------------------------------====================*/
+/*===----                      header evaluation                       ----===*/
+/*====================------------------------------------====================*/
+static void  o___HEADER__________o () { return; }
+
+char
+poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max)
+{
+   char        rce         =  -10;
+   int         x_len       =    0;
+   --rce;  if (a_header == NULL)  return rce;
+   --rce;  if (a_text   == NULL)  return rce;
+   x_len = strlen (a_text);
+   if      (x_len     == 0)       a_header [n] = '0';
+   else if (x_len     <  a_min)   a_header [n] = '?';
+   else if (x_len     <  a_low)   a_header [n] = '!';
+   else if (x_len - 1 >= a_max)   a_header [n] = '#';
+   else if (x_len     >  a_high)  a_header [n] = '!';
+   else                           a_header [n] = a_abbr;
+   return 0;
+}
+
+char
+poly_proj_header        (tPROJ *a_proj)
+{
+   /*---(master)-------------------------*/
+   poly_proj__headerline (a_proj->header,  2, 'n', a_proj->name     ,  1,  4, 15, LEN_TITLE);
+   poly_proj__headerline (a_proj->header,  3, 'f', a_proj->focus    ,  5, 10, 30, LEN_DESC);
+   poly_proj__headerline (a_proj->header,  4, 'n', a_proj->niche    ,  5, 10, 30, LEN_DESC);
+   poly_proj__headerline (a_proj->header,  5, 's', a_proj->subject  , 10, 20, 30, LEN_TITLE);
+   poly_proj__headerline (a_proj->header,  6, 'p', a_proj->purpose  , 30, 50, 70, LEN_HUND);
+   /*---(greek)-------------*/
+   poly_proj__headerline (a_proj->header,  8, 'g', a_proj->namesake , 10, 20, 40, LEN_HUND);
+   poly_proj__headerline (a_proj->header,  9, 'h', a_proj->heritage , 40, 50, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 10, 'i', a_proj->imagery  , 40, 50, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 11, 'r', a_proj->reason   , 40, 50, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 12, 'o', a_proj->oneline  , 40, 50, 70, LEN_HUND);
+   /*---(location)----------*/
+   poly_proj__headerline (a_proj->header, 14, 'd', a_proj->homedir  ,  1,  4, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 15, 'b', a_proj->progname ,  1,  4, 20, LEN_TITLE);
+   poly_proj__headerline (a_proj->header, 16, 'f', a_proj->fullpath , 10, 20, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 17, 's', a_proj->suffix   ,  0,  3,  6, LEN_LABEL);
+   poly_proj__headerline (a_proj->header, 18, 'c', a_proj->content  ,  0, 15, 30, LEN_TITLE);
+   /*---(chars)-------------*/
+   poly_proj__headerline (a_proj->header, 20, 's', a_proj->systems  , 40, 50, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 21, 'l', a_proj->language , 40, 50, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 22, 'c', a_proj->codesize , 10, 30, 60, LEN_DESC);
+   poly_proj__headerline (a_proj->header, 23, 'd', a_proj->depends  ,  0,  0, 70, LEN_HUND);
+   /*---(when)--------------*/
+   poly_proj__headerline (a_proj->header, 25, 'a', a_proj->author   ,  5, 10, 40, LEN_TITLE);
+   poly_proj__headerline (a_proj->header, 26, 'c', a_proj->created  ,  4,  7, 20, LEN_LABEL);
+   /*---(versioning)--------*/
+   poly_proj__headerline (a_proj->header, 28, 'x', a_proj->vermajor , 10, 20, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 29, 'n', a_proj->verminor , 10, 20, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 30, 'v', a_proj->vernum   ,  4,  4,  4, LEN_LABEL);
+   poly_proj__headerline (a_proj->header, 31, 't', a_proj->vertxt   , 10, 20, 70, LEN_HUND);
+   /*---(overall)-----------*/
+   a_proj->header [0] = '-';
+   if      (strchr (a_proj->header, '0') != NULL)  a_proj->header [0] = '#';
+   else if (strchr (a_proj->header, '#') != NULL)  a_proj->header [0] = '!';
+   /*---(complete)----------*/
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       reporting support                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___REPORTING_______o () { return; }
+
+char
+poly_proj_line          (tPROJ *a_proj, char a_style, int c, char a_print)
+{
+   /*  n  name    , just the name
+    *  s  stats   , short count, name, plus statistics
+    *  L  long    , short count plus everything
+    *  a  all     , long count plus statistics
+    *  A  all     , long count plus everything
+    *  m  master  , name plus master data
+    *  g  greek   , name plus master data
+    *  l  location, name plus master data
+    *  c  chars   , name plus system data
+    *  w  who     , name plus author data
+    *  v  version , name plus versioning data
+    *
+    */
+   char       *x_count     = "prj";
+   char       *x_all       = "prj § fil § fnc";
+   char       *x_name      = "---name--------";
+   char       *x_header    = "---header-checklist----------------";
+   char       *x_stats     = "files § funcs § --lines § --empty § ---docs § --debug § ---code § --slocl";
+   char       *x_master    = "---focus---------------------- § ---niche---------------------- § ---subject-------------------- § ---purpose------------------------------------------------------------";
+   char       *x_greek     = "---namesake----------------------------- § ---heritage----------------------------------------------------------- § ---imagery------------------------------------------------------------ § ---reason-chosen------------------------------------------------------ § ---oneline------------------------------------------------------------";
+   char       *x_location  = "---homedir------------------------------------------------------------ § ---basename--------- § ---fullpath----------------------------------------------------------- § suffix § ---content--------------------";
+   char       *x_system    = "---system------------------------------------------------------------- § ---language----------------------------------------------------------- § ---codesize----------------------------- § ---dependencies-------------------------------------------------------";
+   char       *x_author    = "---author------------------------------- § ---created----------";
+   char       *x_version   = "---vermajor----------------------------------------------------------- § ---verminor----------------------------------------------------------- § --vernum-- § ---vertxt-------------------------------------------------------------";
+   char        t           [LEN_RECD] = "";
+   char        x_type      = '-';
+   /*---(prepare)------------------------*/
+   strlcpy (s_print, "", LEN_RECD);
+   if (a_proj == NULL)  x_type = 'h';
+   /*---(index)--------------------------*/
+   if (strchr ("aA", a_style) != NULL) {
+      switch (x_type) {
+      case '-' :   sprintf (t, "%-3d § -   § -   § ", c + 1);  break;
+      case 'h' :   sprintf (t, "%s § ", x_all);                break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   if (strchr ("sL", a_style) != NULL) {
+      switch (x_type) {
+      case '-' :   sprintf (t, "%-3d § ", c + 1);  break;
+      case 'h' :   sprintf (t, "%s § ", x_count);              break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(name)---------------------------*/
+   switch (x_type) {
+   case '-' :   sprintf (t, "%-15.15s § ", a_proj->name);      break;
+   case 'h' :   sprintf (t, "%s § "      , x_name);            break;
+   }
+   strlcat (s_print, t, LEN_RECD);
+   /*> printf ("%s\n", t);                                                            <* 
+    *> printf ("%s\n", s_print);                                                      <*/
+   /*---(statistics)---------------------*/
+   if (strchr ("sLaA", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%5d § %5d § %7d § %7d § %7d § %7d § %7d § %7d § ",
+                       a_proj->COUNT_FILES, a_proj->COUNT_FUNCS,
+                       a_proj->COUNT_LINES, a_proj->COUNT_EMPTY,
+                       a_proj->COUNT_DOCS , a_proj->COUNT_DEBUG,
+                       a_proj->COUNT_CODE , a_proj->COUNT_SLOCL);
+                 break;
+      case 'h' : sprintf (t, "%-s § "   , x_stats);            break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(header flags)-------------------*/
+   if (strchr ("sLaA", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-35.35s § ", a_proj->header);    break;
+      case 'h' : sprintf (t, "%s § "      , x_header);          break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(master)-------------------------*/
+   if (strchr ("LAm", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-30.30s § %-30.30s § %-30.30s § %-70.70s § ",
+                       a_proj->focus   , a_proj->niche   ,
+                       a_proj->subject , a_proj->purpose );
+                 break;
+      case 'h' : sprintf (t, "%s § "      , x_master);          break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(greek)--------------------------*/
+   if (strchr ("LAg", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-40.40s § %-70.70s § %-70.70s § %-70.70s § %-70.70s § ",
+                       a_proj->namesake, a_proj->heritage, a_proj->imagery ,
+                       a_proj->reason  , a_proj->oneline );
+                 break;
+      case 'h' : sprintf (t, "%s § "      , x_greek);           break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(location)-----------------------*/
+   if (strchr ("LAl", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-70.70s § %-20.20s § %-70.70s § %-6.6s § %-30.30s § ",
+                       a_proj->homedir , a_proj->progname,
+                       a_proj->fullpath, a_proj->suffix  , a_proj->content );
+                 break;
+      case 'h' : sprintf (t, "%s § "      , x_location);           break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(chars)--------------------------*/
+   if (strchr ("LAc", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-70.70s § %-70.70s § %-40.40s § %-70.70s § ",
+                       a_proj->systems , a_proj->language,
+                       a_proj->codesize, a_proj->depends );
+                 break;
+      case 'h' : sprintf (t, "%s § "      , x_system);             break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(author)-------------------------*/
+   if (strchr ("LAw", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-40.40s § %-20.20s § ",
+                       a_proj->author  , a_proj->created );
+                 break;
+      case 'h' : sprintf (t, "%s § "      , x_author);             break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(version)------------------------*/
+   if (strchr ("LAv", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-70.70s § %-70.70s § %-10.10s § %-70.70s § ",
+                       a_proj->vermajor, a_proj->verminor,
+                       a_proj->vernum  , a_proj->vertxt  );
+                 break;
+      case 'h' : sprintf (t, "%s § "      , x_version);            break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(newline)------------------------*/
+   if (a_print == 'y')  printf ("%s\n", s_print);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
@@ -691,6 +914,10 @@ poly_proj__unit     (char *a_question, int i)
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
       snprintf (unit_answer, LEN_RECD, "PROJ count       : %3d", poly_btree_count (B_PROJ));
+      return unit_answer;
+   }
+   else if (strcmp (a_question, "print"     )     == 0) {
+      snprintf (unit_answer, LEN_RECD, "PROJ print       : %4d[%-.400s]", strlen (s_print), s_print);;
       return unit_answer;
    }
    if (strncmp (unit_answer, "PROJ unit        :", 18) != 0)  return unit_answer;
@@ -719,6 +946,15 @@ poly_proj__unit     (char *a_question, int i)
          snprintf (unit_answer, LEN_RECD, "PROJ files  (%2d) : %-22.22s   %3dc %3df %3db   %-17.17s %s", i, t, u->count, x_fore, x_back, s, r);
       } else {
          snprintf (unit_answer, LEN_RECD, "PROJ files  (%2d) : []                         -c   -f   -b   []                []", i, t);
+      }
+   }
+   else if (strcmp (a_question, "header"    )     == 0) {
+      u = (tPROJ *) poly_btree_entry (B_PROJ, i);
+      if (u != NULL) {
+         sprintf  (t, "[%.20s]", u->name);
+         snprintf (unit_answer, LEN_RECD, "PROJ head   (%2d) : %-22.22s   [%s]", i, t, u->header);
+      } else {
+         snprintf (unit_answer, LEN_RECD, "PROJ head   (%2d) : %-22.22s   [%s]", i, t, "· ····· ····· ····· ··· ··· ···· ·");
       }
    }
    /*---(complete)-----------------------*/

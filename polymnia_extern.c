@@ -599,15 +599,15 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
       switch (a_ext->type) {
       case '-' : break;
       case 'o' : ++a_src->WORK_OUTPUT;           break;
-      case 'w' : ++a_src->WORK_WRITE;            break;
+      case 'w' : ++a_src->WORK_TWRITE;           break;
       case 'W' : ++a_src->WORK_BWRITE;           break;
       case 'i' : ++a_src->WORK_INPUT;            break;
-      case 'r' : ++a_src->WORK_READ;             break;
+      case 'r' : ++a_src->WORK_TREAD;            break;
       case 'R' : ++a_src->WORK_BREAD;            break;
       case 'm' : ++a_src->WORK_MEMORY;           break;
       case 'p' : ++a_src->WORK_PROCS;            break;
       case 'f' : ++a_src->WORK_FILESYS;          break;
-      case 's' : ++a_src->WORK_SYSTEM;           break;
+      case 's' : ++a_src->WORK_OPSYS;            break;
       }
    }
    /*---(other libraries)----------------*/
@@ -809,9 +809,9 @@ poly_extern__unit       (char *a_question, int i)
          poly_extern__unit_work ('-', 'y', v->WORK_YLIB  , unit_answer);
          poly_extern__unit_work ('-', 'o', v->WORK_OFUNCS, unit_answer);
          poly_extern__unit_work ('-', 'm', v->WORK_MYSTRY, unit_answer);
-         poly_extern__unit_work ('y', 'r', v->WORK_INPUT  + v->WORK_READ   + v->WORK_BREAD  , unit_answer);
-         poly_extern__unit_work ('-', 'w', v->WORK_OUTPUT + v->WORK_WRITE  + v->WORK_BWRITE , unit_answer);
-         poly_extern__unit_work ('-', 's', v->WORK_PROCS  + v->WORK_SYSTEM + v->WORK_FILESYS, unit_answer);
+         poly_extern__unit_work ('y', 'r', v->WORK_INPUT  + v->WORK_TREAD  + v->WORK_BREAD  , unit_answer);
+         poly_extern__unit_work ('-', 'w', v->WORK_OUTPUT + v->WORK_TWRITE + v->WORK_BWRITE , unit_answer);
+         poly_extern__unit_work ('-', 's', v->WORK_PROCS  + v->WORK_OPSYS  + v->WORK_FILESYS, unit_answer);
          poly_extern__unit_work ('y', 'n', v->WORK_NCURSE, unit_answer);
          poly_extern__unit_work ('-', 'o', v->WORK_OPENGL, unit_answer);
          poly_extern__unit_work ('-', 'w', v->WORK_WINDOW, unit_answer);

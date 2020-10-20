@@ -304,6 +304,7 @@ poly_debug_function     (tFUNC *a_func)
    /*---(defaults)-----------------------*/
    a_func->STATS_DSTYLE = '-';
    a_func->STATS_DMATCH = '-';
+   a_func->STATS_DWARN  = '-';
    /*---(quick out)----------------------*/
    if      (a_func->COUNT_DEBUG == 0)          return 0;
    /*---(style)--------------------------*/

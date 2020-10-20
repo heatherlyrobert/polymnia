@@ -3,13 +3,15 @@
 
 
 
-#define     NEW_CFLOW     "cflow  -x $(ls -1 *.c 2> /dev/null | grep -v unit) > %s  2> /dev/null"
+#define     NEW_CFLOW     "cflow  -x $(ls -1 *.c 2> /dev/null | grep -vx unit) > %s  2> /dev/null"
 #define     DEL_ANY       "rm -f %s  2> /dev/null"
 #define     NEW_CTAGS     "ctags  --language-force=c -x --sort=no --file-scope=yes  --c-kinds=pfl %s > %s  2> /dev/null"
+#define     NEW_VARS      "ctags  --language-force=c -x --sort=no                   --c-kinds=vxd %s > %s  2> /dev/null"
 
-static      char       *s_valid       = "ftmcx";
+static      char       *s_valid       = "ftmcxv";
 static      char        s_ctags       [LEN_TITLE] = "";
 static      char        s_code        [LEN_TITLE] = "";
+static      char        s_vars        [LEN_TITLE] = "";
 
 
 char
@@ -62,6 +64,12 @@ poly_shared_open        (char a_type, char *a_focus)
       strlcpy (x_mode  , "rt"    , LEN_TERSE);
       x_file  = &(my.f_code);
       break;
+   case 'v' :  /* variables */
+      strlcpy (x_source, a_focus , LEN_TITLE);
+      strlcpy (x_use   , F_VARS  , LEN_TITLE);
+      strlcpy (x_mode  , "rt"    , LEN_TERSE);
+      x_file  = &(my.f_vars);
+      break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -103,6 +111,9 @@ poly_shared_open        (char a_type, char *a_focus)
    case  't' :
       sprintf (x_cmd, NEW_CTAGS , x_source, x_use);
       break;
+   case  'v' :
+      sprintf (x_cmd, NEW_VARS  , x_source, x_use);
+      break;
    }
    if (strcmp (x_cmd , "") != 0) {
       DEBUG_INPT   yLOG_info    ("x_cmd"     , x_cmd);
@@ -127,6 +138,9 @@ poly_shared_open        (char a_type, char *a_focus)
       break;
    case 'c' :  /* c source files */
       strlcpy (s_code , a_focus , LEN_TITLE);
+      break;
+   case 'v' :  /* varables */
+      strlcpy (s_vars , a_focus , LEN_TITLE);
       break;
    }
    DEBUG_INPT   yLOG_point   ("x_file"          , x_file);
@@ -175,6 +189,10 @@ poly_shared_close       (char a_type)
       strlcpy (x_used , s_code  , LEN_TITLE);
       x_file  = &my.f_code;
       break;
+   case 'v' :  /* global/file variables */
+      strlcpy (x_used , F_VARS  , LEN_RECD);
+      x_file  = &my.f_vars;
+      break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -202,6 +220,10 @@ poly_shared_close       (char a_type)
    case  't' :
       sprintf (x_cmd  , DEL_ANY   , F_CTAGS);
       strlcpy (x_used , F_CTAGS   , LEN_TITLE);
+      break;
+   case  'v' :
+      sprintf (x_cmd  , DEL_ANY   , F_VARS);
+      strlcpy (x_used , F_VARS    , LEN_TITLE);
       break;
    }
    if (strcmp (x_cmd , "") != 0) {
@@ -232,6 +254,9 @@ poly_shared_close       (char a_type)
       break;
    case 'c' :  /* c source files */
       strlcpy (s_code , ""      , LEN_TITLE);
+      break;
+   case 'v' :  /* variables */
+      strlcpy (s_vars , ""      , LEN_TITLE);
       break;
    }
    /*---(complete)-----------------------*/
@@ -283,7 +308,7 @@ poly_shared__unit       (char *a_question)
       c = poly_shared__unit_recd (s_code, 0, x_recd);
       sprintf (s, "%2d[%.14s]", strlen (s_code) , s_code);
       sprintf (r, "%2d[%.14s]", strlen (x_recd) , x_recd);
-      snprintf (unit_answer, LEN_RECD, "SHARED code      : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_code  == NULL) ? '-' : 'y', my.f_code , t, s, c, r);
+      snprintf (unit_answer, LEN_RECD, "SHARED code      : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_code   == NULL) ? '-' : 'y', my.f_code  , t, s, c, r);
       return unit_answer;
    }
    else if (strcmp (a_question, "ctags"     )     == 0) {
@@ -291,14 +316,14 @@ poly_shared__unit       (char *a_question)
       sprintf (t, "%2d[%.14s]", strlen (F_CTAGS), F_CTAGS);
       sprintf (s, "%2d[%.14s]", strlen (s_ctags), s_ctags);
       sprintf (r, "%2d[%.14s]", strlen (x_recd) , x_recd);
-      snprintf (unit_answer, LEN_RECD, "SHARED ctags     : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_ctags == NULL) ? '-' : 'y', my.f_ctags, t, s, c, r);
+      snprintf (unit_answer, LEN_RECD, "SHARED ctags     : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_ctags  == NULL) ? '-' : 'y', my.f_ctags , t, s, c, r);
       return unit_answer;
    }
    else if (strcmp (a_question, "cflow"     )     == 0) {
       c = poly_shared__unit_recd (F_CFLOW, 0, x_recd);
       sprintf (t, "%2d[%.14s]", strlen (F_CFLOW), F_CFLOW);
       sprintf (r, "%2d[%.14s]", strlen (x_recd) , x_recd);
-      snprintf (unit_answer, LEN_RECD, "SHARED cflow     : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_cflow == NULL) ? '-' : 'y', my.f_cflow, t, s, c, r);
+      snprintf (unit_answer, LEN_RECD, "SHARED cflow     : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_cflow  == NULL) ? '-' : 'y', my.f_cflow , t, s, c, r);
       return unit_answer;
    }
    else if (strcmp (a_question, "mystry"    )     == 0) {
@@ -306,6 +331,13 @@ poly_shared__unit       (char *a_question)
       sprintf (t, "%2d[%.14s]", strlen (F_MYSTRY), F_MYSTRY);
       sprintf (r, "%2d[%.14s]", strlen (x_recd) , x_recd);
       snprintf (unit_answer, LEN_RECD, "SHARED mystry    : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_mystry == NULL) ? '-' : 'y', my.f_mystry, t, s, c, r);
+      return unit_answer;
+   }
+   else if (strcmp (a_question, "vars"      )     == 0) {
+      c = poly_shared__unit_recd (F_VARS, 0, x_recd);
+      sprintf (t, "%2d[%.14s]", strlen (F_VARS), F_VARS);
+      sprintf (r, "%2d[%.14s]", strlen (x_recd) , x_recd);
+      snprintf (unit_answer, LEN_RECD, "SHARED vars      : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_vars   == NULL) ? '-' : 'y', my.f_vars  , t, s, c, r);
       return unit_answer;
    }
    /*---(complete)-----------------------*/

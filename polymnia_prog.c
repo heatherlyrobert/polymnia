@@ -88,6 +88,7 @@ PROG_init          (int a_argc, char *a_argv[])
    poly_files_init   ();
    poly_func_init    ();
    poly_extern_init  ();
+   poly_vars_init    ();
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -121,7 +122,7 @@ PROG_args          (int argc, char *argv[])
       else if (strcmp (a, "--report"   ) == 0)  my.g_mode   = MODE_RPTG;
       else if (strcmp (a, "--write"    ) == 0)  my.g_mode   = MODE_WRITE;
       else if (strcmp (a, "--update"   ) == 0)  my.g_mode   = MODE_UPDATE;
-      else if (strcmp (a, "--projs"    ) == 0)  my.g_mode   = MODE_PROJ;
+      else if (strcmp (a, "--projects" ) == 0)  my.g_mode   = MODE_PROJ;
       else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;
       else if (strcmp (a, "--system"   ) == 0)  my.g_mode   = MODE_SYSTEM;
       else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;
@@ -238,14 +239,14 @@ PROG_summarize          (tPROJ *a_proj)
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
    DEBUG_PROG   yLOG_info    ("->name"    , a_proj->name);
    /*---(prepare)------------------------*/
-   if      (my.COUNT_SLOCL < 100    )  strlcpy (a_proj->codesize, "u.micro        < 100 slocl"             , LEN_DESC);
-   else if (my.COUNT_SLOCL < 500    )  strlcpy (a_proj->codesize, "t.tiny         100 - 499 slocl"         , LEN_DESC);
-   else if (my.COUNT_SLOCL < 2000   )  strlcpy (a_proj->codesize, "s.small        500 - 1,999 slocl"       , LEN_DESC);
-   else if (my.COUNT_SLOCL < 10000  )  strlcpy (a_proj->codesize, "m.moderate     2,000 - 9,999 slocl"     , LEN_DESC);
-   else if (my.COUNT_SLOCL < 50000  )  strlcpy (a_proj->codesize, "l.large        10,000 - 49,999 slocl"   , LEN_DESC);
-   else if (my.COUNT_SLOCL < 250000 )  strlcpy (a_proj->codesize, "h.huge         50,000 - 249,999 slocl"  , LEN_DESC);
-   else if (my.COUNT_SLOCL < 1000000)  strlcpy (a_proj->codesize, "e.elephantine  250,000 - 999,999 slocl" , LEN_DESC);
-   else                                strlcpy (a_proj->codesize, "g.gargantuan   >= 1,000,000 slocl"      , LEN_DESC);
+   if      (a_proj->COUNT_SLOCL < 100    )  strlcpy (a_proj->codesize, "u.micro        (< 100 slocl)"             , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 500    )  strlcpy (a_proj->codesize, "t.tiny         (100 - 499 slocl)"         , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 2000   )  strlcpy (a_proj->codesize, "s.small        (500 - 1,999 slocl)"       , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 10000  )  strlcpy (a_proj->codesize, "m.moderate     (2,000 - 9,999 slocl)"     , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 50000  )  strlcpy (a_proj->codesize, "l.large        (10,000 - 49,999 slocl)"   , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 250000 )  strlcpy (a_proj->codesize, "h.huge         (50,000 - 249,999 slocl)"  , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 1000000)  strlcpy (a_proj->codesize, "e.elephantine  (250,000 - 999,999 slocl)" , LEN_DESC);
+   else                                     strlcpy (a_proj->codesize, "g.gargantuan   (>= 1,000,000 slocl)"      , LEN_DESC);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
    a_proj->funcs = 0;
@@ -259,6 +260,7 @@ PROG_summarize          (tPROJ *a_proj)
       a_proj->funcs += x_file->count;
       x_file = x_file->next;
    }
+   poly_proj_header (a_proj);
    /*---(prepare for use)----------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;

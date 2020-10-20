@@ -386,6 +386,7 @@ poly_files_review  (tPROJ *a_proj)
    char        x_type      =  '-';
    int         x_read      =    0;          /* count of entries reviewed      */
    int         x_good      =    0;          /* count of entries processed     */
+   tFILE      *x_curr      = NULL;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(open dir)-----------------------*/
@@ -442,9 +443,12 @@ poly_files_review  (tPROJ *a_proj)
          continue;
       }
       /*---(save)------------------------*/
-      poly_file_add (a_proj, x_name, x_type, NULL);
+      x_curr = NULL;
+      poly_file_add (a_proj, x_name, x_type, &x_curr);
       ++x_good;
       DEBUG_INPT   yLOG_note    ("added to inventory");
+      /*---(check globals)---------------*/
+      if (x_type == 'h')  poly_vars_inventory (x_curr);
       /*---(done)------------------------*/
    }
    DEBUG_INPT   yLOG_value   ("x_read"    , x_read);
@@ -494,6 +498,53 @@ static void  o___SEARCH__________o () { return; }
 
 tFILE*  poly_files_search  (char *a_name) { return (tFILE *) poly_btree_search  (B_FILES, a_name); }
 char    poly_files_list    (void)         { return poly_btree_list (B_FILES); }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       reporting support                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___REPORTING_______o () { return; }
+
+char
+poly_file_line          (tFILE *a_file, char a_style, char a_type, int c)
+{
+   /*  n  name    , just the name
+    *  s  stats   , name plus statistics
+    *
+    */
+   char       *x_count     = "###";
+   char       *x_name      = "---name--------";
+   char       *x_stats     = "files § funcs § --lines § --empty § ---docs § --debug § ---code § --slocl";
+   /*---(index)--------------------------*/
+   if (strchr ("s", a_style) != NULL) {
+      switch (a_type) {
+      case '-' :   printf ("%-3d § ", c + 1);                 break;
+      case 'h' :   printf ("%s § "  , x_count);               break;
+      }
+   }
+   /*---(name)---------------------------*/
+   switch (a_type) {
+   case '-' :   printf ("%-15.15s § ", a_file->name);      break;
+   case 'h' :   printf ("%s § "      , x_name);            break;
+   }
+   /*---(statistics)---------------------*/
+   if (strchr ("sL", a_style) != NULL) {
+      switch (a_type) {
+      case '-' : printf ("%5d § %5d § %7d § %7d § %7d § %7d § %7d § %7d § ",
+                       a_file->COUNT_FILES, a_file->COUNT_FUNCS,
+                       a_file->COUNT_LINES, a_file->COUNT_EMPTY,
+                       a_file->COUNT_DOCS , a_file->COUNT_DEBUG,
+                       a_file->COUNT_CODE , a_file->COUNT_SLOCL);
+                 break;
+      case 'h' : printf ("%-s § "   , x_stats);            break;
+      }
+   }
+   /*---(newline)------------------------*/
+   printf ("\n");
+   /*---(complete)-----------------------*/
+   return 0;
+}
 
 
 

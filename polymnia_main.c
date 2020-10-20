@@ -64,6 +64,10 @@ main (int argc, char *argv[])
       rc = poly_action_search ();
       break;
    case MODE_PROJ   :
+      DEBUG_TOPS   yLOG_note    ("project read, but no htags or write");
+      rc = poly_db_read       ();
+      rc = poly_rptg_projects ();
+      break;
    case MODE_FILE   :
       DEBUG_TOPS   yLOG_note    ("project processing, read, but no htags or write");
       rc = poly_db_read     ();

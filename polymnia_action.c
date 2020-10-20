@@ -77,6 +77,8 @@ poly_action_generate    (void)
    x_file = x_proj->head;
    DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    while (x_file != NULL) {
+      if (x_file->type == 'c')  rc = poly_vars_inventory (x_file);
+      DEBUG_PROG   yLOG_value   ("vars"      , rc);
       rc = poly_tags_inventory (x_file);
       DEBUG_PROG   yLOG_value   ("inventory" , rc);
       rc = poly_code_review    (x_file);

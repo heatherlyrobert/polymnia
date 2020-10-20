@@ -98,8 +98,8 @@ poly_code__oneliners    (tFILE *a_file, char *a_recd)
    DEBUG_INPT   yLOG_info    ("r"         , r);
    /*---(master)-------------------*/
    --rce;
-   if      (strncmp (q, "P_FOCUS    ", 11) == 0)  poly_code__unquote (a_file->proj->focus   , r, LEN_TITLE);
-   else if (strncmp (q, "P_NICHE    ", 11) == 0)  poly_code__unquote (a_file->proj->niche   , r, LEN_TITLE);
+   if      (strncmp (q, "P_FOCUS    ", 11) == 0)  poly_code__unquote (a_file->proj->focus   , r, LEN_DESC);
+   else if (strncmp (q, "P_NICHE    ", 11) == 0)  poly_code__unquote (a_file->proj->niche   , r, LEN_DESC);
    else if (strncmp (q, "P_SUBJECT  ", 11) == 0)  poly_code__unquote (a_file->proj->subject , r, LEN_TITLE);
    else if (strncmp (q, "P_PURPOSE  ", 11) == 0)  poly_code__unquote (a_file->proj->purpose , r, LEN_HUND);
    /*---(greek)--------------------*/
@@ -126,8 +126,13 @@ poly_code__oneliners    (tFILE *a_file, char *a_recd)
    else if (strncmp (q, "P_VERMINOR ", 11) == 0)  poly_code__unquote (a_file->proj->verminor, r, LEN_HUND);
    else if (strncmp (q, "P_VERNUM   ", 11) == 0)  poly_code__unquote (a_file->proj->vernum  , r, LEN_LABEL);
    else if (strncmp (q, "P_VERTXT   ", 11) == 0)  poly_code__unquote (a_file->proj->vertxt  , r, LEN_HUND);
+   /*---(notes)--------------------*/
+   else if (strncmp (q, "P_PRIORITY ", 11) == 0)  ;
+   else if (strncmp (q, "P_PRINCIPLE", 11) == 0)  ;
+   else if (strncmp (q, "P_REMINDER" , 11) == 0)  ;
    /*---(complete)-----------------------*/
    else {
+      a_file->proj->header [33] = '?';
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -713,6 +718,7 @@ poly_code_review        (tFILE *a_file)
          DEBUG_INPT   yLOG_note    ("source file (c) line");
          rc = poly_code__before  (a_file, &x_func);
          rc = poly_code__current (a_file, x_line, x_func, x_curr, x_prev);
+         if (x_func != NULL)  rc = poly_vars_find (x_func, x_curr);
          rc = poly_code__after   (a_file, x_line, x_func, x_curr);
       }
       /*---(done)------------------------*/
