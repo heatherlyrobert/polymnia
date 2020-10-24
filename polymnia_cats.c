@@ -2,6 +2,9 @@
 #include  "polymnia.h"
 
 
+static char   s_print        [LEN_RECD] = "";
+
+
 
 #define     MAX_CATS    60
 static struct cPOS    {
@@ -84,7 +87,7 @@ static struct cPOS    {
    {  3,  2,  6, "P#use"  , "potential #define macros"        , 0, 0 },
    {  3,  2,  7, "F#use"  , "file #define macro use"          , 0, 0 },
    {  3,  2,  8, "G#use"  , "global #define macro use"        , 0, 0 },
-   {  3,  2,  9, "C#use"  , "cstd #define macro use"          , 0, 0 },
+   {  3,  2,  9, "M#use"  , "cstd/major #define macro use"    , 0, 0 },
    {  3,  2, 10, "Y#use"  , "ylib #define macro use"          , 0, 0 },
    {  3,  2, 11, "O#use"  , "unknown/other macros"            , 0, 0 },
    /*--  -123456-   -123456789012345678901234567890- */
@@ -604,9 +607,8 @@ poly_cats__group_3b     (tFUNC *a_func)
    poly_cats_exact   ("F#use"   , a_func->WORK_PUSE  , &a_func->STATS_PUSE  , '-');
    poly_cats_exact   ("F#use"   , a_func->WORK_FUSE  , &a_func->STATS_FUSE  , '-');
    poly_cats_exact   ("G#use"   , a_func->WORK_GUSE  , &a_func->STATS_GUSE  , '-');
-   poly_cats_exact   ("C#use"   , a_func->WORK_CUSE  , &a_func->STATS_CUSE  , '-');
+   poly_cats_exact   ("M#use"   , a_func->WORK_MUSE  , &a_func->STATS_MUSE  , '-');
    poly_cats_exact   ("Y#use"   , a_func->WORK_YUSE  , &a_func->STATS_YUSE  , '-');
-   a_func->WORK_OUSE = a_func->WORK_PUSE - a_func->WORK_FUSE - a_func->WORK_GUSE - a_func->WORK_CUSE - a_func->WORK_YUSE;
    poly_cats_exact   ("O#use"   , a_func->WORK_OUSE  , &a_func->STATS_OUSE  , '-');
    return 0;
 }
@@ -637,7 +639,7 @@ poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out
          a_func->STATS_DSTYLE, a_func->STATS_DMACRO,
          a_func->STATS_DMATCH, a_func->STATS_DFUNCS, a_func->STATS_DWARN ,
          a_func->STATS_PUSE  , a_func->STATS_FUSE  , a_func->STATS_GUSE  ,
-         a_func->STATS_CUSE  , a_func->STATS_YUSE  , a_func->STATS_OUSE  ,
+         a_func->STATS_MUSE  , a_func->STATS_YUSE  , a_func->STATS_OUSE  ,
          '-', '-', '-', '-');
    return 0;
 }
@@ -659,42 +661,87 @@ poly_cats_function      (tFUNC *a_func)
 static void  o___REPORTING_______o () { return; }
 
 char*        /*-> create category headers for reporting ---[gs2---·7-5·5--·B13-]¬[18--·B---56--·---·----]¬[---·------]-*/
-poly_cats_header        (int n, char *a_out)
+poly_cats_header        (int n, char *a_title, int a_curr, int a_total)
 {
    int         i           =    0;
    int         m           =    0;
    char        x_len       =    0;
    char        t           [LEN_RECD]  = "";
    char        s           [LEN_TERSE] = "";
-   strlcpy (a_out, "", LEN_RECD);
-   if (n == 0) {
-      sprintf (a_out, "   [------------complexity------------] [------------------integration----------------] [---------watch-points----------]  [----complexity-----] [-------integration-------] [---watchpoints---]");
-   } else {
-      for (i = 0; i < MAX_CATS; ++i) {
-         /*---(end-of-data)-----------------*/
-         if (s_cats [i].grp <  0)  break;
-         /*---(group break)-----------------*/
-         if (s_cats [i].sub == 0) {
-            strlcat (a_out, " ", LEN_RECD);
-            continue;
-         }
-         /*---(subgroup break)--------------*/
-         if (i > 0 && s_cats [i - 1].sub != s_cats [i].sub) {
-            strlcat (a_out, " ", LEN_RECD);
-         }
-         /*---(vertical strip)--------------*/
-         x_len = strlen (s_cats [i].name);
-         m = x_len - n;
-         if      (n > 7) sprintf (s, "  ");
-         else if (m < 0) sprintf (s, "  ");
-         else            sprintf (s, "%c ", s_cats [i].name [m]);
-         strlcat (a_out, s, LEN_RECD);
-         /*---(done)------------------------*/
+   strlcpy (s_print, "", LEN_RECD);
+   if (n <= 0 || n > 7)  return s_print;
+   if (n > 1)  sprintf (s_print, "%-5.5s : %4d  %5d             ", a_title, a_curr, a_total);
+   else        sprintf (s_print, "                                ");
+   for (i = 0; i < MAX_CATS; ++i) {
+      /*---(end-of-data)-----------------*/
+      if (s_cats [i].grp <  0)  break;
+      /*---(group break)-----------------*/
+      if (s_cats [i].sub == 0) {
+         strlcat (s_print, " ", LEN_RECD);
+         continue;
       }
-      if (n == 1)  strlcat (a_out, "  ---------------------as-presented-in-source-code---------------------", LEN_RECD);
-      else         strlcat (a_out, "                                                                       ", LEN_RECD);
+      /*---(subgroup break)--------------*/
+      if (i > 0 && s_cats [i - 1].sub != s_cats [i].sub) {
+         strlcat (s_print, " ", LEN_RECD);
+      }
+      /*---(vertical strip)--------------*/
+      x_len = strlen (s_cats [i].name);
+      m = x_len - n;
+      if      (n > 7) sprintf (s, "  ");
+      else if (m < 0) sprintf (s, "  ");
+      else            sprintf (s, "%c ", s_cats [i].name [m]);
+      strlcat (s_print, s, LEN_RECD);
+      /*---(done)------------------------*/
    }
-   return a_out;
+   return s_print;
+}
+
+char*        /*-> create category details for functions ---[gs2---.7-5.5--.B13-]¬[18--.B---56--.---.----]¬[---.------]-*/
+poly_cats_database      (tFUNC *a_func)
+{
+   char        t           [LEN_RECD]  = "";
+   char        a           [LEN_RECD]  = "";
+   char        b           [LEN_RECD]  = "";
+   char        c           [LEN_RECD]  = "";
+   char        r           [LEN_TERSE] = "";
+   tFUNC      *x_func      = NULL;
+   x_func = a_func;
+   poly_cats__single      (a_func, r);
+   if (x_func != NULL && a_func->type == '_')   x_func = NULL;
+   poly_cats__complexity  ('l', x_func, 'y', a);
+   poly_cats__integration ('l', x_func, 'y', b);
+   poly_cats__watchpoints ('l', x_func, 'y', c);
+   sprintf  (s_print, "%s  %s %s %s", r, a, b, c);
+   strldchg (s_print, '-', '·', LEN_RECD);
+   return s_print;
+}
+
+char*        /*-> create category details for functions ---[gs2---.7-5.5--.B13-]¬[18--.B---56--.---.----]¬[---.------]-*/
+poly_cats_comment       (tFUNC *a_func)
+{
+   char        t           [LEN_RECD]  = "";
+   char        a           [LEN_RECD]  = "";
+   char        b           [LEN_RECD]  = "";
+   char        c           [LEN_RECD]  = "";
+   char        r           [LEN_TERSE] = "";
+   tFUNC      *x_func      = NULL;
+   x_func = a_func;
+   poly_cats__single      (a_func, r);
+   if (x_func != NULL && a_func->type == '_')   x_func = NULL;
+   poly_cats__complexity  ('-', x_func, 'y', a);
+   poly_cats__integration ('-', x_func, 'y', b);
+   poly_cats__watchpoints ('-', x_func, 'y', c);
+   sprintf (s_print, "%s¬%s¬%s", a, b, c);
+   if (a_func->type == '_') {
+      strldchg (s_print, '[', ' ', LEN_RECD);
+      strldchg (s_print, ']', ' ', LEN_RECD);
+      strldchg (s_print, '.', ' ', LEN_RECD);
+      strldchg (s_print, '-', '·', LEN_RECD);
+      strldchg (s_print, '¬', ' ', LEN_RECD);
+   } else {
+      strldchg (s_print, '.', '·', LEN_RECD);
+   }
+   return s_print;
 }
 
 char*        /*-> create category details for functions ---[gs2---.7-5.5--.B13-]¬[18--.B---56--.---.----]¬[---.------]-*/
@@ -708,7 +755,7 @@ poly_cats_full          (tFUNC *a_func, char *a_out)
    tFUNC      *x_func      = NULL;
    x_func = a_func;
    poly_cats__single      (a_func, r);
-   if (a_func->type == '_')   x_func = NULL;
+   if (x_func != NULL && a_func->type == '_')   x_func = NULL;
    poly_cats__complexity  ('l', x_func, 'y', a);
    poly_cats__integration ('l', x_func, 'y', b);
    poly_cats__watchpoints ('l', x_func, 'y', c);
@@ -782,7 +829,7 @@ poly_cats__unit      (char *a_question, int i)
       sprintf (unit_answer, "CATS full   (%2d) : %-17.17s %s %s %s %s", i, t, r, a, b, c);
    }
    else if   (strcmp (a_question, "header"    )     == 0) {
-      poly_cats_header (i, t);
+      strlcpy (t, poly_cats_header (i, "test", 0, 0), LEN_RECD);
       sprintf (unit_answer, "CATS header (%2d) : %3d[%s]", i, strlen (t), t);
    }
    /*---(complete)-----------------------*/

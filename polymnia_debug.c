@@ -140,9 +140,11 @@ poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type)
    ++a_file->proj->COUNT_LINES;
    ++a_file->COUNT_LINES;
    if (x_inside == 0) ++a_func->COUNT_LINES;
+   DEBUG_DATA   yLOG_sint    (a_file->COUNT_LINES);
    /*---(debug counts)-------------------*/
    switch (a_type) {
    case 'n' :  case 'f' :
+      DEBUG_DATA   yLOG_snote   ("DEBUG");
       ++a_file->proj->COUNT_DEBUG;
       ++a_file->COUNT_DEBUG;
       if (x_inside == 0) {
@@ -150,16 +152,24 @@ poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type)
          ++a_func->WORK_DCOUNT;
          if (a_type == 'f')  ++a_func->WORK_DFREE;
       }
+      DEBUG_DATA   yLOG_sint    (a_file->COUNT_DEBUG);
       break;
    case 'd' :
+      DEBUG_DATA   yLOG_snote   ("DOCS");
       ++a_file->proj->COUNT_DOCS;
       ++a_file->COUNT_DOCS;
       if (x_inside == 0) ++a_func->COUNT_DOCS;
+      DEBUG_DATA   yLOG_sint    (a_file->COUNT_DOCS );
       break;
    case 'e' :
+      DEBUG_DATA   yLOG_snote   ("EMPTY");
       ++a_file->proj->COUNT_EMPTY;
       ++a_file->COUNT_EMPTY;
       if (x_inside == 0) ++a_func->COUNT_EMPTY;
+      DEBUG_DATA   yLOG_sint    (a_file->COUNT_EMPTY);
+      break;
+   default  :
+      DEBUG_DATA   yLOG_snote   ("UNKNOWN");
       break;
    }
    /*---(complete)-----------------------*/
@@ -189,48 +199,41 @@ poly_debug_line         (tFILE *a_file, tFUNC *a_func, char *a_recd)
    }
    DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
    /*---(check debug)--------------------*/
-   --rce;  if (a_recd [0] == 'D') {
-      DEBUG_INPT   yLOG_note    ("check debugging type");
-      if (strncmp (a_recd, "DEBUG_", 6) != 0) {
-         DEBUG_INPT   yLOG_note    ("not a valid DEBUG_ macro debugging line");
-         DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
+   --rce;  if (a_func != NULL && strncmp (a_recd, "DEBUG_", 6) == 0) {
       DEBUG_INPT   yLOG_note    ("valid DEBUG debugging macro line");
       poly_debug__counts (a_file, a_func, 'n');
-      /*---(function level)--------------*/
-      if (a_func != NULL) {
-         /*---(type)---------------------*/
-         x_macro = poly_debug__macro (a_recd + 6);
-         /*---(first debug)--------------*/
-         if (a_func->STATS_DMACRO == '-')    a_func->STATS_DMACRO = x_macro;
-         /*---(additional debug)---------*/
-         else if (a_func->STATS_DMACRO != x_macro) {
-            if      (a_func->STATS_DMACRO == 't') a_func->STATS_DMACRO = x_macro;
-            else if (x_macro              != 't') a_func->STATS_DMACRO = '!';
-         }
+      /*---(type)---------------------*/
+      x_macro = poly_debug__macro (a_recd + 6);
+      /*---(first debug)--------------*/
+      if (a_func->STATS_DMACRO == '-')    a_func->STATS_DMACRO = x_macro;
+      /*---(additional debug)---------*/
+      else if (a_func->STATS_DMACRO != x_macro) {
+         if      (a_func->STATS_DMACRO == 't') a_func->STATS_DMACRO = x_macro;
+         else if (x_macro              != 't') a_func->STATS_DMACRO = '!';
       }
       /*---(done)------------------------*/
    }
    /*---(check logging)------------------*/
-   else  if (a_recd [0] == 'y') {
-      if (strncmp (a_recd, "yLOG", 4) != 0) {
-         DEBUG_INPT   yLOG_note    ("not a valid yLOG_ or yLOGS_ logging line");
-         DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
+   else  if (a_func != NULL && strstr (a_recd, "yLOG") != NULL) {
       DEBUG_INPT   yLOG_note    ("valid yLOG non-macro debugging line");
+      poly_debug__counts (a_file, a_func, 'f');
+   }
+   else  if (a_func != NULL && strstr (a_recd, "yURG") != NULL) {
+      DEBUG_INPT   yLOG_note    ("valid yURG debugging configuration line");
       poly_debug__counts (a_file, a_func, 'f');
    }
    /*---(check comments)-----------------*/
    else  if (a_recd [0] == '/' && a_recd [1] == '*') {
+      DEBUG_INPT   yLOG_note    ("begin comment");
       poly_debug__counts (a_file, a_func, 'd');
    }
    else  if (a_recd [0] == '*' && strchr (" >/", a_recd [1]) != NULL) {
+      DEBUG_INPT   yLOG_note    ("continue/end comment");
       poly_debug__counts (a_file, a_func, 'd');
    }
    /*---(check empties)------------------*/
    else if (strlen  (a_recd) == 0) {
+      DEBUG_INPT   yLOG_note    ("empty line");
       poly_debug__counts (a_file, a_func, 'e');
    }
    /*---(other)--------------------------*/

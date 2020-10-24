@@ -3,6 +3,10 @@
 
 
 
+static char s_print     [LEN_RECD] = "";
+
+
+
 /*====================------------------------------------====================*/
 /*===----                     small supporters                         ----===*/
 /*====================------------------------------------====================*/
@@ -46,6 +50,7 @@ poly_func__wipe_work    (tWORK *a_dst)
    a_dst->beg      = -1;
    a_dst->end      = -1;
    for (i = 0; i < MAX_TEMPS; ++i)  a_dst->temp [i] = 0;
+   a_dst->temp [0] = -1;  /* params is special */
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -923,6 +928,122 @@ poly_func_params        (tFUNC *a_func, char *a_recd)
 
 
 /*====================------------------------------------====================*/
+/*===----                       reporting support                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___REPORTING_______o () { return; }
+
+char*
+poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char a_print)
+{
+   /*  n  name    , just the name
+    *  s  stats   , short count, name, plus statistics
+    *  a  all     , long count, name, plus statistics
+    *  d  database, stats as shown in database format
+    *  c  comment , stats as shown in function comment
+    *  f  file    , name, file, and line
+    *  p  purpse  , name and purpose
+    */
+   char       *x_count     = "fnc";
+   char       *x_all       = "prj § fil § fnc";
+   char       *x_name      = "---name------------------";
+   char       *x_stats     = "files § funcs § --lines § --empty § ---docs § --debug § ---code § --slocl";
+   char       *x_database  = "-  [------------complexity------------] [------------------integration----------------] [---------watch-points----------]";
+   char       *x_comment   = "[----complexity-----] [-------integration-------] [---watchpoints---]";
+   char       *x_file      = "line § ---file-name----------------------------";
+   char       *x_purpose   = "---purpose------------------------------";
+   char       *x_function  = "function list                 § ";
+   char        t           [LEN_RECD] = "";
+   char        s           [LEN_RECD] = "";
+   char        x_type      = '-';
+   /*---(prepare)------------------------*/
+   strlcpy (s_print, "", LEN_RECD);
+   if (a_func == NULL)  x_type = 'h';
+   /*---(index)--------------------------*/
+   if (strchr ("aA", a_style) != NULL) {
+      switch (x_type) {
+      case '-' :   sprintf (t, "%-3d § %-3d § %-3d § ", a + 1, b + 1, c + 1);  break;
+      case 'h' :   sprintf (t, "%s § ", x_all);                        break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   if (strchr ("sL", a_style) != NULL) {
+      switch (x_type) {
+      case '-' :   sprintf (t, "%-3d § ", c + 1);  break;
+      case 'h' :   sprintf (t, "%s § ", x_count);              break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(name)---------------------------*/
+   if (strchr ("tT" , a_style) != NULL) {
+      switch (x_type) {
+      case '-' :   sprintf (t, "%2s  %-25.25s § ",
+                         a_func->hint, a_func->name);
+                   break;
+      case 'h' :   sprintf (t, "function (%2d)                 § ", c);
+                   break;
+      }
+   } else {
+      switch (x_type) {
+      case '-' :   sprintf (t, "%-25.25s § ", a_func->name);      break;
+      case 'h' :   sprintf (t, "%s § "      , x_name);            break;
+      }
+   }
+   strlcat (s_print, t, LEN_RECD);
+   /*---(statistics)---------------------*/
+   if (strchr ("sLaA", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "    - §     - § %7d § %7d § %7d § %7d § %7d § %7d § ",
+                       a_func->COUNT_LINES, a_func->COUNT_EMPTY,
+                       a_func->COUNT_DOCS , a_func->COUNT_DEBUG,
+                       a_func->COUNT_CODE , a_func->COUNT_SLOCL);
+                 break;
+      case 'h' : sprintf (t, "%-s § "   , x_stats);            break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(database view)------------------*/
+   if (strchr ("LAdT", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-s § "   , poly_cats_database (a_func)); break;
+      case 'h' : sprintf (t, "%-s § "   , x_database);         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(compressed view)----------------*/
+   if (strchr ("LAcT", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-s § "   , poly_cats_comment  (a_func)); break;
+      case 'h' : sprintf (t, "%-s § "   , x_comment);          break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(file view)----------------------*/
+   if (strchr ("LAfT", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%4d § %-40.40s § "   ,
+                       a_func->line, a_func->file->name);
+                 break;
+      case 'h' : sprintf (t, "%-s § "   , x_file);             break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(purpose view)-------------------*/
+   if (strchr ("LApT", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-40.40s § "   , a_func->purpose); break;
+      case 'h' : sprintf (t, "%-s § "   , x_purpose);            break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(newline)------------------------*/
+   if (a_print == 'y')  printf ("%s\n", s_print);
+   /*---(complete)-----------------------*/
+   return s_print;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
@@ -941,6 +1062,10 @@ poly_func__unit         (char *a_question, int i)
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
       snprintf (unit_answer, LEN_RECD, "FUNC count       : %3d", poly_btree_count (B_FUNCS));
+      return unit_answer;
+   }
+   else if (strcmp (a_question, "print"     )     == 0) {
+      snprintf (unit_answer, LEN_RECD, "FUNC print       : %4d[%-.400s]", strlen (s_print), s_print);;
       return unit_answer;
    }
    if (strncmp (unit_answer, "FUNC unit        :", 18) != 0)  return unit_answer;

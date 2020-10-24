@@ -489,6 +489,61 @@ poly_rptg_extern        (tEXTERN *a_extern)
 }
 
 char
+poly_rptg__htags_header (tPROJ *a_proj)
+{
+      printf ("##/usr/local/bin/polymnia --htags\n");
+      printf ("##\n");
+      printf ("##   polymnia-hymnos (many praises) greek muse and protector of divine hymns, dancing, geometry, and grammar\n");
+      printf ("##   version %s, %s\n", P_VERNUM, P_VERTXT);
+      printf ("##   htags reporting file for use with vim-ide\n");
+      printf ("##\n");
+      printf ("##\n");
+      printf ("##\n");
+      printf ("##   25 headers ·  [%s]\n", a_proj->header);
+      printf ("##\n");
+      printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+      printf ("##\n");
+      printf ("##   name       n  [%s]\n", a_proj->name);
+      printf ("##   focus      f  [%s]\n", a_proj->focus);
+      printf ("##   niche      n  [%s]\n", a_proj->niche);
+      printf ("##   subject    s  [%s]\n", a_proj->subject);
+      printf ("##   purpose    p  [%s]\n", a_proj->purpose);
+      printf ("##\n");
+      printf ("##   namesake   g  [%s]\n", a_proj->namesake);
+      printf ("##   heritage   h  [%s]\n", a_proj->heritage);
+      printf ("##   imagery    i  [%s]\n", a_proj->imagery);
+      printf ("##   reason     r  [%s]\n", a_proj->reason);
+      printf ("##   one-line   o  [%s]\n", a_proj->oneline);
+      printf ("##\n");
+      printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+      printf ("##\n");
+      printf ("##   homedir    d  [%s]\n", a_proj->homedir);
+      printf ("##   basename   b  [%s]\n", a_proj->progname);
+      printf ("##   fullpath   f  [%s]\n", a_proj->fullpath);
+      printf ("##   suffix     s  [%s]\n", a_proj->suffix);
+      printf ("##   content    c  [%s]\n", a_proj->content);
+      printf ("##\n");
+      printf ("##   system     s  [%s]\n", a_proj->systems);
+      printf ("##   language   l  [%s]\n", a_proj->language);
+      printf ("##   code-size  z  [%s]\n", a_proj->codesize);
+      printf ("##   depends    d  [%s]\n", a_proj->depends);
+      printf ("##\n");
+      printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+      printf ("##\n");
+      printf ("##   author     a  [%s]\n", a_proj->author);
+      printf ("##   created    c  [%s]\n", a_proj->created);
+      printf ("##\n");
+      printf ("##   vermajor   x  [%s]\n", a_proj->vermajor);
+      printf ("##   verminor   n  [%s]\n", a_proj->verminor);
+      printf ("##   vernum     v  [%s]\n", a_proj->vernum);
+      printf ("##   vertxt     t  [%s]\n", a_proj->vertxt);
+      printf ("##\n");
+      printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+      printf ("##\n\n\n\n");
+      return 0;
+}
+
+char
 poly_rptg_htags         (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -497,14 +552,6 @@ poly_rptg_htags         (tPROJ *a_proj)
    tFILE      *x_file      = NULL;
    tFUNC      *x_func      = NULL;
    int         i           =    0;
-   char        a           [LEN_LABEL];
-   char        b           [LEN_LABEL];
-   char        c           [LEN_LABEL];
-   char        d           [LEN_LABEL];
-   char        e           [LEN_LABEL];
-   char        f           [LEN_LABEL];
-   char        g           [LEN_LABEL];
-   char        t           [LEN_RECD];
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -521,64 +568,19 @@ poly_rptg_htags         (tPROJ *a_proj)
    DEBUG_PROG   yLOG_note    ("review all tags and code");
    x_file = a_proj->head;
    DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
-   if (my.g_mode == MODE_HTAGS) {
-      printf ("##/usr/local/bin/polymnia --htags\n");
-      printf ("##   polymnia-hymnos (many praises) greek muse and protector of divine hymns, dancing, geometry, and grammar\n");
-      printf ("##   version %s, %s\n", VER_NUM, VER_TXT);
-      printf ("##\n");
-      printf ("##   header     [%s]\n", a_proj->header);
-      printf ("##\n");
-      printf ("##   name       [%s]\n", a_proj->name);
-      printf ("##   focus      [%s]\n", a_proj->focus);
-      printf ("##   niche      [%s]\n", a_proj->niche);
-      printf ("##   subject    [%s]\n", a_proj->subject);
-      printf ("##   purpose    [%s]\n", a_proj->purpose);
-      printf ("##\n");
-      printf ("##   namesake   [%s]\n", a_proj->namesake);
-      printf ("##   heritage   [%s]\n", a_proj->heritage);
-      printf ("##   imagery    [%s]\n", a_proj->imagery);
-      printf ("##   reason     [%s]\n", a_proj->reason);
-      printf ("##   one-line   [%s]\n", a_proj->oneline);
-      printf ("##\n");
-      printf ("##   basename   [%s]\n", a_proj->progname);
-      printf ("##   homedir    [%s]\n", a_proj->homedir);
-      printf ("##   fullpath   [%s]\n", a_proj->fullpath);
-      printf ("##   suffix     [%s]\n", a_proj->suffix);
-      printf ("##   content    [%s]\n", a_proj->content);
-      printf ("##\n");
-      printf ("##   system     [%s]\n", a_proj->systems);
-      printf ("##   language   [%s]\n", a_proj->language);
-      printf ("##   code-size  [%s]\n", a_proj->codesize);
-      printf ("##   depends    [%s]\n", a_proj->depends);
-      printf ("##\n");
-      printf ("##   author     [%s]\n", a_proj->author);
-      printf ("##   created    [%s]\n", a_proj->created);
-      printf ("##\n");
-      printf ("##   vermajor   [%s]\n", a_proj->vermajor);
-      printf ("##   verminor   [%s]\n", a_proj->verminor);
-      printf ("##   vernum     [%s]\n", a_proj->vernum);
-      printf ("##   vertxt     [%s]\n", a_proj->vertxt);
-      printf ("##\n\n\n\n");
-   }
+   if (my.g_mode == MODE_HTAGS)    poly_rptg__htags_header (a_proj);
    while (x_file != NULL) {
       DEBUG_PROG   yLOG_info    ("file name" , x_file->name);
       printf ("%-29.29s   FILE\n", x_file->name);
       if (my.g_mode == MODE_HTAGS) {
-         sprintf (a, "lines : %4d  %5d", x_file->COUNT_LINES, x_file->proj->COUNT_LINES);
-         sprintf (b, "empty : %4d  %5d", x_file->COUNT_EMPTY, x_file->proj->COUNT_EMPTY);
-         sprintf (c, "docs  : %4d  %5d", x_file->COUNT_DOCS , x_file->proj->COUNT_DOCS );
-         sprintf (d, "debug : %4d  %5d", x_file->COUNT_DEBUG, x_file->proj->COUNT_DEBUG);
-         sprintf (e, "code  : %4d  %5d", x_file->COUNT_CODE , x_file->proj->COUNT_CODE );
-         sprintf (f, "slocl : %4d  %5d", x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL);
-         sprintf (g, "function (%d)"   , x_file->count);
-         printf ("%-29.29s   %s\n", a, poly_cats_header (7, t));
-         printf ("%-29.29s   %s\n", b, poly_cats_header (6, t));
-         printf ("%-29.29s   %s\n", c, poly_cats_header (5, t));
-         printf ("%-29.29s   %s\n", d, poly_cats_header (4, t));
-         printf ("%-29.29s   %s\n", e, poly_cats_header (3, t));
-         printf ("%-29.29s   %s\n", f, poly_cats_header (2, t));
-         printf ("%-29.29s   %s  -------------------------------extended-data-------------------------------\n", "", poly_cats_header (1, t));
-         printf ("%-29.29s   %s  [----source-file----------] [line] [--------------description-------------]\n", g, poly_cats_header (0, t));
+         printf ("%s\n", poly_cats_header (7, "lines", x_file->COUNT_LINES, x_file->proj->COUNT_LINES));
+         printf ("%s\n", poly_cats_header (6, "empty", x_file->COUNT_EMPTY, x_file->proj->COUNT_EMPTY));
+         printf ("%s\n", poly_cats_header (5, "docs" , x_file->COUNT_DOCS , x_file->proj->COUNT_DOCS ));
+         printf ("%s\n", poly_cats_header (4, "debug", x_file->COUNT_DEBUG, x_file->proj->COUNT_DEBUG));
+         printf ("%s\n", poly_cats_header (3, "code" , x_file->COUNT_CODE , x_file->proj->COUNT_CODE ));
+         printf ("%s\n", poly_cats_header (2, "slocl", x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL));
+         printf ("%s\n", poly_cats_header (1, ""     , 0                   , 0                       ));
+         printf ("%s\n", poly_func_line   (NULL, 'T', 0, 0, x_file->count, '-'));
       }
       x_func = NULL;
       rc = poly_code_nextfunc (x_file, &x_func);
@@ -586,9 +588,7 @@ poly_rptg_htags         (tPROJ *a_proj)
       DEBUG_PROG   yLOG_point   ("x_func"    , x_func);
       while (rc >= 0)  {
          DEBUG_PROG   yLOG_info    ("name"      , x_func->name);
-         printf ("%-2s  %-25.25s   %s ", x_func->hint  , x_func->name, poly_cats_full (x_func, t));
-         printf ("%-25.25s   %-4d   %-40.40s", x_func->file->name, x_func->line, x_func->purpose);
-         printf ("\n");
+         printf ("%s\n", poly_func_line (x_func, 'T', 0, 0, 0, '-'));
          rc = poly_code_nextfunc (x_file, &x_func);
          DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
          DEBUG_PROG   yLOG_point   ("x_func"    , x_func);

@@ -580,6 +580,7 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
+   char        x_full      [LEN_RECD]  = "";
    char        x_recd      [LEN_RECD]  = "";
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -590,15 +591,25 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
       return rce;
    }
    DEBUG_INPT   yLOG_value   ("a_line"    , a_line);
+   DEBUG_INPT   yLOG_point   ("a_curr"    , a_curr);
+   --rce;  if (a_curr == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_info    ("a_curr"    , a_curr);
+   /*---(prepare)---------------------*/
+   strlcpy   (x_full, a_curr   , LEN_RECD);
+   strltrim  (x_full, ySTR_BOTH, LEN_RECD);
+   DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
+   strlunall (x_recd, a_curr   , LEN_RECD);
+   strltrim  (x_recd, ySTR_BOTH, LEN_RECD);
+   DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
    /*---(check tail of file)----------*/
    DEBUG_INPT   yLOG_point   ("a_func"    , a_func);
-   if (a_func == NULL) {
+   if (a_func == NULL || a_func->WORK_END >= 0) {
       DEBUG_INPT   yLOG_note    ("file tail, after all functions");
-      strlcpy  (x_recd, a_curr   , LEN_RECD);
-      strltrim (x_recd, ySTR_BOTH, LEN_RECD);
-      DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
-      rc = poly_debug_line  (a_file, a_func, x_recd);
-      if (rc < 0)  rc = poly_code__reserved     (a_file, a_func, a_curr);
+      rc = poly_debug_line  (a_file, a_func, x_full);
+      if (rc < 0)  rc = poly_code__reserved     (a_file, a_func, x_recd);
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
@@ -606,25 +617,22 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    DEBUG_INPT   yLOG_value   ("line"      , a_func->line);
    if (a_line == a_func->line) {
       DEBUG_INPT   yLOG_note    ("FUNCTION HEADER FOUND");
-      poly_code_function (a_func, a_curr, a_prev);
+      poly_code_function (a_func, x_full, a_prev);
    }
    /*---(check single line)-----------*/
    if (a_func->STATS_SINGLE == 'y') {
       DEBUG_DATA   yLOG_note    ("single liner entry");
       poly_func_enter (a_func, a_line);
    }
-   /*---(prepare)---------------------*/
    /*---(check debugging)-------------*/
    if (a_func->STATS_SINGLE != 'y') {
-      strlcpy  (x_recd, a_curr   , LEN_RECD);
-      strltrim (x_recd, ySTR_BOTH, LEN_RECD);
       DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
-      rc = poly_debug_line  (a_file, a_func, x_recd);
+      rc = poly_debug_line  (a_file, a_func, x_full);
    } else
       rc = -1;
    /*---(check source code)-----------*/
    if (rc < 0)  { 
-      rc = poly_code__reserved     (a_file, a_func, a_curr);
+      rc = poly_code__reserved     (a_file, a_func, x_recd);
       rc = poly_code__indent       (a_func, a_curr);
    }
    /*---(check single line)-----------*/
@@ -658,9 +666,9 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
       return rce;
    }
    DEBUG_INPT   yLOG_point   ("a_func"    , a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   if (a_func == NULL) {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
    }
    /*---(beginning)-------------------*/
    if (a_func->WORK_BEG <  0) {
@@ -691,6 +699,7 @@ poly_code_review        (tFILE *a_file)
    int         rc          =    0;
    char        x_curr      [LEN_RECD];
    char        x_prev      [LEN_RECD];
+   char        x_fixed     [LEN_RECD];
    int         x_len       =    0;          /* length of input record         */
    int         x_line      =    0;
    tFUNC      *x_func      = NULL;
@@ -714,11 +723,12 @@ poly_code_review        (tFILE *a_file)
       if (a_file->type == 'h') {
          DEBUG_INPT   yLOG_note    ("header file (h) line");
          poly_code__oneliners (a_file, x_curr);
+         rc = poly_code__current (a_file, 0     , NULL  , x_curr, x_prev);
       } else {
          DEBUG_INPT   yLOG_note    ("source file (c) line");
          rc = poly_code__before  (a_file, &x_func);
          rc = poly_code__current (a_file, x_line, x_func, x_curr, x_prev);
-         if (x_func != NULL)  rc = poly_vars_find (x_func, x_curr);
+         if (x_func != NULL)  rc = poly_vars_find (x_func, x_line, x_curr, '-');
          rc = poly_code__after   (a_file, x_line, x_func, x_curr);
       }
       /*---(done)------------------------*/

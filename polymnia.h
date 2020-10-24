@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8i"
-#define     P_VERTXT    "isolated and unit tested project reporting lines in new function"
+#define     P_VERNUM    "0.8j"
+#define     P_VERTXT    "extracted shared file read and parsing, and unit tested them"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -67,12 +67,6 @@
  *   is usually depicted wearing a veil and looking up to the heavens
  *
  */
-
-/*===[[ VERSION ]]========================================*/
-/* rapidly evolving version number to aid with visual change confirmation     */
-#define   VER_NUM       "0.7d"
-#define   VER_TXT       "fixed extern vs library symbol conflict in analysis"
-
 
 
 /*
@@ -205,6 +199,9 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     F_MYSTRY    "polymnia.mystry"
 #define     F_VARS      "polymnia.vars"
 #define     F_EXTERN    "/var/lib/polymnia/external.txt"
+#define     F_EXTFUNCS  "/var/lib/polymnia/ext_funcs.txt"
+#define     F_EXTMACRO  "/var/lib/polymnia/ext_macro.txt"
+#define     F_EXTLABEL  "/var/lib/polymnia/ext_label.txt"
 #define     F_DB        "/var/lib/polymnia/polymnia.db"
 
 
@@ -233,12 +230,15 @@ struct cMY {
    tPROJ      *g_proj;                 /* limit output to this project        */
    char        g_extern    [LEN_RECD]; /* name for focus/filtering            */
    char        g_libuse    [LEN_RECD]; /* extern library for filtering        */
-   /*---(files)---------------*/
+   /*---(long-term files)-----*/
+   char        n_db        [LEN_RECD]; /* name of database file               */
    FILE       *f_db;                   /* shared database of tags             */
+   char        n_extern    [LEN_RECD]; /* name of external file               */
+   FILE       *f_extern;               /* shared external function list       */
+   /*---(working files)-------*/
    FILE       *f_code;                 /* current program source file         */
    FILE       *f_ctags;                /* ctags input file                    */
    FILE       *f_cflow;                /* cflow input file                    */
-   FILE       *f_extern;               /* shared external function list       */
    FILE       *f_mystry;               /* local mystery external calls        */
    FILE       *f_vars;                 /* global/file variables               */
    /*---(new stats interface)-*/
@@ -382,7 +382,7 @@ struct cFILE {
 #define     STATS_PUSE     stats [42]
 #define     STATS_FUSE     stats [43]
 #define     STATS_GUSE     stats [44]
-#define     STATS_CUSE     stats [45]
+#define     STATS_MUSE     stats [45]
 #define     STATS_YUSE     stats [46]
 #define     STATS_OUSE     stats [47]
 
@@ -485,10 +485,9 @@ struct cYLIB {
 #define     WORK_PUSE      work->temp  [41]
 #define     WORK_FUSE      work->temp  [42]
 #define     WORK_GUSE      work->temp  [43]
-#define     WORK_CUSE      work->temp  [44]
+#define     WORK_MUSE      work->temp  [44]
 #define     WORK_YUSE      work->temp  [45]
 #define     WORK_OUSE      work->temp  [46]
-
 
 
 
@@ -533,8 +532,10 @@ struct      cEXTERN {
    /*---(information)-------*/
    char        lib         [LEN_TITLE];
    char        name        [LEN_TITLE];
+   int         line;
    char        type;
-   char        more;
+   char        cat;
+   char        sub;
    int         uses;
    /*---(ylib)--------------*/
    tYLIB      *head;
@@ -564,6 +565,7 @@ char        poly_files_purge_proj   (tPROJ *a_proj);
 char        poly_files_review       (tPROJ *a_proj);
 char        poly_files_list         (void);
 tFILE*      poly_files_search       (char *a_name);
+char        poly_file_line          (tFILE *a_file, char a_style, int a, int b, char a_print);
 /*---(tags)-----------------*/
 /*---(unittest)-------------*/
 char*       poly_file__unit         (char *a_question, int n);
@@ -592,7 +594,9 @@ char        poly_cats__integration  (char a_style, tFUNC *a_func, char a_update,
 char        poly_cats__group_3a     (tFUNC *a_func);
 char        poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out);
 char        poly_cats_function      (tFUNC *a_func);
-char*       poly_cats_header        (int n, char *a_out);
+char*       poly_cats_header        (int n, char *a_title, int a_curr, int a_total);
+char*       poly_cats_database      (tFUNC *a_func);
+char*       poly_cats_comment       (tFUNC *a_func);
 char*       poly_cats_full          (tFUNC *a_func, char *a_out);
 char*       poly_cats__unit         (char *a_question, int n);
 
@@ -604,7 +608,9 @@ char        PROG__unit_end          (void);
 
 char        poly_extern_init        (void);
 char        poly_extern_wrap        (void);
-char        poly_extern__add        (char *a_lib, char *a_name, char a_type, char a_more);
+char        poly_extern__add        (char *a_lib, char *a_name, int a_line, char a_type);
+char        poly_extern__load_read  (int *a_line, char *a_recd);
+char        poly_extern__load_parse (char *a_recd, char *a_lib, char *a_name, int *a_pos, char *a_type);
 char        poly_extern_load        (void);
 char        poly_extern__read       (char *a_curr);
 char        poly_extern__parse      (char *a_curr, char *a_func, char *a_file, int *a_line);
@@ -715,6 +721,8 @@ char        poly_func_wrap          (void);
 char        poly_func_purpose       (tFUNC *a_func, char *a_recd);
 char        poly_func_return        (tFUNC *a_func, char *a_recd, char *a_prev);
 char        poly_func_params        (tFUNC *a_func, char *a_recd);
+/*---(reporting)------------*/
+char*       poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char a_print);
 /*---(unittest)-------------*/
 char*       poly_func__unit         (char *a_question, int i);
 
@@ -743,6 +751,9 @@ char        poly_tags_inventory     (tFILE *a_file);
 
 char        poly_shared_open        (char a_type, char *a_focus);
 char        poly_shared_close       (char a_type);
+char        poly_shared_read        (char a_type, int *a_line, char *a_curr, char *a_prev);
+char        poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, char *a_file);
+char        poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, char *a_file);
 char*       poly_shared__unit       (char *a_question);
 
 
@@ -750,7 +761,8 @@ char        poly_vars_init          (void);
 char        poly_vars__push         (tFILE *a_file, char *a_name, char a_type);
 char        poly_vars__pop_file     (void);
 char        poly_vars_reset         (tFUNC *a_func);
-char        poly_vars_find          (tFUNC *a_func, char *a_recd);
+char        poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act);
+char        poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act);
 char        poly_vars_inventory     (tFILE *a_file);
 char*       poly_vars__unit         (char *a_question, int i);
 

@@ -3,6 +3,10 @@
 
 
 
+static char s_print     [LEN_RECD] = "";
+
+
+
 /*====================------------------------------------====================*/
 /*===----                     small supporters                         ----===*/
 /*====================------------------------------------====================*/
@@ -507,41 +511,58 @@ char    poly_files_list    (void)         { return poly_btree_list (B_FILES); }
 static void  o___REPORTING_______o () { return; }
 
 char
-poly_file_line          (tFILE *a_file, char a_style, char a_type, int c)
+poly_file_line          (tFILE *a_file, char a_style, int a, int b, char a_print)
 {
    /*  n  name    , just the name
-    *  s  stats   , name plus statistics
+    *  s  stats   , short count, name, plus statistics
+    *  a  all     , long count, name, plus statistics
     *
     */
-   char       *x_count     = "###";
-   char       *x_name      = "---name--------";
+   char       *x_count     = "fil";
+   char       *x_all       = "prj § fil § fnc";
+   char       *x_name      = "---name------------------";
    char       *x_stats     = "files § funcs § --lines § --empty § ---docs § --debug § ---code § --slocl";
+   char        t           [LEN_RECD] = "";
+   char        x_type      = '-';
+   /*---(prepare)------------------------*/
+   strlcpy (s_print, "", LEN_RECD);
+   if (a_file == NULL)  x_type = 'h';
    /*---(index)--------------------------*/
-   if (strchr ("s", a_style) != NULL) {
-      switch (a_type) {
-      case '-' :   printf ("%-3d § ", c + 1);                 break;
-      case 'h' :   printf ("%s § "  , x_count);               break;
+   if (strchr ("aA", a_style) != NULL) {
+      switch (x_type) {
+      case '-' :   sprintf (t, "%-3d § %-3d § -   § ", a + 1, b + 1);  break;
+      case 'h' :   sprintf (t, "%s § ", x_all);                        break;
       }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   if (strchr ("sL", a_style) != NULL) {
+      switch (x_type) {
+      case '-' :   sprintf (t, "%-3d § ", b + 1);  break;
+      case 'h' :   sprintf (t, "%s § ", x_count);              break;
+      }
+      strlcat (s_print, t, LEN_RECD);
    }
    /*---(name)---------------------------*/
-   switch (a_type) {
-   case '-' :   printf ("%-15.15s § ", a_file->name);      break;
-   case 'h' :   printf ("%s § "      , x_name);            break;
+   switch (x_type) {
+   case '-' :   sprintf (t, "%-25.25s § ", a_file->name);      break;
+   case 'h' :   sprintf (t, "%s § "      , x_name);            break;
    }
+   strlcat (s_print, t, LEN_RECD);
    /*---(statistics)---------------------*/
-   if (strchr ("sL", a_style) != NULL) {
-      switch (a_type) {
-      case '-' : printf ("%5d § %5d § %7d § %7d § %7d § %7d § %7d § %7d § ",
-                       a_file->COUNT_FILES, a_file->COUNT_FUNCS,
+   if (strchr ("sLaA", a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "    - § %5d § %7d § %7d § %7d § %7d § %7d § %7d § ",
+                       a_file->COUNT_FUNCS,
                        a_file->COUNT_LINES, a_file->COUNT_EMPTY,
                        a_file->COUNT_DOCS , a_file->COUNT_DEBUG,
                        a_file->COUNT_CODE , a_file->COUNT_SLOCL);
                  break;
-      case 'h' : printf ("%-s § "   , x_stats);            break;
+      case 'h' : sprintf (t, "%-s § "   , x_stats);            break;
       }
+      strlcat (s_print, t, LEN_RECD);
    }
    /*---(newline)------------------------*/
-   printf ("\n");
+   if (a_print == 'y')  printf ("%s\n", s_print);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -569,6 +590,10 @@ poly_file__unit         (char *a_question, int i)
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
       snprintf (unit_answer, LEN_RECD, "FILE count       : %3d", poly_btree_count (B_FILES));
+      return unit_answer;
+   }
+   else if (strcmp (a_question, "print"     )     == 0) {
+      snprintf (unit_answer, LEN_RECD, "FILE print       : %4d[%-.400s]", strlen (s_print), s_print);;
       return unit_answer;
    }
    if (strncmp (unit_answer, "FILE unit        :", 18) != 0)  return unit_answer;

@@ -686,7 +686,9 @@ poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char
    --rce;  if (a_header == NULL)  return rce;
    --rce;  if (a_text   == NULL)  return rce;
    x_len = strlen (a_text);
-   if      (x_len     == 0)       a_header [n] = '0';
+   if      (x_len == 3 && strcmp (a_text, "n/a" ) == 0)  a_header [n] = '-';
+   else if (x_len == 4 && strcmp (a_text, "none") == 0)  a_header [n] = '-';
+   else if (x_len     == 0)       a_header [n] = '0';
    else if (x_len     <  a_min)   a_header [n] = '?';
    else if (x_len     <  a_low)   a_header [n] = '!';
    else if (x_len - 1 >= a_max)   a_header [n] = '#';
@@ -706,9 +708,9 @@ poly_proj_header        (tPROJ *a_proj)
    poly_proj__headerline (a_proj->header,  6, 'p', a_proj->purpose  , 30, 50, 70, LEN_HUND);
    /*---(greek)-------------*/
    poly_proj__headerline (a_proj->header,  8, 'g', a_proj->namesake , 10, 20, 40, LEN_HUND);
-   poly_proj__headerline (a_proj->header,  9, 'h', a_proj->heritage , 40, 50, 70, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 10, 'i', a_proj->imagery  , 40, 50, 70, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 11, 'r', a_proj->reason   , 40, 50, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header,  9, 'h', a_proj->heritage , 40, 40, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 10, 'i', a_proj->imagery  , 40, 40, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 11, 'r', a_proj->reason   , 40, 40, 70, LEN_HUND);
    poly_proj__headerline (a_proj->header, 12, 'o', a_proj->oneline  , 40, 50, 70, LEN_HUND);
    /*---(location)----------*/
    poly_proj__headerline (a_proj->header, 14, 'd', a_proj->homedir  ,  1,  4, 70, LEN_HUND);
@@ -719,14 +721,14 @@ poly_proj_header        (tPROJ *a_proj)
    /*---(chars)-------------*/
    poly_proj__headerline (a_proj->header, 20, 's', a_proj->systems  , 40, 50, 70, LEN_HUND);
    poly_proj__headerline (a_proj->header, 21, 'l', a_proj->language , 40, 50, 70, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 22, 'c', a_proj->codesize , 10, 30, 60, LEN_DESC);
+   poly_proj__headerline (a_proj->header, 22, 'z', a_proj->codesize , 10, 30, 60, LEN_DESC);
    poly_proj__headerline (a_proj->header, 23, 'd', a_proj->depends  ,  0,  0, 70, LEN_HUND);
    /*---(when)--------------*/
    poly_proj__headerline (a_proj->header, 25, 'a', a_proj->author   ,  5, 10, 40, LEN_TITLE);
    poly_proj__headerline (a_proj->header, 26, 'c', a_proj->created  ,  4,  7, 20, LEN_LABEL);
    /*---(versioning)--------*/
-   poly_proj__headerline (a_proj->header, 28, 'x', a_proj->vermajor , 10, 20, 70, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 29, 'n', a_proj->verminor , 10, 20, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 28, 'x', a_proj->vermajor ,  4, 15, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 29, 'n', a_proj->verminor ,  4, 15, 70, LEN_HUND);
    poly_proj__headerline (a_proj->header, 30, 'v', a_proj->vernum   ,  4,  4,  4, LEN_LABEL);
    poly_proj__headerline (a_proj->header, 31, 't', a_proj->vertxt   , 10, 20, 70, LEN_HUND);
    /*---(overall)-----------*/
@@ -745,7 +747,7 @@ poly_proj_header        (tPROJ *a_proj)
 static void  o___REPORTING_______o () { return; }
 
 char
-poly_proj_line          (tPROJ *a_proj, char a_style, int c, char a_print)
+poly_proj_line          (tPROJ *a_proj, char a_style, int a, char a_print)
 {
    /*  n  name    , just the name
     *  s  stats   , short count, name, plus statistics
@@ -762,7 +764,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, int c, char a_print)
     */
    char       *x_count     = "prj";
    char       *x_all       = "prj § fil § fnc";
-   char       *x_name      = "---name--------";
+   char       *x_name      = "---name------------------";
    char       *x_header    = "---header-checklist----------------";
    char       *x_stats     = "files § funcs § --lines § --empty § ---docs § --debug § ---code § --slocl";
    char       *x_master    = "---focus---------------------- § ---niche---------------------- § ---subject-------------------- § ---purpose------------------------------------------------------------";
@@ -779,26 +781,24 @@ poly_proj_line          (tPROJ *a_proj, char a_style, int c, char a_print)
    /*---(index)--------------------------*/
    if (strchr ("aA", a_style) != NULL) {
       switch (x_type) {
-      case '-' :   sprintf (t, "%-3d § -   § -   § ", c + 1);  break;
+      case '-' :   sprintf (t, "%-3d § -   § -   § ", a + 1);  break;
       case 'h' :   sprintf (t, "%s § ", x_all);                break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    if (strchr ("sL", a_style) != NULL) {
       switch (x_type) {
-      case '-' :   sprintf (t, "%-3d § ", c + 1);  break;
+      case '-' :   sprintf (t, "%-3d § ", a + 1);  break;
       case 'h' :   sprintf (t, "%s § ", x_count);              break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(name)---------------------------*/
    switch (x_type) {
-   case '-' :   sprintf (t, "%-15.15s § ", a_proj->name);      break;
+   case '-' :   sprintf (t, "%-25.25s § ", a_proj->name);      break;
    case 'h' :   sprintf (t, "%s § "      , x_name);            break;
    }
    strlcat (s_print, t, LEN_RECD);
-   /*> printf ("%s\n", t);                                                            <* 
-    *> printf ("%s\n", s_print);                                                      <*/
    /*---(statistics)---------------------*/
    if (strchr ("sLaA", a_style) != NULL) {
       switch (x_type) {

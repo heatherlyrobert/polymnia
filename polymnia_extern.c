@@ -1,9 +1,6 @@
 /*============================----beg-of-source---============================*/
 #include  "polymnia.h"
 
-/*----------+-----------+-----------+-----------+-----------+-----------+-----*/
-
-
 
 
 /*====================------------------------------------====================*/
@@ -11,8 +8,74 @@
 /*====================------------------------------------====================*/
 static void  o___EXISTANCE_______o () { return; }
 
+static char  *s_inputs  = " getc getchar gets ungetc scanf vscanf scanf vscanf ";
+static char  *s_readers = " fopen freopen fclose fgetc fgets fscanf vfscanf ftell stello fseek fseeko fgetpos fsetpos rewind ";
+static char  *s_outputs = " putc putchar puts printf vprintf printf vprintf ";
+static char  *s_writers = " fflush fputc fputs fprintf vfprintf fprintf vfprintf ";
+static char  *s_breads  = " fread ";
+static char  *s_bwrites = " fwrite ";
+static char  *s_memory  = " malloc calloc realloc free memset memcpy memmove memcmp memchr ";
+static char  *s_filesys = " remove rename tmpfile tmpnam dup dup2 getwd lockf read readlink stat lstat fstat access chmod chown ";
+static char  *s_systems = " getenv system gedgroups gethostid getlogin getlogin_r getopt getpgid pipe pread pwrite ";
+static char  *s_process = " execl execle execlp execv execve execvp fork vfork nice pause wait waitpid waitid kill clone signal sigaction wait4 getpgid getpgrp getegid geteuid getgid getpid getppid getsid getuid setegid seteuid setgid setpgid setpgrp setregid setreuid setsid ";
+
+char         /*-[ categorize external functions -------------[ leaf  [fc3---·916·19-·K-1-]¬[11---·R-·R--R---·---·----]¬[?#p-#·N-1--M·----]¬*/
+poly_extern__mark        (tEXTERN *a_curr, char *a_lib, char *a_name)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        t           [LEN_HUND]  = "";
+   /*---(default)------------------------*/
+   a_curr->cat    = '-';
+   a_curr->sub    = '-';
+   /*---(ncurses)------------------------*/
+   if      (strcmp  (a_lib, "curses.h"   ) == 0)   a_curr->cat = 'N';
+   else if (strcmp  (a_lib, "ncurses.h"  ) == 0)   a_curr->cat = 'N';
+   /*---(opengl)-------------------------*/
+   else if (strcmp  (a_lib, "gl.h"       ) == 0)   a_curr->cat = 'O';
+   else if (strcmp  (a_lib, "glx.h"      ) == 0)   a_curr->cat = 'O';
+   else if (strcmp  (a_lib, "glu.h"      ) == 0)   a_curr->cat = 'O';
+   /*---(xwindows)-----------------------*/
+   else if (strcmp  (a_lib, "X.h"        ) == 0)   a_curr->cat = 'X';
+   else if (strcmp  (a_lib, "Xlib.h"     ) == 0)   a_curr->cat = 'X';
+   else if (strcmp  (a_lib, "Xutil.h"    ) == 0)   a_curr->cat = 'X';
+   else if (strcmp  (a_lib, "Xatom.h"    ) == 0)   a_curr->cat = 'X';
+   else if (strcmp  (a_lib, "keysym.h"   ) == 0)   a_curr->cat = 'X';
+   /*---(custom libraries)---------------*/
+   else if (strcmp  (a_lib, "yFONT.h"    ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "yGLTEX.h"   ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "yCOLOR.h"   ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "yX11.h"     ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "yVIKEYS.h"  ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "yLOG.h"     ) == 0) {
+      if (strncmp (a_name, "yLOG_s"  ,  6) == 0)   a_curr->cat = 'd';
+      else                                         a_curr->cat = 'D';
+      if      (strstr (a_name, "enter") != NULL)   a_curr->sub = 'e';
+      else if (strstr (a_name, "exit" ) != NULL)   a_curr->sub = 'x';
+   }
+   else if (strcmp  (a_lib, "yURG.h"     ) == 0)   a_curr->cat = 'D';
+   else if (strncmp (a_lib, "y"      ,  1) == 0)   a_curr->cat = 'Y';
+   /*---(standard)-----------------------*/
+   else {
+      sprintf (t, " %s ", a_name);
+      a_curr->cat = 'C';
+      if      (strstr (s_inputs  , t) != NULL)          a_curr->sub = 'i';
+      else if (strstr (s_readers , t) != NULL)          a_curr->sub = 'r';
+      else if (strstr (s_breads  , t) != NULL)          a_curr->sub = 'R';
+      else if (strstr (s_outputs , t) != NULL)          a_curr->sub = 'o';
+      else if (strstr (s_writers , t) != NULL)          a_curr->sub = 'w';
+      else if (strstr (s_bwrites , t) != NULL)          a_curr->sub = 'W';
+      else if (strstr (s_memory  , t) != NULL)          a_curr->sub = 'm';
+      else if (strstr (s_filesys , t) != NULL)          a_curr->sub = 'f';
+      else if (strstr (s_systems , t) != NULL)          a_curr->sub = 's';
+      else if (strstr (s_process , t) != NULL)          a_curr->sub = 'p';
+      else if (strncmp ("pthread_", a_name, 8) == 0)    a_curr->sub = 'T';
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
 char
-poly_extern__add         (char *a_lib, char *a_name, char a_type, char a_more)
+poly_extern__add         (char *a_lib, char *a_name, int a_line, char a_type)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -55,8 +118,9 @@ poly_extern__add         (char *a_lib, char *a_name, char a_type, char a_more)
    DEBUG_DATA   yLOG_note    ("populate");
    strlcpy (x_new->lib , a_lib , LEN_TITLE);
    strlcpy (x_new->name, a_name, LEN_TITLE);
+   x_new->line   = a_line;
    x_new->type   = a_type;
-   x_new->more   = a_more;
+   poly_extern__mark (x_new, a_lib, a_name);
    x_new->uses   = 0;
    x_new->head   = NULL;
    x_new->tail   = NULL;
@@ -103,22 +167,169 @@ poly_extern__del         (tEXTERN *a_extern)
 }
 
 char
+poly_extern__load_read  (int *a_line, char *a_recd)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         x_len       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_info    ("n_extern"  , my.n_extern);
+   DEBUG_INPT   yLOG_point   ("f_extern"  , my.f_extern);
+   --rce;  if (my.f_extern == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_line"    , a_line);
+   --rce;  if (a_line == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
+   --rce;  if (a_recd == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(read)------------------------*/
+   fgets  (a_recd, LEN_RECD, my.f_extern);
+   --rce;  if (feof (my.f_extern))  {
+      DEBUG_INPT   yLOG_note    ("end of file");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(update line)-----------------*/
+   ++(*a_line);
+   DEBUG_INPT   yLOG_value   ("*a_line"   , *a_line);
+   /*---(prepare)---------------------*/
+   x_len = strlen (a_recd);
+   if (x_len > 0)  a_recd [--x_len] = '\0';
+   DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
+   DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_extern__load_parse (char *a_recd, char *a_lib, char *a_name, int *a_pos, char *a_type)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        x_recd      [LEN_RECD]  = "";
+   char       *p           = NULL;
+   char       *q           = NULL;
+   char       *r           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
+   --rce;  if (a_recd == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_lib"     , a_lib);
+   --rce;  if (a_lib == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_name"    , a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_pos"     , a_pos);
+   --rce;  if (a_pos == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_type"    , a_type);
+   --rce;  if (a_type == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare)---------------------*/
+   strlcpy (x_recd, a_recd, LEN_RECD);
+   DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
+   /*---(name)------------------------*/
+   p = strtok_r (x_recd, " ", &r);
+   DEBUG_INPT   yLOG_point   ("name"      , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_note    ("name not found, empty line, SKIP");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   strlcpy (a_name, p, LEN_TITLE);
+   DEBUG_INPT   yLOG_info    ("x_name"    , a_name);
+   /*---(type)------------------------*/
+   p = strtok_r (NULL  , " ", &r);
+   DEBUG_INPT   yLOG_point   ("type"      , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_note    ("type not found, SKIP");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_char    ("p [0]"     , p [0]);
+   --rce;  if (strchr ("pm", p [0]) == NULL) {
+      DEBUG_INPT   yLOG_note    ("type not known, SKIP");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   *a_type = p [0];
+   DEBUG_INPT   yLOG_char    ("*a_type"   , *a_type);
+   /*---(position)--------------------*/
+   p = strtok_r (NULL  , " ", &r);
+   DEBUG_INPT   yLOG_point   ("pos"       , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_note    ("line number not found, SKIP");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   *a_pos = atoi (p);
+   DEBUG_INPT   yLOG_value   ("*a_pos"    , *a_pos);
+   /*---(library)---------------------*/
+   p = strtok_r (NULL  , " ", &r);
+   DEBUG_INPT   yLOG_point   ("lib"       , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_note    ("library not found, SKIP");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   q = strrchr (p, '/');
+   DEBUG_INPT   yLOG_point   ("basename"  , p);
+   --rce;  if (q == NULL) {
+      DEBUG_INPT   yLOG_note    ("library can not be parsed, SKIP");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   strlcpy (a_lib , q + 1, LEN_TITLE);
+   DEBUG_INPT   yLOG_info    ("a_lib"     , a_lib);
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 poly_extern_load        (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;          /* return code for errors         */
    char        rc          =    0;          /* generic return code            */
-   char        x_lib       [LEN_RECD]  = "";
    char        x_recd      [LEN_RECD];
    int         x_len       =    0;
+   char        x_lib       [LEN_TITLE] = "";
+   char        x_name      [LEN_TITLE] = "";
+   int         x_line      =    0;
    char        x_type      =  '-';
-   char        x_more      =  '-';
+   char       *p           = NULL;
+   char       *q           = NULL;
+   char       *r           = NULL;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(purge existing)-----------------*/
    rc = poly_btree_purge (B_EXTERN);
    /*---(open)---------------------------*/
-   my.f_extern = fopen (F_EXTERN, "rt");
+   my.f_extern = fopen (my.n_extern, "rt");
    DEBUG_INPT   yLOG_point   ("my.f_extern"          , my.f_extern);
    --rce;  if (my.f_extern == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -134,44 +345,46 @@ poly_extern_load        (void)
       }
       x_len = strlen (x_recd);
       DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-      if (strlen >= 1)  x_recd [--x_len] = '\0';
-      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-      strltrim (x_recd, ySTR_BOTH, LEN_RECD);
       DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
-      x_len = strlen (x_recd);
-      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-      DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
-      /*---(filter)----------------------*/
-      if (x_len == 0) {
-         DEBUG_INPT   yLOG_note    ("empty line, SKIP");
+      /*---(name)------------------------*/
+      p = strtok_r (x_recd, " ", &r);
+      if (p == NULL) {
+         DEBUG_INPT   yLOG_note    ("name not found, empty line, SKIP");
          continue;
       }
-      if (x_recd [0] == '#') {
-         DEBUG_INPT   yLOG_note    ("comment line, SKIP");
-         continue;
-      }
-      if (x_recd [0] == '/') {
-         DEBUG_INPT   yLOG_note    ("c comment line, SKIP");
-         continue;
-      }
-      /*---(library)---------------------*/
-      if (x_recd [0] == '<') {
-         DEBUG_INPT   yLOG_note    ("library header name line");
-         x_recd [--x_len] = '\0';
-         strlcpy (x_lib, x_recd + 1, LEN_TITLE);
-         DEBUG_INPT   yLOG_info    ("x_lib"     , x_lib);
-         DEBUG_INPT   yLOG_note    ("CONTINUE");
-         continue;
-      }
+      strlcpy (x_name, p, LEN_TITLE);
+      DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
       /*---(type)------------------------*/
-      x_type = '-';
-      if (x_len >= 25)  x_type = x_recd [24];
-      x_more = '-';
-      if (x_len >= 28)  x_more = x_recd [27];
-      x_recd [23] = '\0';
+      p = strtok_r (NULL  , " ", &r);
+      if (p == NULL) {
+         DEBUG_INPT   yLOG_note    ("type not found, SKIP");
+         continue;
+      }
+      x_type = p [0];
+      DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
+      /*---(type)------------------------*/
+      p = strtok_r (NULL  , " ", &r);
+      if (p == NULL) {
+         DEBUG_INPT   yLOG_note    ("line number not found, SKIP");
+         continue;
+      }
+      x_line = atoi (p);
+      DEBUG_INPT   yLOG_value   ("x_line"    , x_line);
+      /*---(library)---------------------*/
+      p = strtok_r (NULL  , " ", &r);
+      if (p == NULL) {
+         DEBUG_INPT   yLOG_note    ("library not found, SKIP");
+         continue;
+      }
+      q = strrchr (p, '/');
+      if (q == NULL) {
+         DEBUG_INPT   yLOG_note    ("library can not be parsed, SKIP");
+         continue;
+      }
+      strlcpy (x_lib , q + 1, LEN_TITLE);
+      DEBUG_INPT   yLOG_info    ("x_lib"     , x_lib);
       /*---(save)------------------------*/
-      strltrim (x_recd, ySTR_BOTH, LEN_RECD);
-      poly_extern__add (x_lib, x_recd, x_type, x_more);
+      poly_extern__add (x_lib, x_name, x_line, x_type);
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
@@ -181,6 +394,7 @@ poly_extern_load        (void)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   my.f_extern = NULL;
    /*---(check count)--------------------*/
    DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_EXTERN));
    --rce;  if (poly_btree_count (B_EXTERN) <= 0) {
@@ -228,6 +442,10 @@ poly_extern_init        (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   strlcpy (my.n_extern, F_EXTERN, LEN_RECD);
+   DEBUG_INPT   yLOG_info    ("n_extern"  , my.n_extern);
+   my.f_extern = NULL;
+   DEBUG_INPT   yLOG_point   ("f_extern"  , my.f_extern);
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -493,11 +711,14 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_INPT   yLOG_info    ("->name"    , (*a_src)->name);
    /*---(get destination tag)---------*/
    *a_dst   = (tFUNC *)   poly_btree_search  (B_FUNCS, a_func);
    DEBUG_INPT   yLOG_point   ("*a_dst"    , *a_dst);
+   if (*a_dst != NULL)  DEBUG_INPT   yLOG_info    ("->name"    , (*a_dst)->name);
    *a_ext   = (tEXTERN *) poly_extern_search (a_func);
    DEBUG_INPT   yLOG_point   ("*a_ext"    , *a_ext);
+   if (*a_ext != NULL)  DEBUG_INPT   yLOG_info    ("->name"    , (*a_ext)->name);
    /*---(mystry)----------------------*/
    --rce;  if (*a_dst == NULL && *a_ext == NULL) {
       /*> if (x_mystry %  5 == 0)  fprintf (s_mystry, "¦");                                                                                           <* 
@@ -543,8 +764,9 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
       return rce;
    }
    --rce;  if (a_dst != NULL && a_ext != NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return 0;
+      /*> DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <*/
+      /*> return 0;                                                                   <*/
+      a_ext = NULL;
    }
    /*---(general)------------------------*/
    ++a_src->WORK_FUNCS;
@@ -573,20 +795,20 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
       }
    }
    /*---(debugging)----------------------*/
-   else if (strchr ("Dd", a_ext->type) != NULL) {
-      DEBUG_INPT   yLOG_char    ("type"      , a_ext->type);
+   else if (strchr ("Dd", a_ext->cat) != NULL) {
+      DEBUG_INPT   yLOG_char    ("cat"       , a_ext->cat);
       ++a_src->WORK_DFUNCS;
-      switch (a_ext->type) {
+      switch (a_ext->cat) {
       case 'd' :
          ++a_src->WORK_DSHORT;
-         switch (a_ext->more) {
+         switch (a_ext->sub) {
          case 'e' :   ++a_src->WORK_DENTER;      break;
          case 'x' :   ++a_src->WORK_DEXIT;       break;
          }
          break;
       case 'D' :
          ++a_src->WORK_DLONG;
-         switch (a_ext->more) {
+         switch (a_ext->sub) {
          case 'e' :   ++a_src->WORK_DENTER;      break;
          case 'x' :   ++a_src->WORK_DEXIT;       break;
          }
@@ -594,10 +816,10 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
       }
    }
    /*---(standard library)---------------*/
-   else if (strchr ("-owWirRmpfs", a_ext->type) != NULL) {
+   /*> else if (strchr ("owWirRmpfsTC", a_ext->sub) != NULL) {                        <*/
+   else if (a_ext->cat == 'C') {
       ++a_src->WORK_CSTD;
-      switch (a_ext->type) {
-      case '-' : break;
+      switch (a_ext->sub) {
       case 'o' : ++a_src->WORK_OUTPUT;           break;
       case 'w' : ++a_src->WORK_TWRITE;           break;
       case 'W' : ++a_src->WORK_BWRITE;           break;
@@ -612,7 +834,7 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    }
    /*---(other libraries)----------------*/
    else {
-      switch (a_ext->type) {
+      switch (a_ext->cat) {
       case 'N' : ++a_src->WORK_NCURSE;
                  ++a_src->WORK_OFUNCS;
                  break;
@@ -625,6 +847,8 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
       case 'y' : ++a_src->WORK_MYX;
       case 'Y' : ++a_src->WORK_YLIB;
                  poly_ylib_add (a_src, a_ext, a_line, NULL);
+                 break;
+      case '-' : ++a_src->WORK_OFUNCS;
                  break;
       }
    }
@@ -776,20 +1000,25 @@ poly_extern__unit       (char *a_question, int i)
    /*---(locals)-----------+-----+-----+-*/
    tEXTERN    *u           = NULL;
    tFUNC      *v           = NULL;
-   char        s           [LEN_RECD]  = "[]";
    char        t           [LEN_RECD]  = "";
+   char        s           [LEN_RECD]  = "[]";
+   char        r           [LEN_RECD]  = "[]";
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "EXTERN unit      : tag number unknown");
    if (i <  0)       return unit_answer;
    u = (tEXTERN *) poly_btree_entry (B_EXTERN, i);
    /*---(simple)-------------------------*/
+   if        (strcmp (a_question, "file"      )     == 0) {
+      snprintf (unit_answer, LEN_RECD, "EXTERN file      : %s", my.n_extern);
+   }
    if (u != NULL) sprintf  (s, "[%.20s]", u->name);
    if        (strcmp (a_question, "count"     )     == 0) {
       snprintf (unit_answer, LEN_RECD, "EXTERN count     : %3d", poly_btree_count (B_EXTERN));
    }
    else if   (strcmp (a_question, "entry"     )     == 0) {
-      if (u != NULL)  sprintf  (t, "%2d %-22.22s %c %d", strlen (u->name), s   , u->type, u->uses);
-      else            sprintf  (t, "%2d %-22.22s %c %d", 0     , "[]", '-'    , 0       );
+      if (u != NULL)  sprintf  (r, "[%.20s]", u->lib);
+      if (u != NULL)  sprintf  (t, "%2d%-22.22s   %2d%-22.22s   %4d   %c   %c   %c   %4d", strlen (u->lib), r, strlen (u->name), s, u->line, u->type, u->cat, u->sub, u->uses);
+      else            sprintf  (t, "%2d%-22.22s   %2d%-22.22s   %4d   %c   %c   %c   %4d", 0, "[]", 0, "[]", 0, '-', '-', '-', 0);
       snprintf (unit_answer, LEN_RECD, "EXTERN entry(%2d) : %s", i, t);
    }
    else if   (strcmp (a_question, "work"      )     == 0) {
