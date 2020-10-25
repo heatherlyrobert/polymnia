@@ -472,7 +472,8 @@ poly_func_enter         (tFUNC *a_func, int a_line)
       if (a_func->next->line     <= a_line)      return rce;
    }
    /*---(update)-------------------------*/
-   a_func->WORK_BEG   = a_line;
+   a_func->WORK_BEG  = a_line;
+   a_func->beg       = a_line;
    poly_vars_reset (a_func);
    /*---(complete)-----------------------*/
    return 0;
@@ -502,6 +503,7 @@ poly_func_exit          (tFUNC *a_func, int a_line)
    }
    /*---(update)-------------------------*/
    a_func->WORK_END  = a_line;
+   a_func->end       = a_line;
    /*---(complete)-----------------------*/
    return 0;
 }

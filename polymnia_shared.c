@@ -398,6 +398,7 @@ poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, 
    char        x_recd      [LEN_RECD]  = "";
    char       *p           = NULL;
    char       *q           = " ";
+   char       *r           = NULL;
    char       *s           = NULL;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -473,8 +474,15 @@ poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   r = strrchr (p, '/');
+   if (r == NULL) {
+      r = p;
+      DEBUG_INPT   yLOG_note    ("no directory portion found");
+   } else {
+      ++r;
+   }
    if (a_file != NULL) {
-      strlcpy (a_file, p, LEN_TITLE);
+      strlcpy (a_file, r, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("a_file"    , a_file);
    }
    /*---(complete)-----------------------*/
@@ -491,6 +499,7 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
    char        x_recd      [LEN_RECD]  = "";
    char       *p           = NULL;
    char       *q           = " :";
+   char       *r           = NULL;
    char       *s           = NULL;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -549,7 +558,14 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
    }
    /*---(get file)-----------------------*/
    if (a_file != NULL) {
-      strlcpy (a_file, p, LEN_TITLE);
+      r = strrchr (p, '/');
+      if (r == NULL) {
+         r = p;
+         DEBUG_INPT   yLOG_note    ("no directory portion found");
+      } else {
+         ++r;
+      }
+      strlcpy (a_file, r, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("a_file"    , a_file);
    }
    /*---(line)---------------------------*/

@@ -134,10 +134,13 @@ char         /*--> read and parse crontab lines ----------[ ------ [ ------ ]-*/
 poly_vars_inventory     (tFILE *a_file)
 {
    /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;           /* return code for errors         */
-   int         rc          =    0;           /* generic return code            */
-   char        x_recd      [LEN_RECD];      /* input record                   */
-   int         x_len       =    0;             /* length of input record         */
+   char        rce         =  -10;
+   int         rc          =    0;
+   char        x_recd      [LEN_RECD]  = "";
+   char        x_name      [LEN_TITLE] = "";
+   char        x_type      =  '-';
+   int         x_line      =    0;
+   int         x_len       =    0;
    int         c           =    0;
    char       *p           = NULL;
    char       *q           = NULL;
@@ -173,24 +176,15 @@ poly_vars_inventory     (tFILE *a_file)
          DEBUG_INPT   yLOG_note    ("reading of line failed or eof");
          break;
       }
-      /*---(name)------------------------*/
-      p = strtok_r (x_recd, " ", &r);
-      DEBUG_INPT   yLOG_point   ("p"         , p);
-      if (p == NULL) {
-         DEBUG_INPT   yLOG_note    ("variable name not found");
-         continue;
+      /*---(parse)-----------------------*/
+      rc = poly_shared_parse_tags (x_recd, x_name, &x_type, &x_line, NULL);
+      DEBUG_INPT   yLOG_value   ("read"      , rc);
+      if (rc < 0)  {
+         DEBUG_INPT   yLOG_note    ("reading of line failed or eof");
+         break;
       }
-      DEBUG_INPT   yLOG_info    ("p"         , p);
-      /*---(type)------------------------*/
-      q = strtok_r (NULL  , " ", &r);
-      DEBUG_INPT   yLOG_point   ("q"         , q);
-      if (q == NULL) {
-         DEBUG_INPT   yLOG_note    ("variable type not found");
-         continue;
-      }
-      DEBUG_INPT   yLOG_info    ("q"         , q);
       /*---(name)------------------------*/
-      rc = poly_vars__push (a_file, p, q [0]);
+      rc = poly_vars__push (a_file, x_name, x_type);
       DEBUG_INPT   yLOG_value   ("push"      , rc);
       if (rc < 0) {
          DEBUG_INPT   yLOG_note    ("something wrong with record");
@@ -259,6 +253,8 @@ poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
    char        x_name      [LEN_TITLE] = "";
    int         n           =    0;
    tEXTERN    *x_ext       = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (a_func   == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -294,6 +290,8 @@ poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
             DEBUG_INPT   yLOG_note    ("was inside a macro");
             if (n > 6 && strncmp ("DEBUG_", b, 6) == 0) {
                DEBUG_INPT   yLOG_note    ("debugging macro/guard, skipping");
+            } else if (n >= 3 && strncmp ("P_"  , b, 2) == 0) {
+               DEBUG_INPT   yLOG_note    ("header oneliners, skipping");
             } else if (n == 4 && strncmp ("NULL", b, 4) == 0) {
                DEBUG_INPT   yLOG_note    ("common NULL, skipping");
             } else if (t [i] == '\0' || strchr (s_bad, t [i]) == NULL) {
@@ -370,6 +368,8 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
    char        x_name      [LEN_TITLE] = "";
    int         n           =    0;
    char       *x_end       = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (a_func   == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -410,14 +410,6 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
             if (e != x_end)   DEBUG_INPT   yLOG_char    ("e [0]"     , e [0]);
             if (e == x_end || strchr (s_bad, e [0]) == NULL) {
                if (a_act == '-')  poly_vars__intern_tally (a_func, i);
-               /*> DEBUG_INPT   yLOG_char    ("scope"     , s_vars [i].scope);        <*/
-               /*> if (s_vars [i].scope == 'g') {                                     <* 
-                *>    if (s_vars [i].type == 'v')  ++(a_func->WORK_GVARS);            <* 
-                *>    else                         ++(a_func->WORK_GUSE);             <* 
-                *> } else {                                                           <* 
-                *>    if (s_vars [i].type == 'v')  ++(a_func->WORK_FVARS);            <* 
-                *>    else                         ++(a_func->WORK_FUSE);             <* 
-                *> }                                                                  <*/
             }
          }
          b = strstr (e + 1, s_vars [i].name);
@@ -434,6 +426,7 @@ poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    int         i           =    0;
    int         x_len       =    0;
    char        t           [LEN_RECD]  = "";
@@ -469,94 +462,11 @@ poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act)
       return rce;
    }
    DEBUG_INPT   yLOG_info    ("t"         , t);
-   /*---(look for potential macros)------*/
-   for (i = 0; i < x_len; ++i) {
-      DEBUG_INPT   yLOG_complex ("check"     , "%2d, %c, %p, %d", i, t [i], b, n);
-      /*---(not a macro letter)----------*/
-      if (strchr (s_macro, t [i]) == NULL) {
-         DEBUG_INPT   yLOG_note    ("not a macro letter");
-         /*---(finish existing)----------*/
-         if (b != NULL && n > 0) {
-            DEBUG_INPT   yLOG_note    ("was inside a macro");
-            if (n > 6 && strncmp ("DEBUG_", b, 6) == 0) {
-               DEBUG_INPT   yLOG_note    ("debugging macros, skipping");
-            } else if (n == 4 && strncmp ("NULL", b, 4) == 0) {
-               DEBUG_INPT   yLOG_note    ("common NULL, skipping");
-            } else if (strchr (s_bad, t [i]) == NULL) {
-               DEBUG_INPT   yLOG_note    ("good finish, increment");
-               ++(a_func->WORK_PUSE);
-               strlcpy (x_name, b, n + 1);
-               DEBUG_INPT   yLOG_info    ("macro name", x_name);
-               x_ext   = (tEXTERN *) poly_extern_search (x_name);
-               DEBUG_INPT   yLOG_point   ("x_ext"     , x_ext);
-               if (x_ext != NULL) {
-                  switch (x_ext->cat) {
-                  case 'Y' : ++(a_func->WORK_YUSE);         break;
-                  case 'y' : ++(a_func->WORK_YUSE);         break;
-                  case 'C' : ++(a_func->WORK_MUSE);         break;
-                  case 'N' : ++(a_func->WORK_MUSE);         break;
-                  case 'O' : ++(a_func->WORK_MUSE);         break;
-                  case 'X' : ++(a_func->WORK_MUSE);         break;
-                  }
-               }
-            } else {
-               DEBUG_INPT   yLOG_note    ("finished wrong");
-            }
-         }
-         DEBUG_INPT   yLOG_note    ("reset macro");
-         b = NULL;
-         n = 0;
-         continue;
-      }
-      /*---(not started)-----------------*/
-      if (b == NULL) {
-         if (strchr ("0123456789_", t [i]) != NULL) {
-            DEBUG_INPT   yLOG_note    ("macro can not start with number or underscore");
-            continue;
-         }
-         if (i == 0 || (i > 0 && strchr (s_bad, t [i - 1]) == NULL)) {
-            DEBUG_INPT   yLOG_note    ("starting a new macro");
-            b = t + i;
-            n = 1;
-         } else {
-            DEBUG_INPT   yLOG_note    ("not a macro start");
-         }
-         continue;
-      }
-      /*---(continuing)------------------*/
-      DEBUG_INPT   yLOG_note    ("continue on macro");
-      ++n;
-      /*---(done)------------------------*/
-   }
-   /*---(prepare)------------------------*/
-   x_end = t + x_len - 1;
-   DEBUG_INPT   yLOG_point   ("x_end"     , x_end);
-   /*---(walk variables)-----------------*/
-   DEBUG_INPT   yLOG_value   ("s_nvar"    , s_nvar);
-   for (i = 0; i < s_nvar; ++i) {
-      DEBUG_INPT   yLOG_info    ("search"    , s_vars [i].name);
-      b = strstr (t, s_vars [i].name);
-      DEBUG_INPT   yLOG_point   ("b"         , b);
-      while (b != NULL && b < x_end) {
-         e = b + s_vars [i].len;
-         if (b != t)  DEBUG_INPT   yLOG_char    ("b [-1]"    , b [-1]);
-         if (b == t || strchr (s_bad, b [-1]) == NULL) {
-            if (e != x_end)   DEBUG_INPT   yLOG_char    ("e [0]"     , e [0]);
-            if (e == x_end || strchr (s_bad, e [0]) == NULL) {
-               DEBUG_INPT   yLOG_char    ("scope"     , s_vars [i].scope);
-               if (s_vars [i].scope == 'g') {
-                  if (s_vars [i].type == 'v')  ++(a_func->WORK_GVARS);
-                  else                         ++(a_func->WORK_GUSE);
-               } else {
-                  if (s_vars [i].type == 'v')  ++(a_func->WORK_FVARS);
-                  else                         ++(a_func->WORK_FUSE);
-               }
-            }
-         }
-         b = strstr (e + 1, s_vars [i].name);
-         DEBUG_INPT   yLOG_point   ("b"         , b);
-      }
-   }
+   /*---(external macros)----------------*/
+   rc = poly_vars__extern_find (a_func, a_line, a_recd, a_act);
+   /*---(internal variables/macros)------*/
+   rc = poly_vars__intern_find (a_func, a_line, a_recd, a_act);
+   /*---(summarize)----------------------*/
    a_func->WORK_OUSE = a_func->WORK_PUSE - a_func->WORK_GUSE - a_func->WORK_FUSE - a_func->WORK_MUSE - a_func->WORK_YUSE;
    DEBUG_INPT   yLOG_value   ("gvars"   , a_func->WORK_GVARS);
    DEBUG_INPT   yLOG_value   ("fvars"   , a_func->WORK_FVARS);
@@ -577,8 +487,8 @@ static void  o___FUNCTION________o () { return; }
 char
 poly_vars_reset         (tFUNC *a_func)
 {
-   a_func->WORK_GVARS = 0;
    a_func->WORK_FVARS = 0;
+   a_func->WORK_GVARS = 0;
    a_func->WORK_PUSE  = 0;
    a_func->WORK_FUSE  = 0;
    a_func->WORK_GUSE  = 0;

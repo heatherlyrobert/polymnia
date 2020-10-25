@@ -167,149 +167,6 @@ poly_extern__del         (tEXTERN *a_extern)
 }
 
 char
-poly_extern__load_read  (int *a_line, char *a_recd)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   int         x_len       =    0;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_info    ("n_extern"  , my.n_extern);
-   DEBUG_INPT   yLOG_point   ("f_extern"  , my.f_extern);
-   --rce;  if (my.f_extern == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_line"    , a_line);
-   --rce;  if (a_line == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
-   --rce;  if (a_recd == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(read)------------------------*/
-   fgets  (a_recd, LEN_RECD, my.f_extern);
-   --rce;  if (feof (my.f_extern))  {
-      DEBUG_INPT   yLOG_note    ("end of file");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(update line)-----------------*/
-   ++(*a_line);
-   DEBUG_INPT   yLOG_value   ("*a_line"   , *a_line);
-   /*---(prepare)---------------------*/
-   x_len = strlen (a_recd);
-   if (x_len > 0)  a_recd [--x_len] = '\0';
-   DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-   DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_extern__load_parse (char *a_recd, char *a_lib, char *a_name, int *a_pos, char *a_type)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        x_recd      [LEN_RECD]  = "";
-   char       *p           = NULL;
-   char       *q           = NULL;
-   char       *r           = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
-   --rce;  if (a_recd == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_lib"     , a_lib);
-   --rce;  if (a_lib == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_name"    , a_name);
-   --rce;  if (a_name == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_pos"     , a_pos);
-   --rce;  if (a_pos == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_type"    , a_type);
-   --rce;  if (a_type == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(prepare)---------------------*/
-   strlcpy (x_recd, a_recd, LEN_RECD);
-   DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
-   /*---(name)------------------------*/
-   p = strtok_r (x_recd, " ", &r);
-   DEBUG_INPT   yLOG_point   ("name"      , p);
-   --rce;  if (p == NULL) {
-      DEBUG_INPT   yLOG_note    ("name not found, empty line, SKIP");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   strlcpy (a_name, p, LEN_TITLE);
-   DEBUG_INPT   yLOG_info    ("x_name"    , a_name);
-   /*---(type)------------------------*/
-   p = strtok_r (NULL  , " ", &r);
-   DEBUG_INPT   yLOG_point   ("type"      , p);
-   --rce;  if (p == NULL) {
-      DEBUG_INPT   yLOG_note    ("type not found, SKIP");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_char    ("p [0]"     , p [0]);
-   --rce;  if (strchr ("pm", p [0]) == NULL) {
-      DEBUG_INPT   yLOG_note    ("type not known, SKIP");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   *a_type = p [0];
-   DEBUG_INPT   yLOG_char    ("*a_type"   , *a_type);
-   /*---(position)--------------------*/
-   p = strtok_r (NULL  , " ", &r);
-   DEBUG_INPT   yLOG_point   ("pos"       , p);
-   --rce;  if (p == NULL) {
-      DEBUG_INPT   yLOG_note    ("line number not found, SKIP");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   *a_pos = atoi (p);
-   DEBUG_INPT   yLOG_value   ("*a_pos"    , *a_pos);
-   /*---(library)---------------------*/
-   p = strtok_r (NULL  , " ", &r);
-   DEBUG_INPT   yLOG_point   ("lib"       , p);
-   --rce;  if (p == NULL) {
-      DEBUG_INPT   yLOG_note    ("library not found, SKIP");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   q = strrchr (p, '/');
-   DEBUG_INPT   yLOG_point   ("basename"  , p);
-   --rce;  if (q == NULL) {
-      DEBUG_INPT   yLOG_note    ("library can not be parsed, SKIP");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   strlcpy (a_lib , q + 1, LEN_TITLE);
-   DEBUG_INPT   yLOG_info    ("a_lib"     , a_lib);
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
 poly_extern_load        (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -329,72 +186,36 @@ poly_extern_load        (void)
    /*---(purge existing)-----------------*/
    rc = poly_btree_purge (B_EXTERN);
    /*---(open)---------------------------*/
-   my.f_extern = fopen (my.n_extern, "rt");
-   DEBUG_INPT   yLOG_point   ("my.f_extern"          , my.f_extern);
-   --rce;  if (my.f_extern == NULL) {
+   rc = poly_shared_open ('e', NULL);
+   DEBUG_INPT   yLOG_value   ("open"      , rc);
+   --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      return  rce;
    }
    /*---(walk)---------------------------*/
    while (1) {
       /*---(read)------------------------*/
-      fgets (x_recd, LEN_RECD, my.f_extern);
-      if (feof (my.f_extern)) {
+      rc = poly_shared_read ('e', NULL, x_recd, NULL);
+      DEBUG_INPT   yLOG_value   ("read"      , rc);
+      if (rc < 0) {
          DEBUG_INPT   yLOG_note    ("end of file");
          break;
       }
-      x_len = strlen (x_recd);
-      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-      DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
-      /*---(name)------------------------*/
-      p = strtok_r (x_recd, " ", &r);
-      if (p == NULL) {
-         DEBUG_INPT   yLOG_note    ("name not found, empty line, SKIP");
-         continue;
-      }
-      strlcpy (x_name, p, LEN_TITLE);
-      DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
-      /*---(type)------------------------*/
-      p = strtok_r (NULL  , " ", &r);
-      if (p == NULL) {
-         DEBUG_INPT   yLOG_note    ("type not found, SKIP");
-         continue;
-      }
-      x_type = p [0];
-      DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
-      /*---(type)------------------------*/
-      p = strtok_r (NULL  , " ", &r);
-      if (p == NULL) {
-         DEBUG_INPT   yLOG_note    ("line number not found, SKIP");
-         continue;
-      }
-      x_line = atoi (p);
-      DEBUG_INPT   yLOG_value   ("x_line"    , x_line);
-      /*---(library)---------------------*/
-      p = strtok_r (NULL  , " ", &r);
-      if (p == NULL) {
-         DEBUG_INPT   yLOG_note    ("library not found, SKIP");
-         continue;
-      }
-      q = strrchr (p, '/');
-      if (q == NULL) {
-         DEBUG_INPT   yLOG_note    ("library can not be parsed, SKIP");
-         continue;
-      }
-      strlcpy (x_lib , q + 1, LEN_TITLE);
-      DEBUG_INPT   yLOG_info    ("x_lib"     , x_lib);
+      /*---(parse)-----------------------*/
+      rc = poly_shared_parse_tags (x_recd, x_name, &x_type, &x_line, x_lib);
+      DEBUG_INPT   yLOG_value   ("parse"     , rc);
+      if (rc < 0)    continue;
       /*---(save)------------------------*/
       poly_extern__add (x_lib, x_name, x_line, x_type);
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
-   rc = fclose (my.f_extern);
-   DEBUG_INPT   yLOG_value   ("close"      , rc);
+   rc = poly_shared_close ('e');
+   DEBUG_INPT   yLOG_value   ("close"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      return  rce;
    }
-   my.f_extern = NULL;
    /*---(check count)--------------------*/
    DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_EXTERN));
    --rce;  if (poly_btree_count (B_EXTERN) <= 0) {
@@ -523,132 +344,6 @@ tEXTERN*  poly_extern_search      (char *a_name) { return (tEXTERN *) poly_btree
 /*===----                        mass actions                          ----===*/
 /*====================------------------------------------====================*/
 static void  o___MASS____________o () { return; }
-
-char
-poly_extern__read       (char *a_curr)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;           /* return code for errors         */
-   int         x_len       =   0;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("my.f_cflow", my.f_cflow);
-   --rce;  if (my.f_cflow == NULL) {
-      DEBUG_INPT   yLOG_note    ("my.f_cflow not open");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_curr"    , a_curr);
-   --rce;  if (a_curr == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(read)------------------------*/
-   fgets  (a_curr, LEN_RECD, my.f_cflow);
-   --rce;  if (feof (my.f_cflow))  {
-      DEBUG_INPT   yLOG_note    ("end of file");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(prepare)---------------------*/
-   x_len = strlen (a_curr);
-   if (x_len > 0)  a_curr [--x_len] = '\0';
-   DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-   DEBUG_INPT   yLOG_info    ("a_curr"    , a_curr);
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_extern__parse      (char *a_curr, char *a_func, char *a_file, int *a_line)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   char        x_recd      [LEN_RECD]  = "";
-   char       *p           = NULL;
-   char       *q           = " :";
-   char       *s           = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_curr"    , a_curr);
-   --rce;  if (a_curr == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_func"    , a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   strlcpy (a_func, "", LEN_TITLE);
-   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
-   --rce;  if (a_file == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   strlcpy (a_file, "", LEN_TITLE);
-   DEBUG_INPT   yLOG_point   ("a_line"    , a_line);
-   --rce;  if (a_line == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   *a_line = -1;
-   /*---(prepare)---------------------*/
-   strlcpy (x_recd, a_curr, LEN_RECD);
-   /*---(get function)----------------*/
-   p = strtok_r (x_recd, q, &s);
-   DEBUG_INPT   yLOG_point   ("p"         , p);
-   --rce;  if (p == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   strlcpy (a_func, p, LEN_TITLE);
-   DEBUG_INPT   yLOG_info    ("func name" , a_func);
-   /*---(get if definition)-----------*/
-   p = strtok_r (NULL  , q, &s);
-   DEBUG_INPT   yLOG_point   ("p"         , p);
-   --rce;  if (p == NULL) {
-      strlcpy (a_func, "", LEN_TITLE);
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_char    ("def mark"  , p [0]);
-   --rce;  if (p [0] == '*') {
-      strlcpy (a_func, "", LEN_TITLE);
-      DEBUG_INPT   yLOG_note    ("function definition, SKIP");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   strlcpy (a_file, p, LEN_TITLE);
-   DEBUG_INPT   yLOG_info    ("file name" , a_file);
-   /*---(get line)--------------------*/
-   p = strtok_r (NULL  , q, &s);
-   DEBUG_INPT   yLOG_point   ("p"         , p);
-   --rce;  if (p == NULL) {
-      strlcpy (a_func, "", LEN_TITLE);
-      strlcpy (a_file, "", LEN_TITLE);
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("p"         , p);
-   *a_line = atoi (p);
-   DEBUG_INPT   yLOG_value   ("*a_line"   , *a_line);
-   --rce;  if (*a_line <= 0) {
-      strlcpy (a_func, "", LEN_TITLE);
-      strlcpy (a_file, "", LEN_TITLE);
-      *a_line = -1;
-      DEBUG_INPT   yLOG_note    ("line could not be parsed, SKIP");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
 
 char
 poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, tFUNC **a_dst, tEXTERN **a_ext)
@@ -866,8 +561,9 @@ poly_extern_review      (void)
    char       *p           = NULL;
    char       *q           = NULL;
    char        x_recd      [LEN_RECD];
-   char        x_funcname  [LEN_TITLE];
-   char        x_filename  [LEN_TITLE];
+   char        x_name      [LEN_TITLE];
+   char        x_lib       [LEN_TITLE];
+   char        x_defn      =  '-';
    int         x_len       =    0;
    int         x_flen      =    0;
    int         x_line      =    0;
@@ -897,18 +593,18 @@ poly_extern_review      (void)
    /*---(walk)---------------------------*/
    while (1) {
       /*---(read)------------------------*/
-      rc = poly_extern__read (x_recd);
+      rc = poly_shared_read ('f', NULL, x_recd, NULL);
       DEBUG_INPT   yLOG_value   ("read"      , rc);
       if (rc < 0) {
          DEBUG_INPT   yLOG_note    ("end of file");
          break;
       }
       /*---(parse)-----------------------*/
-      rc = poly_extern__parse (x_recd, x_funcname, x_filename, &x_line);
+      rc = poly_shared_parse_flow (x_recd, x_name, &x_defn, &x_line, x_lib);
       DEBUG_INPT   yLOG_value   ("parse"     , rc);
       if (rc < 0)    continue;
       /*---(get pointers)----------------*/
-      rc = poly_extern__pointers (x_funcname, x_filename, x_line, &x_src, &x_dst, &x_ext);
+      rc = poly_extern__pointers (x_name, x_lib, x_line, &x_src, &x_dst, &x_ext);
       DEBUG_INPT   yLOG_value   ("pointers"  , rc);
       if (rc < 0)    continue;
       /*---(tally results)---------------*/

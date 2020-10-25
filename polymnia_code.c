@@ -5,7 +5,6 @@
 
 static FILE *s_file = NULL;           /* source file */
 static char  s_name [LEN_RECD] = "";  /* source file name */
-static char  s_recd [LEN_RECD] = "";  /* current record (testing use) */
 
 
 
@@ -199,22 +198,22 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
    char        x_inside    =   -1;
    char        c           =    0;
    /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_func);
+   DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
    if (a_func == NULL) {
-      DEBUG_DATA   yLOG_snote   ("function is null");
+      DEBUG_DATA   yLOG_note    ("function is null");
    } else {
-      DEBUG_DATA   yLOG_spoint  (a_func->work);
+      DEBUG_DATA   yLOG_point   ("->work"    , a_func->work);
       if (a_func->work == NULL) {
-         DEBUG_DATA   yLOG_snote   ("a_func->work null");
+         DEBUG_DATA   yLOG_note   ("a_func->work null");
       } else {
-         DEBUG_DATA   yLOG_sint    (a_func->WORK_BEG);
-         DEBUG_DATA   yLOG_sint    (a_func->WORK_END);
+         DEBUG_DATA   yLOG_value  ("WORK_BEG"  , a_func->WORK_BEG);
+         DEBUG_DATA   yLOG_value  ("WORK_END"  , a_func->WORK_END);
       }
    }
    x_inside = poly_func_inside (a_func);
-   if (x_inside == 0)    DEBUG_DATA   yLOG_snote   ("inside a function");
+   if (x_inside == 0)    DEBUG_DATA   yLOG_note   ("inside a function");
    /*---(line counts)--------------------*/
    ++a_file->proj->COUNT_LINES;
    ++a_file->COUNT_LINES;
@@ -226,15 +225,15 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
    /*---(slocl counts)-------------------*/
    if (a_recd [0] != '#') {
       c = strldcnt (a_recd, ';', LEN_RECD);
-      DEBUG_DATA   yLOG_sint    (c);
+      DEBUG_DATA   yLOG_value   ("c"         , c);
       if (c < 0)  c = 0;
-      DEBUG_DATA   yLOG_snote   ("slocl");
+      DEBUG_DATA   yLOG_note   ("slocl");
       a_file->COUNT_SLOCL += c;
       a_file->proj->COUNT_SLOCL += c;
       if (x_inside == 0) a_func->COUNT_SLOCL += c;
    }
    /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -273,7 +272,7 @@ poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)
    if (a_func != NULL) {
       /*---(returns)---------------------*/
       if      (strstr (a_recd, " return "   ) != NULL)   poly_cats_logic (a_func, 'r');
-      if      (strstr (a_recd, " return;"   ) != NULL)   poly_cats_logic (a_func, 'r');
+      else if (strstr (a_recd, " return;"   ) != NULL)   poly_cats_logic (a_func, 'r');
       /*---(choices)---------------------*/
       if      (strstr (a_recd, " if "       ) != NULL)   poly_cats_logic (a_func, 'c');
       else if (strstr (a_recd, " if("       ) != NULL)   poly_cats_logic (a_func, 'c');
@@ -306,139 +305,6 @@ poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)
 /*===----                       source file processing                 ----===*/
 /*====================------------------------------------====================*/
 static void  o___REVIEW__________o () { return; }
-
-char
-poly_code__open         (tFILE *a_file)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tSTAT       st;
-   int         rci         =    0;
-   char        x_cmd       [LEN_RECD];      /* ctags command                  */
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("s_file"    , s_file);
-   --rce;  if (s_file != NULL) {
-      DEBUG_INPT   yLOG_note    ("source s_file already open with another");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
-   --rce;  if (a_file == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("name"      , a_file->name);
-   /*---(check file)---------------------*/
-   rci = lstat (a_file->name, &st);
-   DEBUG_INPT   yLOG_value   ("lstat"     , rci);
-   --rce; if (rci < 0) {
-      DEBUG_INPT   yLOG_note    ("file does not exist, can not read");
-      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(check regular file)-------------*/
-   --rce;  if (!S_ISREG (st.st_mode)) {
-      DEBUG_INPT   yLOG_note    ("not a regular file, rejected");
-      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(open)---------------------------*/
-   s_file = fopen (a_file->name, "r");
-   DEBUG_INPT   yLOG_point   ("s_file"         , s_file);
-   --rce;  if (s_file == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
-   }
-   strlcpy (s_name, a_file->name, LEN_RECD);
-   DEBUG_INPT   yLOG_note    ("openned successfully");
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_code__read         (int *a_line, char *a_curr, char *a_prev)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;           /* return code for errors         */
-   int         x_len       =   0;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("s_file"    , s_file);
-   --rce;  if (s_file == NULL) {
-      DEBUG_INPT   yLOG_note    ("source s_file not open");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_line"    , a_line);
-   --rce;  if (a_line == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_curr"    , a_curr);
-   --rce;  if (a_curr == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_prev"    , a_prev);
-   --rce;  if (a_prev == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(read)------------------------*/
-   strlcpy (a_prev, a_curr, LEN_RECD);
-   fgets  (a_curr, LEN_RECD, s_file);
-   --rce;  if (feof (s_file))  {
-      DEBUG_INPT   yLOG_note    ("end of file");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(update line)-----------------*/
-   ++(*a_line);
-   DEBUG_INPT   yLOG_value   ("*a_line"   , *a_line);
-   /*---(prepare)---------------------*/
-   x_len = strlen (a_curr);
-   if (x_len > 0)  a_curr [--x_len] = '\0';
-   DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-   DEBUG_INPT   yLOG_info    ("a_curr"    , a_curr);
-   DEBUG_INPT   yLOG_info    ("a_prev"    , a_prev);
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_code__close        (void)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;           /* return code for errors         */
-   int         rc          =   0;           /* generic return code            */
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("s_file"    , s_file);
-   --rce;  if (s_file == NULL) {
-      DEBUG_INPT   yLOG_note    ("source s_file not open");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(close file)---------------------*/
-   rc = fclose (s_file);
-   DEBUG_INPT   yLOG_point   ("fclose"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
-   }
-   /*---(ground pointer)-----------------*/
-   s_file = NULL;
-   strlcpy (s_name, ""          , LEN_RECD);
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
 
 char
 poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
@@ -542,11 +408,12 @@ poly_code_nextfunc      (tFILE *a_file, tFUNC **a_func)
 }
 
 char
-poly_code__before       (tFILE *a_file, tFUNC **a_func)
+poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr, char *a_prev)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
+   char        x_full      [LEN_RECD]  = "";
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -565,9 +432,28 @@ poly_code__before       (tFILE *a_file, tFUNC **a_func)
    if (*a_func == NULL) {
       rc = poly_code_nextfunc (a_file, a_func);
    }
-   /*---(check after)-----------------*/
-   else if ((*a_func)->WORK_END > 0) {
+   /*---(advance as needed)-----------*/
+   if ((*a_func)->WORK_END > 0) {
       rc = poly_code_nextfunc (a_file, a_func);
+   }
+   DEBUG_INPT   yLOG_point   ("*a_func"   , *a_func);
+   /*---(found header)----------------*/
+   if (*a_func != NULL) {
+      DEBUG_INPT   yLOG_value   ("line"      , (*a_func)->line);
+      if (a_line == (*a_func)->line) {
+         DEBUG_INPT   yLOG_note    ("FUNCTION HEADER FOUND");
+         strlcpy   (x_full, a_curr   , LEN_RECD);
+         strltrim  (x_full, ySTR_BOTH, LEN_RECD);
+         DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
+         poly_code_function (*a_func, x_full, a_prev);
+      }
+   }
+   /*---(check single line)-----------*/
+   if (*a_func != NULL) {
+      if ((*a_func)->STATS_SINGLE == 'y') {
+         DEBUG_DATA   yLOG_note    ("single liner entry");
+         poly_func_enter (*a_func, a_line);
+      }
    }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
@@ -602,9 +488,8 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    strltrim  (x_full, ySTR_BOTH, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
    strlunall (x_recd, a_curr   , LEN_RECD);
-   strltrim  (x_recd, ySTR_BOTH, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
-   /*---(check tail of file)----------*/
+   /*---(outside functions)-----------*/
    DEBUG_INPT   yLOG_point   ("a_func"    , a_func);
    if (a_func == NULL || a_func->WORK_END >= 0) {
       DEBUG_INPT   yLOG_note    ("file tail, after all functions");
@@ -613,20 +498,8 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   /*---(found header)----------------*/
-   DEBUG_INPT   yLOG_value   ("line"      , a_func->line);
-   if (a_line == a_func->line) {
-      DEBUG_INPT   yLOG_note    ("FUNCTION HEADER FOUND");
-      poly_code_function (a_func, x_full, a_prev);
-   }
-   /*---(check single line)-----------*/
-   if (a_func->STATS_SINGLE == 'y') {
-      DEBUG_DATA   yLOG_note    ("single liner entry");
-      poly_func_enter (a_func, a_line);
-   }
    /*---(check debugging)-------------*/
    if (a_func->STATS_SINGLE != 'y') {
-      DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
       rc = poly_debug_line  (a_file, a_func, x_full);
    } else
       rc = -1;
@@ -634,11 +507,6 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    if (rc < 0)  { 
       rc = poly_code__reserved     (a_file, a_func, x_recd);
       rc = poly_code__indent       (a_func, a_curr);
-   }
-   /*---(check single line)-----------*/
-   if (a_func->STATS_SINGLE == 'y') {
-      DEBUG_DATA   yLOG_note    ("single liner exit");
-      poly_func_exit  (a_func, a_line);
    }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
@@ -670,17 +538,22 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   /*---(beginning)-------------------*/
-   if (a_func->WORK_BEG <  0) {
+   /*---(single line exit)------------*/
+   if (a_func->STATS_SINGLE == 'y') {
+      DEBUG_DATA   yLOG_note    ("single liner exit");
+      poly_func_exit  (a_func, a_line);
+   }
+   /*---(normal enter)----------------*/
+   else if (a_func->WORK_BEG <  0) {
       if (a_curr [0] == '{') {
-         DEBUG_INPT   yLOG_note    ("beg brace");
+         DEBUG_INPT   yLOG_note    ("multi-line beg brace");
          poly_func_enter (a_func, a_line);
       }
    }
-   /*---(ending)----------------------*/
+   /*---(normal exit)-----------------*/
    else if (a_func->WORK_END <  0) {
       if (a_curr [0] == '}') {
-         DEBUG_INPT   yLOG_note    ("end brace");
+         DEBUG_INPT   yLOG_note    ("multi-line end brace");
          poly_func_exit (a_func, a_line);
          --a_func->COUNT_LINES;
          --a_func->COUNT_CODE;
@@ -692,7 +565,7 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
 }
 
 char
-poly_code_review        (tFILE *a_file)
+poly_code__review       (tFILE *a_file, int a_beg, int a_end, char a_act)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -706,18 +579,21 @@ poly_code_review        (tFILE *a_file)
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(open file)----------------------*/
-   rc = poly_code__open (a_file);
+   rc = poly_shared_open ('c', a_file->name);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
-   --rce;  if (rc < 0 || s_file == NULL) {
+   --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
    /*---(walk)---------------------------*/
    --rce;  while (rc >= 0) {
       /*---(read)------------------------*/
-      rc = poly_code__read  (&x_line, x_curr, x_prev);
+      rc = poly_shared_read ('c', &x_line, x_curr, x_prev);
       DEBUG_INPT   yLOG_value   ("read"      , rc);
-      if (rc < 0)    break;
+      if (rc < 0)  {
+         DEBUG_INPT   yLOG_note    ("reading of line failed or eof");
+         break;
+      }
       DEBUG_INPT   yLOG_value   ("x_line"    , x_line);
       /*---(handle)----------------------*/
       if (a_file->type == 'h') {
@@ -726,7 +602,7 @@ poly_code_review        (tFILE *a_file)
          rc = poly_code__current (a_file, 0     , NULL  , x_curr, x_prev);
       } else {
          DEBUG_INPT   yLOG_note    ("source file (c) line");
-         rc = poly_code__before  (a_file, &x_func);
+         rc = poly_code__before  (a_file, x_line, &x_func, x_curr, x_prev);
          rc = poly_code__current (a_file, x_line, x_func, x_curr, x_prev);
          if (x_func != NULL)  rc = poly_vars_find (x_func, x_line, x_curr, '-');
          rc = poly_code__after   (a_file, x_line, x_func, x_curr);
@@ -734,9 +610,9 @@ poly_code_review        (tFILE *a_file)
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
-   rc = poly_code__close ();
+   rc = poly_shared_close ('c');
    DEBUG_INPT   yLOG_value   ("close"     , rc);
-   --rce;  if (rc < 0 || s_file != NULL) {
+   --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
@@ -744,6 +620,8 @@ poly_code_review        (tFILE *a_file)
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+char poly_code_review (tFILE *a_file) { return poly_code__review (a_file, 0, 99999, '-'); }
 
 
 

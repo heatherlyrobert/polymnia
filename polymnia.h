@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8j"
-#define     P_VERTXT    "extracted shared file read and parsing, and unit tested them"
+#define     P_VERNUM    "0.8k"
+#define     P_VERTXT    "moved all files to shared file read and parsing, and their unit tests"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -327,6 +327,7 @@ struct cFILE {
 
 #define     MAX_STATS      50
 
+/*---(overall)------------------------*/
 #define     STATS_SINGLE   stats [ 0]
 /*---(group one.a)--------------------*/
 #define     STATS_SCOPE    stats [ 1]
@@ -392,9 +393,11 @@ struct cFUNC {
    /*---(master)-------------------------*/
    char        type;                        /* 'f' normal, '_' separator      */
    char        name        [LEN_TITLE];     /* c function name                */
-   int         line;                        /* line in source file            */
    char        hint        [LEN_SHORT];     /* two-char navigation hint       */
    char        purpose     [LEN_DESC];      /* short description of purpose   */
+   int         line;                        /* function header                */
+   int         beg;                         /* first code line                */
+   int         end;                         /* last code line                 */
    char        ready;
    /*---(new stats interface)------------*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
@@ -609,11 +612,7 @@ char        PROG__unit_end          (void);
 char        poly_extern_init        (void);
 char        poly_extern_wrap        (void);
 char        poly_extern__add        (char *a_lib, char *a_name, int a_line, char a_type);
-char        poly_extern__load_read  (int *a_line, char *a_recd);
-char        poly_extern__load_parse (char *a_recd, char *a_lib, char *a_name, int *a_pos, char *a_type);
 char        poly_extern_load        (void);
-char        poly_extern__read       (char *a_curr);
-char        poly_extern__parse      (char *a_curr, char *a_func, char *a_file, int *a_line);
 char        poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, tFUNC **a_dst, tEXTERN **a_ext);
 char        poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line);
 char        poly_extern_review      (void);
@@ -734,10 +733,7 @@ char        poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)
 char        poly_code__indent       (tFUNC *a_func, char *a_recd);
 char        poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev);
 char        poly_code_nextfunc      (tFILE *a_file, tFUNC **a_func);
-char        poly_code__open         (tFILE *a_file);
-char        poly_code__read         (int *a_line, char *a_curr, char *a_prev);
-char        poly_code__close        (void);
-char        poly_code__before       (tFILE *a_file, tFUNC **a_func);
+char        poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr, char *a_prev);
 char        poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr, char *a_prev);
 char        poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr);
 char        poly_code_review        (tFILE *a_file);

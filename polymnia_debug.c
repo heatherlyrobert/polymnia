@@ -214,11 +214,11 @@ poly_debug_line         (tFILE *a_file, tFUNC *a_func, char *a_recd)
       /*---(done)------------------------*/
    }
    /*---(check logging)------------------*/
-   else  if (a_func != NULL && strstr (a_recd, "yLOG") != NULL) {
+   else  if (a_func != NULL && strncmp (a_recd, "yLOG", 4) == 0) {
       DEBUG_INPT   yLOG_note    ("valid yLOG non-macro debugging line");
       poly_debug__counts (a_file, a_func, 'f');
    }
-   else  if (a_func != NULL && strstr (a_recd, "yURG") != NULL) {
+   else  if (a_func != NULL && strncmp (a_recd, "yURG", 4) == 0) {
       DEBUG_INPT   yLOG_note    ("valid yURG debugging configuration line");
       poly_debug__counts (a_file, a_func, 'f');
    }

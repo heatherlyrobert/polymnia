@@ -13,6 +13,7 @@ main (int argc, char *argv[])
    /*---(initialize)---------------------*/
    if (rc >= 0)  rc = yURG_logger  (argc, argv);
    if (rc >= 0)  rc = yURG_urgs    (argc, argv);
+   yURG_stage_check (YURG_STAGE_INIT);
    if (rc >= 0)  rc = PROG_init    (argc, argv);
    if (rc >= 0)  rc = PROG_args    (argc, argv);
    if (rc >= 0)  rc = PROG_begin   ();
@@ -21,6 +22,7 @@ main (int argc, char *argv[])
       PROG_end ();
       return -1;
    }
+   yURG_stage_check (YURG_STAGE_MAIN);
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    DEBUG_PROG   yLOG_char    ("g_mode"    , my.g_mode);
@@ -89,6 +91,7 @@ main (int argc, char *argv[])
       return rc;
    }
    /*---(complete)-----------------------*/
+   yURG_stage_check (YURG_STAGE_WRAP);
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    rc = PROG_end     ();
    return 0;
