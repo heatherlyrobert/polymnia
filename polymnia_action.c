@@ -62,6 +62,7 @@ poly_action_generate    (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(check for empty result)---------*/
    --rce;  if (x_proj->count == 0) {
       rc = poly_proj_del (&x_proj);
       DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
@@ -405,3 +406,64 @@ poly_action_libuse      (void)
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+char
+poly_action_vars        (char a_act)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tPROJ      *x_proj      = NULL;
+   tFUNC      *x_func      = NULL;
+   int         x_len       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_PROG   yLOG_info    ("g_hint"        , my.g_hint);
+   /*---(read database)------------------*/
+   rc = poly_action_generate ();
+   DEBUG_PROG   yLOG_value   ("generate"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get project)--------------------*/
+   x_proj = (tPROJ *) poly_btree_first (B_PROJ);
+   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
+   --rce;  if (x_proj == NULL) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get function)-------------------*/
+   rc = poly_func_by_hint (x_proj, my.g_hint, &x_func);
+   DEBUG_PROG   yLOG_value   ("find"       , rc);
+   DEBUG_PROG   yLOG_point   ("x_func"     , x_func);
+   --rce;  if (rc < 0 || x_func == NULL) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(headers)------------------------*/
+   printf ("vars/macros identified in code\n");
+   printf ("   project  : %s\n", x_proj->name);
+   printf ("   file     : %s\n", x_func->file->name);
+   printf ("   function : %s\n", x_func->name);
+   printf ("   hint     : %s\n", x_func->hint);
+   printf ("   header   : %d\n", x_func->line);
+   printf ("   beg      : %d\n", x_func->beg);
+   printf ("   end      : %d\n", x_func->end);
+   printf ("\n");
+   /*> printf ("line  ---name-------------  beg  end  len    ---library----------  ---found------------  line  t  c  s\n");   <*/
+   poly_vars_header  (a_act);
+   rc = poly_code_driver (x_func->file, x_func->beg, x_func->end, a_act);
+   DEBUG_PROG   yLOG_value   ("driver"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> poly_vars_summary (x_func, a_act);                                             <*/
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+

@@ -399,7 +399,7 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, 
    }
    DEBUG_INPT   yLOG_info    ("file name" , x_file->name);
    /*---(get source tag)--------------*/
-   rc = poly_func_search  (x_file, a_line, a_src);
+   rc = poly_func_by_line (x_file, a_line, a_src);
    DEBUG_INPT   yLOG_point   ("*a_scr"    , *a_src);
    --rce;  if (*a_src == NULL) {
       DEBUG_INPT   yLOG_note    ("function not found");

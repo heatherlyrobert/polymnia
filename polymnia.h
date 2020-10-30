@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8k"
-#define     P_VERTXT    "moved all files to shared file read and parsing, and their unit tests"
+#define     P_VERNUM    "0.8l"
+#define     P_VERTXT    "added and unit tested macro, variable, and function hiding checks"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -144,10 +144,7 @@
 #include    <yURG.h>         /* CUSTOM  heatherly urgent processing           */
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
-
-
-
-#define      LEN_HUND          100
+#include    <yREGEX.h>       /* CUSTOM  heatherly regular expressions         */
 
 
 
@@ -181,6 +178,9 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     MODE_EXTERN       'E'
 #define     MODE_LIBUSE       'L'
 #define     MODE_DUMP         'd'
+#define     MODE_PUSE         'p'
+#define     MODE_VARS         'v'
+#define     MODE_ORPHANS      'o'
 
 #define     RPTG_TITLES       't'
 #define     RPTG_NOTITLES     '-'
@@ -230,6 +230,7 @@ struct cMY {
    tPROJ      *g_proj;                 /* limit output to this project        */
    char        g_extern    [LEN_RECD]; /* name for focus/filtering            */
    char        g_libuse    [LEN_RECD]; /* extern library for filtering        */
+   char        g_hint      [LEN_TERSE];/* function hint for filtering         */
    /*---(long-term files)-----*/
    char        n_db        [LEN_RECD]; /* name of database file               */
    FILE       *f_db;                   /* shared database of tags             */
@@ -325,7 +326,7 @@ struct cFILE {
 };
 
 
-#define     MAX_STATS      50
+#define     MAX_STATS      55
 
 /*---(overall)------------------------*/
 #define     STATS_SINGLE   stats [ 0]
@@ -386,6 +387,11 @@ struct cFILE {
 #define     STATS_MUSE     stats [45]
 #define     STATS_YUSE     stats [46]
 #define     STATS_OUSE     stats [47]
+/*---(group three.c)------------------*/
+#define     STATS_VMASK    stats [48]
+#define     STATS_MMASK    stats [49]
+#define     STATS_FMASK    stats [50]
+#define     STATS_LSTATIC  stats [51]
 
 
 
@@ -432,9 +438,12 @@ struct cYLIB {
    /*---(done)--------------*/
 };
 
+#define     MAX_TEMPS      55
+
 /*---(location)-----------------------*/
 #define     WORK_BEG       work->beg
 #define     WORK_END       work->end
+#define     WORK_LOCALS    work->locals
 /*---(group one.b)--------------------*/
 #define     WORK_PARAMS    work->temp  [ 0]
 /*---(group one.c)--------------------*/
@@ -491,15 +500,20 @@ struct cYLIB {
 #define     WORK_MUSE      work->temp  [44]
 #define     WORK_YUSE      work->temp  [45]
 #define     WORK_OUSE      work->temp  [46]
+/*---(group three.c)------------------*/
+#define     WORK_VMASK     work->temp  [47]
+#define     WORK_MMASK     work->temp  [48]
+#define     WORK_FMASK     work->temp  [49]
+#define     WORK_LSTATIC   work->temp  [50]
 
 
 
-#define     MAX_TEMPS      50
 struct cWORK {
    /*---(positioning)--------------------*/
    int         beg;
    int         end;
    int         temp        [MAX_TEMPS];
+   char        locals      [LEN_RECD];
    /*---(done)------------------------*/
 };
 
@@ -556,6 +570,9 @@ extern char  g_path    [LEN_HUND];
 
 extern char      unit_answer [LEN_RECD];
 
+#define     CODE_MACROS      'p'
+#define     CODE_VARS        'v'
+#define     CODE_ORPHANS     'o'
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
@@ -676,6 +693,7 @@ char        poly_action_about       (void);
 char        poly_action_remove      (void);
 char        poly_action_extern      (void);
 char        poly_action_libuse      (void);
+char        poly_action_vars        (char a_act);
 
 tYLIB*      poly_ylib_new           (void);
 char        poly_ylib_add           (tFUNC *a_tag, tEXTERN *a_extern, int a_line, tYLIB **a_ylib);
@@ -711,7 +729,11 @@ char        poly_func_del           (tFUNC **a_tag);
 char        poly_func_enter         (tFUNC *a_func, int a_line);
 char        poly_func_exit          (tFUNC *a_func, int a_line);
 char        poly_func_inside        (tFUNC *a_func);
-char        poly_func_search        (tFILE *a_file, int a_line, tFUNC **a_func);
+/*---(search)---------------*/
+char        poly_func_by_line       (tFILE *a_file, int a_line, tFUNC **a_func);
+char        poly_func_by_hint       (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func);
+char        poly_func_by_cursor     (tPROJ *a_proj, uchar a_mode, tFUNC **a_func);
+char        poly_func_by_regex      (uchar *a_regex, tFUNC **a_func);
 /*---(program)--------------*/
 char        poly_func_init          (void);
 char        poly_func_purge         (tFILE *a_file);
@@ -736,6 +758,7 @@ char        poly_code_nextfunc      (tFILE *a_file, tFUNC **a_func);
 char        poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr, char *a_prev);
 char        poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr, char *a_prev);
 char        poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr);
+char        poly_code_driver        (tFILE *a_file, int a_beg, int a_end, char a_act);
 char        poly_code_review        (tFILE *a_file);
 
 
@@ -758,8 +781,13 @@ char        poly_vars__push         (tFILE *a_file, char *a_name, char a_type);
 char        poly_vars__pop_file     (void);
 char        poly_vars_reset         (tFUNC *a_func);
 char        poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act);
+char        poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act);
+char        poly_vars_header        (char a_act);
+char        poly_vars__hiding       (tFUNC *a_func);
+char        poly_vars_summary       (tFUNC *a_func, char a_act);
 char        poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act);
 char        poly_vars_inventory     (tFILE *a_file);
+char        poly_vars__unit_set     (tFUNC *a_func, char *a_extern, char *a_intern, char *a_macros, char *a_locals);
 char*       poly_vars__unit         (char *a_question, int i);
 
 

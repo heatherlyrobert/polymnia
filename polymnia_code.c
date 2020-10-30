@@ -292,6 +292,8 @@ poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)
       else if (strstr (a_recd, "}do("       ) != NULL)   poly_cats_logic (a_func, 'c');
       if      (strstr (a_recd, " for "      ) != NULL)   poly_cats_logic (a_func, 'C');
       else if (strstr (a_recd, " for("      ) != NULL)   poly_cats_logic (a_func, 'C');
+      /*---(lcoal static)----------------*/
+      if      (strstr (a_recd, " static "   ) != NULL)   ++a_func->WORK_LSTATIC;
       /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/
@@ -542,6 +544,7 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
    if (a_func->STATS_SINGLE == 'y') {
       DEBUG_DATA   yLOG_note    ("single liner exit");
       poly_func_exit  (a_func, a_line);
+      poly_vars_summary (a_func, '-');
    }
    /*---(normal enter)----------------*/
    else if (a_func->WORK_BEG <  0) {
@@ -555,6 +558,7 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
       if (a_curr [0] == '}') {
          DEBUG_INPT   yLOG_note    ("multi-line end brace");
          poly_func_exit (a_func, a_line);
+         poly_vars_summary (a_func, '-');
          --a_func->COUNT_LINES;
          --a_func->COUNT_CODE;
       }
@@ -565,14 +569,14 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
 }
 
 char
-poly_code__review       (tFILE *a_file, int a_beg, int a_end, char a_act)
+poly_code_driver        (tFILE *a_file, int a_beg, int a_end, char a_act)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
    int         rc          =    0;
-   char        x_curr      [LEN_RECD];
-   char        x_prev      [LEN_RECD];
-   char        x_fixed     [LEN_RECD];
+   char        x_curr      [LEN_RECD]  = "";
+   char        x_prev      [LEN_RECD]  = "";
+   char        x_fixed     [LEN_RECD]  = "";
    int         x_len       =    0;          /* length of input record         */
    int         x_line      =    0;
    tFUNC      *x_func      = NULL;
@@ -595,17 +599,28 @@ poly_code__review       (tFILE *a_file, int a_beg, int a_end, char a_act)
          break;
       }
       DEBUG_INPT   yLOG_value   ("x_line"    , x_line);
-      /*---(handle)----------------------*/
+      /*---(check headers)---------------*/
       if (a_file->type == 'h') {
          DEBUG_INPT   yLOG_note    ("header file (h) line");
          poly_code__oneliners (a_file, x_curr);
          rc = poly_code__current (a_file, 0     , NULL  , x_curr, x_prev);
-      } else {
+      }
+      /*---(check sources)---------------*/
+      else if (a_act == '-') {
          DEBUG_INPT   yLOG_note    ("source file (c) line");
          rc = poly_code__before  (a_file, x_line, &x_func, x_curr, x_prev);
          rc = poly_code__current (a_file, x_line, x_func, x_curr, x_prev);
          if (x_func != NULL)  rc = poly_vars_find (x_func, x_line, x_curr, '-');
          rc = poly_code__after   (a_file, x_line, x_func, x_curr);
+      }
+      /*---(specialty)-------------------*/
+      else if (x_line > a_beg && x_line < a_end) {
+         if (x_func == NULL)  poly_func_by_line (a_file, x_line, &x_func);
+         switch (a_act) {
+         case CODE_MACROS : case CODE_VARS : case CODE_ORPHANS :
+            rc = poly_vars_find (x_func, x_line, x_curr, a_act);
+            break;
+         }
       }
       /*---(done)------------------------*/
    }
@@ -621,7 +636,7 @@ poly_code__review       (tFILE *a_file, int a_beg, int a_end, char a_act)
    return 0;
 }
 
-char poly_code_review (tFILE *a_file) { return poly_code__review (a_file, 0, 99999, '-'); }
+char poly_code_review (tFILE *a_file) { return poly_code_driver (a_file, 0, 99999, '-'); }
 
 
 

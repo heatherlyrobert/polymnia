@@ -14,6 +14,7 @@ poly_tags__handler      (tFILE *a_file, char *a_recd)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
    char        rc          =    0;
+   char        t           [LEN_LABEL] = "";
    char       *p           = NULL;
    char       *q           =  " ";
    char        x_recd      [LEN_RECD];
@@ -59,6 +60,8 @@ poly_tags__handler      (tFILE *a_file, char *a_recd)
       }
       DEBUG_INPT   yLOG_info    ("local for" , a_file->tail->name);
       ++(a_file->tail->WORK_LVARS );
+      sprintf (t, " %s ", x_name);
+      strlcat (a_file->tail->WORK_LOCALS, t, LEN_RECD);
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }

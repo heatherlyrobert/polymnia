@@ -71,6 +71,7 @@ PROG_init          (int a_argc, char *a_argv[])
    my.g_project [0]  = '\0';
    my.g_proj         = NULL;
    my.g_extern [0]   = '\0';
+   my.g_hint   [0]   = '\0';
    /*---(files)--------------------------*/
    DEBUG_PROG   yLOG_note    ("initialize file pointers");
    my.f_db        = NULL;
@@ -125,6 +126,9 @@ PROG_args          (int argc, char *argv[])
       else if (strcmp (a, "--projects" ) == 0)  my.g_mode   = MODE_PROJ;
       else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;
       else if (strcmp (a, "--system"   ) == 0)  my.g_mode   = MODE_SYSTEM;
+      else if (strcmp (a, "--puse"     ) == 0)  my.g_mode   = MODE_PUSE;
+      else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = MODE_VARS;
+      else if (strcmp (a, "--orphans"  ) == 0)  my.g_mode   = MODE_ORPHANS;
       else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;
       else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;
       else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;
@@ -164,6 +168,14 @@ PROG_args          (int argc, char *argv[])
          if (++i < argc)  strlcpy (my.g_libuse, argv[i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("library name not included");
+            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
+            return -1;
+         }
+      }
+      else if (strcmp (a, "--hint"   ) == 0) {
+         if (++i < argc)  strlcpy (my.g_hint, argv[i], LEN_TERSE);
+         else {
+            DEBUG_TOPS  yLOG_note  ("hint not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
             return -1;
          }
@@ -281,9 +293,9 @@ PROG_end             (void)
    /*---(wrap-up)------------------------*/
    poly_proj_purge   ();
    poly_extern_wrap  ();
-   poly_func_wrap    ();
-   poly_files_wrap   ();
-   poly_proj_wrap    ();
+   /*> poly_func_wrap    ();                                                          <*/
+   /*> poly_files_wrap   ();                                                          <*/
+   /*> poly_proj_wrap    ();                                                          <*/
    /*---(remove global files)------------*/
    system ("rm -f htags.gcalls");
    system ("rm -f htags.flow");

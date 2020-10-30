@@ -5,8 +5,8 @@
 
 #define     NEW_CFLOW     "cflow  -x $(ls -1 *.c 2> /dev/null | grep -vx unit) > %s  2> /dev/null"
 #define     DEL_ANY       "rm -f %s  2> /dev/null"
-#define     NEW_CTAGS     "ctags  --language-force=c -x --sort=no --file-scope=yes  --c-kinds=pfl %s > %s  2> /dev/null"
-#define     NEW_VARS      "ctags  --language-force=c -x --sort=no                   --c-kinds=vxd %s > %s  2> /dev/null"
+#define     NEW_CTAGS     "ctags  --language-force=c -x --sort=no --file-scope=yes  --c-kinds=pfl  %s > %s  2> /dev/null"
+#define     NEW_VARS      "ctags  --language-force=c -x --sort=no                   --c-kinds=vxd  %s > %s  2> /dev/null"
 
 static      char       *s_valid       = "ftmcxve";
 static      char        s_ctags       [LEN_RECD] = "";

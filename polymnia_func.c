@@ -50,7 +50,8 @@ poly_func__wipe_work    (tWORK *a_dst)
    a_dst->beg      = -1;
    a_dst->end      = -1;
    for (i = 0; i < MAX_TEMPS; ++i)  a_dst->temp [i] = 0;
-   a_dst->temp [0] = -1;  /* params is special */
+   a_dst->temp [0]   = -1;  /* params is special */
+   a_dst->locals [0] = '\0';
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -528,8 +529,15 @@ poly_func_inside        (tFUNC *a_func)
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                           searching                          ----===*/
+/*====================------------------------------------====================*/
+static void  o___SEARCH__________o () { return; }
+
 char
-poly_func_search        (tFILE *a_file, int a_line, tFUNC **a_func)
+poly_func_by_line       (tFILE *a_file, int a_line, tFUNC **a_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -554,6 +562,99 @@ poly_func_search        (tFILE *a_file, int a_line, tFUNC **a_func)
    *a_func = NULL;
    /*---(complete)-----------------------*/
    --rce;  return rce;
+}
+
+char
+poly_func_by_hint       (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         x_len       =    0;
+   tFILE      *x_file      = NULL;
+   tFUNC      *x_func      = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_proj   == NULL)   return rce;
+   --rce;  if (a_hint   == NULL)   return rce;
+   --rce;  if (a_func   == NULL)   return rce;
+   x_len = strlen (a_hint);
+   --rce;  if (x_len    != 2)      return rce;
+   --rce;  if (a_hint [0] < 'a' || a_hint [0] > 'z')   return rce;
+   --rce;  if (a_hint [1] < 'A' || a_hint [1] > 'z')   return rce;
+   --rce;  if (a_hint [1] > 'Z' && a_hint [1] < 'a')   return rce;
+   /*---(prepare)------------------------*/
+   *a_func = NULL;
+   /*---(walk files)---------------------*/
+   x_file = a_proj->head;
+   while (x_file != NULL) {
+      /*---(walk functions)--------------*/
+      x_func = x_file->head;
+      while (x_func != NULL) {
+         if (strcmp (x_func->hint, a_hint) == 0) {
+            *a_func = x_func;
+            return 0;
+         }
+         x_func = x_func->next;
+      }
+      x_file = x_file->next;
+   }
+   /*---(complete)-----------------------*/
+   --rce;  return rce;
+}
+
+char         /*-[ cursor from provided position ------------[----------------]*/
+poly_func_by_cursor     (tPROJ *a_proj, uchar a_mode, tFUNC **a_func)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tFILE      *x_file      = NULL;
+   tFUNC      *x_func      = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_proj   == NULL)   return rce;
+   --rce;  if (a_func   == NULL)   return rce;
+   /*---(prepare)------------------------*/
+   x_func = *a_func;
+   if (x_func == NULL)  x_func = a_proj->head->head;
+   --rce;  if (x_func   == NULL)   return rce;
+   x_file = x_func->file;
+   --rce;  if (x_file   == NULL)   return rce;
+   /*---(select)-------------------------*/
+   switch (a_mode) {
+   case '['  :
+      x_func = a_proj->head->head;
+      break;
+   case '<'  :
+      x_func = x_func->prev;
+      if (x_func == NULL || x_func == *a_func) {
+         if (x_file->prev != NULL) {
+            x_func = x_file->prev->tail;
+         }
+      }
+      break;
+   case '.'  :
+      ;;
+      break;
+   case '>'  :
+      x_func = x_func->next;
+      if (x_func == NULL || x_func == *a_func) {
+         if (x_file->next != NULL) {
+            x_func = x_file->next->head;
+         }
+      }
+      break;
+   case ']'  :
+      x_func = a_proj->tail->tail;
+      break;
+   default   :
+      --rce;
+      return rce;
+      break;
+   }
+   /*---(check update)-------------------*/
+   --rce;  if (x_func == NULL)  return rce;
+   /*---(save)---------------------------*/
+   *a_func = x_func;
+   /*---(complete)-----------------------*/
+   return 0;
 }
 
 
@@ -949,8 +1050,8 @@ poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char 
    char       *x_all       = "prj § fil § fnc";
    char       *x_name      = "---name------------------";
    char       *x_stats     = "files § funcs § --lines § --empty § ---docs § --debug § ---code § --slocl";
-   char       *x_database  = "-  [------------complexity------------] [------------------integration----------------] [---------watch-points----------]";
-   char       *x_comment   = "[----complexity-----] [-------integration-------] [---watchpoints---]";
+   char       *x_database  = "-  [------------complexity------------] [------------------integration----------------] [-----------------watch-points---------------]";
+   char       *x_comment   = "[----complexity-----] [-------integration-------] [------watchpoints-------]";
    char       *x_file      = "line § ---file-name----------------------------";
    char       *x_purpose   = "---purpose------------------------------";
    char       *x_function  = "function list                 § ";

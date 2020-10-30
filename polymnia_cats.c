@@ -6,7 +6,7 @@ static char   s_print        [LEN_RECD] = "";
 
 
 
-#define     MAX_CATS    60
+#define     MAX_CATS    70
 static struct cPOS    {
    char        grp;                         /* major group                    */
    char        sub;                         /* sub group for clarity          */
@@ -72,7 +72,7 @@ static struct cPOS    {
    {  2,  5, 18, "ncurses", "ncurses function calls"          , 0, 0 },
    {  2,  5, 19, "opengl" , "opengl function calls"           , 0, 0 },
    {  2,  5, 20, "windows", "x11 and like functions calls"    , 0, 0 },
-   {  2,  5, 21, "myx"    , "my x11/opengl support libs"      , 0, 0 },
+   {  2,  5, 21, "ygraph" , "my x11/opengl support libs"      , 0, 0 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP THREE -- WATCH POINTS ]]========================*/
@@ -91,10 +91,17 @@ static struct cPOS    {
    {  3,  2, 10, "Y#use"  , "ylib #define macro use"          , 0, 0 },
    {  3,  2, 11, "O#use"  , "unknown/other macros"            , 0, 0 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  3, 12, "·"      , ""                                , 0, 0 },
-   {  3,  3, 13, "·"      , ""                                , 0, 0 },
-   {  3,  3, 14, "·"      , ""                                , 0, 0 },
-   {  3,  3, 15, "·"      , ""                                , 0, 0 },
+   {  3,  3, 12, "Vmask"  , "vars masking other vars"         , 0, 0 },
+   {  3,  3, 13, "Mmask"  , "macros masking other macros"     , 0, 0 },
+   {  3,  3, 14, "Fmask"  , "funcs masking other funcs"       , 0, 0 },
+   {  3,  3, 15, "Lstatic", "local static variables"          , 0, 0 },
+   /*--  -123456-   -123456789012345678901234567890- */
+   {  3,  4, 16, "·"      , ""                                , 0, 0 },
+   {  3,  4, 17, "·"      , ""                                , 0, 0 },
+   {  3,  4, 18, "·"      , ""                                , 0, 0 },
+   {  3,  4, 19, "·"      , ""                                , 0, 0 },
+   {  3,  4, 20, "·"      , ""                                , 0, 0 },
+   {  3,  4, 21, "·"      , ""                                , 0, 0 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*--  -123456-   -123456789012345678901234567890- */
@@ -614,25 +621,40 @@ poly_cats__group_3b     (tFUNC *a_func)
 }
 
 char
+poly_cats__group_3c     (tFUNC *a_func)
+{
+   char        rce         =    0;
+   --rce;  if (a_func       == NULL)  return rce;
+   --rce;  if (a_func->work == NULL)  return rce;
+   if (a_func->WORK_VMASK   > 0)  a_func->STATS_VMASK   = '#';
+   if (a_func->WORK_MMASK   > 0)  a_func->STATS_MMASK   = '#';
+   if (a_func->WORK_FMASK   > 0)  a_func->STATS_FMASK   = '#';
+   if (a_func->WORK_LSTATIC > 0)  a_func->STATS_LSTATIC = '#';
+   return 0;
+}
+
+char
 poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out)
 {
    char        rce         =    0;
-   char       *x_norm      = "[%c%c%c%c%c.%c%c%c%c%c%c.%c%c%c%c]";
-   char       *x_long      = " %c %c %c %c %c  %c %c %c %c %c %c  %c %c %c %c ";
+   char       *x_norm      = "[%c%c%c%c%c.%c%c%c%c%c%c.%c%c%c%c.%c%c%c%c%c%c]";
+   char       *x_long      = " %c %c %c %c %c  %c %c %c %c %c %c  %c %c %c %c  %c %c %c %c %c %c ";
    char       *p           = x_norm;
    if (a_style == 'l')  p = x_long;
    --rce;  if (a_func == NULL) {
       if (a_out != NULL) {
          sprintf (a_out, p,
                '-', '-', '-', '-', '-',
-               '-', '-', '-', '-', '-',
-               '-', '-', '-', '-', '-');
+               '-', '-', '-', '-', '-', '-',
+               '-', '-', '-', '-',
+               '-', '-', '-', '-', '-', '-');
       }
       return rce;
    }
    if (a_func->work != NULL && a_update == 'y') {
       poly_cats__group_3a (a_func);
       poly_cats__group_3b (a_func);
+      poly_cats__group_3c (a_func);
    }
    --rce;  if (a_out  == NULL)  return rce;
    sprintf (a_out, p,
@@ -640,7 +662,9 @@ poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out
          a_func->STATS_DMATCH, a_func->STATS_DFUNCS, a_func->STATS_DWARN ,
          a_func->STATS_PUSE  , a_func->STATS_FUSE  , a_func->STATS_GUSE  ,
          a_func->STATS_MUSE  , a_func->STATS_YUSE  , a_func->STATS_OUSE  ,
-         '-', '-', '-', '-');
+         a_func->STATS_VMASK , a_func->STATS_MMASK , a_func->STATS_FMASK ,
+         a_func->STATS_LSTATIC,
+         '-', '-', '-', '-', '-', '-');
    return 0;
 }
 
