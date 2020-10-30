@@ -408,7 +408,7 @@ poly_action_libuse      (void)
 }
 
 char
-poly_action_vars        (char a_act)
+poly_action_vars        (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -442,24 +442,30 @@ poly_action_vars        (char a_act)
       return rce;
    }
    /*---(headers)------------------------*/
-   printf ("vars/macros identified in code\n");
-   printf ("   project  : %s\n", x_proj->name);
-   printf ("   file     : %s\n", x_func->file->name);
-   printf ("   function : %s\n", x_func->name);
-   printf ("   hint     : %s\n", x_func->hint);
-   printf ("   header   : %d\n", x_func->line);
-   printf ("   beg      : %d\n", x_func->beg);
-   printf ("   end      : %d\n", x_func->end);
+   printf ("##/usr/local/bin/polymnia --vars\n");
+   printf ("##\n");
+   printf ("##   polymnia-hymnos (many praises) greek muse and protector of divine hymns, dancing, geometry, and grammar\n");
+   printf ("##   version %s, %s\n", P_VERNUM, P_VERTXT);
+   printf ("##   vars/macros reporting for use with vim-ide\n");
+   printf ("##   project  : %s\n", x_proj->name);
+   printf ("##   file     : %s\n", x_func->file->name);
+   printf ("##   function : %s\n", x_func->name);
+   printf ("##   hint     : %s\n", x_func->hint);
+   printf ("##   header   : %d\n", x_func->line);
+   printf ("##   beg      : %d\n", x_func->beg);
+   printf ("##   end      : %d\n", x_func->end);
    printf ("\n");
    /*> printf ("line  ---name-------------  beg  end  len    ---library----------  ---found------------  line  t  c  s\n");   <*/
-   poly_vars_header  (a_act);
-   rc = poly_code_driver (x_func->file, x_func->beg, x_func->end, a_act);
-   DEBUG_PROG   yLOG_value   ("driver"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*> poly_vars_summary (x_func, a_act);                                             <*/
+   poly_vars_header  (CODE_VAR_M);
+   rc = poly_code_driver (x_func->file, x_func->beg, x_func->end, CODE_VAR_M);
+   poly_vars_summary (x_func, CODE_VAR_M);
+   poly_vars_header  (CODE_VAR_V);
+   rc = poly_code_driver (x_func->file, x_func->beg, x_func->end, CODE_VAR_V);
+   poly_vars_summary (x_func, CODE_VAR_V);
+   poly_vars_header  (CODE_VAR_O);
+   rc = poly_code_driver (x_func->file, x_func->beg, x_func->end, CODE_VAR_O);
+   poly_vars_summary (x_func, CODE_VAR_O);
+   poly_vars_list    ();
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;

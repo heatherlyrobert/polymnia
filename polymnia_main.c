@@ -83,17 +83,9 @@ main (int argc, char *argv[])
       DEBUG_TOPS   yLOG_note    ("libuse processing, read, but no htags or write");
       rc = poly_action_libuse ();
       break;
-   case MODE_PUSE   :
-      DEBUG_TOPS   yLOG_note    ("--puse processing, htags then reporting");
-      rc = poly_action_vars (CODE_MACROS);
-      break;
    case MODE_VARS   :
-      DEBUG_TOPS   yLOG_note    ("--vars processing, htags then reporting");
-      rc = poly_action_vars (CODE_VARS);
-      break;
-   case MODE_ORPHANS:
-      DEBUG_TOPS   yLOG_note    ("--orphans processing, htags then reporting");
-      rc = poly_action_vars (CODE_ORPHANS);
+      DEBUG_TOPS   yLOG_note    ("htag gathering, then var/macros analysis");
+      rc = poly_action_vars ();
       break;
    }
    /*---(check for failure)--------------*/

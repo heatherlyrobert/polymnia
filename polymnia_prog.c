@@ -126,9 +126,7 @@ PROG_args          (int argc, char *argv[])
       else if (strcmp (a, "--projects" ) == 0)  my.g_mode   = MODE_PROJ;
       else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;
       else if (strcmp (a, "--system"   ) == 0)  my.g_mode   = MODE_SYSTEM;
-      else if (strcmp (a, "--puse"     ) == 0)  my.g_mode   = MODE_PUSE;
       else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = MODE_VARS;
-      else if (strcmp (a, "--orphans"  ) == 0)  my.g_mode   = MODE_ORPHANS;
       else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;
       else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;
       else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;

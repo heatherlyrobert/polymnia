@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8l"
-#define     P_VERTXT    "added and unit tested macro, variable, and function hiding checks"
+#define     P_VERNUM    "0.8m"
+#define     P_VERTXT    "great draft of --vars reporting to back up hiding cats/stats"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -178,9 +178,7 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     MODE_EXTERN       'E'
 #define     MODE_LIBUSE       'L'
 #define     MODE_DUMP         'd'
-#define     MODE_PUSE         'p'
 #define     MODE_VARS         'v'
-#define     MODE_ORPHANS      'o'
 
 #define     RPTG_TITLES       't'
 #define     RPTG_NOTITLES     '-'
@@ -570,9 +568,12 @@ extern char  g_path    [LEN_HUND];
 
 extern char      unit_answer [LEN_RECD];
 
-#define     CODE_MACROS      'p'
-#define     CODE_VARS        'v'
-#define     CODE_ORPHANS     'o'
+#define     CODE_NORMAL      '-'
+#define     CODE_VAR_I       'i'
+#define     CODE_VAR_M       'm'
+#define     CODE_VAR_V       'v'
+#define     CODE_VAR_O       'o'
+#define     CODE_VAR_F       'f'
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
@@ -693,7 +694,7 @@ char        poly_action_about       (void);
 char        poly_action_remove      (void);
 char        poly_action_extern      (void);
 char        poly_action_libuse      (void);
-char        poly_action_vars        (char a_act);
+char        poly_action_vars        (void);
 
 tYLIB*      poly_ylib_new           (void);
 char        poly_ylib_add           (tFUNC *a_tag, tEXTERN *a_extern, int a_line, tYLIB **a_ylib);
@@ -777,7 +778,7 @@ char*       poly_shared__unit       (char *a_question);
 
 
 char        poly_vars_init          (void);
-char        poly_vars__push         (tFILE *a_file, char *a_name, char a_type);
+char        poly_vars__push         (tFILE *a_file, int a_line, char *a_name, char a_type);
 char        poly_vars__pop_file     (void);
 char        poly_vars_reset         (tFUNC *a_func);
 char        poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act);
@@ -787,6 +788,7 @@ char        poly_vars__hiding       (tFUNC *a_func);
 char        poly_vars_summary       (tFUNC *a_func, char a_act);
 char        poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act);
 char        poly_vars_inventory     (tFILE *a_file);
+char        poly_vars_list          (void);
 char        poly_vars__unit_set     (tFUNC *a_func, char *a_extern, char *a_intern, char *a_macros, char *a_locals);
 char*       poly_vars__unit         (char *a_question, int i);
 

@@ -7,6 +7,7 @@ typedef     struct     cVARS      tVARS;
 struct cVARS {
    char        scope;                       /* (g)lobal, (f)ile               */
    tFILE      *file;                        /* file pointer                   */
+   int         line;                        /* line is source file            */
    char        len;                         /* variable name length           */
    char        name        [LEN_TITLE];     /* variable name                  */
    char        type;                        /* (v)var, (m)macro               */
@@ -26,11 +27,9 @@ static char  s_smacros   [LEN_RECD] = "";       /* all macros identified      */
 static int   s_nmacros   = 0;                   /* count of all               */
 static char  s_macros    [LEN_RECD] = "";       /* all macros identified      */
 static int   s_nextern   = 0;                   /* count of all               */
-static int   s_uextern   = 0;                   /* count of unique            */
 static char  s_sextern   [LEN_RECD] = "";       /* list of unique             */
 static char  s_extern    [LEN_RECD] = "";       /* list of unique             */
 static int   s_nintern   = 0;                   /* count of all               */
-static int   s_uintern   = 0;                   /* count of unique            */
 static char  s_sintern   [LEN_RECD] = "";       /* list of unique             */
 static char  s_intern    [LEN_RECD] = "";       /* list of unique             */
 
@@ -71,11 +70,9 @@ poly_vars_init          (void)
    strlcpy (s_extern, "", LEN_RECD);
    strlcpy (s_sextern, "", LEN_RECD);
    s_nextern = 0;
-   s_uextern = 0;
    strlcpy (s_intern, "", LEN_RECD);
    strlcpy (s_sintern, "", LEN_RECD);
    s_nintern = 0;
-   s_uintern = 0;
    return 0;
 }
 
@@ -87,7 +84,7 @@ poly_vars_init          (void)
 static void  o___DATA____________o () { return; }
 
 char
-poly_vars__confirm      (char *a_name)
+poly_vars__confirm      (tFILE *a_file, char *a_name)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -102,14 +99,15 @@ poly_vars__confirm      (char *a_name)
       if (s_vars [i].len      != x_len)           continue;
       if (s_vars [i].name [0] != a_name [0])      continue;
       if (strcmp (s_vars [i].name, a_name) != 0)  continue;
-      return 1;
+      if (s_vars [i].scope == 'g')                return 1;
+      if (s_vars [i].file  == a_file)             return 1;
    }
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-poly_vars__push         (tFILE *a_file, char *a_name, char a_type)
+poly_vars__push         (tFILE *a_file, int a_line, char *a_name, char a_type)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -126,12 +124,13 @@ poly_vars__push         (tFILE *a_file, char *a_name, char a_type)
    x_len  = strlen (a_name);
    --rce;  if (x_len  <= 0)         return rce;
    /*---(confirm)------------------------*/
-   rc = poly_vars__confirm (a_name);
+   rc = poly_vars__confirm (a_file, a_name);
    --rce;  if (rc != 0)  return rce;
    /*---(add entry)----------------------*/
    if (x_type == 'h')   s_vars [s_nvar].scope = 'g';
    else                 s_vars [s_nvar].scope = 'f';
    s_vars [s_nvar].file = a_file;
+   s_vars [s_nvar].line = a_line;
    s_vars [s_nvar].len  = x_len;
    strlcpy (s_vars [s_nvar].name, a_name, LEN_TITLE);
    if (a_type == 'm')   s_vars [s_nvar].type  = 'm';
@@ -183,12 +182,12 @@ poly_vars_inventory     (tFILE *a_file)
       return  rce;
    }
    /*---(clear file vars)----------------*/
-   rc = poly_vars__pop_file ();
-   DEBUG_INPT   yLOG_value   ("clear"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
-   }
+   /*> rc = poly_vars__pop_file ();                                                   <* 
+    *> DEBUG_INPT   yLOG_value   ("clear"     , rc);                                  <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return  rce;                                                                <* 
+    *> }                                                                              <*/
    /*---(prepare)------------------------*/
    rc = poly_shared_open ('v', a_file->name);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
@@ -222,7 +221,7 @@ poly_vars_inventory     (tFILE *a_file)
          continue;
       }
       /*---(name)------------------------*/
-      rc = poly_vars__push (a_file, x_name, x_type);
+      rc = poly_vars__push (a_file, x_line, x_name, x_type);
       DEBUG_INPT   yLOG_value   ("push"      , rc);
       if (rc < 0) {
          DEBUG_INPT   yLOG_note    ("something wrong with record");
@@ -343,24 +342,23 @@ poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
                }
                if (x_ext != NULL) {
                   if (strstr (s_extern, s) == NULL) {
-                     if (a_act == CODE_MACROS)  ++s_uextern;
                      strlcat (s_extern, s, LEN_RECD);
                      ++s_nextern;
                   }
                }
                switch (a_act) {
-               case '-' :
+               case CODE_NORMAL :
                   poly_vars__extern_tally (a_func, x_ext);
                   break;
-               case CODE_MACROS :
+               case CODE_VAR_M :
+                  sprintf (s, "<-- potenial internal or mystery");
                   if (x_ext != NULL) {
                      sprintf (s, "%-20.20s  %-20.20s  %4d  %c  %c  %c", x_ext->lib, x_ext->name, x_ext->line, x_ext->type, x_ext->cat, x_ext->sub);
                      strlcpy (s_sextern, s_extern, LEN_RECD);
                   }
-                  else                sprintf (s, "");
-                  printf ("%4d  %-20.20s  %3d  %3d  %3d    %s\n", a_line, x_name, b - t, i, n, s);
+                  printf ("%4d   - -  %-20.20s  %3d  %3d  %3d    %s\n", a_line, x_name, b - t, i, n, s);
                   break;
-               case CODE_ORPHANS:
+               case CODE_VAR_O :
                   strlcpy (s_sextern, s_extern, LEN_RECD);
                   strlcpy (s_smacros, s_macros, LEN_RECD);
                   break;
@@ -473,6 +471,7 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
    /*---(walk variables)-----------------*/
    DEBUG_INPT   yLOG_value   ("s_nvar"    , s_nvar);
    for (i = 0; i < s_nvar; ++i) {
+      if (s_vars [i].scope == 'f' && s_vars [i].file != a_func->file)  continue;
       DEBUG_INPT   yLOG_info    ("search"    , s_vars [i].name);
       b = strstr (t, s_vars [i].name);
       DEBUG_INPT   yLOG_point   ("b"         , b);
@@ -484,21 +483,20 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
             if (e == x_end || strchr (s_bad, e [0]) == NULL) {
                sprintf (s, " %s ", s_vars [i].name);
                if (strstr (s_intern, s) == NULL) {
-                  if (a_act == CODE_VARS)  ++s_uintern;
                   strlcat (s_intern, s, LEN_RECD);
                   ++s_nintern;
                }
                switch (a_act) {
-               case '-' :
+               case CODE_NORMAL :
                   poly_vars__intern_tally (a_func, i);
                   break;
-               case CODE_VARS :
-                  printf ("%4d  %4d  %-20.20s  %3d  %3d  %3d  %c  %c", a_line, i, s_vars [i].name, b - t, e - t, s_vars [i].len, s_vars [i].scope, s_vars [i].type);
+               case CODE_VAR_V :
+                  printf ("%4d  %4d  %-20.20s  %3d  %3d  %3d    %-20.20s  %-20.20s  %4d  %c  %c", a_line, i, s_vars [i].name, b - t, e - t, s_vars [i].len, (s_vars [i].file)->name, s_vars [i].name, s_vars [i].line, s_vars [i].scope, s_vars [i].type);
                   if (strstr (s_extern, s) != NULL)  printf ("  potenally masking external\n");
                   else                               printf ("\n");
                   strlcpy (s_sintern, s_intern, LEN_RECD);
                   break;
-               case CODE_ORPHANS :
+               case CODE_VAR_O :
                   strlcpy (s_sintern, s_intern, LEN_RECD);
                   /*> sprintf (s, " %s ", s_vars [i].name);                                                                                              <* 
                    *> printf ("current %s\n", s);                                                                                                        <* 
@@ -523,18 +521,17 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
 char
 poly_vars_header        (char a_act)
 {
-   /*> s_nextern = 0;                                                                 <* 
-    *> s_uextern = 0;                                                                 <* 
-    *> strlcpy (s_extern, "", LEN_RECD);                                              <* 
-    *> s_nintern = 0;                                                                 <* 
-    *> s_uintern = 0;                                                                 <* 
-    *> strlcpy (s_intern, "", LEN_RECD);                                              <*/
+   printf ("\n");
    switch (a_act) {
-   case CODE_MACROS :
-      printf ("line  ---name-------------  beg  end  len    ---library----------  ---found------------  line  t  c  s\n");
+   case CODE_VAR_M :
+      printf ("\n");
+      printf ("POTENIAL MARCROS (TESTED AGAINST EXTERNALS)\n");
+      printf ("line  indx  ---name-------------  beg  end  len    ---library----------  ---found------------  line  t  c  s\n");
       break;
-   case CODE_VARS   :
-      printf ("line  indx  ---name-------------  beg  end  len  s  t\n");
+   case CODE_VAR_V :
+      printf ("\n");
+      printf ("GLOBAL/FILE VARIABLES IDENTIFIED\n");
+      printf ("line  indx  ---name-------------  beg  end  len    ---file-------------  ---found------------  line  s  t\n");
       break;
    }
    return 0;
@@ -559,14 +556,13 @@ poly_vars__hiding       (tFUNC *a_func)
    strlcpy (t, a_func->WORK_LOCALS, LEN_RECD);
    p = strtok_r (t, " ", &r);
    while (p != NULL) {
-      if      (strstr (s_extern, p) != NULL) {
+      sprintf (u, " %s ", p);
+      if (strstr (s_extern, u) != NULL) {
          ++a_func->WORK_VMASK;
-         sprintf (u, " %s ", p);
          strlcat (s_vhide, u, LEN_RECD);
          ++s_vnhide;
-      } else if (strstr (s_intern, p) != NULL) {
+      } else if (strstr (s_intern, u) != NULL) {
          ++a_func->WORK_VMASK;
-         sprintf (u, " %s ", p);
          strlcat (s_vhide, u, LEN_RECD);
          ++s_vnhide;
       }
@@ -579,10 +575,10 @@ poly_vars__hiding       (tFUNC *a_func)
    strlcpy (t, s_macros, LEN_RECD);
    p = strtok_r (t, " ", &r);
    while (p != NULL) {
-      if (strstr (s_extern, p) != NULL) {
-         if (strstr (s_intern, p) != NULL) {
+      sprintf (u, " %s ", p);
+      if (strstr (s_extern, u) != NULL) {
+         if (strstr (s_intern, u) != NULL) {
             ++a_func->WORK_MMASK;
-            sprintf (u, " %s ", p);
             strlcat (s_mhide, u, LEN_RECD);
             ++s_mnhide;
          }
@@ -593,11 +589,27 @@ poly_vars__hiding       (tFUNC *a_func)
    x_ext   = (tEXTERN *) poly_extern_search (a_func->name);
    if (x_ext != NULL) {
       ++a_func->WORK_FMASK;
-   } else if (poly_vars__confirm (a_func->name) == 1) {
+   } else if (poly_vars__confirm (a_func->file, a_func->name) == 1) {
       ++a_func->WORK_FMASK;
    }
    /*---(complete)-----------------------*/
    return 0;
+}
+
+char
+poly_vars_list      (void)
+{
+   int         i           =    0;
+   if (my.g_mode == MODE_VARS) {
+      for (i = 0; i < s_nvar; ++i) {
+         if (i % 25 == 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  t\n");
+         if (i %  5 == 0)  printf ("\n");
+         printf ("%4d  %-20.20s  %4d  %-20.20s  %c  %c\n", i, s_vars [i].file->name, s_vars [i].line, s_vars [i].name, s_vars [i].scope, s_vars [i].type);
+      }
+      --i;
+      if (i % 25 != 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  t\n");
+      printf ("\n");
+   }
 }
 
 char
@@ -611,96 +623,35 @@ poly_vars_summary       (tFUNC *a_func, char a_act)
    char        w           [LEN_RECD]  = "";
    char       *p           = NULL;
    char       *r           = NULL;
+   int         i           =    0;
    /*---(output)-------------------------*/
    switch (a_act) {
-   case '-' :
+   case CODE_NORMAL :
       poly_vars__hiding (a_func);
-      /*---(variable hiding)----------------*/
-      /*> strlcpy (t, s_intern, LEN_RECD);                                               <* 
-       *> p = strtok_r (t, " ", &r);                                                     <* 
-       *> while (p != NULL) {                                                            <* 
-       *>    if (strstr (s_extern, p) != NULL) {                                         <* 
-       *>       sprintf (u, " %s ", p);                                                  <* 
-       *>       strlcat (w, u, LEN_RECD);                                                <* 
-       *>       ++d;                                                                     <* 
-       *>    }                                                                           <* 
-       *>    p = strtok_r (NULL, " ", &r);                                               <* 
-       *> }                                                                              <* 
-       *> if (d > 0)  a_func->STATS_VMASK = '#';                                         <*/
-      /*---(macro hiding)-------------------*/
-      /*> strlcpy (t, s_smacros, LEN_RECD);                                                        <* 
-       *> p = strtok_r (t, " ", &r);                                                               <* 
-       *> while (p != NULL) {                                                                      <* 
-       *>    if (strstr (s_sextern, p) == NULL) {                                                  <* 
-       *>       if (strstr (s_sintern, p) == NULL) {                                               <* 
-       *>          ++c;                                                                            <* 
-       *>          ++a_func->WORK_MMASK;                                                           <* 
-       *>          sprintf (u, " %s ", p);                                                         <* 
-       *>          strlcat (s_mhide, u, LEN_RECD);                                                 <* 
-       *>          ++s_mnhide;                                                                     <* 
-       *>          /+> a_func->STATS_MMASK = '#';                                            <+/   <* 
-       *>       }                                                                                  <* 
-       *>    }                                                                                     <* 
-       *>    p = strtok_r (NULL, " ", &r);                                                         <* 
-       *> }                                                                                        <*/
-      /*---(variable hiding)----------------*/
-      /*> strlcpy (t, a_func->WORK_LOCALS, LEN_RECD);                                              <* 
-       *> p = strtok_r (t, " ", &r);                                                               <* 
-       *> while (p != NULL) {                                                                      <* 
-       *>    if      (strstr (s_sextern, p) != NULL) {                                             <* 
-       *>       ++a_func->WORK_VMASK;                                                              <* 
-       *>       sprintf (u, " %s ", p);                                                            <* 
-       *>       strlcat (s_vhide, u, LEN_RECD);                                                    <* 
-       *>       ++s_vnhide;                                                                        <* 
-       *>       /+> a_func->STATS_VMASK = '#';                                               <+/   <* 
-       *>    } else if (strstr (s_sintern, p) != NULL) {                                           <* 
-       *>       ++a_func->WORK_VMASK;                                                              <* 
-       *>       sprintf (u, " %s ", p);                                                            <* 
-       *>       strlcat (s_vhide, u, LEN_RECD);                                                    <* 
-       *>       ++s_vnhide;                                                                        <* 
-       *>       /+> a_func->STATS_VMASK = '#';                                               <+/   <* 
-       *>    }                                                                                     <* 
-       *>    p = strtok_r (NULL, " ", &r);                                                         <* 
-       *> }                                                                                        <*/
       break;
-   case CODE_MACROS :
-      printf ("line  ---name-------------  beg  end  len    ---library----------  ---found------------  line  t  c  s\n");
+   case CODE_VAR_M  :
+      printf ("line  indx  ---name-------------  beg  end  len    ---library----------  ---found------------  line  t  c  s\n");
       printf ("\n");
-      printf ("total count  %d\n", s_nextern);
-      printf ("unique count %d\n", s_uextern);
-      printf ("unique list %s\n" , s_sextern);
-      break;
-   case CODE_VARS   :
-      printf ("line  indx  ---name-------------  beg  end  len  s  t\n");
+      printf ("all macros  %3d[%s]\n" , strlen (s_macros), s_macros);
+      printf ("... count   %3d\n", s_nmacros);
       printf ("\n");
-      printf ("total count  %d\n", s_nintern);
-      printf ("unique count %d\n", s_uintern);
-      printf ("unique list %s\n" , s_sintern);
-      printf ("locals      %s\n" , a_func->WORK_LOCALS);
-      printf ("hiding      %s\n" , w);
-      printf ("work_vmask  %d\n" , a_func->WORK_VMASK);
-      printf ("work_mmask  %d\n" , a_func->WORK_MMASK);
-      printf ("work_fmask  %d\n" , a_func->WORK_FMASK);
+      printf ("externals   %3d[%s]\n" , strlen (s_extern), s_extern);
+      printf ("... count   %3d\n", s_nextern);
       break;
-   case CODE_ORPHANS:
-      printf ("macros      %s\n" , s_smacros);
-      printf ("externals   %s\n" , s_sextern);
+   case CODE_VAR_V  :
+      printf ("line  indx  ---name-------------  beg  end  len    ---file-------------  ---found------------  line  s  t\n");
+      printf ("\n");
       printf ("internals   %s\n" , s_sintern);
-      /*> strlcpy (t, s_smacros, LEN_RECD);                                           <* 
-       *> p = strtok_r (t, " ", &r);                                                  <* 
-       *> while (p != NULL) {                                                         <* 
-       *>    if (strstr (s_sextern, p) == NULL) {                                     <* 
-       *>       if (strstr (s_sintern, p) == NULL) {                                  <* 
-       *>          ++c;                                                               <* 
-       *>          sprintf (u, " %s ", p);                                            <* 
-       *>          strlcat (v, u, LEN_RECD);                                          <* 
-       *>       }                                                                     <* 
-       *>    }                                                                        <* 
-       *>    p = strtok_r (NULL, " ", &r);                                            <* 
-       *> }                                                                           <*/
+      printf ("... count    %d\n", s_nintern);
       printf ("\n");
-      printf ("count        %d\n" , c);
-      printf ("orphans     %s\n" , v);
+      printf ("LOCALS      %s\n" , a_func->WORK_LOCALS);
+      printf ("... vmask   %d\n" , a_func->WORK_VMASK);
+      printf ("... mmask   %d\n" , a_func->WORK_MMASK);
+      printf ("... fmask   %d\n" , a_func->WORK_FMASK);
+      break;
+   case CODE_VAR_O   :
+      /*> printf ("count        %d\n" , c);                                           <*/
+      /*> printf ("orphans     %s\n" , v);                                            <*/
       /*> strlcpy (t, s_sintern, LEN_RECD);                                           <* 
        *> p = strtok_r (t, " ", &r);                                                  <* 
        *> while (p != NULL) {                                                         <* 
@@ -711,9 +662,10 @@ poly_vars_summary       (tFUNC *a_func, char a_act)
        *>    }                                                                        <* 
        *>    p = strtok_r (NULL, " ", &r);                                            <* 
        *> }                                                                           <*/
-      printf ("\n");
-      printf ("count        %d\n" , d);
-      printf ("hiding      %s\n" , w);
+      /*> printf ("\n");                                                              <*/
+      /*> printf ("count        %d\n" , d);                                           <*/
+      /*> printf ("hiding      %s\n" , w);                                            <*/
+      break;
    }
    return 0;
 }
@@ -796,10 +748,8 @@ poly_vars_reset         (tFUNC *a_func)
    s_nmacros          = 0;
    strlcpy (s_extern, "", LEN_RECD);
    s_nextern          = 0;
-   s_uextern          = 0;
    strlcpy (s_intern, "", LEN_RECD);
    s_nintern          = 0;
-   s_uintern          = 0;
    strlcpy (s_mhide , "", LEN_RECD);
    s_mnhide           = 0;
    strlcpy (s_vhide , "", LEN_RECD);
@@ -843,13 +793,13 @@ poly_vars__unit         (char *a_question, int i)
       snprintf (unit_answer, LEN_RECD, "VARS count       : %3da  %3dg", s_nvar, s_nglobal);
    }
    else if (strcmp (a_question, "macros"    )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "VARS macros      : %2dn  -- %3d[%-.60s]", s_nmacros, strlen (s_macros), s_macros);
+      snprintf (unit_answer, LEN_RECD, "VARS macros      : %2dn %3d[%-.60s]", s_nmacros, strlen (s_macros), s_macros);
    }
    else if (strcmp (a_question, "intern"    )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "VARS intern      : %2dn %2du %3d[%-.60s]", s_nintern, s_uintern, strlen (s_intern), s_intern);
+      snprintf (unit_answer, LEN_RECD, "VARS intern      : %2dn %3d[%-.60s]", s_nintern, strlen (s_intern), s_intern);
    }
    else if (strcmp (a_question, "extern"    )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "VARS extern      : %2dn %2du %3d[%-.60s]", s_nextern, s_uextern,  strlen (s_extern), s_extern);
+      snprintf (unit_answer, LEN_RECD, "VARS extern      : %2dn %3d[%-.60s]", s_nextern, strlen (s_extern), s_extern);
    }
    else if (strcmp (a_question, "mhide"     )     == 0) {
       snprintf (unit_answer, LEN_RECD, "VARS mhide       : %2dn  -- %3d[%-.60s]", s_mnhide,  strlen (s_mhide), s_mhide);

@@ -606,7 +606,7 @@ poly_code_driver        (tFILE *a_file, int a_beg, int a_end, char a_act)
          rc = poly_code__current (a_file, 0     , NULL  , x_curr, x_prev);
       }
       /*---(check sources)---------------*/
-      else if (a_act == '-') {
+      else if (a_act == CODE_NORMAL) {
          DEBUG_INPT   yLOG_note    ("source file (c) line");
          rc = poly_code__before  (a_file, x_line, &x_func, x_curr, x_prev);
          rc = poly_code__current (a_file, x_line, x_func, x_curr, x_prev);
@@ -616,11 +616,7 @@ poly_code_driver        (tFILE *a_file, int a_beg, int a_end, char a_act)
       /*---(specialty)-------------------*/
       else if (x_line > a_beg && x_line < a_end) {
          if (x_func == NULL)  poly_func_by_line (a_file, x_line, &x_func);
-         switch (a_act) {
-         case CODE_MACROS : case CODE_VARS : case CODE_ORPHANS :
-            rc = poly_vars_find (x_func, x_line, x_curr, a_act);
-            break;
-         }
+         rc = poly_vars_find (x_func, x_line, x_curr, a_act);
       }
       /*---(done)------------------------*/
    }
