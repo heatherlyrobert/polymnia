@@ -2,18 +2,22 @@
 #include  "polymnia.h"
 
 
+
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 #define     MAX_PROTO   500
 typedef     struct      cPROTO      tPROTO;
 struct      cPROTO {
+   char        scope;                       /* (g)lobal, (f)ile               */
+   tFILE      *file;                        /* file pointer                   */
+   int         line;                        /* line is source file            */
+   char        len;                         /* name length                    */
    char        name        [LEN_TITLE];
-   int         len;
-   int         file;
-   int         line;
-   char        type;
+   tFUNC      *func;                        /* back to actual function        */
 };
-tPROTO      s_protos    [MAX_PROTO];
-int         s_nproto    =    0;
+static tPROTO      s_protos    [MAX_PROTO];
+static int         s_nproto    =    0;
+static int         s_nglobal   =    0;
+static int         s_npriv     =    0;
 
 
 
@@ -23,26 +27,21 @@ int         s_nproto    =    0;
 static void  o___ELEMENTAL_______o () { return; }
 
 char
-poly_proto__wipe   (tPROTO *a_dst)
+poly_proto__purge  (void)
 {
-   /*> if (a_dst == NULL)  return -1;                                                 <* 
-    *> strlcpy (a_dst->name, "", LEN_TITLE);                                           <* 
-    *> a_dst->len      = 0;                                                           <* 
-    *> a_dst->file     = 0;                                                           <* 
-    *> a_dst->line     = 0;                                                           <* 
-    *> a_dst->type     = '-';                                                         <* 
-    *> return 0;                                                                      <*/
-}
-
-char
-poly_proto__copy  (tPROTO *a_dst, tPROTO *a_src)
-{
-   /*> strlcpy (a_dst->name, a_src->name, LEN_TITLE);                                  <* 
-    *> a_dst->len    = a_src->len;                                                    <* 
-    *> a_dst->file   = a_src->file;                                                   <* 
-    *> a_dst->line   = a_src->line;                                                   <* 
-    *> a_dst->type   = a_src->type;                                                   <* 
-    *> return 0;                                                                      <*/
+   int         i           =    0;
+   for (i = 0; i < MAX_PROTO; ++i) {
+      s_protos [i].scope    = '-';
+      s_protos [i].file     = 0;
+      s_protos [i].line     = 0;
+      s_protos [i].len      = 0;
+      s_protos [i].name [0] = '\0';
+      s_protos [i].func     = NULL;
+   }
+   s_nproto  = 0;
+   s_nglobal = 0;
+   s_npriv   = 0;
+   return 0;
 }
 
 
@@ -55,67 +54,224 @@ static void  o___PROGRAM_________o () { return; }
 char
 poly_proto_init         (void)
 {
-   /*> /+---(locals)-----------+-----+-----+-+/                                        <* 
-    *> int         i           =    0;          /+ generic return code            +/   <* 
-    *> /+---(header)-------------------------+/                                        <* 
-    *> DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                       <* 
-    *> for (i = 0; i < MAX_PROTO; ++i)   poly_proto__wipe (&s_protos [i]);             <* 
-    *> s_nproto = 0;                                                                   <* 
-    *> DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                       <* 
-    *> return 0;                                                                       <*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   poly_proto__purge ();
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       data adding                            ----===*/
+/*====================------------------------------------====================*/
+static void  o___DATA____________o () { return; }
+
+char
+poly_proto_push         (tFILE *a_file, int a_line, char *a_name)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         x_len       =    0;
+   char        x_type      =  '-';
+   /*---(defense)------------------------*/
+   --rce;  if (s_nproto >= MAX_PROTO)  return rce;
+   --rce;  if (a_file == NULL)         return rce;
+   --rce;  if (a_name == NULL)         return rce;
+   /*---(prepare)------------------------*/
+   x_len  = strlen (a_name);
+   --rce;  if (x_len  <= 0)         return rce;
+   /*---(add entry)----------------------*/
+   x_type = a_file->type;
+   if (x_type == 'h') {
+      if (strstr (a_file->name, "_priv.h") == NULL) {
+         s_protos [s_nproto].scope = 'g';
+         ++s_nglobal;
+      } else  {
+         s_protos [s_nproto].scope = 'p';
+         ++s_npriv;
+      }
+   }
+   else                 s_protos [s_nproto].scope = 'f';
+   s_protos [s_nproto].file = a_file;
+   s_protos [s_nproto].line = a_line;
+   s_protos [s_nproto].len  = x_len;
+   strlcpy (s_protos [s_nproto].name, a_name, LEN_TITLE);
+   /*---(update counters)----------------*/
+   ++s_nproto;
+   /*---(complete)-----------------------*/
+   return 0;
 }
 
 char
-poly_proto_add          (int a_file, char *a_name, char a_type, int a_line)
+poly_proto_hook         (tFILE *a_file, tFUNC *a_func, char *a_name)
 {
-   /*> /+---(locals)-----------+-----------+-+/                                        <* 
-    *> char        rce         = -10;           /+ return code for errors         +/   <* 
-    *> /+---(header)-------------------------+/                                        <* 
-    *> DEBUG_INPT   yLOG_senter  (__FUNCTION__);                                       <* 
-    *> DEBUG_INPT   yLOG_sint    (s_nproto);                                           <* 
-    *> /+---(file)---------------------------+/                                        <* 
-    *> DEBUG_INPT   yLOG_sint    (a_file);                                             <* 
-    *> --rce;  if (a_file <  0) {                                                      <* 
-    *>    DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);                               <* 
-    *>    return  rce;                                                                 <* 
-    *> }                                                                               <* 
-    *> --rce;  if (a_file >= s_nfile) {                                                <* 
-    *>    DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);                               <* 
-    *>    return  rce;                                                                 <* 
-    *> }                                                                               <* 
-    *> s_protos [s_nproto].file = a_file;                                              <* 
-    *> /+---(name)---------------------------+/                                        <* 
-    *> DEBUG_INPT   yLOG_spoint  (a_name);                                             <* 
-    *> --rce;  if (a_name == NULL) {                                                   <* 
-    *>    htags_tags_wipe (&s_protos [s_nproto]);                                      <* 
-    *>    DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);                               <* 
-    *>    return  rce;                                                                 <* 
-    *> }                                                                               <* 
-    *> strlcpy (s_protos [s_nproto].name  , a_name  , LEN_TITLE);                       <* 
-    *> /+---(type)---------------------------+/                                        <* 
-    *> DEBUG_INPT   yLOG_spoint  (a_type);                                             <* 
-    *> --rce;  if (a_type == NULL) {                                                   <* 
-    *>    htags_tags_wipe (&s_protos [s_nproto]);                                      <* 
-    *>    DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);                               <* 
-    *>    return  rce;                                                                 <* 
-    *> }                                                                               <* 
-    *> strlcpy (s_protos [s_nproto].type  , a_type  , LEN_RECD);                       <* 
-    *> /+---(line)---------------------------+/                                        <* 
-    *> DEBUG_INPT   yLOG_sint    (a_line);                                             <* 
-    *> --rce;  if (a_line <= 0) {                                                      <* 
-    *>    htags_tags_wipe (&s_protos [s_nproto]);                                      <* 
-    *>    DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);                               <* 
-    *>    return  rce;                                                                 <* 
-    *> }                                                                               <* 
-    *> s_protos [s_nproto].line  = a_line;                                             <* 
-    *> /+---(update)-------------------------+/                                        <* 
-    *> ++s_nproto;                                                                     <* 
-    *> /+---(complete)-----------------------+/                                        <* 
-    *> DEBUG_INPT   yLOG_sexit   (__FUNCTION__);                                       <* 
-    *> return 0;                                                                       <*/
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         i           =    0;
+   int         x_len       =    0;
+   int         c           =    0;
+   /*---(defense)------------------------*/
+   --rce;  if (a_name == NULL) return rce;
+   /*---(prepare)------------------------*/
+   x_len  = strlen (a_name);
+   /*---(walk variables)-----------------*/
+   for (i = 0; i < s_nproto; ++i) {
+      if (s_protos [i].len      != x_len)           continue;
+      if (s_protos [i].name [0] != a_name [0])      continue;
+      if (strcmp (s_protos [i].name, a_name) != 0)  continue;
+      if (strchr ("gp", s_protos [i].scope) != NULL) {
+         s_protos [i].func   = a_func;
+         if (a_func->STATS_PROTO == '-')  a_func->STATS_PROTO = s_protos [i].scope;
+         else                             a_func->STATS_PROTO = '#';
+         ++c;
+      }
+      if (s_protos [i].file  == a_file) {
+         s_protos [i].func   = a_func;
+         if (a_func->STATS_PROTO == '-')  a_func->STATS_PROTO = s_protos [i].scope;
+         else                             a_func->STATS_PROTO = '#';
+         ++c;
+      }
+   }
+   /*---(complete)-----------------------*/
+   return c;
 }
 
 char
-poly_proto_find    (char *a_name)
+poly_proto_list     (void)
 {
+   int         i           =    0;
+   char        t           [LEN_TITLE] = "";
+   if (my.g_mode == MODE_PROTO) {
+      for (i = 0; i < s_nproto; ++i) {
+         if (i % 25 == 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  ---function---------\n");
+         if (i %  5 == 0)  printf ("\n");
+         if ((s_protos [i].func)->name == NULL)  strlcpy (t, "", LEN_TITLE);
+         else sprintf (t, "%-20.20s", (s_protos [i].func)->name);
+         printf ("%4d  %-20.20s  %4d  %-20.20s  %c  %-20.20s\n", i,
+               s_protos [i].file->name, s_protos [i].line,
+               s_protos [i].name, s_protos [i].scope, t);
+      }
+      --i;
+      if (i % 25 != 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  ---function---------\n");
+      printf ("\n");
+   }
 }
+
+char
+poly_proto_units        (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;           /* return code for errors         */
+   int         rc          =    0;           /* generic return code            */
+   char        x_recd      [LEN_RECD];      /* input record                   */
+   char        x_verb      [LEN_LABEL];
+   char        x_name      [LEN_TITLE];
+   tFUNC      *x_func      = NULL;
+   int         x_test      =    0;
+   int         x_scrp      =    0;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   rc = poly_shared_open ('u', NULL);
+   DEBUG_INPT   yLOG_value   ("create"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(walk tags)----------------------*/
+   while (1) {
+      /*---(read)------------------------*/
+      rc = poly_shared_read ('u', NULL, x_recd, NULL);
+      DEBUG_INPT   yLOG_value   ("read"      , rc);
+      if (rc < 0)  {
+         DEBUG_INPT   yLOG_note    ("reading of line failed or eof");
+         break;
+      }
+      /*> printf ("%4d[%s]\n", strlen (x_recd), x_recd);                              <*/
+      /*---(parse)-----------------------*/
+      rc = poly_shared_parse_unit (x_recd, x_verb, x_name);
+      DEBUG_INPT   yLOG_value   ("read"      , rc);
+      if (rc < 0)  {
+         DEBUG_INPT   yLOG_note    ("reading of line failed or eof");
+         break;
+      }
+      /*> printf ("%4d[%s]\n", strlen (x_name), x_name);                              <*/
+      /*---(test change)-----------------*/
+      if (strncmp (x_verb, "PREP", 4) == 0) {
+         ++x_test;
+         /*> printf ("found new unit test %d\n", x_test);                             <*/
+         continue;
+      }
+      if (strncmp (x_verb, "SCRP", 4) == 0) {
+         ++x_scrp;
+         /*> printf ("found new unit script %d\n", x_scrp);                           <*/
+         continue;
+      }
+      /*---(idenfify function)-----------*/
+      poly_func_by_name (x_name, &x_func);
+      /*> x_func = (tFUNC *) poly_btree_search (B_FUNCS, x_name);                     <*/
+      DEBUG_INPT   yLOG_point   ("x_func"    , x_func);
+      --rce;  if (x_func == NULL)  continue;
+      DEBUG_INPT   yLOG_info    ("file name" , x_func->name);
+      /*---(update counter)-----------------*/
+      if (x_test != x_func->WORK_TSAVE) {
+         ++x_func->WORK_TUNIT;
+         x_func->WORK_TSAVE = x_test;
+      }
+      if (x_scrp != x_func->WORK_SSAVE) {
+         ++x_func->WORK_SUNIT;
+         x_func->WORK_SSAVE = x_scrp;
+      }
+      ++x_func->WORK_NUNIT;
+      /*---(done)------------------------*/
+   }
+   /*---(wrapup)-------------------------*/
+   rc = poly_shared_close ('u');
+   DEBUG_INPT   yLOG_value   ("cleanup"   , rc);
+   printf ("poly_shared_close %d\n", rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                         unit testing                         ----===*/
+/*====================------------------------------------====================*/
+static void  o___UNITTEST________o () { return; }
+
+char*        /*-[ unit test accessor ]---------------------[us2---·A-7·6--·B21-]¬[----·T-B1H---·---·----]¬[---·------]*/
+poly_proto__unit        (char *a_question, int i)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        s           [LEN_TITLE] = " 0[]";
+   char        t           [LEN_TITLE] = " 0[]";
+   char        u           [LEN_TITLE] = " 0[]";
+   /*---(defense)------------------------*/
+   snprintf (unit_answer, LEN_RECD, "VARS unit        : question unknown");
+   /*---(simple)-------------------------*/
+   if      (strcmp (a_question, "count"     )     == 0) {
+      snprintf (unit_answer, LEN_RECD, "PROTO count      : %3da  %3dg  %3dp", s_nproto, s_nglobal, s_npriv);
+   }
+   else if (strcmp (a_question, "entry"     )     == 0) {
+      sprintf (s, "%2d[%0.15s]", strlen (s_protos [i].name), s_protos [i].name);
+      if (s_protos [i].file != NULL)  sprintf (t, "%2d[%0.15s]", strlen (s_protos [i].file->name), s_protos [i].file->name);
+      if (s_protos [i].func != NULL)  sprintf (u, "%2d[%0.15s]", strlen (s_protos [i].func->name), s_protos [i].func->name);
+      snprintf (unit_answer, LEN_RECD, "PROTO entry (%2d) : %-19.19s  %4d  %-19.19s  %c  %s", i, s, s_protos [i].line, t, s_protos [i].scope, u);
+   }
+   /*---(complete)-----------------------*/
+   return unit_answer;
+}
+
+
+
+
+
+

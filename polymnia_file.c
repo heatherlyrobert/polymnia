@@ -500,7 +500,24 @@ poly_files_review  (tPROJ *a_proj)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-tFILE*  poly_files_search  (char *a_name) { return (tFILE *) poly_btree_search  (B_FILES, a_name); }
+char
+poly_file_by_name       (uchar *a_name, tFILE **a_file)
+{
+   if (a_file == NULL)   return -1;
+   *a_file = (tFILE *) poly_btree_search  (B_FILES, a_name);
+   if (*a_file == NULL)  return -2;
+   return 0;
+}
+
+char
+poly_file_by_index      (int n, tFILE **a_file)
+{
+   if (a_file == NULL)   return -1;
+   *a_file = (tFILE *) poly_btree_entry (B_FILES, n);
+   if (*a_file == NULL)  return -2;
+   return 0;
+}
+
 char    poly_files_list    (void)         { return poly_btree_list (B_FILES); }
 
 
@@ -601,16 +618,16 @@ poly_file__unit         (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "FILE unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "stats"     )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FILES, i);
+      poly_file_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : %-22.22s     · %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FUNCS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
+         snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : %-22.22s     · %3d %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
       } else {
-         snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : []                         ·   -     -   -   -   -   -   -", i);
+         snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : []                         ·   -   -     -   -   -   -   -   -", i);
       }
    }
    else if (strcmp (a_question, "funcs"     )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FILES, i);
+      poly_file_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          if (u->head != NULL) {

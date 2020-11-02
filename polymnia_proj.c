@@ -928,9 +928,9 @@ poly_proj__unit     (char *a_question, int i)
       u = (tPROJ *) poly_btree_entry (B_PROJ, i);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         snprintf (unit_answer, LEN_RECD, "PROJ stats  (%2d) : %-22.22s   %3d %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FILES, u->COUNT_FUNCS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
+         snprintf (unit_answer, LEN_RECD, "PROJ stats  (%2d) : %-22.22s   %3d %3d %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FILES, u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
       } else {
-         snprintf (unit_answer, LEN_RECD, "PROJ stats  (%2d) : %-22.22s     -   -     -   -   -   -   -   -", i, t);
+         snprintf (unit_answer, LEN_RECD, "PROJ stats  (%2d) : %-22.22s     -   -   -     -   -   -   -   -   -", i, t);
       }
    }
    else if (strcmp (a_question, "files"     )     == 0) {

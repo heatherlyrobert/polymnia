@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8m"
-#define     P_VERTXT    "great draft of --vars reporting to back up hiding cats/stats"
+#define     P_VERNUM    "0.8n"
+#define     P_VERTXT    "ylib modernized and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -179,6 +179,7 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     MODE_LIBUSE       'L'
 #define     MODE_DUMP         'd'
 #define     MODE_VARS         'v'
+#define     MODE_PROTO        'p'
 
 #define     RPTG_TITLES       't'
 #define     RPTG_NOTITLES     '-'
@@ -196,6 +197,7 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     F_CFLOW     "polymnia.cflow"
 #define     F_MYSTRY    "polymnia.mystry"
 #define     F_VARS      "polymnia.vars"
+#define     F_UNITS     "polymnia.units"
 #define     F_EXTERN    "/var/lib/polymnia/external.txt"
 #define     F_EXTFUNCS  "/var/lib/polymnia/ext_funcs.txt"
 #define     F_EXTMACRO  "/var/lib/polymnia/ext_macro.txt"
@@ -208,12 +210,13 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     COUNT_PROJS    counts [0]
 #define     COUNT_FILES    counts [1]
 #define     COUNT_FUNCS    counts [2]
-#define     COUNT_LINES    counts [3]
-#define     COUNT_EMPTY    counts [4]
-#define     COUNT_DOCS     counts [5]
-#define     COUNT_DEBUG    counts [6]
-#define     COUNT_CODE     counts [7]
-#define     COUNT_SLOCL    counts [8]
+#define     COUNT_YLIBS    counts [3]
+#define     COUNT_LINES    counts [4]
+#define     COUNT_EMPTY    counts [5]
+#define     COUNT_DOCS     counts [6]
+#define     COUNT_DEBUG    counts [7]
+#define     COUNT_CODE     counts [8]
+#define     COUNT_SLOCL    counts [9]
 
 
 
@@ -230,6 +233,7 @@ struct cMY {
    char        g_libuse    [LEN_RECD]; /* extern library for filtering        */
    char        g_hint      [LEN_TERSE];/* function hint for filtering         */
    /*---(long-term files)-----*/
+   FILE       *f_error;                /* stderr output                       */
    char        n_db        [LEN_RECD]; /* name of database file               */
    FILE       *f_db;                   /* shared database of tags             */
    char        n_extern    [LEN_RECD]; /* name of external file               */
@@ -240,6 +244,7 @@ struct cMY {
    FILE       *f_cflow;                /* cflow input file                    */
    FILE       *f_mystry;               /* local mystery external calls        */
    FILE       *f_vars;                 /* global/file variables               */
+   FILE       *f_units;                /* function calls from unit tests      */
    /*---(new stats interface)-*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(content)-------------*/
@@ -324,7 +329,7 @@ struct cFILE {
 };
 
 
-#define     MAX_STATS      55
+#define     MAX_STATS      60
 
 /*---(overall)------------------------*/
 #define     STATS_SINGLE   stats [ 0]
@@ -390,6 +395,10 @@ struct cFILE {
 #define     STATS_MMASK    stats [49]
 #define     STATS_FMASK    stats [50]
 #define     STATS_LSTATIC  stats [51]
+/*---(group three.d)------------------*/
+#define     STATS_TUNIT    stats [52]
+#define     STATS_SUNIT    stats [53]
+#define     STATS_NUNIT    stats [54]
 
 
 
@@ -413,30 +422,34 @@ struct cFUNC {
    tFUNC      *next;
    tWORK      *work;
    /*---(extern)------------*/
-   tYLIB      *head;
-   tYLIB      *tail;
-   int         count;
+   int         y_count;
+   tYLIB      *y_head;
+   tYLIB      *y_tail;
    /*---(btree)-------------*/
    tBTREE     *btree;
    /*---(done)--------------*/
 };
 
 struct cYLIB {
-   /*---(master)-------------------------*/
-   char        name        [LEN_TITLE];
+   /*---(main)--------------*/
+   uchar       name       [LEN_TITLE];
    int         line;
-   /*---(tags)--------------*/
-   tFUNC      *tag;
-   tYLIB      *tprev;
-   tYLIB      *tnext;
-   /*---(ylib)--------------*/
+   /*---(function)----------*/
+   tFUNC      *func;
+   tYLIB      *f_prev;
+   tYLIB      *f_next;
+   /*---(extern)------------*/
    tEXTERN    *ylib;
-   tYLIB      *eprev;
-   tYLIB      *enext;
+   tYLIB      *e_prev;
+   tYLIB      *e_next;
    /*---(done)--------------*/
 };
+extern   int g_nylib;
 
-#define     MAX_TEMPS      55
+
+
+
+#define     MAX_TEMPS      60
 
 /*---(location)-----------------------*/
 #define     WORK_BEG       work->beg
@@ -503,6 +516,12 @@ struct cYLIB {
 #define     WORK_MMASK     work->temp  [48]
 #define     WORK_FMASK     work->temp  [49]
 #define     WORK_LSTATIC   work->temp  [50]
+/*---(group three.d)------------------*/
+#define     WORK_TSAVE     work->temp  [51]
+#define     WORK_TUNIT     work->temp  [52]
+#define     WORK_SSAVE     work->temp  [53]
+#define     WORK_SUNIT     work->temp  [54]
+#define     WORK_NUNIT     work->temp  [55]
 
 
 
@@ -534,7 +553,7 @@ struct      cBTREE {
 };
 #define     B_PROJ      'T'
 #define     B_FILES     'f'
-#define     B_FUNCS      't'
+#define     B_FUNCS     't'
 #define     B_PROTO     'p'
 #define     B_EXTERN    'e'
 #define     B_UNIT      'U'
@@ -553,9 +572,9 @@ struct      cEXTERN {
    char        sub;
    int         uses;
    /*---(ylib)--------------*/
-   tYLIB      *head;
-   tYLIB      *tail;
-   int         count;
+   tYLIB      *y_head;
+   tYLIB      *y_tail;
+   int         y_count;
    /*---(btree)-------------*/
    tBTREE     *btree;
    /*---(done)--------------*/
@@ -585,14 +604,14 @@ char        poly_files_del          (tFILE **a_file);
 char        poly_files_purge_proj   (tPROJ *a_proj);
 char        poly_files_review       (tPROJ *a_proj);
 char        poly_files_list         (void);
-tFILE*      poly_files_search       (char *a_name);
+char        poly_file_by_name       (uchar *a_name, tFILE **a_file);
+char        poly_file_by_index      (int n, tFILE **a_file);
 char        poly_file_line          (tFILE *a_file, char a_style, int a, int b, char a_print);
 /*---(tags)-----------------*/
 /*---(unittest)-------------*/
 char*       poly_file__unit         (char *a_question, int n);
 
 char        poly_tags_inventory     (tFILE *a_file);
-char        poly_tags_addylib       (tFUNC *a_tag, tYLIB *a_ylib);
 char*       poly_tags__unit         (char *a_question, int n);
 
 char        poly_cats_counts_clear  (int  a_counts [MAX_COUNTS]);
@@ -621,6 +640,7 @@ char*       poly_cats_comment       (tFUNC *a_func);
 char*       poly_cats_full          (tFUNC *a_func, char *a_out);
 char*       poly_cats__unit         (char *a_question, int n);
 
+char        PROG_args               (int a_argc, char *a_argv[]);
 char        PROG_prepare            (void);
 char        PROG_summarize          (tPROJ *x_proj);
 char        PROG__unit_quiet        (void);
@@ -635,12 +655,20 @@ char        poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFU
 char        poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line);
 char        poly_extern_review      (void);
 char        poly_extern_list        (void);
-tEXTERN*    poly_extern_search      (char *a_name);
-char        poly_extern_addylib     (tEXTERN *a_extern, tYLIB *a_ylib);
+int         poly_extern_count       (void);
+char        poly_extern_by_name     (uchar *a_name, tEXTERN **a_func);
+char        poly_extern_by_index    (int n, tEXTERN **a_ext);
 char*       poly_extern__unit       (char *a_question, int n);
 
+
+
+char        poly_proto__purge       (void);
 char        poly_proto_init         (void);
-char        poly_proto_add          (int a_file, char *a_name, char a_type, int a_line);
+char        poly_proto_push         (tFILE *a_file, int a_line, char *a_name);
+char        poly_proto_hook         (tFILE *a_file, tFUNC *a_func, char *a_name);
+char        poly_proto_list         (void);
+char*       poly_proto__unit        (char *a_question, int i);
+
 
 
 char        poly_btree_init         (char a_btree);
@@ -679,8 +707,13 @@ char        poly_proj__headerline   (char *a_header, char n, char a_abbr, char *
 char        poly_proj_header        (tPROJ *a_proj);
 char        poly_proj_line          (tPROJ *a_proj, char a_style, int c, char a_print);
 
+char        poly_db_name            (char *a_name, char a_loud);
+char        poly_db_init            (void);
+char        poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, int *a_nylib);
+char        poly_db__close          (void);
 char        poly_db_write           (void);
 char        poly_db_read            (void);
+char*       poly_db__unit           (char *a_question);
 
 char        poly_rptg_projects      (void);
 char        poly_rptg_htags         (tPROJ *x_proj);
@@ -696,10 +729,24 @@ char        poly_action_extern      (void);
 char        poly_action_libuse      (void);
 char        poly_action_vars        (void);
 
-tYLIB*      poly_ylib_new           (void);
+/*---(memory)---------------*/
+char        poly_ylib_new           (tYLIB **a_new);
+char        poly_ylib__free         (tYLIB **a_old);
+/*---(hooking)--------------*/
+char        poly_ylib__fhook        (tFUNC *a_func, tYLIB *a_ylib);
+char        poly_ylib__funhook      (tYLIB *a_ylib);
+char        poly_ylib__ehook        (tEXTERN *a_ext, tYLIB *a_ylib);
+char        poly_ylib__eunhook      (tYLIB *a_ylib);
+/*---(existance)------------*/
 char        poly_ylib_add           (tFUNC *a_tag, tEXTERN *a_extern, int a_line, tYLIB **a_ylib);
-char        poly_ylib_del           (tYLIB *a_ylib);
-char        poly_ylib_purge_tag     (tFUNC *a_tag);
+char        poly_ylib_del           (tYLIB **a_ylib);
+/*---(program)--------------*/
+char        poly_ylib_purge_func    (tFUNC *a_tag);
+/*---(unittest)-------------*/
+char*       poly_ylib__unit         (char *a_question, char *a_name);
+/*---(done)-----------------*/
+
+
 
 /*---(support)--------------*/
 char        poly_debug__macro       (char *a_macro);
@@ -722,7 +769,7 @@ char        poly_func__free         (tFUNC **a_func);
 /*---(hooking)--------------*/
 char        poly_func_hook          (tFILE *a_file, tFUNC *a_tag);
 char        poly_func__unhook       (tFUNC *a_tag);
-char        poly_func_count         (tFILE *a_file);
+char        poly_func_in_file       (tFILE *a_file);
 /*---(existance)------------*/
 char        poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, tFUNC **a_func);
 char        poly_func_del           (tFUNC **a_tag);
@@ -731,6 +778,9 @@ char        poly_func_enter         (tFUNC *a_func, int a_line);
 char        poly_func_exit          (tFUNC *a_func, int a_line);
 char        poly_func_inside        (tFUNC *a_func);
 /*---(search)---------------*/
+int         poly_func_count         (void);
+char        poly_func_by_name       (uchar *a_name, tFUNC **a_func);
+char        poly_func_by_index      (int n, tFUNC **a_func);
 char        poly_func_by_line       (tFILE *a_file, int a_line, tFUNC **a_func);
 char        poly_func_by_hint       (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func);
 char        poly_func_by_cursor     (tPROJ *a_proj, uchar a_mode, tFUNC **a_func);
@@ -769,11 +819,13 @@ char        poly_tags__handler      (tFILE *a_file, char *a_recd);
 char        poly_tags_inventory     (tFILE *a_file);
 
 
+char        poly_shared_verify      (uchar *a_name);
 char        poly_shared_open        (char a_type, char *a_focus);
 char        poly_shared_close       (char a_type);
 char        poly_shared_read        (char a_type, int *a_line, char *a_curr, char *a_prev);
 char        poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, char *a_file);
 char        poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, char *a_file);
+char        poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name);
 char*       poly_shared__unit       (char *a_question);
 
 

@@ -487,7 +487,8 @@ poly_btree_dgnome       (char a_btree)
    DEBUG_SORT   yLOG_point   ("head"      , B_HEAD);
    --rce;  if (B_HEAD == NULL) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      /*> return rce;                                                                 <*/
+      return 0;
    }
    DEBUG_SORT   yLOG_point   ("->next"    , B_HEAD->next);
    --rce;  if (B_HEAD->next == NULL) {
@@ -789,6 +790,10 @@ poly_btree_build        (char a_btree)
    --rce;  if (n < 0) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
+   }
+   if (B_COUNT == 0) {
+      DEBUG_SORT   yLOG_exit    (__FUNCTION__);
+      return 0;
    }
    x_lvl  = poly_btree__depth (B_COUNT);
    DEBUG_SORT   yLOG_value   ("est depth" , x_lvl);

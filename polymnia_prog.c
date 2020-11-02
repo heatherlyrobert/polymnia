@@ -74,31 +74,38 @@ PROG_init          (int a_argc, char *a_argv[])
    my.g_hint   [0]   = '\0';
    /*---(files)--------------------------*/
    DEBUG_PROG   yLOG_note    ("initialize file pointers");
-   my.f_db        = NULL;
    my.f_code      = NULL;
    my.f_ctags     = NULL;
    my.f_cflow     = NULL;
    my.f_extern    = NULL;
    my.f_mystry    = NULL;
+   my.f_vars      = NULL;
+   my.f_units     = NULL;
+   my.f_error     = stderr;
    /*---(global counts)------------------*/
    DEBUG_PROG   yLOG_note    ("initialize global counts");
    poly_cats_counts_clear (my.counts);
    /*---(initialization)-----------------*/
    DEBUG_PROG   yLOG_note    ("run sub initialization functions");
+   poly_db_init      ();
    poly_proj_init    ();
    poly_files_init   ();
    poly_func_init    ();
    poly_extern_init  ();
    poly_vars_init    ();
+   poly_proto_init   ();
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
+#define  TWOARG  if (++i >= a_argc)  printf ("%s option requires an argument (%d)\n", a, --rc); else 
+
 char         /*-> process the command line args ------[ ------ [gz.952.251.B4]*/ /*-[01.0000.121.!]-*/ /*-[--.---.---.--]-*/
-PROG_args          (int argc, char *argv[])
+PROG_args          (int a_argc, char *a_argv[])
 {
-   /*---(locals)-------------------------*/
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
    int         i           = 0;
    char       *a           = NULL;
    int         x_total     = 0;
@@ -109,8 +116,8 @@ PROG_args          (int argc, char *argv[])
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
    /*> FILE_rename ("");                                                              <*/
    /*---(process)------------------------*/
-   for (i = 1; i < argc; ++i) {
-      a = argv[i];
+   for (i = 1; i < a_argc; ++i) {
+      a = a_argv [i];
       ++x_total;
       if (a[0] == '@')  continue;
       DEBUG_ARGS  yLOG_info    ("cli arg", a);
@@ -134,10 +141,13 @@ PROG_args          (int argc, char *argv[])
       else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;
       else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;
       else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;
+      else if (strcmp (a, "--noerror"  ) == 0 && my.f_error == stderr)  my.f_error  = fopen ("/dev/null", "wt");
+      /*---(special names)---------------*/
+      else if (strcmp (a, "--database" ) == 0)  TWOARG rc = poly_db_name (a_argv [i], 'y');
       /*---(compound)--------------------*/
       else if (strcmp (a, "--remove" ) == 0) {
          my.g_mode = MODE_REMOVE;
-         if (++i < argc)  strlcpy (my.g_project, argv[i], LEN_TITLE);
+         if (++i < a_argc)  strlcpy (my.g_project, a_argv [i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("project name not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
@@ -145,7 +155,7 @@ PROG_args          (int argc, char *argv[])
          }
       }
       else if (strcmp (a, "--project") == 0) {
-         if (++i < argc)  strlcpy (my.g_project, argv[i], LEN_TITLE);
+         if (++i < a_argc)  strlcpy (my.g_project, a_argv [i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("project name not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
@@ -154,7 +164,7 @@ PROG_args          (int argc, char *argv[])
       }
       else if (strcmp (a, "--extern" ) == 0) {
          my.g_mode = MODE_EXTERN;
-         if (++i < argc)  strlcpy (my.g_extern, argv[i], LEN_TITLE);
+         if (++i < a_argc)  strlcpy (my.g_extern, a_argv [i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("extern name not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
@@ -163,7 +173,7 @@ PROG_args          (int argc, char *argv[])
       }
       else if (strcmp (a, "--libuse" ) == 0) {
          my.g_mode = MODE_LIBUSE;
-         if (++i < argc)  strlcpy (my.g_libuse, argv[i], LEN_TITLE);
+         if (++i < a_argc)  strlcpy (my.g_libuse, a_argv [i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("library name not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
@@ -171,7 +181,7 @@ PROG_args          (int argc, char *argv[])
          }
       }
       else if (strcmp (a, "--hint"   ) == 0) {
-         if (++i < argc)  strlcpy (my.g_hint, argv[i], LEN_TERSE);
+         if (++i < a_argc)  strlcpy (my.g_hint, a_argv [i], LEN_TERSE);
          else {
             DEBUG_TOPS  yLOG_note  ("hint not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
@@ -185,7 +195,8 @@ PROG_args          (int argc, char *argv[])
        *> else if (strncmp (a, "--layout-"           ,  9) == 0)  PROG_layout_set ("cli", "layout"   , a +  9);   <* 
        *> else if (strncmp (a, "--function-list"     ,  9) == 0)  CALC_func_list  ();                             <*/
       /*---(other)-----------------------*/
-      /*> else if (a[0] != '-'                     )   strlcpy (x_name , argv[i]  , LEN_RECD);   <*/
+      /*> else if (a[0] != '-'                     )   strlcpy (x_name , a_argv[i]  , LEN_RECD);   <*/
+      if (rc < 0)  break;
    }
    DEBUG_ARGS  yLOG_value  ("entries"   , x_total);
    DEBUG_ARGS  yLOG_value  ("arguments" , x_args);
@@ -194,7 +205,7 @@ PROG_args          (int argc, char *argv[])
    }
    /*---(complete)-----------------------*/
    DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char         /*-> initialize program and variables ---[ ------ [gz.741.041.07]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
@@ -271,7 +282,8 @@ PROG_summarize          (tPROJ *a_proj)
       x_file = x_file->next;
    }
    poly_proj_header (a_proj);
-   /*---(prepare for use)----------------*/
+   poly_proto_units ();
+   /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -291,9 +303,6 @@ PROG_end             (void)
    /*---(wrap-up)------------------------*/
    poly_proj_purge   ();
    poly_extern_wrap  ();
-   /*> poly_func_wrap    ();                                                          <*/
-   /*> poly_files_wrap   ();                                                          <*/
-   /*> poly_proj_wrap    ();                                                          <*/
    /*---(remove global files)------------*/
    system ("rm -f htags.gcalls");
    system ("rm -f htags.flow");
@@ -325,11 +334,11 @@ PROG__unit_quiet   (void)
 char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 PROG__unit_loud      (void)
 {
-   char       *x_args [2]  = { "polymnia_unit", "@@kitchen" };
-   yURG_logger (2, x_args);
-   PROG_init   (2, x_args);
-   yURG_urgs   (2, x_args);
-   PROG_args   (2, x_args);
+   char       *x_args [4]  = { "polymnia_unit", "@@kitchen", "@@nosort", "@@main_only" };
+   yURG_logger (4, x_args);
+   PROG_init   (4, x_args);
+   yURG_urgs   (4, x_args);
+   PROG_args   (4, x_args);
    PROG_begin  ();
    return 0;
 }

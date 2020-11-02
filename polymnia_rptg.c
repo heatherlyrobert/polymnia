@@ -438,12 +438,12 @@ poly_rptg_extern        (tEXTERN *a_extern)
    }
    DEBUG_RPTG   yLOG_point   ("a_extern"  , a_extern);
    DEBUG_RPTG   yLOG_info    ("->name"    , a_extern->name);
-   x_ylib = a_extern->head;
+   x_ylib = a_extern->y_head;
    DEBUG_RPTG   yLOG_point   ("x_ylib"    , x_ylib);
    while (x_ylib != NULL) {
       /*---(project filtering)-----------*/
-      if (my.g_proj != NULL && x_ylib->tag->file->proj != my.g_proj) {
-         x_ylib = x_ylib->enext;
+      if (my.g_proj != NULL && x_ylib->func->file->proj != my.g_proj) {
+         x_ylib = x_ylib->e_next;
          DEBUG_RPTG   yLOG_point   ("x_ylib"    , x_ylib);
          continue;
       }
@@ -453,36 +453,36 @@ poly_rptg_extern        (tEXTERN *a_extern)
       DEBUG_RPTG   yLOG_info    ("->name"    , x_ylib->name);
       /*---(tree view)-------------------*/
       if (my.g_titles == RPTG_TREEVIEW) {
-         if (x_ylib->tag->file->proj != x_proj) {
+         if (x_ylib->func->file->proj != x_proj) {
             x_file = NULL;
             printf ("\n");
-            printf ("%-25.25s\n", x_ylib->tag->file->proj->name);
+            printf ("%-25.25s\n", x_ylib->func->file->proj->name);
          }
-         if (x_ylib->tag->file != x_file) {
+         if (x_ylib->func->file != x_file) {
             x_func  = NULL;
             if (x_file != NULL)  printf ("\n");
-            printf ("   %-25.25s\n", x_ylib->tag->file->name);
+            printf ("   %-25.25s\n", x_ylib->func->file->name);
          } 
-         if (x_ylib->tag != x_func) {
+         if (x_ylib->func != x_func) {
             if (x_func != NULL)  printf ("\n");
-            printf ("      %-25.25s", x_ylib->tag->name);
+            printf ("      %-25.25s", x_ylib->func->name);
          } 
          printf ("%4d,", x_ylib->line);
-         x_proj = x_ylib->tag->file->proj;
-         x_file = x_ylib->tag->file;
-         x_func = x_ylib->tag;
+         x_proj = x_ylib->func->file->proj;
+         x_file = x_ylib->func->file;
+         x_func = x_ylib->func;
       }
       /*---(normal view)-----------------*/
       else {
-         printf ("%-25.25s  %-25.25s  %-25.25s  %4d  %-25.25s\n", a_extern->name, x_ylib->tag->file->proj->name, x_ylib->tag->file->name, x_ylib->line, x_ylib->tag->name);
+         printf ("%-25.25s  %-25.25s  %-25.25s  %4d  %-25.25s\n", a_extern->name, x_ylib->func->file->proj->name, x_ylib->func->file->name, x_ylib->line, x_ylib->func->name);
       }
       /*---(next)------------------------*/
       ++c;
-      x_ylib = x_ylib->enext;
+      x_ylib = x_ylib->e_next;
       DEBUG_RPTG   yLOG_point   ("x_ylib"    , x_ylib);
       /*---(done)------------------------*/
    }
-   if (my.g_titles == RPTG_TITLES)  printf ("\n## %d total references, %d shown\n", a_extern->count, c);
+   if (my.g_titles == RPTG_TITLES)  printf ("\n## %d total references, %d shown\n", a_extern->y_count, c);
    /*---(complete)-----------------------*/
    DEBUG_RPTG   yLOG_exit    (__FUNCTION__);
    return 0;

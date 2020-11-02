@@ -392,7 +392,7 @@ poly_debug__unit        (char *a_question, int i)
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "DEBUG unit       : function number unknown");
    if (strcmp (a_question, "work"      )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          if (u->WORK_DCOUNT > 0)  sprintf (s, " %3dc", u->WORK_DCOUNT);

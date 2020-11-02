@@ -356,6 +356,12 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(prototype)----------------------*/
+   rc = poly_proto_hook  (a_func->file, a_func, a_func->name);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -652,7 +658,7 @@ poly_code__unit         (char *a_question, int i)
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "CODE unit        : function number unknown");
    if (strcmp (a_question, "work"      )     == 0) {
-      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          if (u->WORK_CHOICE > 0)  sprintf (s, " %3dc", u->WORK_CHOICE);

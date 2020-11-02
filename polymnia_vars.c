@@ -12,9 +12,9 @@ struct cVARS {
    char        name        [LEN_TITLE];     /* variable name                  */
    char        type;                        /* (v)var, (m)macro               */
 };
-tVARS        s_vars        [MAX_VARS];
-int          s_nvar        = 0;
-int          s_nglobal     = 0;
+static tVARS        s_vars        [MAX_VARS];
+static int          s_nvar        = 0;
+static int          s_nglobal     = 0;
 
 
 
@@ -332,7 +332,7 @@ poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
                strlcpy (x_name, b, n + 1);
                DEBUG_INPT   yLOG_info    ("macro name", x_name);
                /*---(find external)------------------*/
-               x_ext   = (tEXTERN *) poly_extern_search (x_name);
+               poly_extern_by_name (x_name, &x_ext);
                DEBUG_INPT   yLOG_point   ("x_ext"     , x_ext);
                /*---(save for mask testing)----------*/
                sprintf (s, " %s ", x_name);
@@ -586,7 +586,7 @@ poly_vars__hiding       (tFUNC *a_func)
       p = strtok_r (NULL, " ", &r);
    }
    /*---(function hiding)----------------*/
-   x_ext   = (tEXTERN *) poly_extern_search (a_func->name);
+   poly_extern_by_name (a_func->name, &x_ext);
    if (x_ext != NULL) {
       ++a_func->WORK_FMASK;
    } else if (poly_vars__confirm (a_func->file, a_func->name) == 1) {
@@ -808,7 +808,7 @@ poly_vars__unit         (char *a_question, int i)
       snprintf (unit_answer, LEN_RECD, "VARS vhide       : %2dn  -- %3d[%-.60s]", s_vnhide,  strlen (s_vhide), s_vhide);
    }
    else if (strcmp (a_question, "hide"      )     == 0) {
-      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          sprintf  (s, "%3dv %3dm %3df %3ds  [%-.35s]",
@@ -825,7 +825,7 @@ poly_vars__unit         (char *a_question, int i)
       snprintf (unit_answer, LEN_RECD, "VARS entry  (%2d) : %-17.17s   %c %c   %2d%s", i, t, s_vars [i].scope, s_vars [i].type, strlen (s_vars [i].name), s);
    }
    else if (strcmp (a_question, "func"      )     == 0) {
-      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          sprintf  (s, "%3dn %3df %3dg      %3dp %3df %3dg %3dm %3dy %3do",

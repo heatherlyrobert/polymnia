@@ -96,9 +96,9 @@ static struct cPOS    {
    {  3,  3, 14, "Fmask"  , "funcs masking other funcs"       , 0, 0 },
    {  3,  3, 15, "Lstatic", "local static variables"          , 0, 0 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  4, 16, "·"      , ""                                , 0, 0 },
-   {  3,  4, 17, "·"      , ""                                , 0, 0 },
-   {  3,  4, 18, "·"      , ""                                , 0, 0 },
+   {  3,  4, 16, "units"  , "count of unit tests used"        , 0, 0 },
+   {  3,  4, 17, "scrps"  , "count of unit scripts used"      , 0, 0 },
+   {  3,  4, 18, "steps"  , "count of unit steps used"        , 0, 0 },
    {  3,  4, 19, "·"      , ""                                , 0, 0 },
    {  3,  4, 20, "·"      , ""                                , 0, 0 },
    {  3,  4, 21, "·"      , ""                                , 0, 0 },
@@ -634,6 +634,18 @@ poly_cats__group_3c     (tFUNC *a_func)
 }
 
 char
+poly_cats__group_3d     (tFUNC *a_func)
+{
+   char        rce         =    0;
+   --rce;  if (a_func       == NULL)  return rce;
+   --rce;  if (a_func->work == NULL)  return rce;
+   poly_cats_exact   ("tunit"   , a_func->WORK_TUNIT , &a_func->STATS_TUNIT , '-');
+   poly_cats_exact   ("sunit"   , a_func->WORK_SUNIT , &a_func->STATS_SUNIT , '-');
+   poly_cats_exact   ("nunit"   , a_func->WORK_NUNIT , &a_func->STATS_NUNIT , '-');
+   return 0;
+}
+
+char
 poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out)
 {
    char        rce         =    0;
@@ -655,6 +667,7 @@ poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out
       poly_cats__group_3a (a_func);
       poly_cats__group_3b (a_func);
       poly_cats__group_3c (a_func);
+      poly_cats__group_3d (a_func);
    }
    --rce;  if (a_out  == NULL)  return rce;
    sprintf (a_out, p,
@@ -662,9 +675,10 @@ poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out
          a_func->STATS_DMATCH, a_func->STATS_DFUNCS, a_func->STATS_DWARN ,
          a_func->STATS_PUSE  , a_func->STATS_FUSE  , a_func->STATS_GUSE  ,
          a_func->STATS_MUSE  , a_func->STATS_YUSE  , a_func->STATS_OUSE  ,
-         a_func->STATS_VMASK , a_func->STATS_MMASK , a_func->STATS_FMASK ,
-         a_func->STATS_LSTATIC,
-         '-', '-', '-', '-', '-', '-');
+         a_func->STATS_VMASK , a_func->STATS_MMASK ,
+         a_func->STATS_FMASK , a_func->STATS_LSTATIC,
+         a_func->STATS_TUNIT , a_func->STATS_SUNIT , a_func->STATS_NUNIT ,
+         '-', '-', '-');
    return 0;
 }
 
@@ -823,7 +837,7 @@ poly_cats__unit      (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "CATS unit        : tag number unknown");
    if (i <  0)       return unit_answer;
    /*---(prepare)------------------------*/
-   u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
+   poly_func_by_index (i, &u);
    if (u != NULL)  sprintf  (t, "[%.20s]", u->name);
    /*---(simple)-------------------------*/
    if        (strcmp (a_question, "complex"   )     == 0) {

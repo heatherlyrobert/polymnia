@@ -7,8 +7,9 @@
 #define     DEL_ANY       "rm -f %s  2> /dev/null"
 #define     NEW_CTAGS     "ctags  --language-force=c -x --sort=no --file-scope=yes  --c-kinds=pfl  %s > %s  2> /dev/null"
 #define     NEW_VARS      "ctags  --language-force=c -x --sort=no                   --c-kinds=vxd  %s > %s  2> /dev/null"
+#define     NEW_UNITS     "grep   --no-filename -E --regexp=\"^(PREP|SCRP|     exec|     get)\"  *.unit  > %s  2> /dev/null"
 
-static      char       *s_valid       = "ftmcxve";
+static      char       *s_valid       = "ftmcxveu";
 static      char        s_ctags       [LEN_RECD] = "";
 static      char        s_code        [LEN_RECD] = "";
 static      char        s_vars        [LEN_RECD] = "";
@@ -47,6 +48,9 @@ poly_shared__pointer    (char a_type, FILE ***a_file)
    case 'e' :  /* external */
       *a_file  = &(my.f_extern);
       break;
+   case 'u' :  /* unit tests */
+      *a_file  = &(my.f_units);
+      break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -55,6 +59,36 @@ poly_shared__pointer    (char a_type, FILE ***a_file)
    DEBUG_INPT   yLOG_point   ("*a_file"   , *a_file);
    /*---(complete)-----------------------*/
    return 0;
+}
+
+char
+poly_shared_verify      (uchar *a_name)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         rci         =    0;
+   tSTAT       st;
+   /*---(defense)------------------------*/
+   if (a_name == NULL)                   return 0;
+   if (strcmp (a_name, "") == 0)         return 0;
+   /*---(check for existance)------------*/
+   rci = lstat (a_name, &st);
+   DEBUG_FILE   yLOG_value   ("lstat"     , rci);
+   --rce; if (rci < 0) {
+      DEBUG_FILE   yLOG_note    ("file does not exist, can not read");
+      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(check for regular file)---------*/
+   --rce;  if (!S_ISREG (st.st_mode)) {
+      DEBUG_FILE   yLOG_note    ("not a regular file, rejected");
+      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(output)-------------------------*/
+   DEBUG_FILE   yLOG_note    ("confirmed as existing and is a regular file");
+   /*---(complete)-----------------------*/
+   return 1;
 }
 
 
@@ -101,32 +135,35 @@ poly_shared_open        (char a_type, char *a_focus)
    /*---(assign name)--------------------*/
    --rce;  switch (a_type) {
    case 'f' :  /* cflow */
-      strlcpy (x_use   , F_CFLOW , LEN_RECD);
-      strlcpy (x_mode  , "rt"    , LEN_TERSE);
+      strlcpy (x_use   , F_CFLOW    , LEN_RECD);
+      strlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 't' :  /* ctags */
-      strlcpy (x_source, a_focus , LEN_RECD);
-      strlcpy (x_use   , F_CTAGS , LEN_RECD);
-      strlcpy (x_mode  , "rt"    , LEN_TERSE);
+      strlcpy (x_source, a_focus    , LEN_RECD);
+      strlcpy (x_use   , F_CTAGS    , LEN_RECD);
+      strlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'm' :  /* mystery calls */
-      strlcpy (x_use   , F_MYSTRY, LEN_RECD);
-      strlcpy (x_mode  , "wt"    , LEN_TERSE);
+      strlcpy (x_use   , F_MYSTRY   , LEN_RECD);
+      strlcpy (x_mode  , "wt"       , LEN_TERSE);
       break;
    case 'c' :  /* c source files */
-      strlcpy (x_source, a_focus , LEN_RECD);
-      strlcpy (x_use   , a_focus , LEN_RECD);
-      strlcpy (x_mode  , "rt"    , LEN_TERSE);
+      strlcpy (x_source, a_focus    , LEN_RECD);
+      strlcpy (x_use   , a_focus    , LEN_RECD);
+      strlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'v' :  /* variables */
-      strlcpy (x_source, a_focus , LEN_RECD);
-      strlcpy (x_use   , F_VARS  , LEN_RECD);
-      strlcpy (x_mode  , "rt"    , LEN_TERSE);
+      strlcpy (x_source, a_focus    , LEN_RECD);
+      strlcpy (x_use   , F_VARS     , LEN_RECD);
+      strlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'e' :  /* external */
-      strlcpy (x_source, my.n_extern, LEN_RECD);
       strlcpy (x_use   , my.n_extern, LEN_RECD);
-      strlcpy (x_mode  , "rt"    , LEN_TERSE);
+      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      break;
+   case 'u' :  /* units    */
+      strlcpy (x_use   , F_UNITS    , LEN_RECD);
+      strlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
@@ -143,20 +180,11 @@ poly_shared_open        (char a_type, char *a_focus)
       return rce;
    }
    /*---(pre-check)----------------------*/
-   if (strcmp (x_source, "") != 0) {
-      rci = lstat (x_source, &st);
-      DEBUG_INPT   yLOG_value   ("lstat"     , rci);
-      --rce; if (rci < 0) {
-         DEBUG_INPT   yLOG_note    ("file does not exist, can not read");
-         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-      --rce;  if (!S_ISREG (st.st_mode)) {
-         DEBUG_INPT   yLOG_note    ("not a regular file, rejected");
-         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-      DEBUG_INPT   yLOG_note    ("confirmed as exists");
+   rc = poly_shared_verify (x_source);
+   DEBUG_INPT   yLOG_value   ("verify"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return rce;
    }
    /*---(pre-handle)---------------------*/
    switch (a_type) {
@@ -171,6 +199,9 @@ poly_shared_open        (char a_type, char *a_focus)
       break;
    case  'v' :
       sprintf (x_cmd, NEW_VARS  , x_source, x_use);
+      break;
+   case  'u' :
+      sprintf (x_cmd, NEW_UNITS , x_use);
       break;
    }
    if (strcmp (x_cmd , "") != 0) {
@@ -254,7 +285,10 @@ poly_shared_close       (char a_type)
       strlcpy (x_used , F_VARS  , LEN_RECD);
       break;
    case 'e' :  /* external */
-      strlcpy (x_used  , my.n_extern, LEN_RECD);
+      /*> strlcpy (x_used  , F_EXTERN, LEN_RECD);                                     <*/
+      break;
+   case 'u' :  /* external */
+      strlcpy (x_used  , F_UNITS, LEN_RECD);
       break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
@@ -288,6 +322,9 @@ poly_shared_close       (char a_type)
       sprintf (x_cmd  , DEL_ANY   , F_VARS);
       strlcpy (x_used , F_VARS    , LEN_RECD);
       break;
+   case  'u' :
+      sprintf (x_cmd  , DEL_ANY   , F_UNITS);
+      break;
    }
    if (strcmp (x_cmd , "") != 0) {
       DEBUG_INPT   yLOG_info    ("x_cmd"     , x_cmd);
@@ -299,7 +336,7 @@ poly_shared_close       (char a_type)
       }
    }
    /*---(post-check)---------------------*/
-   if (strchr ("ft", a_type) != NULL) {
+   if (strchr ("ftu", a_type) != NULL) {
       rci = lstat (x_used, &st);
       DEBUG_INPT   yLOG_value   ("lstat"     , rci);
       --rce; if (rci >= 0) {
@@ -591,6 +628,63 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
          return rce;
       }
    }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_recd      [LEN_RECD]  = "";
+   char       *p           = NULL;
+   char       *q           = "";
+   char       *r           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_curr"    , a_curr);
+   --rce;  if (a_curr == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_name"    , a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   strlcpy (a_name, "", LEN_TITLE);
+   /*---(prepare)---------------------*/
+   strlcpy (x_recd, a_curr, LEN_RECD);
+   /*---(get verb)-----------------------*/
+   p = strtok_r (x_recd, q, &r);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_note    ("can not find verb field, SKIP");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   strlcpy  (a_verb, p, LEN_TITLE);
+   strltrim (a_verb, ySTR_BOTH, LEN_TITLE);
+   DEBUG_INPT   yLOG_info    ("a_verb"    , a_verb);
+   /*---(skip gap)-----------------------*/
+   p = strtok_r (NULL  , q, &r);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get function)-------------------*/
+   p = strtok_r (NULL  , q, &r);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_note    ("can not find name field, SKIP");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   strlcpy  (a_name, p, LEN_TITLE);
+   strltrim (a_name, ySTR_BOTH, LEN_TITLE);
+   DEBUG_INPT   yLOG_info    ("a_name"    , a_name);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;

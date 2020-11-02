@@ -29,9 +29,9 @@ poly_func__wipe         (tFUNC *a_dst)
    a_dst->prev        = NULL;
    a_dst->next        = NULL;
    a_dst->work        = NULL;
-   a_dst->head        = NULL;
-   a_dst->tail        = NULL;
-   a_dst->count       = 0;
+   a_dst->y_head      = NULL;
+   a_dst->y_tail      = NULL;
+   a_dst->y_count     = 0;
    /*---(clear counts/stats)-------------*/
    poly_cats_counts_clear (a_dst->counts);
    poly_cats_stats_clear  (a_dst->stats);
@@ -409,6 +409,13 @@ poly_func_del           (tFUNC **a_func)
       return rce;
    }
    DEBUG_DATA   yLOG_note    ((*a_func)->name);
+   /*---(purge ylib links)---------------*/
+   rc = poly_ylib_purge_func (*a_func);
+   DEBUG_DATA   yLOG_value   ("purge ylib", rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(out of linked list)-------------*/
    rc = poly_func__unhook (*a_func);
    DEBUG_DATA   yLOG_value   ("unhook"    , rc);
@@ -419,13 +426,6 @@ poly_func_del           (tFUNC **a_func)
    /*---(btree)--------------------------*/
    rc = poly_btree_unhook (&((*a_func)->btree));
    DEBUG_DATA   yLOG_value   ("un-btree"  , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(purge ylib links)---------------*/
-   rc = poly_ylib_purge_tag  (*a_func);
-   DEBUG_DATA   yLOG_value   ("purge ylib", rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -535,6 +535,27 @@ poly_func_inside        (tFUNC *a_func)
 /*===----                           searching                          ----===*/
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
+
+int poly_func_count         (void) { return poly_btree_count (B_FUNCS); }
+
+char
+poly_func_by_name       (uchar *a_name, tFUNC **a_func)
+{
+   if (a_func == NULL)   return -1;
+   *a_func = (tFUNC *) poly_btree_search  (B_FUNCS, a_name);
+   if (*a_func == NULL)  return -2;
+   return 0;
+}
+
+char
+poly_func_by_index      (int n, tFUNC **a_func)
+{
+   if (a_func == NULL)   return -1;
+   *a_func = (tFUNC *) poly_btree_entry (B_FUNCS, n);
+   if (*a_func == NULL)  return -2;
+   return 0;
+}
+
 
 char
 poly_func_by_line       (tFILE *a_file, int a_line, tFUNC **a_func)
@@ -1164,7 +1185,7 @@ poly_func__unit         (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "FUNC unit        : function number unknown");
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "FUNC count       : %3d", poly_btree_count (B_FUNCS));
+      snprintf (unit_answer, LEN_RECD, "FUNC count       : %3d", poly_func_count ());
       return unit_answer;
    }
    else if (strcmp (a_question, "print"     )     == 0) {
@@ -1176,7 +1197,7 @@ poly_func__unit         (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "FUNC unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "head"      )     == 0) {
-      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          sprintf  (r, "[%.40s]", u->purpose);
@@ -1185,7 +1206,7 @@ poly_func__unit         (char *a_question, int i)
          snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : []                     []         0[]                                          -", i);
    }
    else if (strcmp (a_question, "entry"     )     == 0) {
-      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          if (u->work != NULL)  snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->line, u->type, u->WORK_BEG, u->WORK_END);
@@ -1193,15 +1214,17 @@ poly_func__unit         (char *a_question, int i)
       } else                   snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s   -  -  -        -    -", i, t);
    }
    else if (strcmp (a_question, "stats"     )     == 0) {
-      u = (tFUNC *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         if (u->WORK_BEG    >= 0)  sprintf  (r, "%3d",     u->WORK_BEG);
-         if (u->WORK_END    >= 0)  sprintf  (s, "%3d",     u->WORK_END);
-         if (u->WORK_LVARS  >  0)  sprintf  (q, "%3d",     u->WORK_LVARS );
-         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   ·   %3d %3d %3d %3d %3d %3d   %3d %s %s   %s", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL, u->line, r, s, q);
+         if (u->work != NULL) {
+            if (u->WORK_BEG    >= 0)  sprintf  (r, "%3d",     u->WORK_BEG);
+            if (u->WORK_END    >= 0)  sprintf  (s, "%3d",     u->WORK_END);
+            if (u->WORK_LVARS  >  0)  sprintf  (q, "%3d",     u->WORK_LVARS );
+         }
+         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   · %3d   %3d %3d %3d %3d %3d %3d   %3d %s %s %s", i, t, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL, u->line, r, s, q);
       }  else
-         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   ·     -   -   -   -   -   -     -   -   -     -", i, t);
+         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   ·   -     -   -   -   -   -   -     -   -   -   -", i, t);
    }
    /*---(complete)-----------------------*/
    return unit_answer;

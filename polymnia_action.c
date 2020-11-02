@@ -330,7 +330,7 @@ poly_action_extern      (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   tEXTERN    *x_extern    = NULL;
+   tEXTERN    *x_ext       = NULL;
    int         x_len       =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
@@ -350,15 +350,15 @@ poly_action_extern      (void)
       return rce;
    }
    /*---(find target)--------------------*/
-   x_extern = poly_extern_search (my.g_extern);
-   DEBUG_PROG   yLOG_point   ("x_extern"   , x_extern);
-   --rce;  if (x_extern == NULL) {
+   poly_extern_by_name (my.g_extern, &x_ext);
+   DEBUG_PROG   yLOG_point   ("x_ext"      , x_ext);
+   --rce;  if (x_ext == NULL) {
       DEBUG_PROG   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   DEBUG_PROG   yLOG_point   ("->name"     , x_extern->name);
+   DEBUG_PROG   yLOG_point   ("->name"     , x_ext->name);
    /*---(read database)------------------*/
-   rc = poly_rptg_extern (x_extern);
+   rc = poly_rptg_extern (x_ext);
    DEBUG_PROG   yLOG_value   ("rptg"       , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

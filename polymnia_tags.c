@@ -114,7 +114,11 @@ poly_tags_inventory     (tFILE *a_file)
    char        rce         =  -10;           /* return code for errors         */
    int         rc          =    0;           /* generic return code            */
    char        x_recd      [LEN_RECD];      /* input record                   */
+   char        x_name      [LEN_TITLE];
+   int         x_line      =    0;
+   char        x_type      =  '-';
    int         x_len       =    0;             /* length of input record         */
+   char        t           [LEN_TITLE];
    int         c           =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -134,31 +138,46 @@ poly_tags_inventory     (tFILE *a_file)
    /*---(walk tags)----------------------*/
    while (1) {
       /*---(read)------------------------*/
-      fgets  (x_recd, LEN_RECD, my.f_ctags);
-      if (feof (my.f_ctags)) {
-         DEBUG_INPT   yLOG_note    ("end of file");
+      rc = poly_shared_read ('t', NULL, x_recd, NULL);
+      DEBUG_INPT   yLOG_value   ("read"      , rc);
+      if (rc < 0)  {
+         DEBUG_INPT   yLOG_note    ("reading of line failed or eof");
          break;
       }
-      /*---(filter)----------------------*/
-      x_len = strlen (x_recd);
-      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-      if (x_len < 10) {
-         DEBUG_INPT   yLOG_note    ("too short, SKIP");
-         continue;
+      /*---(parse)-----------------------*/
+      rc = poly_shared_parse_tags (x_recd, x_name, &x_type, &x_line, NULL);
+      DEBUG_INPT   yLOG_value   ("read"      , rc);
+      if (rc < 0)  {
+         DEBUG_INPT   yLOG_note    ("reading of line failed or eof");
+         break;
       }
-      x_recd [--x_len] = '\0';
-      DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
+      /*---(handle locals)------------------*/
+      if (x_type == 'l') {
+         DEBUG_INPT   yLOG_note    ("found a local");
+         if (a_file->tail == NULL) {
+            DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+            return rce;
+         }
+         DEBUG_INPT   yLOG_info    ("local for" , a_file->tail->name);
+         ++(a_file->tail->WORK_LVARS );
+         sprintf (t, " %s ", x_name);
+         strlcat (a_file->tail->WORK_LOCALS, t, LEN_RECD);
+      }
+      /*---(handle prototype)---------------*/
+      else if (x_type == 'p') {
+         DEBUG_INPT   yLOG_note    ("found a prototype");
+         rc = poly_proto_push (a_file, x_line, x_name);
+      }
       /*---(name)------------------------*/
-      rc = poly_tags__handler (a_file, x_recd);
-      if (rc < 0) {
-         DEBUG_INPT   yLOG_note    ("something wrong with record");
-         continue;
+      else if (x_type == 'f') {
+         DEBUG_INPT   yLOG_note    ("found a function header");
+         if (strncmp ("o___", x_name, 4) == 0)   x_type = '_';
+         DEBUG_INPT   yLOG_char    ("type"      , x_type);
+         rc = poly_func_add (a_file, x_name, x_type, x_line, NULL);
       }
       /*---(done)------------------------*/
-      ++c;
    }
    /*---(wrapup)-------------------------*/
-   /*> rc = poly_tags__cleanup ();                                                    <*/
    rc = poly_shared_close ('t');
    DEBUG_INPT   yLOG_value   ("cleanup"   , rc);
    --rce;  if (rc < 0) {
@@ -166,57 +185,9 @@ poly_tags_inventory     (tFILE *a_file)
       return  rce;
    }
    /*---(summary)------------------------*/
-   DEBUG_INPT   yLOG_value   ("c"         , c);
-   DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_FUNCS));
+   DEBUG_INPT   yLOG_value   ("count"     , poly_func_count ());
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                     detailed code review                     ----===*/
-/*====================------------------------------------====================*/
-static void  o___REVIEW__________o () { return; }
-
-
-
-char
-poly_tags_addylib       (tFUNC *a_tag, tYLIB *a_ylib)
-{
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_tag);
-   if (a_tag == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
-      return -1;
-   }
-   DEBUG_DATA   yLOG_spoint  (a_ylib);
-   if (a_ylib == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
-      return -1;
-   }
-   /*---(into linked list)---------------*/
-   DEBUG_DATA   yLOG_spoint  (a_tag->head);
-   DEBUG_DATA   yLOG_spoint  (a_tag->tail);
-   if (a_tag->head  == NULL) {
-      DEBUG_DATA   yLOG_snote   ("first");
-      a_tag->head  = a_tag->tail  = a_ylib;
-   } else {
-      DEBUG_DATA   yLOG_snote   ("append");
-      a_ylib->tprev      = a_tag->tail;
-      a_tag->tail->tnext = a_ylib;
-      a_tag->tail        = a_ylib;
-   }
-   /*---(tie tag back to file)-----------*/
-   a_ylib->tag   = a_tag;
-   /*---(update count)-------------------*/
-   ++(a_tag->count);
-   DEBUG_DATA   yLOG_sint    (a_tag->count);
-   /*---(complete)------------------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -237,7 +208,7 @@ poly_tags__unit      (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "TAGS unit        : tags number unknown");
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "TAGS count       : %3d", poly_btree_count (B_FUNCS));
+      snprintf (unit_answer, LEN_RECD, "TAGS count       : %3d", poly_func_count ());
       return unit_answer;
    }
    if (strncmp (unit_answer, "TAGS unit        :", 18) != 0)  return unit_answer;
@@ -245,7 +216,7 @@ poly_tags__unit      (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "TAGS unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "entry"     )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          if (u->work != NULL)  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->line, u->type, u->WORK_BEG, u->WORK_END);
@@ -253,7 +224,7 @@ poly_tags__unit      (char *a_question, int i)
       } else                   snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s   -  -  -        -    -", i, t);
    }
    else if (strcmp (a_question, "stats"     )     == 0) {
-      u = (tFILE *) poly_btree_entry (B_FUNCS, i);
+      poly_func_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
          snprintf (unit_answer, LEN_RECD, "TAGS stats  (%2d) : %-22.22s     ·   ·   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
