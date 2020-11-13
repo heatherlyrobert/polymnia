@@ -13,99 +13,98 @@ static struct cPOS    {
    char        pos;                         /* position in major group        */
    char        name        [LEN_LABEL];     /* short description              */
    char        desc        [LEN_LABEL];     /* longer description             */
-   int         beg;                         /* short-cut to valid entries     */
-   int         count;                       /* count of valid entries         */
+   int         n;                           /* statistics entry               */
 } s_cats [MAX_CATS] = {
    /*===[[ PREFIX ]]=============================================*/
    /*--  -123456-   -123456789012345678901234567890- */
-   {  0,  1,  0, "oneline", "one line function"               , 0, 0 },
+   {  0,  1,  0, "oneline", "one line function"               ,  0 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP ONE -- COMPLEXITY ]]============================*/
-   {  1,  0,  0, "-----"  , "complexity"                      , 0, 0 },
+   {  1,  0,  0, "-----"  , "complexity"                      , -1 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  1,  1, "scope"  , "function scope"                  , 0, 0 },
-   {  1,  1,  2, "rtype"  , "return type"                     , 0, 0 },
-   {  1,  1,  3, "nparam" , "number of parameters"            , 0, 0 },
-   {  1,  1,  4, "pnum"   , "params use number pointers"      , 0, 0 },
-   {  1,  1,  5, "ptwo"   , "params use double pointers"      , 0, 0 },
-   {  1,  1,  6, "proto"  , "prototype location"              , 0, 0 },
+   {  1,  1,  1, "scope"  , "function scope"                  ,  1 },
+   {  1,  1,  2, "rtype"  , "return type"                     ,  2 },
+   {  1,  1,  3, "nparam" , "number of parameters"            ,  3 },
+   {  1,  1,  4, "pnum"   , "params use number pointers"      ,  4 },
+   {  1,  1,  5, "ptwo"   , "params use double pointers"      ,  5 },
+   {  1,  1,  6, "proto"  , "prototype location"              ,  6 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  2,  7, "total"  , "total lines of any type"         , 0, 0 },
-   {  1,  2,  8, "debug"  , "debugging lines"                 , 0, 0 },
-   {  1,  2,  9, "slocl"  , "source lines of code logical"    , 0, 0 },
+   {  1,  2,  7, "total"  , "total lines of any type"         ,  7 },
+   {  1,  2,  8, "debug"  , "debugging lines"                 ,  8 },
+   {  1,  2,  9, "slocl"  , "source lines of code logical"    ,  9 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  3, 10, "Lvars"  , "number of local vars used"       , 0, 0 },
-   {  1,  3, 11, "Fvars"  , "number of file vars used"        , 0, 0 },
-   {  1,  3, 12, "Gvars"  , "number of global vars used"      , 0, 0 },
+   {  1,  3, 10, "Lvars"  , "number of local vars used"       , 10 },
+   {  1,  3, 11, "Fvars"  , "number of file vars used"        , 11 },
+   {  1,  3, 12, "Gvars"  , "number of global vars used"      , 12 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  4, 13, "choice" , "number of choices/decisions"     , 0, 0 },
-   {  1,  4, 14, "return" , "number of return/exit points"    , 0, 0 },
-   {  1,  4, 15, "indent" , "depth of indentation"            , 0, 0 },
-   {  1,  4, 16, "memory" , "memory management used"          , 0, 0 },
+   {  1,  4, 13, "choice" , "number of choices/decisions"     , 13 },
+   {  1,  4, 14, "loop"   , "number of loops"                 , 57 },
+   {  1,  4, 15, "return" , "number of return/exit points"    , 14 },
+   {  1,  4, 16, "error"  , "return with errors"              , 56 },
+   {  1,  4, 17, "indent" , "depth of indentation"            , 15 },
+   {  1,  4, 18, "memory" , "memory management used"          , 16 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP TWO -- INTEGRATION ]]===========================*/
-   {  2,  0,  0, "-----"  , "integration"                     , 0, 0 },
+   {  2,  0,  0, "-----"  , "integration"                     , -1 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  1,  1, "called" , "called by anything else"         , 0, 0 },
-   {  2,  1,  2, "Fcaller", "called by local functions"       , 0, 0 },
-   {  2,  1,  3, "Gcaller", "called by global functions"      , 0, 0 },
-   {  3,  1,  4, "Xcaller", "called by external programs"     , 0, 0 },
-   {  2,  1,  5, "recurse", "function is recursive"           , 0, 0 },
+   {  2,  1,  1, "called" , "called by anything else"         , 17 },
+   {  2,  1,  2, "Fcaller", "called by local functions"       , 18 },
+   {  2,  1,  3, "Gcaller", "called by global functions"      , 19 },
+   {  3,  1,  4, "Xcaller", "called by external programs"     , 20 },
+   {  2,  1,  5, "recurse", "function is recursive"           , 21 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  2,  6, "funcs"  , "calls to any/all functions"      , 0, 0 },
-   {  2,  2,  7, "Dfuncs" , "calls to debugging functions"    , 0, 0 },
+   {  2,  2,  6, "funcs"  , "calls to any/all functions"      , 22 },
+   {  2,  2,  7, "Dfuncs" , "calls to debugging functions"    , 23 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  3,  8, "Rfuncs" , "calls to real/non-debug"         , 0, 0 },
-   {  2,  3,  9, "Ffuncs" , "calls to local functions"        , 0, 0 },
-   {  2,  3, 10, "Gfuncs" , "calls to global functions"       , 0, 0 },
-   {  2,  3, 11, "cstd"   , "calls to c-std libraries"        , 0, 0 },
-   {  2,  3, 12, "ylib"   , "calls to my custom libraries"    , 0, 0 },
-   {  2,  3, 13, "Ofuncs" , "calls to other libraries"        , 0, 0 },
-   {  2,  3, 14, "mystry" , "calls to unknown functions"      , 0, 0 },
+   {  2,  3,  8, "Rfuncs" , "calls to real/non-debug"         , 24 },
+   {  2,  3,  9, "Ffuncs" , "calls to local functions"        , 25 },
+   {  2,  3, 10, "Gfuncs" , "calls to global functions"       , 26 },
+   {  2,  3, 11, "cstd"   , "calls to c-std libraries"        , 27 },
+   {  2,  3, 12, "ylib"   , "calls to my custom libraries"    , 28 },
+   {  2,  3, 13, "Ofuncs" , "calls to other libraries"        , 29 },
+   {  2,  3, 14, "mystry" , "calls to unknown functions"      , 30 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  4, 15, "input"  , "stdin and file input"            , 0, 0 },
-   {  2,  4, 16, "output" , "stdout and file output"          , 0, 0 },
-   {  2,  4, 17, "system" , "unix process or system calls"    , 0, 0 },
+   {  2,  4, 15, "input"  , "stdin and file input"            , 31 },
+   {  2,  4, 16, "output" , "stdout and file output"          , 32 },
+   {  2,  4, 17, "system" , "unix process or system calls"    , 33 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  5, 18, "ncurses", "ncurses function calls"          , 0, 0 },
-   {  2,  5, 19, "opengl" , "opengl function calls"           , 0, 0 },
-   {  2,  5, 20, "windows", "x11 and like functions calls"    , 0, 0 },
-   {  2,  5, 21, "ygraph" , "my x11/opengl support libs"      , 0, 0 },
+   {  2,  5, 18, "ncurses", "ncurses function calls"          , 34 },
+   {  2,  5, 19, "opengl" , "opengl function calls"           , 35 },
+   {  2,  5, 20, "windows", "x11 and like functions calls"    , 36 },
+   {  2,  5, 21, "ygraph" , "my x11/opengl support libs"      , 37 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP THREE -- WATCH POINTS ]]========================*/
-   {  3,  0,  0, "-----"  , "watch-points"                    , 0, 0 },
+   {  3,  0,  0, "-----"  , "watch-points"                    , -1 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  1,  1, "Dstyle" , "debugging style"                 , 0, 0 },
-   {  3,  1,  2, "Dmacro" , "debugging macros used"           , 0, 0 },
-   {  3,  1,  3, "Dmatch" , "debugging enter/exit match"      , 0, 0 },
-   {  2,  1,  4, "Dfuncs" , "calls to debugging functions"    , 0, 0 },
-   {  3,  1,  5, "Dwarn"  , "debugging trouble marker"        , 0, 0 },
+   {  3,  1,  1, "Dstyle" , "debugging style"                 , 38 },
+   {  3,  1,  2, "Dmacro" , "debugging macros used"           , 39 },
+   {  3,  1,  3, "Dmatch" , "debugging enter/exit match"      , 40 },
+   {  2,  1,  4, "Dfuncs" , "calls to debugging functions"    , 23 },
+   {  3,  1,  5, "Dwarn"  , "debugging trouble marker"        , 42 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  2,  6, "P#use"  , "potential #define macros"        , 0, 0 },
-   {  3,  2,  7, "F#use"  , "file #define macro use"          , 0, 0 },
-   {  3,  2,  8, "G#use"  , "global #define macro use"        , 0, 0 },
-   {  3,  2,  9, "M#use"  , "cstd/major #define macro use"    , 0, 0 },
-   {  3,  2, 10, "Y#use"  , "ylib #define macro use"          , 0, 0 },
-   {  3,  2, 11, "O#use"  , "unknown/other macros"            , 0, 0 },
+   {  3,  2,  6, "P#use"  , "potential #define macros"        , 43 },
+   {  3,  2,  7, "F#use"  , "file #define macro use"          , 44 },
+   {  3,  2,  8, "G#use"  , "global #define macro use"        , 45 },
+   {  3,  2,  9, "M#use"  , "cstd/major #define macro use"    , 46 },
+   {  3,  2, 10, "Y#use"  , "ylib #define macro use"          , 47 },
+   {  3,  2, 11, "O#use"  , "unknown/other macros"            , 48 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  3, 12, "Vmask"  , "vars masking other vars"         , 0, 0 },
-   {  3,  3, 13, "Mmask"  , "macros masking other macros"     , 0, 0 },
-   {  3,  3, 14, "Fmask"  , "funcs masking other funcs"       , 0, 0 },
-   {  3,  3, 15, "Lstatic", "local static variables"          , 0, 0 },
+   {  3,  3, 12, "Vmask"  , "vars masking other vars"         , 49 },
+   {  3,  3, 13, "Mmask"  , "macros masking other macros"     , 50 },
+   {  3,  3, 14, "Fmask"  , "funcs masking other funcs"       , 51 },
+   {  3,  3, 15, "Lstatic", "local static variables"          , 52 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  4, 16, "units"  , "count of unit tests used"        , 0, 0 },
-   {  3,  4, 17, "scrps"  , "count of unit scripts used"      , 0, 0 },
-   {  3,  4, 18, "steps"  , "count of unit steps used"        , 0, 0 },
-   {  3,  4, 19, "·"      , ""                                , 0, 0 },
-   {  3,  4, 20, "·"      , ""                                , 0, 0 },
-   {  3,  4, 21, "·"      , ""                                , 0, 0 },
+   {  3,  4, 16, "units"  , "count of unit tests used"        , 53 },
+   {  3,  4, 17, "scrps"  , "count of unit scripts used"      , 54 },
+   {  3,  4, 18, "steps"  , "count of unit steps used"        , 55 },
+   {  3,  4, 19, "·"      , ""                                , -1 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*--  -123456-   -123456789012345678901234567890- */
-   { -1, -1, -1, ""       , ""                                , 0, 0 },
+   { -1, -1, -1, ""       , ""                                , -1 },
    /*--  -123456-   -123456789012345678901234567890- */
 };
 
@@ -115,79 +114,128 @@ static struct cPOS    {
 struct cLABEL {
    char        grp;
    char        pos;
-   char        value;
+   char        low;
+   char        high;
+   char        terse       [LEN_TERSE];
    char        desc        [LEN_TITLE];
 } s_labels [MAX_LABELS] = {
    /*--   -   -123456789012345678901234567890- */
-   { 1,  1, 'e', "extern (library)"               },
-   { 1,  1, 'g', "global (program wide)"          },
-   { 1,  1, 'f', "file (implicit file only)"      },
-   { 1,  1, 's', "static (explicit static)"       },
-   { 1,  1, 'u', "unit test (special global)"     },
+   { 1,  1, 'e', 'e', "extern" ,  "extern (library)"               },
+   { 1,  1, 'g', 'g', "global" ,  "global (program wide)"          },
+   { 1,  1, 'f', 'f', "file"   ,  "file (implicit file only)"      },
+   { 1,  1, 's', 's', "static" ,  "static (explicit static)"       },
+   { 1,  1, 'u', 'u', "unit"   ,  "unit test (special global)"     },
    /*--   -   -123456789012345678901234567890- */
-   { 1,  2, 's', "string (char*)"                 },
-   { 1,  2, 'c', "character (char)"               },
-   { 1,  2, 'v', "void (nothing)"                 },
-   { 1,  2, 'p', "pointer (* of any type)"        },
-   { 1,  2, 'n', "number (int or real)"           },
-   { 1,  2, 'o', "other/unknown"                  },
+   { 1,  2, 's', 's', "string" ,  "string (char*)"                 },
+   { 1,  2, 'c', 'c', "char"   ,  "character (char)"               },
+   { 1,  2, 'v', 'v', "void"   ,  "void (nothing)"                 },
+   { 1,  2, 'p', 'p', "point"  ,  "pointer (* of any type)"        },
+   { 1,  2, 'n', 'n', "number" ,  "number (int or real)"           },
+   { 1,  2, 'o', 'o', "other"  ,  "other/unknown"                  },
    /*--   -   -123456789012345678901234567890- */
-   { 1,  3, '*', "none (dangerous)"               },
-   { 1,  3, '0', "void (explicit none)"           },
-   { 1,  3, '9', "explicit one to nine"           },
-   { 1,  3, '#', "more than nine (wow)"           },
+   { 1,  3, '#', '#', "JESUS"  ,  "out of control"                 },
+   { 1,  3, '*', '*', "DANGER" ,  "none (dangerous)"               },
+   { 1,  3, '0', '0', "void"   ,  "void (explicit none)"           },
+   { 1,  3, '1', '3', "low"    ,  "common, just a feww"            },
+   { 1,  3, '4', '6', "mid"    ,  "much more detailed"             },
+   { 1,  3, '7', '9', "HIGH"   ,  "many and dangerous"             },
    /*--   -   -123456789012345678901234567890- */
-   { 1,  4, '-', "no lines in function"           },
-   { 1,  4, 'Z', "line scale by fives"            },
-   { 1,  4, '#', "more than 180 lines"            },
+   { 1,  6, 'g', 'g', "global" ,  "global header"                  },
+   { 1,  6, 'f', 'f', "file"   ,  "top of file"                    },
    /*--   -   -123456789012345678901234567890- */
-   { 1,  5, '-', "no debug lines in function"     },
-   { 1,  5, 'Z', "debug line scale by fives"      },
-   { 1,  5, '#', "more than 180 debug lines"      },
+   { 1,  7, '#', '#', "JESUS"  ,  "more than 120 lines"            },
+   { 1,  7, '1', '4', "small"  ,  "less than 20 lines"             },
+   { 1,  7, '5', '9', "-"      ,  "20 to 40 lines"                 },
+   { 1,  7, 'A', 'D', "full"   ,  "40 to 60 lines"                 },
+   { 1,  7, 'E', 'H', "large"  ,  "60 to 80 lines"                 },
+   { 1,  7, 'I', 'N', "huge"   ,  "80 to 120 lines"                },
+   { 1,  7, 'O', 'Z', "JESUS"  ,  "more than 120 lines"            },
    /*--   -   -123456789012345678901234567890- */
-   { 1,  6, '-', "no slocl lines in function"     },
-   { 1,  6, 'Z', "slocl line scale by fives"      },
-   { 1,  6, '#', "more than 180 slocl lines"      },
+   { 1,  8, '1', '1', "low"    ,  "just a smidge"                  },
+   { 1,  8, '2', '4', "-"      ,  "average seems 25%"              },
+   { 1,  8, '5', '7', "high"   ,  "high percentage"                },
+   { 1,  8, 'A', 'A', "warn"   ,  "all debugging"                  },
    /*--   -   -123456789012345678901234567890- */
-   { 1,  7, '-', "no local variables"             },
-   { 1,  7, 'z', "local variables on scale"       },
-   { 1,  7, '#', "more than 36 local vars"        },
+   { 1,  9, '1', '3', "low"    ,  "very little real code"          },
+   { 1,  9, '4', '7', "-"      ,  "average seems 40-60%"           },
+   { 1,  9, '8', '9', "high"   ,  "high percentage"                },
+   { 1,  9, 'A', 'A', "warn"   ,  "no comments, no debug"          },
    /*--   -   -123456789012345678901234567890- */
-   { 1,  8, '-', "no decision/choices"            },
-   { 1,  8, 'z', "decisions on scale"             },
-   { 1,  8, '#', "more than 36 decisions"         },
+   { 1, 10, '#', '#', "JESUS"  ,  "tons of local variables"        },
+   { 1, 10, '1', '3', "few"    ,  "just a couple to work"          },
+   { 1, 10, '4', '6', "-"      ,  "moderate amount"                },
+   { 1, 10, '7', '9', "heavy"  ,  "clearly working harder"         },
+   { 1, 10, 'A', 'Z', "JESUS"  ,  "tons of local variables"        },
    /*--   -   -123456789012345678901234567890- */
-   { 1,  9, '-', "no returns"                     },
-   { 1,  9, 'z', "returns on scale"               },
-   { 1,  9, '#', "more than 36 returns"           },
+   { 1, 11, '#', '#', "JESUS"  ,  "tons of shared variables"       },
+   { 1, 11, '1', '3', "few"    ,  "touching shared"                },
+   { 1, 11, '4', '6', "-"      ,  "moderate amount"                },
+   { 1, 11, '7', '9', "heavy"  ,  "dangerous sharing"              },
+   { 1, 11, 'A', 'Z', "JESUS"  ,  "tons of shared variables"       },
    /*--   -   -123456789012345678901234567890- */
-   { 1, 10, '-', "no indentation"                 },
-   { 1, 10, 'Z', "indents on scale by threes"     },
-   { 1, 10, '#', "more than 36 indents"           },
+   { 1, 12, '#', '#', "JESUS"  ,  "tons of global variables"       },
+   { 1, 12, '1', '2', "-"      ,  "touching global"                },
+   { 1, 12, '3', '6', "lots"   ,  "moderate amount"                },
+   { 1, 12, '7', '9', "heavy"  ,  "dangerous sharing"              },
+   { 1, 12, 'A', 'Z', "JESUS"  ,  "tons of global variables"       },
    /*--   -   -123456789012345678901234567890- */
-   { 1, 11, '-', "no dynamic memory mgmt"         },
-   { 1, 11, '#', "uses malloc/free"               },
+   { 1, 13, '#', '#', "JESUS"  ,  "more than 36 decisions"         },
+   { 1, 13, '1', '3', "-"      ,  "just a couple decisions"        },
+   { 1, 13, '4', '9', "lots"   ,  "lots of decisions"              },
+   { 1, 13, 'A', 'Z', "JESUS"  ,  "tons of decision logic"         },
    /*--   -   -123456789012345678901234567890- */
-   { 2,  8, '-', "no input"                       },
-   { 2,  8, 'i', "stdin input"                    },
-   { 2,  8, 'r', "text file input"                },
-   { 2,  8, 'R', "binary file input (fread)"      },
+   { 1, 14, '#', '#', "JESUS"  ,  ""                               },
+   { 1, 14, '1', '1', "-"      ,  ""                               },
+   { 1, 14, '2', '3', "few"    ,  ""                               },
+   { 1, 14, '4', '9', "think"  ,  ""                               },
+   { 1, 14, 'A', 'Z', "JESUS"  ,  ""                               },
    /*--   -   -123456789012345678901234567890- */
-   { 2,  9, '-', "no output"                      },
-   { 2,  9, 'o', "stdin output"                   },
-   { 2,  9, 'w', "text file output"               },
-   { 2,  9, 'W', "binary file output (fwrite)"    },
+   { 1, 15, '#', '#', "JESUS"  ,  ""                               },
+   { 1, 15, '1', '3', "-"      ,  ""                               },
+   { 1, 15, '4', '9', "think"  ,  ""                               },
+   { 1, 15, 'A', 'Z', "JESUS"  ,  ""                               },
    /*--   -   -123456789012345678901234567890- */
-   { 2, 10, '-', "no system access"               },
-   { 2, 10, 'f', "filesystem access"              },
-   { 2, 10, 'p', "process control"                },
-   { 2, 10, 's', "linux system calls"             },
-   { 2, 10, 'B', "both process/system calls"      },
+   { 1, 16, '#', '#', "alloc"  ,  "uses malloc/free"               },
    /*--   -   -123456789012345678901234567890- */
-   { 2, 11, '-', "no recursion"                   },
-   { 2, 11, '#', "recursive function"             },
+   /*> { 2,  8, '-', ""       ,  "no input"                       },                  <* 
+    *> { 2,  8, 'i', ""       ,  "stdin input"                    },                  <* 
+    *> { 2,  8, 'r', ""       ,  "text file input"                },                  <* 
+    *> { 2,  8, 'R', ""       ,  "binary file input (fread)"      },                  <*/
    /*--   -   -123456789012345678901234567890- */
-   { 0,  0,  0 , ""                               },
+   /*> { 2,  9, '-', ""       ,  "no output"                      },                  <* 
+    *> { 2,  9, 'o', ""       ,  "stdin output"                   },                  <* 
+    *> { 2,  9, 'w', ""       ,  "text file output"               },                  <* 
+    *> { 2,  9, 'W', ""       ,  "binary file output (fwrite)"    },                  <*/
+   /*--   -   -123456789012345678901234567890- */
+   /*> { 2, 10, '-', ""       ,  "no system access"               },                  <* 
+    *> { 2, 10, 'f', ""       ,  "filesystem access"              },                  <* 
+    *> { 2, 10, 'p', ""       ,  "process control"                },                  <* 
+    *> { 2, 10, 's', ""       ,  "linux system calls"             },                  <* 
+    *> { 2, 10, 'B', ""       ,  "both process/system calls"      },                  <*/
+   /*--   -   -123456789012345678901234567890- */
+   /*> { 2, 11, '-', ""       ,  "no recursion"                   },                  <* 
+    *> { 2, 11, '#', ""       ,  "recursive function"             },                  <*/
+   /*--   -   -123456789012345678901234567890- */
+   /*--   -   -123456789012345678901234567890- */
+   /*--DSTYLE--------------------------------- */
+   { 3,  1, 'l', 'l', "long"   ,  ""                               },
+   { 3,  1, 's', 's', "short"  ,  ""                               },
+   { 3,  1, 'b', 'b', "BOTH"   ,  ""                               },
+   /*--DMACRO--------------------------------- */
+   { 3,  2, '!', '!', "MIXED"  ,  ""                               },
+   { 3,  2, 'a', 'z', "-"      ,  ""                               },
+   { 3,  2, 'A', 'Z', "mas"    ,  ""                               },
+   /*--DMATCH--------------------------------- */
+   { 3,  3, 'e', 'e', "ENTERS" ,  ""                               },
+   { 3,  3, 'E', 'E', "ENTERS" ,  ""                               },
+   { 3,  3, 'x', 'x', "EXITS"  ,  ""                               },
+   { 3,  3, 'X', 'X', "EXITS"  ,  ""                               },
+   { 3,  3, 's', 's', "SHORT"  ,  ""                               },
+   { 3,  3, 'y', 'y', "-"      ,  ""                               },
+   /*--DWARN---------------------------------- */
+   { 3,  5, '#', '#', "BOOM"   ,  ""                               },
+   /*--   -   -123456789012345678901234567890- */
+   { 0,  0,  0 , 0 , ""       ,  ""                               },
 };
 
 
@@ -306,17 +354,23 @@ poly_cats_logic    (tFUNC *a_tag, char a_type)
 {
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    switch (a_type) {
-   case 'r' :
+   case 'R' :  /* return with errors */
+      IN_TAG  ++(a_tag->WORK_RCE);    
+   case 'r' :  /* normal return */
       IN_TAG  ++(a_tag->WORK_RETURN);
       break;
-   case 'c' :
+   case 'c' :  /* if, switch */
       IN_TAG  ++(a_tag->WORK_CHOICE);
       break;
-   case 'C' :
-      IN_TAG  ++(a_tag->WORK_CHOICE);
-      a_tag->file->COUNT_SLOCL -= 2;
-      a_tag->file->proj->COUNT_SLOCL -= 2;
-      IN_TAG  (a_tag->COUNT_SLOCL) -= 2;
+   case 'l' :  /* do, until */
+      IN_TAG  ++(a_tag->WORK_LOOP);
+      ++(a_tag->file->COUNT_SLOCL);
+      break;
+   case 'L' :  /* for (remove one semi-colon from SLOCL */
+      IN_TAG  ++(a_tag->WORK_LOOP);
+      --(a_tag->file->COUNT_SLOCL);
+      --(a_tag->file->proj->COUNT_SLOCL);
+      IN_TAG  --(a_tag->COUNT_SLOCL);
       break;
    }
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
@@ -357,11 +411,25 @@ char
 poly_cats__group_1b     (tFUNC *a_func)
 {
    char        rce         =    0;
+   float       a           =  0.0;
+   int         b           =    0;
+   float       c           =  0.0;
+   int         d           =    0;
    --rce;  if (a_func       == NULL)  return rce;
    --rce;  if (a_func->work == NULL)  return rce;
    poly_cats_scaled  ("lines"   , a_func->COUNT_LINES, &a_func->STATS_TOTAL , '-');
-   poly_cats_scaled  ("debug"   , a_func->COUNT_DEBUG, &a_func->STATS_DEBUG , '-');
-   poly_cats_scaled  ("slocl"   , a_func->COUNT_SLOCL, &a_func->STATS_SLOCL , '-');
+   /*> poly_cats_scaled  ("debug"   , a_func->COUNT_DEBUG, &a_func->STATS_DEBUG , '-');   <*/
+   a = ((float) a_func->COUNT_DEBUG / a_func->COUNT_LINES);
+   b = round (a * 10);
+   poly_cats_exact   ("debug"   , b                  , &a_func->STATS_DEBUG , '-');
+   /*> poly_cats_scaled  ("slocl"   , a_func->COUNT_SLOCL, &a_func->STATS_SLOCL , '-');   <*/
+   c = ((float) a_func->COUNT_SLOCL / a_func->COUNT_LINES);
+   d = round (c * 10);
+   poly_cats_exact   ("slocl"   , d                  , &a_func->STATS_SLOCL , '-');
+   /*> printf ("%-15.15s %3d   %3d %4.2f %2d %c   %3d %4.2f %2d %c\n",                <* 
+    *>       a_func->name, a_func->COUNT_LINES,                                       <* 
+    *>       a_func->COUNT_DEBUG, a, b, a_func->STATS_DEBUG,                          <* 
+    *>       a_func->COUNT_SLOCL, c, d, a_func->STATS_SLOCL);                         <*/
    return 0;
 }
 
@@ -385,7 +453,10 @@ poly_cats__group_1d     (tFUNC *a_func)
    --rce;  if (a_func       == NULL)  return rce;
    --rce;  if (a_func->work == NULL)  return rce;
    poly_cats_exact   ("choices" , a_func->WORK_CHOICE, &a_func->STATS_CHOICE, '-');
-   poly_cats_exact   ("returns" , a_func->WORK_RETURN, &a_func->STATS_RETURN, '-');
+   poly_cats_exact   ("loops"   , a_func->WORK_LOOP  , &a_func->STATS_LOOP  , '-');
+   n = a_func->WORK_RETURN - a_func->WORK_RCE;
+   poly_cats_exact   ("returns" , n                  , &a_func->STATS_RETURN, '-');
+   poly_cats_exact   ("rce"     , a_func->WORK_RCE   , &a_func->STATS_RCE   , '-');
    poly_cats_flag    ("memories", a_func->WORK_MEMORY, &a_func->STATS_MEMORY, '#');
    DEBUG_INPT   yLOG_value   ("indent"    , a_func->WORK_INDENT);
    n = (a_func->WORK_INDENT / 3) - 1;
@@ -397,8 +468,8 @@ char
 poly_cats__complexity   (char a_style, tFUNC *a_func, char a_update, char *a_out)
 {
    char        rce         =    0;
-   char       *x_norm      = "[%c%c%c%c%c%c.%c%c%c.%c%c%c.%c%c%c%c]";
-   char       *x_long      = " %c %c %c %c %c %c  %c %c %c  %c %c %c  %c %c %c %c ";
+   char       *x_norm      = "[%c%c%c%c%c%c.%c%c%c.%c%c%c.%c%c%c%c%c%c]";
+   char       *x_long      = " %c %c %c %c %c %c  %c %c %c  %c %c %c  %c %c %c %c %c %c ";
    char       *p           = x_norm;
    if (a_style == 'l')  p = x_long;
    --rce;  if (a_func == NULL) {
@@ -407,7 +478,7 @@ poly_cats__complexity   (char a_style, tFUNC *a_func, char a_update, char *a_out
                '-', '-', '-', '-', '-', '-',
                '-', '-', '-',
                '-', '-', '-',
-               '-', '-', '-', '-');
+               '-', '-', '-', '-', '-', '-');
       return rce;
    }
    if (a_func->work != NULL && a_update == 'y') {
@@ -423,7 +494,8 @@ poly_cats__complexity   (char a_style, tFUNC *a_func, char a_update, char *a_out
          a_func->STATS_PTWO  , a_func->STATS_PROTO ,
          a_func->STATS_TOTAL , a_func->STATS_DEBUG , a_func->STATS_SLOCL ,
          a_func->STATS_LVARS , a_func->STATS_FVARS , a_func->STATS_GVARS ,
-         a_func->STATS_CHOICE, a_func->STATS_RETURN,
+         a_func->STATS_CHOICE, a_func->STATS_LOOP  ,
+         a_func->STATS_RETURN, a_func->STATS_RCE   ,
          a_func->STATS_INDENT, a_func->STATS_MEMORY);
    return 0;
 }
@@ -439,6 +511,7 @@ poly_cats__group_2a     (tFUNC *a_func)
    poly_cats_exact   ("lcalls"  , a_func->WORK_LCALLS, &a_func->STATS_LCALLS, '-');
    poly_cats_exact   ("gcalls"  , a_func->WORK_GCALLS, &a_func->STATS_GCALLS, '-');
    poly_cats_exact   ("ecalls"  , a_func->WORK_ECALLS, &a_func->STATS_ECALLS, '-');
+   if (a_func->STATS_SINGLE == 'y')  a_func->WORK_RECURS = 0;
    poly_cats_flag    ("recurse" , a_func->WORK_RECURS, &a_func->STATS_RECURS, '#');
    return 0;
 }
@@ -649,8 +722,8 @@ char
 poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out)
 {
    char        rce         =    0;
-   char       *x_norm      = "[%c%c%c%c%c.%c%c%c%c%c%c.%c%c%c%c.%c%c%c%c%c%c]";
-   char       *x_long      = " %c %c %c %c %c  %c %c %c %c %c %c  %c %c %c %c  %c %c %c %c %c %c ";
+   char       *x_norm      = "[%c%c%c%c%c.%c%c%c%c%c%c.%c%c%c%c.%c%c%c%c]";
+   char       *x_long      = " %c %c %c %c %c  %c %c %c %c %c %c  %c %c %c %c  %c %c %c %c ";
    char       *p           = x_norm;
    if (a_style == 'l')  p = x_long;
    --rce;  if (a_func == NULL) {
@@ -659,7 +732,7 @@ poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out
                '-', '-', '-', '-', '-',
                '-', '-', '-', '-', '-', '-',
                '-', '-', '-', '-',
-               '-', '-', '-', '-', '-', '-');
+               '-', '-', '-', '-');
       }
       return rce;
    }
@@ -678,7 +751,7 @@ poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out
          a_func->STATS_VMASK , a_func->STATS_MMASK ,
          a_func->STATS_FMASK , a_func->STATS_LSTATIC,
          a_func->STATS_TUNIT , a_func->STATS_SUNIT , a_func->STATS_NUNIT ,
-         '-', '-', '-');
+         '-');
    return 0;
 }
 
@@ -750,7 +823,8 @@ poly_cats_database      (tFUNC *a_func)
    poly_cats__integration ('l', x_func, 'y', b);
    poly_cats__watchpoints ('l', x_func, 'y', c);
    sprintf  (s_print, "%s  %s %s %s", r, a, b, c);
-   strldchg (s_print, '-', '·', LEN_RECD);
+   if (a_func->type == '_')  strldchg (s_print, '-', ' ', LEN_RECD);
+   else                      strldchg (s_print, '-', '·', LEN_RECD);
    return s_print;
 }
 
@@ -798,7 +872,9 @@ poly_cats_full          (tFUNC *a_func, char *a_out)
    poly_cats__integration ('l', x_func, 'y', b);
    poly_cats__watchpoints ('l', x_func, 'y', c);
    sprintf (a_out, "%s  %s %s %s ", r, a, b, c);
-   strldchg (a_out, '-', '·', LEN_RECD);
+   /*> strldchg (a_out, '-', '·', LEN_RECD);                                          <*/
+   if (a_func->type == '_')  strldchg (a_out, '-', ' ', LEN_RECD);
+   else                      strldchg (a_out, '-', '·', LEN_RECD);
    poly_cats__complexity  ('-', x_func, 'y', a);
    poly_cats__integration ('-', x_func, 'y', b);
    poly_cats__watchpoints ('-', x_func, 'y', c);
@@ -814,6 +890,62 @@ poly_cats_full          (tFUNC *a_func, char *a_out)
    }
    strlcat (a_out, t, LEN_RECD);
    return a_out;
+}
+
+char
+poly_cats_func          (tFUNC *a_func)
+{
+   char        rce         =  -10;
+   int         i           =    0;
+   int         j           =    0;
+   tFUNC      *x_func      = NULL;
+   char        x_sub       =    0;
+   uchar       x_ch        =  ' ';
+   uchar       x_stat      =  ' ';
+   char        x_terse     [LEN_TERSE] = "";
+   if (a_func == NULL)  poly_func_by_index (10, &x_func);
+   else                 x_func = a_func;
+   if (x_func == NULL)  return 0;
+   printf ("%s\n\n", x_func->name);
+   for (i = 0; i < MAX_CATS; ++i) {
+      /*---(end-of-data)-----------------*/
+      if (s_cats [i].grp <  0)  break;
+      /*---(group break)-----------------*/
+      if (s_cats [i].sub == 0) {
+         printf ("\n");
+         x_ch = '[';
+         x_ch = '*';
+         x_ch = '¼';
+         continue;
+      }
+      else if (s_cats [i + 1].sub <= 0) {
+         x_ch = ']';
+         x_ch = '½';
+      }
+      else if (s_cats [i].sub != x_sub && x_ch == (uchar) ' ') {
+         x_ch = '¬';
+         x_ch = '·';
+      }
+      /*---(vertical strip)--------------*/
+      strlcpy (x_terse, "", LEN_TERSE);
+      if (s_cats [i].n >= 0)  x_stat = x_func->stats [s_cats [i].n];
+      if (x_stat != '-') {
+         for (j = 0; j < MAX_LABELS; ++j) {
+            if (s_labels [j].grp   != s_cats [i].grp)  continue;
+            if (s_labels [j].pos   != s_cats [i].pos)  continue;
+            if (s_labels [j].low   >  x_stat)          continue;
+            if (s_labels [j].high  <  x_stat)          continue;
+            strlcpy (x_terse, s_labels [j].terse, LEN_TERSE);
+         }
+      }
+      else                x_stat = '·';
+      printf ("%c%-7.7s  %c  %-9.9s\n", x_ch, s_cats [i].name, x_stat, x_terse);
+      x_ch  = ' ';
+      x_sub = s_cats [i].sub;
+      /*---(done)------------------------*/
+   }
+   printf ("\n");
+   return 0;
 }
 
 

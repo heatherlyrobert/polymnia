@@ -3,10 +3,14 @@
 
 
 
+static char   s_print         [LEN_RECD] = "";
+
+
+
 /*====================------------------------------------====================*/
-/*===----                     creation/destruction                     ----===*/
+/*===----                      support functions                       ----===*/
 /*====================------------------------------------====================*/
-static void  o___EXISTANCE_______o () { return; }
+static void  o___SUPPORT_________o () { return; }
 
 static char  *s_inputs  = " getc getchar gets ungetc scanf vscanf scanf vscanf ";
 static char  *s_readers = " fopen freopen fclose fgetc fgets fscanf vfscanf ftell stello fseek fseeko fgetpos fsetpos rewind ";
@@ -75,7 +79,65 @@ poly_extern__mark        (tEXTERN *a_curr, char *a_lib, char *a_name)
 }
 
 char
-poly_extern__add         (char *a_lib, char *a_name, int a_line, char a_type)
+poly_extern__wipe        (tEXTERN *a_ext)
+{
+   a_ext->lib [0]  = '\0';
+   a_ext->name [0] = '\0';
+   a_ext->line     = -1;
+   a_ext->type     = '-';
+   a_ext->cat      = '-';
+   a_ext->sub      = '-';
+   a_ext->uses     = 0;
+   a_ext->y_head   = NULL;
+   a_ext->y_tail   = NULL;
+   a_ext->y_count  = 0;
+   a_ext->btree    = NULL;
+   return 1;
+}
+
+char*
+poly_extern__memory     (tEXTERN *a_ext)
+{
+   /*---(master)-------------------------*/
+   strlcpy (s_print, "["  , LEN_RECD);
+   poly_shared__check_str  (s_print, a_ext->lib);
+   poly_shared__check_str  (s_print, a_ext->name);
+   poly_shared__check_num  (s_print, a_ext->line);
+   poly_shared__check_char (s_print, a_ext->type);
+   poly_shared__check_char (s_print, a_ext->cat);
+   poly_shared__check_char (s_print, a_ext->sub);
+   poly_shared__check_num  (s_print, a_ext->uses);
+   poly_shared__spacer     (s_print);
+   poly_shared__check_ptr  (s_print, a_ext->y_head);
+   poly_shared__check_ptr  (s_print, a_ext->y_tail);
+   poly_shared__check_num  (s_print, a_ext->y_count);
+   poly_shared__spacer     (s_print);
+   poly_shared__check_ptr  (s_print, a_ext->btree);
+   strlcat (s_print, "]" , LEN_RECD);
+   /*---(complete)-----------------------*/
+   return s_print;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       memory allccation                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___MEMORY__________o () { return; }
+
+char poly_extern__new  (tEXTERN **a_new) { return poly_shared_new  ("ext", sizeof (tEXTERN), a_new, NULL, '-', poly_extern__wipe); }
+char poly_extern_force (tEXTERN **a_new) { return poly_shared_new  ("ext", sizeof (tEXTERN), a_new, NULL, 'y', poly_extern__wipe); }
+char poly_extern__free (tEXTERN **a_old) { return poly_shared_free ("ext", a_old, NULL); }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                     creation/destruction                     ----===*/
+/*====================------------------------------------====================*/
+static void  o___EXISTANCE_______o () { return; }
+
+char
+poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -104,11 +166,7 @@ poly_extern__add         (char *a_lib, char *a_name, int a_line, char a_type)
    }
    DEBUG_DATA   yLOG_info    ("a_lib"     , a_lib);
    /*---(create cell)--------------------*/
-   while (x_new == NULL) {
-      ++x_tries;
-      x_new = (tEXTERN *) malloc (sizeof (tEXTERN));
-      if (x_tries > 10)   break;
-   }
+   poly_extern__new (&x_new);
    DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
    --rce;  if (x_new == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -116,15 +174,12 @@ poly_extern__add         (char *a_lib, char *a_name, int a_line, char a_type)
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
+   poly_extern__wipe (x_new);
    strlcpy (x_new->lib , a_lib , LEN_TITLE);
    strlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->line     = a_line;
    x_new->type     = a_type;
    poly_extern__mark (x_new, a_lib, a_name);
-   x_new->uses     = 0;
-   x_new->y_head   = NULL;
-   x_new->y_tail   = NULL;
-   x_new->y_count  = 0;
    /*---(into btree)---------------------*/
    rc = poly_btree_hook (B_EXTERN, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
@@ -138,7 +193,7 @@ poly_extern__add         (char *a_lib, char *a_name, int a_line, char a_type)
 }
 
 char
-poly_extern__del         (tEXTERN *a_extern)
+poly_extern_remove       (tEXTERN *a_old)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -146,21 +201,25 @@ poly_extern__del         (tEXTERN *a_extern)
    /*---(begin)--------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_point   ("a_extern"  , a_extern);
-   --rce;  if (a_extern == NULL) {
+   DEBUG_DATA   yLOG_point   ("a_old"     , a_old);
+   --rce;  if (a_old == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(btree)--------------------------*/
-   rc = poly_btree_unhook (&a_extern->btree);
+   rc = poly_btree_unhook (&a_old->btree);
    DEBUG_DATA   yLOG_value   ("unhook"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(free)---------------------------*/
-   DEBUG_DATA   yLOG_note    ("free extern");
-   free (a_extern);
+   poly_extern__free (&a_old);
+   DEBUG_DATA   yLOG_point   ("a_old"     , a_old);
+   --rce;  if (a_old == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -206,7 +265,7 @@ poly_extern_load        (void)
       DEBUG_INPT   yLOG_value   ("parse"     , rc);
       if (rc < 0)    continue;
       /*---(save)------------------------*/
-      poly_extern__add (x_lib, x_name, x_line, x_type);
+      poly_extern_add (x_lib, x_name, x_line, x_type);
       /*---(done)------------------------*/
    }
    /*---(close)--------------------------*/
@@ -287,8 +346,8 @@ poly_extern__purge      (void)
    u = (tEXTERN *) poly_btree_first (B_EXTERN);
    while (u != NULL) {
       DEBUG_PROG   yLOG_value   ("extern"    , u->name);
-      rc = poly_extern__del (u);
-      DEBUG_PROG   yLOG_value   ("del"       , rc);
+      rc = poly_extern_remove (u);
+      DEBUG_PROG   yLOG_value   ("remove"    , rc);
       if (rc < 0) {
          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
          return rc;
@@ -311,12 +370,15 @@ poly_extern_wrap        (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
-   rc = poly_extern__purge ();
+   /*> rc = poly_extern_count ();                                                     <*/
+   /*> rc = poly_extern__purge ();                                                    <*/
    DEBUG_PROG   yLOG_value   ("purge"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*> printf ("%d\n", poly_extern_count ());                                         <*/
+   /*> DEBUG_PROG   printf ("%s %d\n", __FUNCTION__, poly_extern_count ());           <*/
    /*> rc = poly_btree_purge (B_EXTERN);                                              <* 
     *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
     *> --rce;  if (rc < 0) {                                                          <* 
@@ -353,6 +415,12 @@ poly_extern_by_index    (int n, tEXTERN **a_ext)
    *a_ext = (tEXTERN *) poly_btree_entry (B_EXTERN, n);
    if (*a_ext == NULL)  return -2;
    return 0;
+}
+
+char
+poly_extern_cursor      (char a_dir, tEXTERN **a_ext)
+{
+   return poly_btree_cursor  (B_EXTERN, a_dir, a_ext);
 }
 
 char      poly_extern_list        (void) { return poly_btree_list (B_EXTERN); }

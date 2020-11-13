@@ -63,7 +63,10 @@ PROG_init          (int a_argc, char *a_argv[])
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(run-time-config)----------------*/
    DEBUG_PROG   yLOG_note    ("initialize run-time settings");
-   my.g_mode      = MODE_SEARCH;
+   my.g_mode      = POLY_NONE;
+   my.g_data      = POLY_DATA_NONE;
+   my.g_unit      = 'y';
+   my.g_rptg      = POLY_RPTG_NONE;
    my.g_titles    = RPTG_NOTITLES;
    my.g_filter    = FILTER_NONE;
    /*---(filtering)----------------------*/
@@ -71,7 +74,7 @@ PROG_init          (int a_argc, char *a_argv[])
    my.g_project [0]  = '\0';
    my.g_proj         = NULL;
    my.g_extern [0]   = '\0';
-   my.g_hint   [0]   = '\0';
+   strlcpy (my.g_hint, "--", LEN_TERSE);
    /*---(files)--------------------------*/
    DEBUG_PROG   yLOG_note    ("initialize file pointers");
    my.f_code      = NULL;
@@ -89,7 +92,7 @@ PROG_init          (int a_argc, char *a_argv[])
    DEBUG_PROG   yLOG_note    ("run sub initialization functions");
    poly_db_init      ();
    poly_proj_init    ();
-   poly_files_init   ();
+   poly_file_init    ();
    poly_func_init    ();
    poly_extern_init  ();
    poly_vars_init    ();
@@ -99,7 +102,7 @@ PROG_init          (int a_argc, char *a_argv[])
    return 0;
 }
 
-#define  TWOARG  if (++i >= a_argc)  printf ("%s option requires an argument (%d)\n", a, --rc); else 
+#define  TWOARG  if (++i >= a_argc)  yURG_error ("FATAL, %s argument requires an additional string", a, --rc); else 
 
 char         /*-> process the command line args ------[ ------ [gz.952.251.B4]*/ /*-[01.0000.121.!]-*/ /*-[--.---.---.--]-*/
 PROG_args          (int a_argc, char *a_argv[])
@@ -124,46 +127,42 @@ PROG_args          (int a_argc, char *a_argv[])
       ++x_args;
       /*---(simple)----------------------*/
       if      (strcmp (a, "--version"  ) == 0)  PROG_vershow ();
-      else if (strcmp (a, "--htags"    ) == 0)  my.g_mode   = MODE_HTAGS;
-      else if (strcmp (a, "--about"    ) == 0)  my.g_mode   = MODE_ABOUT;
-      else if (strcmp (a, "--dump"     ) == 0)  my.g_mode   = MODE_DUMP;
-      else if (strcmp (a, "--report"   ) == 0)  my.g_mode   = MODE_RPTG;
-      else if (strcmp (a, "--write"    ) == 0)  my.g_mode   = MODE_WRITE;
-      else if (strcmp (a, "--update"   ) == 0)  my.g_mode   = MODE_UPDATE;
-      else if (strcmp (a, "--projects" ) == 0)  my.g_mode   = MODE_PROJ;
-      else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;
-      else if (strcmp (a, "--system"   ) == 0)  my.g_mode   = MODE_SYSTEM;
-      else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = MODE_VARS;
-      else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;
-      else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;
-      else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;
-      else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;
-      else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;
-      else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;
-      else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;
-      else if (strcmp (a, "--noerror"  ) == 0 && my.f_error == stderr)  my.f_error  = fopen ("/dev/null", "wt");
-      /*---(special names)---------------*/
-      else if (strcmp (a, "--database" ) == 0)  TWOARG rc = poly_db_name (a_argv [i], 'y');
+      /*---(complicated)-----------------*/
+      else if (strcmp (a, "--htags"    ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_rptg = POLY_RPTG_HTAGS;   }
+      else if (strcmp (a, "--nounit"   ) == 0)   my.g_unit  = '-';
+      /*---(data handling)---------------*/
+      else if (strcmp (a, "--new"      ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_NEW;     }
+      else if (strcmp (a, "--update"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UPDATE;  }
+      else if (strcmp (a, "--remove"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }
+      else if (strcmp (a, "--system"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_SYSTEM;  }
+      else if (strcmp (a, "--monkey"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_MONKEY;  }
+      else if (strcmp (a, "--member"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_MEMBER;  }
+      else if (strcmp (a, "--world"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_WORLD;   }
+      /*---(reports)---------------------*/
+      else if (strcmp (a, "--projects" ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_PROJS;   }
+      else if (strcmp (a, "--oneline"  ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ONELINE; }
+      else if (strcmp (a, "--about"    ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ABOUT;   }
+      else if (strcmp (a, "--dump"     ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_DUMP;    }
+      else if (strcmp (a, "--detail"   ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_FUNC;    }
+      /*---(others)----------------------*/
+      /*> else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;          <* 
+       *> else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = POLY_RPTG_VARS;          <* 
+       *> else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;        <* 
+       *> else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;      <* 
+       *> else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;      <* 
+       *> else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;       <* 
+       *> else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;      <* 
+       *> else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;        <* 
+       *> else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;       <*/
+      /*---(configuration)---------------*/
+      else if (strcmp (a, "--database" ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
+      else if (strcmp (a, "--project"  ) == 0)  TWOARG rc = poly_proj_cli    (a_argv [i], 'y');
+      else if (strcmp (a, "--hint"     ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
+      /*> else if (strcmp (a, "--extern"   ) == 0)  TWOARG rc = poly_extern_name (a_argv [i], 'y');   <*/
+      /*> else if (strcmp (a, "--ylib"     ) == 0)  TWOARG rc = poly_ylib_name   (a_argv [i], 'y');   <*/
       /*---(compound)--------------------*/
-      else if (strcmp (a, "--remove" ) == 0) {
-         my.g_mode = MODE_REMOVE;
-         if (++i < a_argc)  strlcpy (my.g_project, a_argv [i], LEN_TITLE);
-         else {
-            DEBUG_TOPS  yLOG_note  ("project name not included");
-            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
-            return -1;
-         }
-      }
-      else if (strcmp (a, "--project") == 0) {
-         if (++i < a_argc)  strlcpy (my.g_project, a_argv [i], LEN_TITLE);
-         else {
-            DEBUG_TOPS  yLOG_note  ("project name not included");
-            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
-            return -1;
-         }
-      }
       else if (strcmp (a, "--extern" ) == 0) {
-         my.g_mode = MODE_EXTERN;
+         my.g_mode = POLY_RPTG_EXTERN;
          if (++i < a_argc)  strlcpy (my.g_extern, a_argv [i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("extern name not included");
@@ -172,18 +171,10 @@ PROG_args          (int a_argc, char *a_argv[])
          }
       }
       else if (strcmp (a, "--libuse" ) == 0) {
-         my.g_mode = MODE_LIBUSE;
+         my.g_mode = POLY_RPTG_YLIB;
          if (++i < a_argc)  strlcpy (my.g_libuse, a_argv [i], LEN_TITLE);
          else {
             DEBUG_TOPS  yLOG_note  ("library name not included");
-            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
-            return -1;
-         }
-      }
-      else if (strcmp (a, "--hint"   ) == 0) {
-         if (++i < a_argc)  strlcpy (my.g_hint, a_argv [i], LEN_TERSE);
-         else {
-            DEBUG_TOPS  yLOG_note  ("hint not included");
             DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
             return -1;
          }

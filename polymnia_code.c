@@ -271,7 +271,9 @@ poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)
    /*---(function level)-----------------*/
    if (a_func != NULL) {
       /*---(returns)---------------------*/
-      if      (strstr (a_recd, " return "   ) != NULL)   poly_cats_logic (a_func, 'r');
+      if      (strstr (a_recd, " return rce") != NULL)   poly_cats_logic (a_func, 'R');
+      else if (strstr (a_recd, " return -"  ) != NULL)   poly_cats_logic (a_func, 'R');
+      else if (strstr (a_recd, " return "   ) != NULL)   poly_cats_logic (a_func, 'r');
       else if (strstr (a_recd, " return;"   ) != NULL)   poly_cats_logic (a_func, 'r');
       /*---(choices)---------------------*/
       if      (strstr (a_recd, " if "       ) != NULL)   poly_cats_logic (a_func, 'c');
@@ -284,14 +286,14 @@ poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)
       else if (strstr (a_recd, " default "  ) != NULL)   poly_cats_logic (a_func, 'c');
       else if (strstr (a_recd, " default:"  ) != NULL)   poly_cats_logic (a_func, 'c');
       /*---(loops)-----------------------*/
-      if      (strstr (a_recd, " while "    ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, " while("    ) != NULL)   poly_cats_logic (a_func, 'c');
-      if      (strstr (a_recd, " do "       ) != NULL)   poly_cats_logic (a_func, 'c');
-      if      (strstr (a_recd, "}do "       ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, " do("       ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, "}do("       ) != NULL)   poly_cats_logic (a_func, 'c');
-      if      (strstr (a_recd, " for "      ) != NULL)   poly_cats_logic (a_func, 'C');
-      else if (strstr (a_recd, " for("      ) != NULL)   poly_cats_logic (a_func, 'C');
+      if      (strstr (a_recd, " while "    ) != NULL)   poly_cats_logic (a_func, 'l');
+      else if (strstr (a_recd, " while("    ) != NULL)   poly_cats_logic (a_func, 'l');
+      if      (strstr (a_recd, " do "       ) != NULL)   poly_cats_logic (a_func, 'l');
+      if      (strstr (a_recd, "}do "       ) != NULL)   poly_cats_logic (a_func, 'l');
+      else if (strstr (a_recd, " do("       ) != NULL)   poly_cats_logic (a_func, 'l');
+      else if (strstr (a_recd, "}do("       ) != NULL)   poly_cats_logic (a_func, 'l');
+      if      (strstr (a_recd, " for "      ) != NULL)   poly_cats_logic (a_func, 'L');
+      else if (strstr (a_recd, " for("      ) != NULL)   poly_cats_logic (a_func, 'L');
       /*---(lcoal static)----------------*/
       if      (strstr (a_recd, " static "   ) != NULL)   ++a_func->WORK_LSTATIC;
       /*---(done)------------------------*/
@@ -441,7 +443,7 @@ poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr
       rc = poly_code_nextfunc (a_file, a_func);
    }
    /*---(advance as needed)-----------*/
-   if ((*a_func)->WORK_END > 0) {
+   if (*a_func != NULL && (*a_func)->WORK_END > 0) {
       rc = poly_code_nextfunc (a_file, a_func);
    }
    DEBUG_INPT   yLOG_point   ("*a_func"   , *a_func);

@@ -173,12 +173,18 @@ poly_proto_units        (void)
    int         x_scrp      =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(quick calloff)------------------*/
+   DEBUG_INPT   yLOG_char    ("g_unit"    , my.g_unit);
+   if (my.g_unit != 'y') {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
    /*---(prepare)------------------------*/
    rc = poly_shared_open ('u', NULL);
    DEBUG_INPT   yLOG_value   ("create"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
+      return rce;
    }
    /*---(walk tags)----------------------*/
    while (1) {
@@ -201,39 +207,60 @@ poly_proto_units        (void)
       /*---(test change)-----------------*/
       if (strncmp (x_verb, "PREP", 4) == 0) {
          ++x_test;
-         /*> printf ("found new unit test %d\n", x_test);                             <*/
          continue;
       }
       if (strncmp (x_verb, "SCRP", 4) == 0) {
          ++x_scrp;
-         /*> printf ("found new unit script %d\n", x_scrp);                           <*/
          continue;
       }
       /*---(idenfify function)-----------*/
-      poly_func_by_name (x_name, &x_func);
-      /*> x_func = (tFUNC *) poly_btree_search (B_FUNCS, x_name);                     <*/
+      rc = poly_func_by_name (x_name, &x_func);
       DEBUG_INPT   yLOG_point   ("x_func"    , x_func);
-      --rce;  if (x_func == NULL)  continue;
-      DEBUG_INPT   yLOG_info    ("file name" , x_func->name);
+      if (x_func == NULL) {
+         DEBUG_INPT   yLOG_note    ("could not find function");
+         continue;
+      }
+      DEBUG_INPT   yLOG_info    ("function"  , x_func->name);
+      /*---(verify the right project)-------*/
+      while (x_func->file->proj != my.g_proj) {
+         DEBUG_INPT   yLOG_note    ("project does not match, next function");
+         rc = poly_func_cursor ('>', &x_func);
+         DEBUG_INPT   yLOG_point   ("x_func"    , x_func);
+         if (rc < 0)                              break;
+         if (x_func == NULL)                     { rc = -1;  break; }
+         DEBUG_INPT   yLOG_info    ("name"      , x_func->name);
+         if (strcmp (x_name, x_func->name) != 0) { rc = -2;  break; }
+      }
+      if (rc < 0 || x_func == NULL) {
+         DEBUG_INPT   yLOG_note    ("could not find function in right project");
+         continue;
+      }
+      if (x_func->work == NULL) {
+         DEBUG_INPT   yLOG_note    ("function does not have WORK setup");
+         continue;
+      }
       /*---(update counter)-----------------*/
       if (x_test != x_func->WORK_TSAVE) {
+         DEBUG_INPT   yLOG_note    ("new unit file");
          ++x_func->WORK_TUNIT;
          x_func->WORK_TSAVE = x_test;
       }
       if (x_scrp != x_func->WORK_SSAVE) {
+         DEBUG_INPT   yLOG_note    ("new script");
          ++x_func->WORK_SUNIT;
          x_func->WORK_SSAVE = x_scrp;
       }
       ++x_func->WORK_NUNIT;
+      DEBUG_INPT   yLOG_note    ("incrementing unit test count");
       /*---(done)------------------------*/
    }
    /*---(wrapup)-------------------------*/
    rc = poly_shared_close ('u');
    DEBUG_INPT   yLOG_value   ("cleanup"   , rc);
-   printf ("poly_shared_close %d\n", rc);
+   /*> printf ("poly_shared_close %d\n", rc);                                         <*/
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
+      return rce;
    }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);

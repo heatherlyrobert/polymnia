@@ -16,6 +16,7 @@ char
 poly_file__wipe    (tFILE *a_dst)
 {
    if (a_dst == NULL)  return -1;
+   DEBUG_DATA   yLOG_snote   ("wipe");
    /*---(master)------------*/
    a_dst->type     = '-';
    a_dst->name [0] = '\0';
@@ -31,6 +32,151 @@ poly_file__wipe    (tFILE *a_dst)
    a_dst->count    = 0;
    a_dst->btree    = NULL;
    /*---(tags)--------------*/
+   return 1;
+}
+
+char*
+poly_file__unit_memory  (tFILE *a_file)
+{
+   /*---(master)-------------------------*/
+   strlcpy (s_print, "["  , LEN_RECD);
+   poly_shared__check_char (s_print, a_file->type);
+   poly_shared__check_str  (s_print, a_file->name);
+   poly_shared__check_str  (s_print, a_file->sort);
+   poly_shared__spacer     (s_print);
+   /*---(project/file)-------------------*/
+   poly_shared__check_ptr  (s_print, a_file->proj);
+   poly_shared__check_ptr  (s_print, a_file->prev);
+   poly_shared__check_ptr  (s_print, a_file->next);
+   poly_shared__spacer     (s_print);
+   /*---(functions)----------------------*/
+   poly_shared__check_ptr  (s_print, a_file->head);
+   poly_shared__check_ptr  (s_print, a_file->tail);
+   poly_shared__check_num  (s_print, a_file->count);
+   poly_shared__spacer     (s_print);
+   /*---(btree)--------------------------*/
+   poly_shared__check_ptr  (s_print, a_file->btree);
+   strlcat (s_print, "]" , LEN_RECD);
+   /*---(complete)-----------------------*/
+   return s_print;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       memory allccation                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___MEMORY__________o () { return; }
+
+char poly_file__new  (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, '-', poly_file__wipe); }
+char poly_file_force (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, 'y', poly_file__wipe); }
+char poly_file__free (tFILE **a_old) { return poly_shared_free ("file", a_old, NULL); }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                   hooking and unhooking                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___HOOKING_________o () { return; }
+
+char
+poly_file_hook          (tPROJ *a_proj, tFILE *a_file)
+{
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   /*> DEBUG_DATA   yLOG_senter  (__FUNCTION__);                                      <*/
+   DEBUG_DATA   yLOG_enter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   /*> DEBUG_DATA   yLOG_spoint  (a_proj);                                            <*/
+   DEBUG_DATA   yLOG_point  ("a_proj", a_proj);
+   --rce;  if (a_proj == NULL) {
+      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> DEBUG_DATA   yLOG_spoint  (a_file);                                            <*/
+   DEBUG_DATA   yLOG_point  ("a_file", a_file);
+   --rce;  if (a_file == NULL) {
+      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> DEBUG_DATA   yLOG_spoint  (a_file->proj);                                      <*/
+   DEBUG_DATA   yLOG_point  ("->proj", a_file->proj);
+   --rce;  if (a_file->proj != NULL) {
+      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> DEBUG_DATA   yLOG_snote   (a_file->name);                                      <*/
+   DEBUG_DATA   yLOG_note   (a_file->name);
+   /*---(into linked list)---------------*/
+   /*> DEBUG_DATA   yLOG_sint    (a_file->proj->count);                               <* 
+    *> DEBUG_DATA   yLOG_spoint  (a_proj->head);                                      <* 
+    *> DEBUG_DATA   yLOG_spoint  (a_proj->tail);                                      <*/
+   DEBUG_DATA   yLOG_value   ("count", a_proj->count);
+   DEBUG_DATA   yLOG_point  ("head" , a_proj->head);
+   DEBUG_DATA   yLOG_point  ("tail", a_proj->tail);
+   if (a_proj->head == NULL) {
+      /*> DEBUG_DATA   yLOG_snote   ("first");                                        <*/
+      DEBUG_DATA   yLOG_note   ("first");
+      a_proj->head = a_proj->tail = a_file;
+   } else {
+      /*> DEBUG_DATA   yLOG_snote   ("append");                                       <*/
+      DEBUG_DATA   yLOG_note   ("append");
+      a_file->prev        = a_proj->tail;
+      a_proj->tail->next  = a_file;
+      a_proj->tail        = a_file;
+   }
+   /*---(tie file back to proj)----------*/
+   a_file->proj  = a_proj;
+   /*---(update count)-------------------*/
+   ++a_proj->count;
+   ++a_proj->COUNT_FILES;
+   /*> DEBUG_DATA   yLOG_sint    (a_proj->count);                                     <*/
+   DEBUG_DATA   yLOG_value   ("count", a_proj->count);
+   /*---(complete)------------------------------*/
+   /*> DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                      <*/
+   DEBUG_DATA   yLOG_exit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_file_unhook        (tFILE *a_file)
+{
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (a_file);
+   if (a_file == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
+      return -1;
+   }
+   DEBUG_DATA   yLOG_spoint  (a_file->proj);
+   if (a_file->proj == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -2);
+      return -2;
+   }
+   DEBUG_DATA   yLOG_snote   (a_file->name);
+   /*---(out of linked list)-------------*/
+   DEBUG_DATA   yLOG_sint    (a_file->proj->count);
+   DEBUG_DATA   yLOG_spoint  (a_file->proj->head);
+   DEBUG_DATA   yLOG_spoint  (a_file->proj->tail);
+   DEBUG_DATA   yLOG_snote   ("unlink");
+   if (a_file->next != NULL)  a_file->next->prev = a_file->prev;
+   else                       a_file->proj->tail = a_file->prev;
+   if (a_file->prev != NULL)  a_file->prev->next = a_file->next;
+   else                       a_file->proj->head = a_file->next;
+   /*---(update count)-------------------*/
+   --(a_file->proj->count);
+   --(a_file->proj->COUNT_FILES);
+   DEBUG_DATA   yLOG_sint    (a_file->proj->count);
+   /*---(ground pointers)----------------*/
+   a_file->proj = NULL;
+   a_file->prev = NULL;
+   a_file->next = NULL;
+   /*---(complete)------------------------------*/
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -40,34 +186,6 @@ poly_file__wipe    (tFILE *a_dst)
 /*===----                     creation/destruction                     ----===*/
 /*====================------------------------------------====================*/
 static void  o___EXISTANCE_______o () { return; }
-
-tFILE*
-poly_file_new           (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tFILE      *x_new       = NULL;
-   int         x_tries     =    0;
-   /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(create cell)--------------------*/
-   while (x_new == NULL) {
-      ++x_tries;
-      x_new = (tFILE *) malloc (sizeof (tFILE));
-      if (x_tries > 10)   break;
-   }
-   DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
-   --rce;  if (x_new == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
-   }
-   /*---(wipe clean)---------------------*/
-   DEBUG_DATA   yLOG_note    ("wipe clean");
-   poly_file__wipe (x_new);
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return x_new;
-}
 
 char
 poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file)
@@ -105,7 +223,7 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
       }
    }
    /*---(create file)--------------------*/
-   x_new = poly_file_new ();
+   poly_file__new (&x_new);
    DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
    --rce;  if (x_new == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -119,7 +237,7 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    if (strncmp (a_name, a_proj->name, strlen (a_proj->name)) == 0) x_prefix = 'Y';
    sprintf (x_new->sort, "%c%c%s", x_prefix, x_type, x_new->name);
    /*---(link to project)----------------*/
-   rc = poly_proj_file_hook (a_proj, x_new);
+   rc = poly_file_hook (a_proj, x_new);
    DEBUG_DATA   yLOG_value   ("addfile"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -143,7 +261,7 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
 }
 
 char
-poly_files_del          (tFILE **a_file)
+poly_file_remove        (tFILE **a_file)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -164,28 +282,19 @@ poly_files_del          (tFILE **a_file)
    }
    DEBUG_DATA   yLOG_info    ("->name"    , x_file->name);
    /*---(purge assigned tags)------------*/
-   rc = poly_func_purge (x_file);
+   rc = poly_func_purge (x_file, '-');
    DEBUG_DATA   yLOG_value   ("purge"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(out of linked list)-------------*/
-   rc = poly_proj_file_unhook (x_file);
+   rc = poly_file_unhook (x_file);
    DEBUG_DATA   yLOG_value   ("unhook"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> DEBUG_DATA   yLOG_note    ("unlink");                                          <*/
-   /*> if (x_file->next != NULL)  x_file->next->prev = x_file->prev;                  <* 
-    *> else                       x_file->proj->tail = x_file->prev;                  <* 
-    *> if (x_file->prev != NULL)  x_file->prev->next = x_file->next;                  <* 
-    *> else                       x_file->proj->head = x_file->next;                  <*/
-   /*---(update count)-------------------*/
-   /*> --(x_file->proj->count);                                                       <* 
-    *> --(x_file->proj->COUNT_FILES);                                                 <*/
-   /*> DEBUG_DATA   yLOG_value   ("count"     , x_file->proj->count);                 <*/
    /*---(unhook from btree)--------------*/
    rc = poly_btree_unhook (&x_file->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
@@ -211,7 +320,7 @@ poly_files_del          (tFILE **a_file)
 static void  o___PROGRAM_________o () { return; }
 
 char
-poly_files_init         (void)
+poly_file_init          (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -231,7 +340,7 @@ poly_files_init         (void)
 }
 
 char
-poly_files_purge_proj   (tPROJ *a_proj)
+poly_file_purge         (tPROJ *a_proj, char a_update)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -253,8 +362,7 @@ poly_files_purge_proj   (tPROJ *a_proj)
       x_next = x_file->next;
       DEBUG_DATA   yLOG_point   ("x_file"    , x_file);
       DEBUG_DATA   yLOG_info    ("->name"    , x_file->name);
-      rc = poly_func_purge (x_file);
-      rc = poly_files_del  (&x_file);
+      rc = poly_file_remove  (&x_file);
       x_file = x_next;
    }
    /*---(check)--------------------------*/
@@ -263,13 +371,26 @@ poly_files_purge_proj   (tPROJ *a_proj)
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(update btrees)------------------*/
+   --rce;  if (a_update == 'y') {
+      rc = poly_btree_prepare (B_FILES);
+      if (rc < 0) {
+         DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      rc = poly_btree_prepare (B_FUNCS);
+      if (rc < 0) {
+         DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+   }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-poly_files_wrap         (void)
+poly_file_wrap          (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -299,7 +420,7 @@ static  s_comps      = 0;
 static  s_teles      = 0;
 
 char
-poly_files__swap        (tFILE *a_one, tFILE *a_two)
+poly_file__swap        (tFILE *a_one, tFILE *a_two)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -339,7 +460,7 @@ poly_files__swap        (tFILE *a_one, tFILE *a_two)
 }
 
 char
-poly_files__dgnome      (tPROJ *x_proj)
+poly_file__dgnome       (tPROJ *x_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -369,7 +490,7 @@ poly_files__dgnome      (tPROJ *x_proj)
       }
       /*---(swap)------------------------*/
       DEBUG_SORT   yLOG_note    ("swap and move back");
-      poly_files__swap (o->prev, o);
+      poly_file__swap (o->prev, o);
       /*---(next)------------------------*/
    }
    /*---(complete)-----------------------*/
@@ -378,7 +499,7 @@ poly_files__dgnome      (tPROJ *x_proj)
 }
 
 char         /*--> make a list of input files --------------------------------*/
-poly_files_review  (tPROJ *a_proj)
+poly_file_review        (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         rc          =    0;          /* generic return code            */
@@ -469,7 +590,7 @@ poly_files_review  (tPROJ *a_proj)
       return  rce;
    }
    /*---(prepare for use)----------------*/
-   rc = poly_files__dgnome  (a_proj);
+   rc = poly_file__dgnome  (a_proj);
    DEBUG_SORT   yLOG_value   ("files sort" , rc);
    --rce;  if (rc < 0) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
@@ -518,7 +639,11 @@ poly_file_by_index      (int n, tFILE **a_file)
    return 0;
 }
 
-char    poly_files_list    (void)         { return poly_btree_list (B_FILES); }
+char
+poly_file_cursor        (char a_dir, tFILE **a_file)
+{
+   return poly_btree_cursor  (B_FILES, a_dir, a_file);
+}
 
 
 
@@ -644,5 +769,3 @@ poly_file__unit         (char *a_question, int i)
    /*---(complete)-----------------------*/
    return unit_answer;
 }
-
-

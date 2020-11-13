@@ -13,51 +13,6 @@ static char s_print     [LEN_RECD] = "";
 static void  o___SUPPORT_________o () { return; }
 
 char
-poly_func__wipe         (tFUNC *a_dst)
-{
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(master)-------------------------*/
-   a_dst->type        = '-';
-   a_dst->name [0]    = '\0';
-   a_dst->line        = -1;
-   a_dst->hint [0]    = '\0';
-   a_dst->purpose [0] = '\0';
-   a_dst->ready       = '?';
-   /*---(pointers)-----------------------*/
-   a_dst->file        = NULL;
-   a_dst->prev        = NULL;
-   a_dst->next        = NULL;
-   a_dst->work        = NULL;
-   a_dst->y_head      = NULL;
-   a_dst->y_tail      = NULL;
-   a_dst->y_count     = 0;
-   /*---(clear counts/stats)-------------*/
-   poly_cats_counts_clear (a_dst->counts);
-   poly_cats_stats_clear  (a_dst->stats);
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_func__wipe_work    (tWORK *a_dst)
-{
-   int         i           =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(positioning)--------------------*/
-   a_dst->beg      = -1;
-   a_dst->end      = -1;
-   for (i = 0; i < MAX_TEMPS; ++i)  a_dst->temp [i] = 0;
-   a_dst->temp [0]   = -1;  /* params is special */
-   a_dst->locals [0] = '\0';
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
 poly_func__hint         (int n, char *a_label)
 {
    /*---(locals)-----------+-----------+-*/
@@ -76,131 +31,170 @@ poly_func__hint         (int n, char *a_label)
    return 0;
 }
 
+char
+poly_func_cli           (char *a_hint, char a_loud)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         x_len       =    0;
+   char       *x_valid     = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+   int         i           =    0;
+   tFUNC      *x_func      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_FILE   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   strlcpy (my.g_hint, "--", LEN_TERSE);
+   /*---(defense)------------------------*/
+   DEBUG_ARGS  yLOG_point   ("a_hint"    , a_hint);
+   --rce;  if (a_hint == NULL) {
+      if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, name can not be null");
+      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_ARGS  yLOG_info    ("a_hint"    , a_hint);
+   /*---(check length)-------------------*/
+   x_len = strlen (a_hint);
+   DEBUG_ARGS  yLOG_value   ("x_len"     , x_len);
+   --rce;  if (x_len != 2) {
+      if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, name must be two characters long");
+      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(check characters)---------------*/
+   --rce;  for (i = 0; i < x_len; ++i) {
+      if (strchr (x_valid, a_hint [i]) != NULL)  continue;
+      if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, name can not have a <%c> at character %d", a_hint [i], i);
+      DEBUG_TOPS  yLOG_char  ("bad char"  , a_hint [i]);
+      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(find it)------------------------*/
+   /*> DEBUG_ARGS  yLOG_point   ("g_proj"    , my.g_proj);                            <*/
+   /*> --rce;  if (my.g_proj == NULL) {                                                         <* 
+    *>    if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, no current project set");      <* 
+    *>    DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);                                           <* 
+    *>    return rce;                                                                           <* 
+    *> }                                                                                        <* 
+    *> poly_func_by_hint (my.g_proj, x_recd, &x_found);                                         <* 
+    *> DEBUG_ARGS  yLOG_point   ("x_found"   , x_found);                                        <* 
+    *> --rce;  if (x_found == NULL) {                                                           <* 
+    *>    if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, name not found in project");   <* 
+    *>    DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);                                           <* 
+    *>    return rce;                                                                           <* 
+    *> }                                                                                        <*/
+   /*---(copy)---------------------------*/
+   strlcpy (my.g_hint, a_hint, LEN_TERSE);
+   DEBUG_ARGS  yLOG_info    ("g_hint"    , my.g_hint);
+   /*---(complete)-----------------------*/
+   DEBUG_FILE   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
-/*===----                    memory allocation                         ----===*/
+/*===----                   clearing and checking                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___CLEARING________o () { return; }
+
+char
+poly_func__wipe         (tFUNC *a_func)
+{
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(master)-------------------------*/
+   a_func->type        = '-';
+   a_func->name [0]    = '\0';
+   a_func->line        = -1;
+   a_func->hint [0]    = '\0';
+   a_func->purpose [0] = '\0';
+   a_func->ready       = '?';
+   /*---(pointers)-----------------------*/
+   a_func->file        = NULL;
+   a_func->prev        = NULL;
+   a_func->next        = NULL;
+   a_func->work        = NULL;
+   a_func->y_head      = NULL;
+   a_func->y_tail      = NULL;
+   a_func->y_count     = 0;
+   /*---(clear counts/stats)-------------*/
+   poly_cats_counts_clear (a_func->counts);
+   poly_cats_stats_clear  (a_func->stats);
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+char*
+poly_func__memory       (tFUNC *a_func)
+{
+   /*---(master)-------------------------*/
+   strlcpy (s_print, "["  , LEN_RECD);
+   poly_shared__check_char (s_print, a_func->type);
+   poly_shared__check_str  (s_print, a_func->name);
+   poly_shared__check_num  (s_print, a_func->line);
+   poly_shared__check_str  (s_print, a_func->hint);
+   poly_shared__check_str  (s_print, a_func->purpose);
+   poly_shared__check_char (s_print, a_func->ready);
+   poly_shared__spacer     (s_print);
+   /*---(func/ylib)----------------------*/
+   poly_shared__check_ptr  (s_print, a_func->file);
+   poly_shared__check_ptr  (s_print, a_func->prev);
+   poly_shared__check_ptr  (s_print, a_func->next);
+   poly_shared__check_ptr  (s_print, a_func->work);
+   poly_shared__check_ptr  (s_print, a_func->y_head);
+   poly_shared__check_ptr  (s_print, a_func->y_tail);
+   poly_shared__check_num  (s_print, a_func->y_count);
+   strlcat (s_print, "]" , LEN_RECD);
+   /*---(complete)-----------------------*/
+   return s_print;
+}
+
+char
+poly_work__wipe         (tWORK *a_work)
+{
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(positioning)--------------------*/
+   a_work->beg      = -1;
+   a_work->end      = -1;
+   for (i = 0; i < MAX_TEMPS; ++i)  a_work->temp [i] = 0;
+   a_work->temp [0]   = -1;  /* params is special */
+   a_work->locals [0] = '\0';
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+char*
+poly_work__memory       (tWORK *a_work)
+{
+   /*---(master)-------------------------*/
+   strlcpy (s_print, "["  , LEN_RECD);
+   poly_shared__check_num  (s_print, a_work->beg);
+   poly_shared__check_num  (s_print, a_work->end);
+   poly_shared__check_num  (s_print, a_work->temp [0]);
+   poly_shared__check_str  (s_print, a_work->locals);
+   strlcat (s_print, "]" , LEN_RECD);
+   /*---(complete)-----------------------*/
+   return s_print;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       memory allccation                      ----===*/
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char
-poly_func_new           (tFUNC **a_func)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tFUNC      *x_new       = NULL;
-   int         x_tries     =    0;
-   /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_point   ("*a_func"   , *a_func);
-   --rce;  if (*a_func != NULL) {
-      DEBUG_DATA   yLOG_note    ("already set to a particular function");
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(default)------------------------*/
-   *a_func = NULL;
-   /*---(create cell)--------------------*/
-   while (x_new == NULL) {
-      ++x_tries;
-      x_new = (tFUNC *) malloc (sizeof (tFUNC));
-      if (x_tries > 3)   break;
-   }
-   DEBUG_DATA   yLOG_value   ("x_tries"   , x_tries);
-   DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
-   --rce;  if (x_new == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(clear and return)---------------*/
-   poly_func__wipe (x_new);
-   *a_func = x_new;
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+char poly_func__new  (tFUNC **a_new) { return poly_shared_new  ("func", sizeof (tFUNC), a_new, NULL, '-', poly_func__wipe); }
+char poly_func_force (tFUNC **a_new) { return poly_shared_new  ("func", sizeof (tFUNC), a_new, NULL, 'y', poly_func__wipe); }
+char poly_func__free (tFUNC **a_old) { return poly_shared_free ("func", a_old, NULL); }
 
-char
-poly_func__new_work     (tWORK **a_work)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tWORK      *x_new       = NULL;
-   int         x_tries     =    0;
-   /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_point   ("a_work"    , a_work);
-   --rce;  if (a_work == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_point   ("*a_work"   , *a_work);
-   --rce;  if (*a_work != NULL) {
-      DEBUG_DATA   yLOG_note    ("already set to a particular work area");
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(default)------------------------*/
-   *a_work = NULL;
-   /*---(create cell)--------------------*/
-   while (x_new == NULL) {
-      ++x_tries;
-      x_new = (tWORK *) malloc (sizeof (tWORK));
-      if (x_tries > 3)   break;
-   }
-   DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
-   --rce;  if (x_new == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(populate)-----------------------*/
-   DEBUG_DATA   yLOG_note    ("wipe clean");
-   poly_func__wipe_work (x_new);
-   *a_work = x_new;
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_func__free         (tFUNC **a_func)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tFUNC      *x_new       = NULL;
-   int         x_tries     =    0;
-   /*---(begin)--------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_point   ("*a_func"   , *a_func);
-   --rce;  if (*a_func == NULL) {
-      DEBUG_DATA   yLOG_note    ("never set to a particular function");
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(free work)----------------------*/
-   DEBUG_DATA   yLOG_point   ("work"      , (*a_func)->work);
-   if ((*a_func)->work != NULL)  free ((*a_func)->work);
-   (*a_func)->work = NULL;
-   /*---(clear and return)---------------*/
-   free (*a_func);
-   *a_func = NULL;
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+char poly_work__new  (tWORK **a_new) { return poly_shared_new  ("work", sizeof (tWORK), a_new, NULL, '-', poly_work__wipe); }
+char poly_work_force (tWORK **a_new) { return poly_shared_new  ("work", sizeof (tWORK), a_new, NULL, 'y', poly_work__wipe); }
+char poly_work__free (tWORK **a_old) { return poly_shared_free ("work", a_old, NULL); }
 
 
 
@@ -257,7 +251,7 @@ poly_func_hook          (tFILE *a_file, tFUNC *a_func)
 }
 
 char
-poly_func__unhook       (tFUNC *a_func)
+poly_func_unhook        (tFUNC *a_func)
 {
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
@@ -343,14 +337,14 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
       }
    }
    /*---(create function)----------------*/
-   rc = poly_func_new (&x_new);
+   rc = poly_func__new (&x_new);
    DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
    --rce;  if (rc < 0 || x_new == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(create working data)------------*/
-   rc = poly_func__new_work (&(x_new->work));
+   rc = poly_work__new (&(x_new->work));
    DEBUG_DATA   yLOG_point   ("->work"    , x_new->work);
    --rce;  if (rc < 0 || x_new->work == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -391,7 +385,7 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
 }
 
 char
-poly_func_del           (tFUNC **a_func)
+poly_func_remove        (tFUNC **a_func)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -410,14 +404,14 @@ poly_func_del           (tFUNC **a_func)
    }
    DEBUG_DATA   yLOG_note    ((*a_func)->name);
    /*---(purge ylib links)---------------*/
-   rc = poly_ylib_purge_func (*a_func);
+   rc = poly_ylib_purge  (*a_func, '-');
    DEBUG_DATA   yLOG_value   ("purge ylib", rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(out of linked list)-------------*/
-   rc = poly_func__unhook (*a_func);
+   rc = poly_func_unhook (*a_func);
    DEBUG_DATA   yLOG_value   ("unhook"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -554,6 +548,12 @@ poly_func_by_index      (int n, tFUNC **a_func)
    *a_func = (tFUNC *) poly_btree_entry (B_FUNCS, n);
    if (*a_func == NULL)  return -2;
    return 0;
+}
+
+char
+poly_func_cursor        (char a_dir, tFUNC **a_func)
+{
+   return poly_btree_cursor  (B_FUNCS, a_dir, a_func);
 }
 
 
@@ -706,13 +706,13 @@ poly_func_init          (void)
 }
 
 char
-poly_func_purge         (tFILE *a_file)
+poly_func_purge         (tFILE *a_file, char a_update)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   tFUNC       *x_tag       = NULL;
-   tFUNC       *x_next      = NULL;
+   tFUNC       *x_func     = NULL;
+   tFUNC       *x_next     = NULL;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -723,19 +723,27 @@ poly_func_purge         (tFILE *a_file)
    }
    /*---(walk-through)-------------------*/
    DEBUG_DATA   yLOG_value   ("->count"   , a_file->count);
-   x_tag = a_file->head;
-   while (x_tag != NULL) {
-      x_next = x_tag->next;
-      DEBUG_DATA   yLOG_point   ("x_tag"     , x_tag);
-      DEBUG_DATA   yLOG_info    ("->name"    , x_tag->name);
-      rc = poly_func_del (&x_tag);
-      x_tag = x_next;
+   x_func = a_file->head;
+   while (x_func != NULL) {
+      x_next = x_func->next;
+      DEBUG_DATA   yLOG_point   ("x_func"    , x_func);
+      DEBUG_DATA   yLOG_info    ("->name"    , x_func->name);
+      rc = poly_func_remove (&x_func);
+      x_func = x_next;
    }
    /*---(check)--------------------------*/
    DEBUG_DATA   yLOG_value   ("->count"   , a_file->count);
    --rce;  if (a_file->count > 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
+   }
+   /*---(update btrees)------------------*/
+   --rce;  if (a_update == 'y') {
+      rc = poly_btree_prepare (B_FUNCS);
+      if (rc < 0) {
+         DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
@@ -1056,6 +1064,234 @@ poly_func_params        (tFUNC *a_func, char *a_recd)
 /*====================------------------------------------====================*/
 static void  o___REPORTING_______o () { return; }
 
+static char  *s_owner     = "---project----- § ---file------------- § line";
+static char  *s_ends      = "-beg § -end";
+static char  *s_all       = "prj § fil § fnc";
+static char  *s_count     = "fnc";
+
+char*
+poly_func__prefix       (tFUNC *a_func, char a_spec, int a, int b, int c)
+{
+   /*---(locals)-------------------------*/
+   char        t           [LEN_RECD]  = "";
+   char        s           [LEN_RECD]  = "";
+   char        x_type      = '-';
+   /*---(prepare)------------------------*/
+   strlcpy (s_print, "", LEN_RECD);
+   if (a_func == NULL)  x_type = 'h';
+   if (a_spec == '\0')  return s_print;
+   /*---(owner style)--------------------*/
+   if (strchr ("AHOo", a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-15.15s § %-20.20s § %4d § ", a_func->file->proj->name, a_func->file->name, a_func->line);
+         break;
+      case 'h' :
+         sprintf (t, "%s § ", s_owner);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(ends style)---------------------*/
+   if (strchr ("AO", a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%4d § %4d § ", a_func->beg, a_func->end);
+         break;
+      case 'h' :
+         sprintf (t, "%s § ", s_ends);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(full counts)--------------------*/
+   if (a_spec == 'N') {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-3d § %-3d § %-3d § ", a + 1, b + 1, c + 1);
+         break;
+      case 'h' :
+         sprintf (t, "%s § ", s_all);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(function count)-----------------*/
+   else if (a_spec == 'n') {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-3d § ", c + 1);
+         break;
+      case 'h' :
+         sprintf (t, "%s § ", s_count);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(normal hint)--------------------*/
+   if (strchr ("AHh", a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-2.2s § ", a_func->hint);
+         break;
+      case 'h' :
+         sprintf (t, "-- § ");
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(tag style)----------------------*/
+   if (strchr ("t"  , a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-2.2s  ", a_func->hint);
+         break;
+      case 'h' :
+         sprintf (t, "func");
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(complete)-----------------------*/
+   return s_print;
+}
+
+static char  *s_name      = "---name------------------";
+static char  *s_stats     = "files § funcs";
+static char  *s_short     = "ylibs § --lines § --empty § ---docs § --debug § ---code § --slocl";
+
+char*
+poly_func__core         (tFUNC *a_func, char a_spec, int c)
+{
+   /*---(locals)-------------------------*/
+   char        t           [LEN_RECD]  = "";
+   char        s           [LEN_RECD]  = "";
+   char        x_type      = '-';
+   /*---(prepare)------------------------*/
+   if (a_func == NULL)  x_type = 'h';
+   if (a_spec == '\0')  return s_print;
+   /*---(tag entry)----------------------*/
+   if (a_spec == 't') {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-25.25s § ", a_func->name);
+         break;
+      case 'h' : 
+         sprintf (t, "tion (%2d)                 § ", c);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(normal name)--------------------*/
+   if (strchr ("Ssn" , a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-25.25s § ", a_func->name);
+         break;
+      case 'h' :  
+         sprintf (t, "%s § "      , s_name);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(standard stats)-----------------*/
+   if (strchr ("S"   , a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "    - §     - § ");
+         break;
+      case 'h' :
+         sprintf (t, "%-s § "   , s_stats);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(short stats)--------------------*/
+   if (strchr ("Ss"  , a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%5d § %7d § %7d § %7d § %7d § %7d § %7d § ",
+               a_func->COUNT_YLIBS,
+               a_func->COUNT_LINES, a_func->COUNT_EMPTY, a_func->COUNT_DOCS ,
+               a_func->COUNT_DEBUG, a_func->COUNT_CODE , a_func->COUNT_SLOCL);
+         break;
+      case 'h' :
+         sprintf (t, "%-s § "   , s_short);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(complete)-----------------------*/
+   return s_print;
+}
+
+/*---(details)------------------------*/
+static char  *s_database  = "-  [--------------complexity--------------] [------------------integration----------------] [---------------watch-points-------------]";
+static char  *s_comment   = "[-----complexity------] [-------integration-------] [------watchpoints-----]";
+static char  *s_file      = "line § ---file-name----------------------------";
+static char  *s_purpose   = "---purpose------------------------------";
+
+char*
+poly_func__suffix       (tFUNC *a_func, char a_spec)
+{
+   /*---(locals)-------------------------*/
+   char        t           [LEN_RECD]  = "";
+   char        x_type      = '-';
+   /*---(prepare)------------------------*/
+   if (a_func == NULL)  x_type = 'h';
+   if (a_spec == '\0')  return s_print;
+   /*---(database view)------------------*/
+   if (strchr ("dt"  , a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-s § "   , poly_cats_database (a_func));
+         break;
+      case 'h' :
+         sprintf (t, "%-s § "   , s_database);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(compressed view)----------------*/
+   if (strchr ("ct"  , a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-s § "   , poly_cats_comment  (a_func));
+         break;
+      case 'h' :
+         sprintf (t, "%-s § "   , s_comment);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(file view)----------------------*/
+   if (strchr ("ft"  , a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%4d § %-40.40s § "   , a_func->line, a_func->file->name);
+         break;
+      case 'h' :
+         sprintf (t, "%-s § "   , s_file);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(purpose view)-------------------*/
+   if (strchr ("pt"  , a_spec) != NULL) {
+      switch (x_type) {
+      case '-' :
+         sprintf (t, "%-40.40s § "   , a_func->purpose);
+         break;
+      case 'h' :
+         sprintf (t, "%-s § "   , s_purpose);
+         break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(complete)-----------------------*/
+   return s_print;
+}
+
 char*
 poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char a_print)
 {
@@ -1067,98 +1303,103 @@ poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char 
     *  f  file    , name, file, and line
     *  p  purpse  , name and purpose
     */
-   char       *x_count     = "fnc";
-   char       *x_all       = "prj § fil § fnc";
-   char       *x_name      = "---name------------------";
-   char       *x_stats     = "files § funcs § --lines § --empty § ---docs § --debug § ---code § --slocl";
-   char       *x_database  = "-  [------------complexity------------] [------------------integration----------------] [-----------------watch-points---------------]";
-   char       *x_comment   = "[----complexity-----] [-------integration-------] [------watchpoints-------]";
-   char       *x_file      = "line § ---file-name----------------------------";
-   char       *x_purpose   = "---purpose------------------------------";
-   char       *x_function  = "function list                 § ";
-   char        t           [LEN_RECD] = "";
-   char        s           [LEN_RECD] = "";
-   char        x_type      = '-';
-   /*---(prepare)------------------------*/
-   strlcpy (s_print, "", LEN_RECD);
-   if (a_func == NULL)  x_type = 'h';
+   /*---(locals)-------------------------*/
+   /*> char        t           [LEN_RECD]  = "";                                                                                                                        <* 
+    *> char        s           [LEN_RECD]  = "";                                                                                                                        <* 
+    *> char  *x_all       = "prj § fil § fnc";                                                                                                                          <* 
+    *> char  *x_count     = "fnc";                                                                                                                                      <* 
+    *> char  *x_name      = "---name------------------";                                                                                                                <* 
+    *> char  *x_stats     = "files § funcs § ylibs § --lines § --empty § ---docs § --debug § ---code § --slocl";                                                        <* 
+    *> char  *x_database  = "-  [------------complexity------------] [------------------integration----------------] [-----------------watch-points---------------]";   <* 
+    *> char  *x_comment   = "[----complexity-----] [-------integration-------] [------watchpoints-------]";                                                             <*/
+   switch (a_style) {
+   case POLY_RPTG_HTAGS :
+      poly_func__prefix  (a_func, 't', a, b, c);
+      poly_func__core    (a_func, 't', c);
+      poly_func__suffix  (a_func, 't');
+      break;
+   case POLY_RPTG_DUMP  :
+      poly_func__prefix  (a_func, 'A', a, b, c);
+      poly_func__core    (a_func, 'S', c);
+      poly_func__suffix  (a_func, 't');
+   }
    /*---(index)--------------------------*/
-   if (strchr ("aA", a_style) != NULL) {
-      switch (x_type) {
-      case '-' :   sprintf (t, "%-3d § %-3d § %-3d § ", a + 1, b + 1, c + 1);  break;
-      case 'h' :   sprintf (t, "%s § ", x_all);                        break;
-      }
-      strlcat (s_print, t, LEN_RECD);
-   }
-   if (strchr ("sL", a_style) != NULL) {
-      switch (x_type) {
-      case '-' :   sprintf (t, "%-3d § ", c + 1);  break;
-      case 'h' :   sprintf (t, "%s § ", x_count);              break;
-      }
-      strlcat (s_print, t, LEN_RECD);
-   }
+   /*> if (strchr ("aA", a_style) != NULL) {                                                <* 
+    *>    switch (x_type) {                                                                 <* 
+    *>    case '-' :   sprintf (t, "%-3d § %-3d § %-3d § ", a + 1, b + 1, c + 1);  break;   <* 
+    *>    case 'h' :   sprintf (t, "%s § ", x_all);                        break;           <* 
+    *>    }                                                                                 <* 
+    *>    strlcat (s_print, t, LEN_RECD);                                                   <* 
+    *> }                                                                                    <*/
+   /*> if (strchr ("sL", a_style) != NULL) {                                          <* 
+    *>    switch (x_type) {                                                           <* 
+    *>    case '-' :   sprintf (t, "%-3d § ", c + 1);  break;                         <* 
+    *>    case 'h' :   sprintf (t, "%s § ", x_count);              break;             <* 
+    *>    }                                                                           <* 
+    *>    strlcat (s_print, t, LEN_RECD);                                             <* 
+    *> }                                                                              <*/
    /*---(name)---------------------------*/
-   if (strchr ("tT" , a_style) != NULL) {
-      switch (x_type) {
-      case '-' :   sprintf (t, "%2s  %-25.25s § ",
-                         a_func->hint, a_func->name);
-                   break;
-      case 'h' :   sprintf (t, "function (%2d)                 § ", c);
-                   break;
-      }
-   } else {
-      switch (x_type) {
-      case '-' :   sprintf (t, "%-25.25s § ", a_func->name);      break;
-      case 'h' :   sprintf (t, "%s § "      , x_name);            break;
-      }
-   }
-   strlcat (s_print, t, LEN_RECD);
+   /*> if (strchr ("tT" , a_style) != NULL) {                                         <* 
+    *>    switch (x_type) {                                                           <* 
+    *>    case '-' :   sprintf (t, "%2s  %-25.25s § ",                                <* 
+    *>                       a_func->hint, a_func->name);                             <* 
+    *>                 break;                                                         <* 
+    *>    case 'h' :   sprintf (t, "function (%2d)                 § ", c);           <* 
+    *>                 break;                                                         <* 
+    *>    }                                                                           <* 
+    *> } else {                                                                       <* 
+    *>    switch (x_type) {                                                           <* 
+    *>    case '-' :   sprintf (t, "%-25.25s § ", a_func->name);      break;          <* 
+    *>    case 'h' :   sprintf (t, "%s § "      , x_name);            break;          <* 
+    *>    }                                                                           <* 
+    *> }                                                                              <* 
+    *> strlcat (s_print, t, LEN_RECD);                                                <*/
    /*---(statistics)---------------------*/
-   if (strchr ("sLaA", a_style) != NULL) {
-      switch (x_type) {
-      case '-' : sprintf (t, "    - §     - § %7d § %7d § %7d § %7d § %7d § %7d § ",
-                       a_func->COUNT_LINES, a_func->COUNT_EMPTY,
-                       a_func->COUNT_DOCS , a_func->COUNT_DEBUG,
-                       a_func->COUNT_CODE , a_func->COUNT_SLOCL);
-                 break;
-      case 'h' : sprintf (t, "%-s § "   , x_stats);            break;
-      }
-      strlcat (s_print, t, LEN_RECD);
-   }
+   /*> if (strchr ("sLaA", a_style) != NULL) {                                             <* 
+    *>    switch (x_type) {                                                                <* 
+    *>    case '-' : sprintf (t, "    - §     - § %7d § %7d § %7d § %7d § %7d § %7d § ",   <* 
+    *>                     a_func->COUNT_LINES, a_func->COUNT_EMPTY,                       <* 
+    *>                     a_func->COUNT_DOCS , a_func->COUNT_DEBUG,                       <* 
+    *>                     a_func->COUNT_CODE , a_func->COUNT_SLOCL);                      <* 
+    *>               break;                                                                <* 
+    *>    case 'h' : sprintf (t, "%-s § "   , x_stats);            break;                  <* 
+    *>    }                                                                                <* 
+    *>    strlcat (s_print, t, LEN_RECD);                                                  <* 
+    *> }                                                                                   <*/
    /*---(database view)------------------*/
-   if (strchr ("LAdT", a_style) != NULL) {
-      switch (x_type) {
-      case '-' : sprintf (t, "%-s § "   , poly_cats_database (a_func)); break;
-      case 'h' : sprintf (t, "%-s § "   , x_database);         break;
-      }
-      strlcat (s_print, t, LEN_RECD);
-   }
+   /*> if (strchr ("LAdT", a_style) != NULL) {                                        <* 
+    *>    switch (x_type) {                                                           <* 
+    *>    case '-' : sprintf (t, "%-s § "   , poly_cats_database (a_func)); break;    <* 
+    *>    case 'h' : sprintf (t, "%-s § "   , x_database);         break;             <* 
+    *>    }                                                                           <* 
+    *>    strlcat (s_print, t, LEN_RECD);                                             <* 
+    *> }                                                                              <*/
    /*---(compressed view)----------------*/
-   if (strchr ("LAcT", a_style) != NULL) {
-      switch (x_type) {
-      case '-' : sprintf (t, "%-s § "   , poly_cats_comment  (a_func)); break;
-      case 'h' : sprintf (t, "%-s § "   , x_comment);          break;
-      }
-      strlcat (s_print, t, LEN_RECD);
-   }
+   /*> if (strchr ("LAcT", a_style) != NULL) {                                        <* 
+    *>    switch (x_type) {                                                           <* 
+    *>    case '-' : sprintf (t, "%-s § "   , poly_cats_comment  (a_func)); break;    <* 
+    *>    case 'h' : sprintf (t, "%-s § "   , x_comment);          break;             <* 
+    *>    }                                                                           <* 
+    *>    strlcat (s_print, t, LEN_RECD);                                             <* 
+    *> }                                                                              <*/
    /*---(file view)----------------------*/
-   if (strchr ("LAfT", a_style) != NULL) {
-      switch (x_type) {
-      case '-' : sprintf (t, "%4d § %-40.40s § "   ,
-                       a_func->line, a_func->file->name);
-                 break;
-      case 'h' : sprintf (t, "%-s § "   , x_file);             break;
-      }
-      strlcat (s_print, t, LEN_RECD);
-   }
+   /*> if (strchr ("LAfT", a_style) != NULL) {                                        <* 
+    *>    switch (x_type) {                                                           <* 
+    *>    case '-' : sprintf (t, "%4d § %-40.40s § "   ,                              <* 
+    *>                     a_func->line, a_func->file->name);                         <* 
+    *>               break;                                                           <* 
+    *>    case 'h' : sprintf (t, "%-s § "   , s_file);             break;             <* 
+    *>    }                                                                           <* 
+    *>    strlcat (s_print, t, LEN_RECD);                                             <* 
+    *> }                                                                              <*/
    /*---(purpose view)-------------------*/
-   if (strchr ("LApT", a_style) != NULL) {
-      switch (x_type) {
-      case '-' : sprintf (t, "%-40.40s § "   , a_func->purpose); break;
-      case 'h' : sprintf (t, "%-s § "   , x_purpose);            break;
-      }
-      strlcat (s_print, t, LEN_RECD);
-   }
+   /*> if (strchr ("LApT", a_style) != NULL) {                                        <* 
+    *>    switch (x_type) {                                                           <* 
+    *>    case '-' : sprintf (t, "%-40.40s § "   , a_func->purpose); break;           <* 
+    *>    case 'h' : sprintf (t, "%-s § "   , s_purpose);            break;           <* 
+    *>    }                                                                           <* 
+    *>    strlcat (s_print, t, LEN_RECD);                                             <* 
+    *> }                                                                              <*/
    /*---(newline)------------------------*/
    if (a_print == 'y')  printf ("%s\n", s_print);
    /*---(complete)-----------------------*/
@@ -1190,6 +1431,10 @@ poly_func__unit         (char *a_question, int i)
    }
    else if (strcmp (a_question, "print"     )     == 0) {
       snprintf (unit_answer, LEN_RECD, "FUNC print       : %4d[%-.400s]", strlen (s_print), s_print);;
+      return unit_answer;
+   }
+   else if (strcmp (a_question, "hint"      )     == 0) {
+      snprintf (unit_answer, LEN_RECD, "FUNC hint        : %s", my.g_hint);
       return unit_answer;
    }
    if (strncmp (unit_answer, "FUNC unit        :", 18) != 0)  return unit_answer;
@@ -1225,6 +1470,18 @@ poly_func__unit         (char *a_question, int i)
          snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   · %3d   %3d %3d %3d %3d %3d %3d   %3d %s %s %s", i, t, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL, u->line, r, s, q);
       }  else
          snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   ·   -     -   -   -   -   -   -     -   -   -   -", i, t);
+   }
+   else if (strcmp (a_question, "units"     )     == 0) {
+      poly_func_by_index (i, &u);
+      if (u != NULL) {
+         sprintf  (t, "[%.20s]", u->name);
+         if (u->work != NULL) {
+            if (u->WORK_TUNIT  >  0)  sprintf  (r, "%3d",     u->WORK_TUNIT);
+            if (u->WORK_SUNIT  >  0)  sprintf  (s, "%3d",     u->WORK_SUNIT);
+            if (u->WORK_NUNIT  >  0)  sprintf  (q, "%3d",     u->WORK_NUNIT );
+         }
+      }
+      snprintf (unit_answer, LEN_RECD, "FUNC units  (%2d) : %-22.22s       %su   %ss   %sn", i, t, r, s, q);
    }
    /*---(complete)-----------------------*/
    return unit_answer;

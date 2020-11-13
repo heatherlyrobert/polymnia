@@ -600,7 +600,7 @@ char
 poly_vars_list      (void)
 {
    int         i           =    0;
-   if (my.g_mode == MODE_VARS) {
+   if (my.g_mode == POLY_RPTG_VARS) {
       for (i = 0; i < s_nvar; ++i) {
          if (i % 25 == 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  t\n");
          if (i %  5 == 0)  printf ("\n");

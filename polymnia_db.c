@@ -9,7 +9,7 @@
 static void  o___SUPPORT_________o () { return; }
 
 char
-poly_db_name            (char *a_name, char a_loud)
+poly_db_cli             (char *a_name, char a_loud)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -22,7 +22,7 @@ poly_db_name            (char *a_name, char a_loud)
    /*---(defense)------------------------*/
    DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
-      if (a_loud == 'y')  fprintf (my.f_error, "--database option can not be null\n");
+      if (a_loud == 'y')  yURG_error ("FATAL, --database <name>, name can not be null");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
@@ -32,14 +32,14 @@ poly_db_name            (char *a_name, char a_loud)
    l = strlen (x_recd);
    DEBUG_ARGS  yLOG_value   ("l"         , l);
    --rce;  if (l <= 0) {
-      if (a_loud == 'y')  fprintf (my.f_error, "--database option can not be empty\n");
+      if (a_loud == 'y')  yURG_error ("FATAL, --database <name>, name can not be blank/empty");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(check characters)---------------*/
    --rce;  for (i = 0; i < l; ++i) {
       if (strchr (x_valid, x_recd [i]) != NULL)  continue;
-      if (a_loud == 'y')  fprintf (my.f_error, "--database option <%s> can not have <%c> char at %d\n", x_recd, x_recd [i], i);
+      if (a_loud == 'y')  yURG_error ("FATAL, --database <name>, name can not have a <%c> at character %d", x_recd [i], i);
       DEBUG_TOPS  yLOG_char  ("bad char"  , x_recd [i]);
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
@@ -60,7 +60,7 @@ poly_db_name            (char *a_name, char a_loud)
 char
 poly_db_init            (void)
 {
-   poly_db_name (F_DB, '-');
+   poly_db_cli (F_DB, '-');
    my.f_db = NULL;
    return 0;
 }
@@ -79,11 +79,16 @@ poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, 
    char        rce         =  -10;
    char        x_mode      [LEN_TERSE] = "";
    int         n           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_FILE   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("my.f_db"   , my.f_db);
-   --rce;  if (my.f_db != NULL)  return rce;
+   DEBUG_FILE   yLOG_point   ("my.f_db"   , my.f_db);
+   --rce;  if (my.f_db != NULL) {
+      DEBUG_FILE   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(set mode)-----------------------*/
-   DEBUG_INPT   yLOG_char    ("a_mode"    , a_mode);
+   DEBUG_FILE   yLOG_char    ("a_mode"    , a_mode);
    --rce;  switch (a_mode) {
    case 'r' :
       strlcpy (x_mode, "rb", LEN_TERSE);
@@ -92,48 +97,53 @@ poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, 
       strlcpy (x_mode, "wb", LEN_TERSE);
       break;
    default  :
+      DEBUG_FILE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_info    ("x_mode"    , x_mode);
+   DEBUG_FILE   yLOG_info    ("x_mode"    , x_mode);
    /*---(open)---------------------------*/
-   DEBUG_INPT   yLOG_info    ("my.n_db"   , my.n_db);
+   DEBUG_FILE   yLOG_info    ("my.n_db"   , my.n_db);
    my.f_db = fopen (my.n_db, x_mode);
-   DEBUG_INPT   yLOG_point   ("my.f_db"   , my.f_db);
-   --rce;  if (my.f_db == NULL)  return rce;
+   DEBUG_FILE   yLOG_point   ("my.f_db"   , my.f_db);
+   --rce;  if (my.f_db == NULL) {
+      DEBUG_FILE   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(project count)------------------*/
    switch (a_mode) {
    case 'r' :
       fread  (&n, sizeof (int), 1, my.f_db);
-      DEBUG_OUTP   yLOG_value   ("projs"     , n);
+      DEBUG_FILE   yLOG_value   ("projs"     , n);
       if (a_nproj != NULL)  *a_nproj = n;
       fread  (&n, sizeof (int), 1, my.f_db);
-      DEBUG_OUTP   yLOG_value   ("files"     , n);
+      DEBUG_FILE   yLOG_value   ("files"     , n);
       if (a_nfile != NULL)  *a_nfile = n;
       fread  (&n, sizeof (int), 1, my.f_db);
-      DEBUG_OUTP   yLOG_value   ("funcs"     , n);
+      DEBUG_FILE   yLOG_value   ("funcs"     , n);
       if (a_nfunc != NULL)  *a_nfunc = n;
       fread  (&n, sizeof (int), 1, my.f_db);
-      DEBUG_OUTP   yLOG_value   ("ylib"      , n);
+      DEBUG_FILE   yLOG_value   ("ylib"      , n);
       if (a_nylib != NULL)  *a_nylib = n;
       break;
    case 'w' :
       n = poly_btree_count (B_PROJ);
-      DEBUG_OUTP   yLOG_value   ("projs"     , n);
+      DEBUG_FILE   yLOG_value   ("projs"     , n);
       fwrite (&n, sizeof (int), 1, my.f_db);
       n = poly_btree_count (B_FILES);
-      DEBUG_OUTP   yLOG_value   ("files"     , n);
+      DEBUG_FILE   yLOG_value   ("files"     , n);
       fwrite (&n, sizeof (int), 1, my.f_db);
       /*> n = poly_btree_count (B_FUNCS);                                             <*/
       n = poly_func_count ();
-      DEBUG_OUTP   yLOG_value   ("funcs"     , n);
+      DEBUG_FILE   yLOG_value   ("funcs"     , n);
       fwrite (&n, sizeof (int), 1, my.f_db);
       n = g_nylib;
-      DEBUG_OUTP   yLOG_value   ("ylib"      , n);
+      DEBUG_FILE   yLOG_value   ("ylib"      , n);
       fwrite (&n, sizeof (int), 1, my.f_db);
       break;
    }
-   DEBUG_OUTP   yLOG_value   ("n"         , n);
+   DEBUG_FILE   yLOG_value   ("n"         , n);
    /*---(complete)-----------------------*/
+   DEBUG_FILE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -179,7 +189,7 @@ poly_db__write_ylib     (tFUNC *a_func)
    /*---(walk projects)------------------*/
    while (x_ylib != NULL) {
       /*---(write)-----------------------*/
-      DEBUG_OUTP   yLOG_info    ("tag"       , x_ylib->name);
+      DEBUG_OUTP   yLOG_info    ("func"      , x_ylib->name);
       fwrite (x_ylib  , sizeof (tYLIB), 1, my.f_db);
       /*---(next)------------------------*/
       x_ylib = x_ylib->f_next;
@@ -321,7 +331,7 @@ poly_db__read_ylib      (tFUNC *a_func, int n)
    DEBUG_INPT   yLOG_value   ("n"         , n);
    for (i = 0; i < n; ++i) {
       /*---(allocate)-----------------------*/
-      poly_ylib_new (&x_new);
+      poly_ylib_force (&x_new);
       DEBUG_INPT   yLOG_point   ("x_ylib"    , x_new);
       --rce;  if (x_new == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -378,8 +388,7 @@ poly_db__read_func      (tFILE *a_file, int n)
    DEBUG_INPT   yLOG_value   ("n"         , n);
    for (i = 0; i < n; ++i) {
       /*---(allocate)-----------------------*/
-      x_func = NULL;
-      rc = poly_func_new (&x_func);
+      rc = poly_func_force (&x_func);
       DEBUG_INPT   yLOG_point   ("x_func"   , x_func);
       --rce;  if (rc < 0 || x_func == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -387,7 +396,7 @@ poly_db__read_func      (tFILE *a_file, int n)
       }
       /*---(read)---------------------------*/
       fread  (x_func, sizeof (tFUNC), 1, my.f_db);
-      DEBUG_INPT   yLOG_info    ("tag"       , x_func->name);
+      DEBUG_INPT   yLOG_info    ("func"      , x_func->name);
       /*---(clear the pointers)-------------*/
       x_nylib         = x_func->y_count;
       x_func->file    = NULL;
@@ -399,7 +408,7 @@ poly_db__read_func      (tFILE *a_file, int n)
       x_func->btree   = NULL;
       /*---(add to project)-----------------*/
       rc = poly_func_hook (a_file, x_func);
-      DEBUG_INPT   yLOG_value   ("addtag"    , rc);
+      DEBUG_INPT   yLOG_value   ("hook"      , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -413,7 +422,7 @@ poly_db__read_func      (tFILE *a_file, int n)
       }
       /*---(dive)---------------------------*/
       rc = poly_db__read_ylib (x_func, x_nylib);
-      DEBUG_INPT   yLOG_value   ("read_ylib" , rc);
+      DEBUG_INPT   yLOG_value   ("ylibs"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -432,14 +441,15 @@ poly_db__read_file      (tPROJ *a_proj, int n)
    char        rc          =    0;
    int         i           =    0;
    tFILE      *x_file      = NULL;
-   int         x_ntag      =    0;
+   int         x_nfunc     =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   DEBUG_INPT   yLOG_point   ("a_proj"    , a_proj);
    /*---(walk projects)------------------*/
-   DEBUG_INPT   yLOG_value   ("n"         , n);
+   DEBUG_INPT   yLOG_value   ("files"     , n);
    for (i = 0; i < n; ++i) {
       /*---(allocate)-----------------------*/
-      x_file = poly_file_new ();
+      poly_file_force (&x_file);
       DEBUG_INPT   yLOG_point   ("x_file"    , x_file);
       --rce;  if (x_file == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -449,15 +459,17 @@ poly_db__read_file      (tPROJ *a_proj, int n)
       fread  (x_file, sizeof (tFILE), 1, my.f_db);
       DEBUG_INPT   yLOG_info    ("file"      , x_file->name);
       /*---(clear the pointers)-------------*/
-      x_ntag        = x_file->count;
+      DEBUG_INPT   yLOG_note    ("overwrite with some defaults");
+      x_nfunc       = x_file->count;
       x_file->proj  = NULL;
       x_file->head  = x_file->tail  = NULL;
       x_file->next  = x_file->prev  = NULL;
       x_file->count = x_file->COUNT_FILES = x_file->COUNT_FUNCS = x_file->COUNT_YLIBS = 0;
       x_file->btree = NULL;
       /*---(add to project)-----------------*/
-      rc = poly_proj_file_hook (a_proj, x_file);
-      DEBUG_INPT   yLOG_value   ("addfile"   , rc);
+      DEBUG_INPT   yLOG_note    ("prepare for hook");
+      rc = poly_file_hook (a_proj, x_file);
+      DEBUG_INPT   yLOG_value   ("hook"      , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -470,8 +482,8 @@ poly_db__read_file      (tPROJ *a_proj, int n)
          return rce;
       }
       /*---(dive)---------------------------*/
-      rc = poly_db__read_func (x_file, x_ntag);
-      DEBUG_INPT   yLOG_value   ("read_tag"  , rc);
+      rc = poly_db__read_func (x_file, x_nfunc);
+      DEBUG_INPT   yLOG_value   ("funcs"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -496,15 +508,16 @@ poly_db_read          (void)
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(open)---------------------------*/
    rc = poly_db__open ('r', &n, NULL, NULL, NULL);
-   DEBUG_OUTP   yLOG_value   ("open"      , rc);
+   DEBUG_INPT   yLOG_value   ("open"      , rc);
    --rce;  if (rc < 0) {
-      DEBUG_OUTP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_INPT   yLOG_value   ("projects"  , n);
    /*---(walk projects)------------------*/
    for (i = 0; i < n; ++i) {
       /*---(allocate)-----------------------*/
-      x_proj = poly_proj_new ();
+      poly_proj_force (&x_proj);
       DEBUG_INPT   yLOG_point   ("x_proj"    , x_proj);
       --rce;  if (x_proj == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -535,16 +548,16 @@ poly_db_read          (void)
    }
    /*---(close)--------------------------*/
    rc = poly_db__close ();
-   DEBUG_OUTP   yLOG_value   ("close"     , rc);
+   DEBUG_INPT   yLOG_value   ("close"     , rc);
    --rce;  if (rc < 0) {
-      DEBUG_OUTP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(prepare btree)------------------*/
    rc = poly_btree_prepare_all ();
-   DEBUG_PROG   yLOG_value   ("prepare"    , rc);
+   DEBUG_INPT   yLOG_value   ("prepare"    , rc);
    --rce;  if (n > 0 && rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(complete)-----------------------*/
