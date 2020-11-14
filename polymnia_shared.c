@@ -9,7 +9,7 @@
 #define     NEW_VARS      "ctags  --language-force=c -x --sort=no                   --c-kinds=vxd  %s > %s  2> /dev/null"
 #define     NEW_UNITS     "grep   --no-filename -E --regexp=\"^(PREP|SCRP| [ ]*exec| [ ]*get)\"  *.unit  > %s  2> /dev/null"
 
-static      char       *s_valid       = "ftmcxveu";
+static      char       *s_valid       = "ftmcxveuwW";
 static      char        s_ctags       [LEN_RECD] = "";
 static      char        s_code        [LEN_RECD] = "";
 static      char        s_vars        [LEN_RECD] = "";
@@ -149,225 +149,6 @@ poly_shared__spacer     (char *a_out)
 
 
 /*====================------------------------------------====================*/
-/*===----                     hooking and unhooking                    ----===*/
-/*====================------------------------------------====================*/
-static void  o___HOOKING_________o () { return; }
-
-/*> char                                                                              <* 
- *> poly_shared_hook        (void *a_parent, tCTRL *a_ctrl, tSIBS **a_sibs)           <* 
- *> {                                                                                 <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
- *>    char        rce         =  -10;                                                <* 
- *>    char        n           =   -1;                                                <* 
- *>    tSIBS      *x_sibs      = NULL;                                                <* 
- *>    int         x_tries     =    0;                                                <* 
- *>    /+---(begin)--------------------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_senter  (__FUNCTION__);                                      <* 
- *>    /+---(defense)------------------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_parent);                                          <* 
- *>    --rce;  if (a_parent == NULL) {                                                <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_ctrl);                                            <* 
- *>    --rce;  if (a_ctrl == NULL) {                                                  <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_sibs);                                            <* 
- *>    --rce;  if (a_sibs == NULL) {                                                  <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    DEBUG_DATA   yLOG_spoint  (*a_sibs);                                           <* 
- *>    --rce;  if (*a_sibs != NULL) {                                                 <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    /+---(create cell)--------------------+/                                       <* 
- *>    while (x_sibs == NULL) {                                                       <* 
- *>       ++x_tries;                                                                  <* 
- *>       x_sibs = (tSIBS *) malloc (sizeof (tSIBS));                                 <* 
- *>       if (x_tries > 3)   break;                                                   <* 
- *>    }                                                                              <* 
- *>    DEBUG_DATA   yLOG_sint    (x_tries);                                           <* 
- *>    DEBUG_DATA   yLOG_spoint  (x_sibs);                                            <* 
- *>    --rce;  if (x_sibs == NULL) {                                                  <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    /+---(into siblings list)-------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_snote   ("link");                                            <* 
- *>    x_sibs->next    = NULL;                                                        <* 
- *>    x_sibs->prev    = NULL;                                                        <* 
- *>    if (a_ctrl->head == NULL) {                                                    <* 
- *>       a_ctrl->head = a_ctrl->tail = x_sibs;                                       <* 
- *>    } else {                                                                       <* 
- *>       x_sibs->prev = a_ctrl->tail;                                                <* 
- *>       a_ctrl->next = x_sibs;                                                      <* 
- *>       a_ctrl->tail = x_sibs;                                                      <* 
- *>    }                                                                              <* 
- *>    /+---(update count)-------------------+/                                       <* 
- *>    ++B_COUNT;                                                                     <* 
- *>    DEBUG_DATA   yLOG_sint    (B_COUNT);                                           <* 
- *>    DEBUG_DATA   yLOG_snote   ("successful");                                      <* 
- *>    /+---(reverse link)-------------------+/                                       <* 
- *>    if (a_sibs != NULL)  *a_sibs = x_sibs;                                         <* 
- *>    /+---(complete)-----------------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                      <* 
- *>    return 0;                                                                      <* 
- *> }                                                                                 <*/
-
-/*> char                                                                                                                                                                                                                     <* 
- *> poly_shared_hook        (char *a_terse, char *a_name, void *a_here, void *a_parent, void *a_owner, void *a_head, void *a_tail, void *a_prev, void *a_tnext, int *a_count, int *a_counta, int *a_countb, int *a_countc)   <* 
- *> {                                                                                                                                                                                                                        <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                                                                                                              <* 
- *>    char        rce         =  -10;                                                                                                                                                                                       <* 
- *>    /+---(header)-------------------------+/                                                                                                                                                                              <* 
- *>    /+> DEBUG_DATA   yLOG_senter  (__FUNCTION__);                                      <+/                                                                                                                                <* 
- *>    DEBUG_DATA   yLOG_enter   (__FUNCTION__);                                                                                                                                                                             <* 
- *>    /+> if (a_terse != NULL)  DEBUG_DATA   yLOG_snote   (a_terse);                     <+/                                                                                                                                <* 
- *>    if (a_terse != NULL)  DEBUG_DATA   yLOG_note    (a_terse);                                                                                                                                                            <* 
- *>    DEBUG_DATA   yLOG_exit    (__FUNCTION__);                                                                                                                                                                             <* 
- *>    return 0;                                                                                                                                                                                                             <* 
- *>    /+---(defense)------------------------+/                                                                                                                                                                              <* 
- *>    /+> DEBUG_DATA   yLOG_spoint  (a_here);                                            <+/                                                                                                                                <* 
- *>    DEBUG_DATA   yLOG_point   ("a_here"    , a_here);                                                                                                                                                                     <* 
- *>    --rce;  if (a_here == NULL) {                                                                                                                                                                                         <* 
- *>       /+> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <+/                                                                                                                                <* 
- *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                                                                                                                                                     <* 
- *>       return rce;                                                                                                                                                                                                        <* 
- *>    }                                                                                                                                                                                                                     <* 
- *>    /+> DEBUG_DATA   yLOG_spoint  (a_parent);                                          <+/                                                                                                                                <* 
- *>    DEBUG_DATA   yLOG_point   ("a_parent"  , a_parent);                                                                                                                                                                   <* 
- *>    --rce;  if (a_parent != NULL) {                                                                                                                                                                                       <* 
- *>       /+> DEBUG_DATA   yLOG_snote   ("already hooked");                               <+/                                                                                                                                <* 
- *>       DEBUG_DATA   yLOG_note    ("already hooked");                                                                                                                                                                      <* 
- *>       /+> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <+/                                                                                                                                <* 
- *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                                                                                                                                                     <* 
- *>       return rce;                                                                                                                                                                                                        <* 
- *>    }                                                                                                                                                                                                                     <* 
- *>    /+> if (a_name != NULL)  DEBUG_DATA   yLOG_snote   (a_name);                       <+/                                                                                                                                <* 
- *>    if (a_name != NULL)  DEBUG_DATA   yLOG_note    (a_name);                                                                                                                                                              <* 
- *>    /+---(into linked list)---------------+/                                                                                                                                                                              <* 
- *>    DEBUG_DATA   yLOG_sint    (*a_count);                                                                                                                                                                                 <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_head);                                                                                                                                                                                   <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_tail);                                                                                                                                                                                   <* 
- *>    if (a_head  == NULL) {                                                                                                                                                                                                <* 
- *>       DEBUG_DATA   yLOG_snote   ("first");                                                                                                                                                                               <* 
- *>       a_head  = a_tail  = a_here;                                                                                                                                                                                        <* 
- *>    } else {                                                                                                                                                                                                              <* 
- *>       DEBUG_DATA   yLOG_snote   ("append");                                                                                                                                                                              <* 
- *>       a_prev  = a_tail;                                                                                                                                                                                                  <* 
- *>       a_tnext = a_here;                                                                                                                                                                                                  <* 
- *>       a_tail  = a_here;                                                                                                                                                                                                  <* 
- *>    }                                                                                                                                                                                                                     <* 
- *>    /+---(parent pointer)-----------------+/                                                                                                                                                                              <* 
- *>    a_parent   = a_owner;                                                                                                                                                                                                 <* 
- *>    /+---(function counts)----------------+/                                                                                                                                                                              <* 
- *>    ++(*a_count);                                                                                                                                                                                                         <* 
- *>    DEBUG_DATA   yLOG_sint    (*a_count);                                                                                                                                                                                 <* 
- *>    ++(*a_counta);                                                                                                                                                                                                        <* 
- *>    ++(*a_countb);                                                                                                                                                                                                        <* 
- *>    ++(*a_countc);                                                                                                                                                                                                        <* 
- *>    /+---(complete)------------------------------+/                                                                                                                                                                       <* 
- *>    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                                                                                                                                                             <* 
- *>    return 0;                                                                                                                                                                                                             <* 
- *> }                                                                                                                                                                                                                        <*/
-
-/*> char                                                                              <* 
- *> poly_btree_unhook       (tBTREE **a_link)                                         <* 
- *> {                                                                                 <* 
- *>    /+---(locals)-----------+-----------+-+/                                       <* 
- *>    char        rce         =  -10;                                                <* 
- *>    char        rc          =    0;                                                <* 
- *>    char        n           =   -1;                                                <* 
- *>    tBTREE     *x_old       = NULL;                                                <* 
- *>    /+---(beginning)----------------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_senter  (__FUNCTION__);                                      <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_link);                                            <* 
- *>    --rce;  if (a_link == NULL) {                                                  <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    x_old = *a_link;                                                               <* 
- *>    DEBUG_DATA   yLOG_spoint  (x_old);                                             <* 
- *>    --rce;  if (x_old == NULL) {                                                   <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    /+---(set index for macros)-----------+/                                       <* 
- *>    n = x_old->n;                                                                  <* 
- *>    /+---(out of linked list)-------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_snote   ("unlink");                                          <* 
- *>    if (x_old->next != NULL)   x_old->next->prev = x_old->prev;                    <* 
- *>    else                       B_TAIL            = x_old->prev;                    <* 
- *>    if (x_old->prev != NULL)   x_old->prev->next = x_old->next;                    <* 
- *>    else                       B_HEAD            = x_old->next;                    <* 
- *>    /+---(update count)-------------------+/                                       <* 
- *>    --B_COUNT;                                                                     <* 
- *>    DEBUG_DATA   yLOG_sint    (B_COUNT);                                           <* 
- *>    /+---(free main)----------------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_snote   ("free and null");                                   <* 
- *>    free (x_old);                                                                  <* 
- *>    *a_link = NULL;                                                                <* 
- *>    /+---(reset ready)--------------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_snote   ("reset");                                           <* 
- *>    B_READY = '-';                                                                 <* 
- *>    /+---(complete)-----------------------+/                                       <* 
- *>    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                      <* 
- *>    return 0;                                                                      <* 
- *> }                                                                                 <*/
-
-
-/*> char                                                                                                                                                                                                                                  <* 
- *> poly_shared_unhook      (char *a_terse, char *a_name, void *a_here, void *a_owner, void *a_head, void *a_tail, void *a_prev, void *a_pnext, void *a_next, void *a_nprev, int *a_count, int *a_counta, int *a_countb, int *a_countc)   <* 
- *> {                                                                                                                                                                                                                                     <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                                                                                                                           <* 
- *>    char        rce         =  -10;                                                                                                                                                                                                    <* 
- *>    tFUNC      *x_func      = NULL;                                                                                                                                                                                                    <* 
- *>    /+---(header)-------------------------+/                                                                                                                                                                                           <* 
- *>    DEBUG_DATA   yLOG_senter  (__FUNCTION__);                                                                                                                                                                                          <* 
- *>    if (a_terse != NULL)  DEBUG_DATA   yLOG_snote   (a_terse);                                                                                                                                                                         <* 
- *>    /+---(defense)------------------------+/                                                                                                                                                                                           <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_here);                                                                                                                                                                                                <* 
- *>    --rce;  if (a_here == NULL) {                                                                                                                                                                                                      <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                                                                                                                                                                                  <* 
- *>       return rce;                                                                                                                                                                                                                     <* 
- *>    }                                                                                                                                                                                                                                  <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_owner);                                                                                                                                                                                               <* 
- *>    --rce;  if (a_owner == NULL) {                                                                                                                                                                                                     <* 
- *>       DEBUG_DATA   yLOG_snote   ("not presently hooked");                                                                                                                                                                             <* 
- *>       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                                                                                                                                                                                  <* 
- *>       return rce;                                                                                                                                                                                                                     <* 
- *>    }                                                                                                                                                                                                                                  <* 
- *>    if (a_name != NULL)  DEBUG_DATA   yLOG_snote   (a_name);                                                                                                                                                                           <* 
- *>    /+---(out of linked list)-------------+/                                                                                                                                                                                           <* 
- *>    DEBUG_DATA   yLOG_sint    (*a_count);                                                                                                                                                                                              <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_head);                                                                                                                                                                                                <* 
- *>    DEBUG_DATA   yLOG_spoint  (a_tail);                                                                                                                                                                                                <* 
- *>    if (a_next != NULL)  a_nprev = a_prev;                                                                                                                                                                                             <* 
- *>    else                 a_tail  = a_prev;                                                                                                                                                                                             <* 
- *>    if (a_prev != NULL)  a_pnext = a_next;                                                                                                                                                                                             <* 
- *>    else                 a_head  = a_next;                                                                                                                                                                                             <* 
- *>    /+---(function counts)----------------+/                                                                                                                                                                                           <* 
- *>    --(*a_count);                                                                                                                                                                                                                      <* 
- *>    DEBUG_DATA   yLOG_sint    (*a_count);                                                                                                                                                                                              <* 
- *>    --(*a_counta);                                                                                                                                                                                                                     <* 
- *>    --(*a_countb);                                                                                                                                                                                                                     <* 
- *>    --(*a_countc);                                                                                                                                                                                                                     <* 
- *>    /+---(ground pointers)----------------+/                                                                                                                                                                                           <* 
- *>    a_owner  = NULL;                                                                                                                                                                                                                   <* 
- *>    a_prev   = NULL;                                                                                                                                                                                                                   <* 
- *>    a_next   = NULL;                                                                                                                                                                                                                   <* 
- *>    /+---(complete)-----------------------+/                                                                                                                                                                                           <* 
- *>    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                                                                                                                                                                          <* 
- *>    return 0;                                                                                                                                                                                                                          <* 
- *> }                                                                                                                                                                                                                                     <*/
-
-
-
-/*====================------------------------------------====================*/
 /*===----                       support function                       ----===*/
 /*====================------------------------------------====================*/
 static void  o___SUPPORT_________o () { return; }
@@ -401,6 +182,10 @@ poly_shared__pointer    (char a_type, FILE ***a_file)
       break;
    case 'u' :  /* unit tests */
       *a_file  = &(my.f_units);
+      break;
+   case 'w' :  /* world project inventory */
+   case 'W' :
+      *a_file  = &(my.f_world);
       break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
@@ -515,6 +300,14 @@ poly_shared_open        (char a_type, char *a_focus)
    case 'u' :  /* units    */
       strlcpy (x_use   , F_UNITS    , LEN_RECD);
       strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      break;
+   case 'w' :  /* world projects inventory  */
+      strlcpy (x_use   , my.n_world , LEN_RECD);
+      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      break;
+   case 'W' :  /* world projects inventory  */
+      strlcpy (x_use   , my.n_world , LEN_RECD);
+      strlcpy (x_mode  , "wt"       , LEN_TERSE);
       break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
@@ -636,10 +429,12 @@ poly_shared_close       (char a_type)
       strlcpy (x_used , F_VARS  , LEN_RECD);
       break;
    case 'e' :  /* external */
-      /*> strlcpy (x_used  , F_EXTERN, LEN_RECD);                                     <*/
       break;
    case 'u' :  /* external */
       strlcpy (x_used  , F_UNITS, LEN_RECD);
+      break;
+   case 'w' :  /* world project inventory */
+   case 'W' :
       break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
@@ -1165,6 +960,13 @@ poly_shared__unit       (char *a_question)
       sprintf (t, "%2d[%.14s]", strlen (F_UNITS), F_UNITS);
       sprintf (r, "%2d[%.14s]", strlen (x_recd) , x_recd);
       snprintf (unit_answer, LEN_RECD, "SHARED unit      : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_units   == NULL) ? '-' : 'y', my.f_units  , t, s, c, r);
+      return unit_answer;
+   }
+   else if (strcmp (a_question, "world"     )     == 0) {
+      c = poly_shared__unit_recd (my.n_world, 0, x_recd);
+      sprintf (t, "%2d[%.14s]", strlen (my.n_world), my.n_world);
+      sprintf (r, "%2d[%.14s]", strlen (x_recd) , x_recd);
+      snprintf (unit_answer, LEN_RECD, "SHARED world     : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_world   == NULL) ? '-' : 'y', my.f_world  , t, s, c, r);
       return unit_answer;
    }
    /*---(complete)-----------------------*/

@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8o"
-#define     P_VERTXT    "able to create a big inventory of projects (45)"
+#define     P_VERNUM    "0.8p"
+#define     P_VERTXT    "world/system functionality working, configurable, and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -168,7 +168,7 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_RPTG           'r'
 #define     POLY_BOTH           'B'
 
-#define     POLY_DATA_VALIDS    "-hwurLSKMW"
+#define     POLY_DATA_VALIDS    "-hwurLSRU"
 #define     POLY_DATA_NONE      '-'
 #define     POLY_DATA_HTAGS     'h'
 #define     POLY_DATA_NEW       'w'
@@ -176,9 +176,8 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_DATA_REMOVE    'r'
 #define     POLY_DATA_LIBS      'L'
 #define     POLY_DATA_SYSTEM    'S'
-#define     POLY_DATA_MONKEY    'K'
-#define     POLY_DATA_MEMBER    'M'
-#define     POLY_DATA_WORLD     'W'
+#define     POLY_DATA_REG       'R'
+#define     POLY_DATA_UNREG     'U'
 
 #define     POLY_RPTG_VALIDS    "-adefhopvy"
 #define     POLY_RPTG_NONE      '-'
@@ -218,6 +217,7 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     F_EXTMACRO  "/var/lib/polymnia/ext_macro.txt"
 #define     F_EXTLABEL  "/var/lib/polymnia/ext_label.txt"
 #define     F_DB        "/var/lib/polymnia/polymnia.db"
+#define     F_WORLD     "/var/lib/polymnia/world.txt"
 
 
 
@@ -256,6 +256,8 @@ struct cMY {
    FILE       *f_db;                   /* shared database of tags             */
    char        n_extern    [LEN_RECD]; /* name of external file               */
    FILE       *f_extern;               /* shared external function list       */
+   char        n_world     [LEN_RECD]; /* name of world project inventory     */
+   FILE       *f_world;                /* world project inventory             */
    /*---(working files)-------*/
    FILE       *f_code;                 /* current program source file         */
    FILE       *f_ctags;                /* ctags input file                    */
@@ -490,6 +492,14 @@ struct cYLIB {
 extern   int g_nylib;
 
 
+typedef struct cWORLD tWORLD;
+struct cWORLD {
+   char        name        [LEN_LABEL];
+   char        home        [LEN_RECD];
+   tBTREE     *btree;
+};
+
+
 
 
 #define     MAX_TEMPS      60
@@ -602,8 +612,9 @@ struct      cBTREE {
 #define     B_FUNCS     't'
 #define     B_PROTO     'p'
 #define     B_EXTERN    'e'
+#define     B_WORLD     'p'
 #define     B_UNIT      'U'
-#define     B_ALL       "TftpeU"
+#define     B_ALL       "TftpewU"
 
 
 
@@ -698,6 +709,7 @@ char*       poly_cats__unit         (char *a_question, int n);
 
 char        PROG_args               (int a_argc, char *a_argv[]);
 char        PROG_prepare            (void);
+char        PROG_dispatch           (void);
 char        PROG_summarize          (tPROJ *x_proj);
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
@@ -967,5 +979,39 @@ char        poly_vars_inventory     (tFILE *a_file);
 char        poly_vars_list          (void);
 char        poly_vars__unit_set     (tFUNC *a_func, char *a_extern, char *a_intern, char *a_macros, char *a_locals);
 char*       poly_vars__unit         (char *a_question, int i);
+
+
+
+/*---(cli)------------------*/
+char        poly_world_cli          (char *a_name, char a_loud);
+/*---(cleansing)------------*/
+char        poly_world__wipe        (tWORLD *a_world);
+char*       poly_world__memory      (tWORLD *a_world);
+/*---(memory)---------------*/
+char        poly_world__new         (tWORLD **a_new);
+char        poly_world__free        (tWORLD **a_old);
+/*---(existance)------------*/
+char        poly_world__add         (char *a_name, char *a_home);
+char        poly_world__remove      (char *a_name);
+/*---(searching)------------*/
+int         poly_world__count       (void);
+char        poly_world__by_name     (uchar *a_name, tWORLD **a_world);
+char        poly_world__by_index    (int n, tWORLD **a_world);
+char        poly_world__by_cursor   (char a_dir, tWORLD **a_world);
+/*---(exim)-----------------*/
+char        poly_world__export      (void);
+char        poly_world__import      (void);
+/*---(register)-------------*/
+char        poly_world__register    (void);
+char        poly_world__unregister  (void);
+/*---(actions)--------------*/
+char        poly_world_register     (void);
+char        poly_world_unregister   (void);
+char        poly_world_system       (void);
+/*---(program)--------------*/
+char        poly_world_init         (void);
+char        poly_world__purge       (void);
+char        poly_world_wrap         (void);
+
 
 

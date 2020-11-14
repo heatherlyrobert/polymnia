@@ -97,6 +97,7 @@ PROG_init          (int a_argc, char *a_argv[])
    poly_extern_init  ();
    poly_vars_init    ();
    poly_proto_init   ();
+   poly_world_init   ();
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -126,24 +127,23 @@ PROG_args          (int a_argc, char *a_argv[])
       DEBUG_ARGS  yLOG_info    ("cli arg", a);
       ++x_args;
       /*---(simple)----------------------*/
-      if      (strcmp (a, "--version"  ) == 0)  PROG_vershow ();
+      if      (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
       /*---(complicated)-----------------*/
-      else if (strcmp (a, "--htags"    ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_rptg = POLY_RPTG_HTAGS;   }
-      else if (strcmp (a, "--nounit"   ) == 0)   my.g_unit  = '-';
+      else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_rptg = POLY_RPTG_HTAGS;   }
+      else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
       /*---(data handling)---------------*/
-      else if (strcmp (a, "--new"      ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_NEW;     }
-      else if (strcmp (a, "--update"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UPDATE;  }
-      else if (strcmp (a, "--remove"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }
-      else if (strcmp (a, "--system"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_SYSTEM;  }
-      else if (strcmp (a, "--monkey"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_MONKEY;  }
-      else if (strcmp (a, "--member"   ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_MEMBER;  }
-      else if (strcmp (a, "--world"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_WORLD;   }
+      else if (strcmp (a, "--new"       ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_NEW;     }
+      else if (strcmp (a, "--update"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UPDATE;  }
+      else if (strcmp (a, "--remove"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }
+      else if (strcmp (a, "--register"  ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REG;     }
+      else if (strcmp (a, "--unregister") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UNREG;   }
+      else if (strcmp (a, "--system"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_SYSTEM;  }
       /*---(reports)---------------------*/
-      else if (strcmp (a, "--projects" ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_PROJS;   }
-      else if (strcmp (a, "--oneline"  ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ONELINE; }
-      else if (strcmp (a, "--about"    ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ABOUT;   }
-      else if (strcmp (a, "--dump"     ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_DUMP;    }
-      else if (strcmp (a, "--detail"   ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_FUNC;    }
+      else if (strcmp (a, "--projects"  ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_PROJS;   }
+      else if (strcmp (a, "--oneline"   ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ONELINE; }
+      else if (strcmp (a, "--about"     ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ABOUT;   }
+      else if (strcmp (a, "--dump"      ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_DUMP;    }
+      else if (strcmp (a, "--detail"    ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_FUNC;    }
       /*---(others)----------------------*/
       /*> else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;          <* 
        *> else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = POLY_RPTG_VARS;          <* 
@@ -155,9 +155,10 @@ PROG_args          (int a_argc, char *a_argv[])
        *> else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;        <* 
        *> else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;       <*/
       /*---(configuration)---------------*/
-      else if (strcmp (a, "--database" ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
-      else if (strcmp (a, "--project"  ) == 0)  TWOARG rc = poly_proj_cli    (a_argv [i], 'y');
-      else if (strcmp (a, "--hint"     ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
+      else if (strcmp (a, "--database"  ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
+      else if (strcmp (a, "--world"     ) == 0)  TWOARG rc = poly_world_cli   (a_argv [i], 'y');
+      else if (strcmp (a, "--project"   ) == 0)  TWOARG rc = poly_proj_cli    (a_argv [i], 'y');
+      else if (strcmp (a, "--hint"      ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
       /*> else if (strcmp (a, "--extern"   ) == 0)  TWOARG rc = poly_extern_name (a_argv [i], 'y');   <*/
       /*> else if (strcmp (a, "--ylib"     ) == 0)  TWOARG rc = poly_ylib_name   (a_argv [i], 'y');   <*/
       /*---(compound)--------------------*/
@@ -282,6 +283,83 @@ PROG_summarize          (tPROJ *a_proj)
 
 
 /*====================------------------------------------====================*/
+/*===----                      action dispatching                      ----===*/
+/*====================------------------------------------====================*/
+static void      o___DISPATCH________________o (void) {;}
+
+char
+PROG_dispatch           (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_PROG   yLOG_char    ("g_mode"    , my.g_mode);
+   /*---(data handling)------------------*/
+   if (my.g_mode == POLY_DATA || my.g_mode == POLY_BOTH) {
+      DEBUG_PROG   yLOG_char    ("g_data"    , my.g_data);
+      switch (my.g_data) {
+      case POLY_DATA_HTAGS  :  rc = poly_action_htags     ();   break;
+      case POLY_DATA_NEW    :  rc = poly_action_new       ();   break;
+      case POLY_DATA_UPDATE :  rc = poly_action_update    ();   break;
+      case POLY_DATA_REMOVE :  rc = poly_action_remove    ();   break;
+      case POLY_DATA_REG    :  rc = poly_world_register   ();   break;
+      case POLY_DATA_UNREG  :  rc = poly_world_unregister ();   break;
+      case POLY_DATA_SYSTEM :  rc = poly_world_system     ();   break;
+      }
+   }
+   /*---(reporting)----------------------*/
+   if (my.g_mode == POLY_RPTG || my.g_mode == POLY_BOTH) {
+      DEBUG_PROG   yLOG_char    ("g_rptg"    , my.g_rptg);
+      switch (my.g_rptg) {
+      case POLY_RPTG_PROJS   : case POLY_RPTG_ONELINE :
+         rc = poly_db_read       ();
+         rc = poly_rptg_projects ();
+         break;
+      case POLY_RPTG_FUNC    :
+         rc = poly_action_detail ();
+         break;
+
+
+      case POLY_RPTG_ABOUT   :
+         rc = poly_action_about ();
+         break;
+      case POLY_RPTG_DUMP   :
+         DEBUG_TOPS   yLOG_note    ("rptg processing, file read, nor htags or write");
+         rc = poly_db_read     ();
+         rc = poly_rptg_dump   ();
+         break;
+      case MODE_SEARCH :
+         DEBUG_TOPS   yLOG_note    ("search processing, read, but no htags or write");
+         rc = poly_action_search ();
+         break;
+      case MODE_FILE   :
+         DEBUG_TOPS   yLOG_note    ("project processing, read, but no htags or write");
+         rc = poly_db_read     ();
+         rc = poly_rptg_proj   ();
+         break;
+      case POLY_RPTG_EXTERN :
+         DEBUG_TOPS   yLOG_note    ("extern processing, read, but no htags or write");
+         rc = poly_action_extern ();
+         break;
+      case POLY_RPTG_YLIB   :
+         DEBUG_TOPS   yLOG_note    ("libuse processing, read, but no htags or write");
+         rc = poly_action_libuse ();
+         break;
+      case POLY_RPTG_VARS   :
+         DEBUG_TOPS   yLOG_note    ("htag gathering, then var/macros analysis");
+         rc = poly_action_vars ();
+         break;
+      }
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return rc;
+}
+
+
+/*====================------------------------------------====================*/
 /*===----                        program shutdown                      ----===*/
 /*====================------------------------------------====================*/
 static void      o___SHUTDOWN________________o (void) {;}
@@ -294,6 +372,7 @@ PROG_end             (void)
    /*---(wrap-up)------------------------*/
    poly_proj_purge   ();
    poly_extern_wrap  ();
+   poly_world_wrap   ();
    /*---(remove global files)------------*/
    system ("rm -f htags.gcalls");
    system ("rm -f htags.flow");

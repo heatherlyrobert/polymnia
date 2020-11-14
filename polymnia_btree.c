@@ -47,6 +47,7 @@ struct      cROOTS {
    { B_FUNCS   , "funcs"     , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
    { B_EXTERN  , "extern"    , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
    { B_PROTO   , "proto"     , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
+   { B_WORLD   , "world"     , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
    { B_UNIT    , "unit"      , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
    { 0         , ""          , '-' , NULL, NULL, NULL,   "", NULL,   NULL,   0, 0},
 };
@@ -956,6 +957,13 @@ poly_btree_search       (char a_btree, char *a_name)
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point   ("a_name"    , a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return NULL;
+   }
+   DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
    /*---(find tree)----------------------*/
    n = poly_btree__by_abbr   (a_btree);
    DEBUG_DATA   yLOG_value   ("a_btree"   , n);
