@@ -36,6 +36,10 @@ poly_rptg__total        (void)
          poly_btree_count (B_PROJ), poly_btree_count (B_FILES),
          poly_func_count (), g_nylib,
          s_lines, s_empty, s_debug, s_docs, s_code, s_slocl);
+   printf ("                                                        § %7.2f § %7.2f § %7.2f § %7.2f § %7.2f § \n",
+         (float) s_empty / s_lines, (float) s_debug / s_lines,
+         (float) s_docs  / s_lines, (float) s_code  / s_lines,
+         (float) s_slocl / s_lines);
    return 0;
 }
 
@@ -166,7 +170,7 @@ poly_rptg_projects      (void)
    printf ("\n");
    printf ("polymnia-hymnos (many praises) greek muse and protector of divine hymns, dancing, geometry, and grammar\n");
    printf ("version %s, %s\n", P_VERNUM, P_VERTXT);
-   printf ("project inventory with key statistics\n");
+   printf ("project inventory with summary statistics\n");
    printf ("\n");
    /*---(prepare)------------------------*/
    poly_rptg__prep ();

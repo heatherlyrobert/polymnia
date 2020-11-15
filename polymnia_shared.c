@@ -9,9 +9,10 @@
 #define     NEW_VARS      "ctags  --language-force=c -x --sort=no                   --c-kinds=vxd  %s > %s  2> /dev/null"
 #define     NEW_UNITS     "grep   --no-filename -E --regexp=\"^(PREP|SCRP| [ ]*exec| [ ]*get)\"  *.unit  > %s  2> /dev/null"
 
-static      char       *s_valid       = "ftmcxveuwW";
+static      char       *s_valid       = "ftmcxveuswW";
 static      char        s_ctags       [LEN_RECD] = "";
 static      char        s_code        [LEN_RECD] = "";
+static      char        s_scrp        [LEN_RECD] = "";
 static      char        s_vars        [LEN_RECD] = "";
 
 
@@ -180,8 +181,11 @@ poly_shared__pointer    (char a_type, FILE ***a_file)
    case 'e' :  /* external */
       *a_file  = &(my.f_extern);
       break;
-   case 'u' :  /* unit tests */
+   case 'u' :  /* unit tests for functions */
       *a_file  = &(my.f_units);
+      break;
+   case 's' :  /* unit test scripts */
+      *a_file  = &(my.f_scrps);
       break;
    case 'w' :  /* world project inventory */
    case 'W' :
@@ -301,6 +305,11 @@ poly_shared_open        (char a_type, char *a_focus)
       strlcpy (x_use   , F_UNITS    , LEN_RECD);
       strlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
+   case 's' :  /* unit test scripts   */
+      strlcpy (x_source, a_focus    , LEN_RECD);
+      strlcpy (x_use   , a_focus    , LEN_RECD);
+      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      break;
    case 'w' :  /* world projects inventory  */
       strlcpy (x_use   , my.n_world , LEN_RECD);
       strlcpy (x_mode  , "rt"       , LEN_TERSE);
@@ -375,6 +384,9 @@ poly_shared_open        (char a_type, char *a_focus)
    case 'v' :  /* varables */
       strlcpy (s_vars , a_focus , LEN_RECD);
       break;
+   case 's' :  /* unit test scripts */
+      strlcpy (s_scrp , a_focus , LEN_RECD);
+      break;
    }
    DEBUG_INPT   yLOG_point   ("x_file"          , x_file);
    DEBUG_INPT   yLOG_point   ("*x_file"         , *x_file);
@@ -432,6 +444,9 @@ poly_shared_close       (char a_type)
       break;
    case 'u' :  /* external */
       strlcpy (x_used  , F_UNITS, LEN_RECD);
+      break;
+   case 's' :  /* unit test scripts */
+      strlcpy (x_used , s_scrp  , LEN_RECD);
       break;
    case 'w' :  /* world project inventory */
    case 'W' :
@@ -503,6 +518,9 @@ poly_shared_close       (char a_type)
       break;
    case 'v' :  /* variables */
       strlcpy (s_vars , ""      , LEN_RECD);
+      break;
+   case 's' :  /* unit test scripts */
+      strlcpy (s_scrp , ""      , LEN_RECD);
       break;
    }
    /*---(complete)-----------------------*/

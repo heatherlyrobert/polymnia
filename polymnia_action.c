@@ -103,12 +103,17 @@ poly_action__gather     (tPROJ *a_proj)
    x_file = a_proj->head;
    DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    while (x_file != NULL) {
-      if (x_file->type == 'c')  rc = poly_vars_inventory (x_file);
-      DEBUG_PROG   yLOG_value   ("vars"      , rc);
-      rc = poly_tags_inventory (x_file);
-      DEBUG_PROG   yLOG_value   ("inventory" , rc);
-      rc = poly_code_review    (x_file);
-      DEBUG_PROG   yLOG_value   ("review"    , rc);
+      if (strchr ("ch", x_file->type) != NULL) {
+         if (x_file->type == 'c')  rc = poly_vars_inventory (x_file);
+         DEBUG_PROG   yLOG_value   ("vars"      , rc);
+         rc = poly_tags_inventory (x_file);
+         DEBUG_PROG   yLOG_value   ("inventory" , rc);
+         rc = poly_code_review    (x_file);
+         DEBUG_PROG   yLOG_value   ("review"    , rc);
+      } else {
+         rc = poly_units_inventory (x_file);
+         DEBUG_PROG   yLOG_value   ("inventory" , rc);
+      }
       x_file = x_file->next;
       DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    }

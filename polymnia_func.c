@@ -241,7 +241,7 @@ poly_func_hook          (tFILE *a_file, tFUNC *a_func)
    ++(a_file->count);
    ++(a_file->proj->funcs);
    DEBUG_DATA   yLOG_value   ("count"     , a_file->count);
-   if (a_func->type == 'f')  {
+   if (strchr ("fsS", a_func->type) != NULL)  {
       ++(a_file->COUNT_FUNCS);
       ++(a_file->proj->COUNT_FUNCS);
    }
@@ -274,7 +274,7 @@ poly_func_unhook        (tFUNC *a_func)
    --(a_func->file->count);
    --(a_func->file->proj->funcs);
    DEBUG_DATA   yLOG_sint    (a_func->file->count);
-   if (a_func->type == 'f')  {
+   if (strchr ("fsS", a_func->type) != NULL)  {
       --(a_func->file->COUNT_FUNCS);
       --(a_func->file->proj->COUNT_FUNCS);
    }
@@ -317,7 +317,7 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
    }
    DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
    DEBUG_DATA   yLOG_char    ("a_type"    , a_type);
-   --rce;  if (a_type == '\0' || strchr ("f_", a_type) == NULL) {
+   --rce;  if (a_type == '\0' || strchr ("f_wsS", a_type) == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }

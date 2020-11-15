@@ -233,10 +233,16 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    DEBUG_DATA   yLOG_note    ("populate");
    strlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->type   = a_type;
-   if (x_new->type == 'h')  x_type = 'H';
+   /*---(standard names to front)--------*/
    if (strncmp (a_name, a_proj->name, strlen (a_proj->name)) == 0) x_prefix = 'Y';
-   sprintf (x_new->sort, "%c%c%s", x_prefix, x_type, x_new->name);
+   /*---(headers to front)---------------*/
+   if (x_new->type == 'h')  x_type = 'H';
+   /*---(units come last)----------------*/
+   if (strstr (x_new->name, ".unit")       != NULL)   x_prefix = 'Z';
+   /*---(master to top of units)---------*/
+   if (strcmp (x_new->name, "master.unit") == 0)      x_type   = 'H';
    /*---(link to project)----------------*/
+   sprintf (x_new->sort, "%c%c%s", x_prefix, x_type, x_new->name);
    rc = poly_file_hook (a_proj, x_new);
    DEBUG_DATA   yLOG_value   ("addfile"   , rc);
    --rce;  if (rc < 0) {
@@ -508,6 +514,7 @@ poly_file_review        (tPROJ *a_proj)
    tDIRENT    *x_file      = NULL;          /* directory entry pointer        */
    char        x_name      [LEN_TITLE];      /* file name                      */
    int         x_len       =    0;
+   char        x_point     =  '-';
    char        x_type      =  '-';
    int         x_read      =    0;          /* count of entries reviewed      */
    int         x_good      =    0;          /* count of entries processed     */
@@ -549,22 +556,44 @@ poly_file_review        (tPROJ *a_proj)
          DEBUG_INPT   yLOG_note    ("crazy long name, SKIP");
          continue;
       }
-      /*---(cut on suffix len)-----------*/
-      DEBUG_INPT   yLOG_char    ("x_len - 2" , x_name [x_len - 2]);
-      if (x_name [x_len - 2] != '.')  {
-         DEBUG_INPT   yLOG_note    ("does not have a one-char suffix, SKIP");
-         continue;
+      /*---(one character suffixes)------*/
+      x_point = x_name [x_len - 2];
+      DEBUG_INPT   yLOG_char    ("x_point"   , x_point);
+      if (x_point == '.') {
+         x_type = x_name [x_len - 1];
+         DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
+         if (strchr ("ch", x_type) == NULL) {
+            DEBUG_INPT   yLOG_note    ("not a c or h file, SKIP");
+            continue;
+         }
+         if (x_len > 7 && strcmp ("_unit.c", x_name + x_len - 7) == 0) {
+            DEBUG_INPT   yLOG_note    ("cut the unit testing code files, SKIP");
+            continue;
+         }
       }
-      /*---(cut on suffix)---------------*/
-      x_type = x_name [x_len - 1];
-      DEBUG_INPT   yLOG_char    ("x_len - 1" , x_type);
-      if (strchr ("ch", x_name [x_len - 1]) == NULL) {
-         DEBUG_INPT   yLOG_note    ("not a c or h file, SKIP");
-         continue;
+      /*---(unit tests)------------------*/
+      else if (x_len >= 6) {
+         x_point = x_name [x_len - 5];
+         DEBUG_INPT   yLOG_char    ("x_point"   , x_point);
+         if (x_point != '.') {
+            DEBUG_INPT   yLOG_note    ("not the right length suffix, SKIP");
+            continue;
+         }
+         if (strcmp ("unit", x_name + x_len - 4) != 0) {
+            DEBUG_INPT   yLOG_note    ("not a unit suffix, SKIP");
+            continue;
+         }
+         /*---(quick calloff)------------------*/
+         DEBUG_INPT   yLOG_char    ("g_unit"    , my.g_unit);
+         if (my.g_unit != 'y') {
+            DEBUG_INPT   yLOG_note    ("called with --nounit");
+            continue;
+         }
+         x_type = 'u';
       }
-      /*---(filter unit test)*-----------*/
-      if (x_len > 7 && strcmp ("_unit.c", x_name + x_len - 7) == 0) {
-         DEBUG_INPT   yLOG_note    ("cut the unit testing code files, SKIP");
+      /*---(all else)--------------------*/
+      else {
+         DEBUG_INPT   yLOG_note    ("bad suffix, SKIP");
          continue;
       }
       /*---(save)------------------------*/
@@ -582,7 +611,6 @@ poly_file_review        (tPROJ *a_proj)
    DEBUG_INPT   yLOG_note    ("closing directory");
    rc = closedir (x_dir);
    DEBUG_INPT   yLOG_value   ("close_rc"  , rc);
-   /*> printf ("   end-of-files\n\n\n");                                              <*/
    /*---(check count)--------------------*/
    DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_FILES));
    --rce;  if (poly_btree_count (B_FILES) <= 0) {

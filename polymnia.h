@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.8p"
-#define     P_VERTXT    "world/system functionality working, configurable, and unit tested"
+#define     P_VERNUM    "0.9a"
+#define     P_VERTXT    "added unit test files and lines to analysis (of course)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -265,6 +265,7 @@ struct cMY {
    FILE       *f_mystry;               /* local mystery external calls        */
    FILE       *f_vars;                 /* global/file variables               */
    FILE       *f_units;                /* function calls from unit tests      */
+   FILE       *f_scrps;                /* reading unit tests                  */
    /*---(new stats interface)-*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(content)-------------*/
@@ -746,7 +747,6 @@ char        poly_proto_init         (void);
 char        poly_proto_push         (tFILE *a_file, int a_line, char *a_name);
 char        poly_proto_hook         (tFILE *a_file, tFUNC *a_func, char *a_name);
 char        poly_proto_list         (void);
-char        poly_proto_units        (void);
 char*       poly_proto__unit        (char *a_question, int i);
 
 
@@ -939,7 +939,6 @@ char        poly_code_review        (tFILE *a_file);
 char        poly_tags__create       (tFILE *a_file);
 char        poly_tags__cleanup      (void);
 char        poly_tags__handler      (tFILE *a_file, char *a_recd);
-char        poly_tags_inventory     (tFILE *a_file);
 
 
 /*---(memory)---------------*/
@@ -1014,4 +1013,8 @@ char        poly_world__purge       (void);
 char        poly_world_wrap         (void);
 
 
+char        poly_units_by_func      (void);
+char        poly_units__scripts     (tFILE *a_file, int x_line, char *a_recd, tFUNC **a_func);
+char        poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd);
+char        poly_units_inventory    (tFILE *a_file);
 

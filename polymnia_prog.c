@@ -84,6 +84,7 @@ PROG_init          (int a_argc, char *a_argv[])
    my.f_mystry    = NULL;
    my.f_vars      = NULL;
    my.f_units     = NULL;
+   my.f_scrps     = NULL;
    my.f_error     = stderr;
    /*---(global counts)------------------*/
    DEBUG_PROG   yLOG_note    ("initialize global counts");
@@ -274,7 +275,7 @@ PROG_summarize          (tPROJ *a_proj)
       x_file = x_file->next;
    }
    poly_proj_header (a_proj);
-   poly_proto_units ();
+   poly_units_by_func ();
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
