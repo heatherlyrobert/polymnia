@@ -32,11 +32,11 @@ char
 poly_rptg__total        (void)
 {
    printf ("\n");
-   printf ("         TOTALS (%3d) § %5d § %5d § %5d § %7d § %7d § %7d § %7d § %7d § %7d § \n",
+   printf ("#        TOTALS (%3d) § %5d § %5d § %5d § %7d § %7d § %7d § %7d § %7d § %7d § \n",
          poly_btree_count (B_PROJ), poly_btree_count (B_FILES),
          poly_func_count (), g_nylib,
          s_lines, s_empty, s_debug, s_docs, s_code, s_slocl);
-   printf ("                                                        § %7.2f § %7.2f § %7.2f § %7.2f § %7.2f § \n",
+   printf ("#          percents   §       §       §       §         § %7.2f § %7.2f § %7.2f § %7.2f § %7.2f § \n",
          (float) s_empty / s_lines, (float) s_debug / s_lines,
          (float) s_docs  / s_lines, (float) s_code  / s_lines,
          (float) s_slocl / s_lines);
@@ -168,9 +168,9 @@ poly_rptg_projects      (void)
    /*---(report header)------------------*/
    printf ("#!/usr/local/bin/polymnia --projects\n");
    printf ("\n");
-   printf ("polymnia-hymnos (many praises) greek muse and protector of divine hymns, dancing, geometry, and grammar\n");
-   printf ("version %s, %s\n", P_VERNUM, P_VERTXT);
-   printf ("project inventory with summary statistics\n");
+   printf ("# %s %s\n", P_NAMESAKE, P_HERITAGE);
+   printf ("# version %s, %s\n", P_VERNUM, P_VERTXT);
+   printf ("# core project inventory with summary statistics\n");
    printf ("\n");
    /*---(prepare)------------------------*/
    poly_rptg__prep ();
@@ -196,7 +196,7 @@ poly_rptg_projects      (void)
    poly_proj_line (NULL, my.g_rptg, 0, 'y');
    poly_rptg__total ();
    printf ("\n");
-   printf ("## end of report\n");
+   printf ("# end-of-file.  done, finito, completare, whimper.\n");
    return 0;
 }
 
@@ -629,6 +629,11 @@ poly_rptg_htags         (tPROJ *a_proj)
          DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
          DEBUG_PROG   yLOG_point   ("x_func"    , x_func);
       }
+      printf ("\n");
+      printf ("footprint\n");
+      printf ("text %6d %7d\n", x_file->COUNT_TEXT, x_file->proj->COUNT_TEXT);
+      printf ("data %6d %7d\n", x_file->COUNT_DATA, x_file->proj->COUNT_DATA);
+      printf ("bss  %6d %7d\n", x_file->COUNT_BSS , x_file->proj->COUNT_BSS);
       if (my.g_rptg == POLY_RPTG_HTAGS)  for (i = 0; i < 70 - x_file->count; ++i)  printf ("\n");
       else         printf ("\n\n");
       x_file = x_file->next;

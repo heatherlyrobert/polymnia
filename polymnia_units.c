@@ -162,7 +162,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    }
    else if (strncmp (a_recd, "SECT ", 5) == 0) {
       sprintf (t, "o___%02d___o", e++);
-      rc = poly_func_add (a_file, t, 's', a_line, &x_curr);
+      rc = poly_func_add (a_file, t, '_', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {
          *a_func = x_curr;
@@ -201,8 +201,8 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       rc = 1;
    }
    else if (strncmp (a_recd, "WAVE "  , 5) == 0) {
-      sprintf (t, "wave_%02d", 'è' - 1 + c++);
-      rc = poly_func_add (a_file, t, 'S', a_line, &x_curr);
+      sprintf (t, "o___wave_%c___o", (uchar) 'è' - 1 + c++);
+      rc = poly_func_add (a_file, t, '_', a_line, &x_curr);
       /* add purpose from description */
       /* change name to be single char lettes identifier in unit test */
       if (x_curr != NULL) {
@@ -216,7 +216,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    }
    else if (strncmp (a_recd, "stage " , 6) == 0) {
       sprintf (t, "stage_%02d", d++);
-      rc = poly_func_add (a_file, t, 'S', a_line, &x_curr);
+      rc = poly_func_add (a_file, t, '_', a_line, &x_curr);
       /* add purpose from description */
       /* change name to be single char lettes identifier in unit test */
       if (x_curr != NULL) {

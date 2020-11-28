@@ -7,7 +7,7 @@ static char   s_print        [LEN_RECD] = "";
 
 
 #define     MAX_CATS    70
-static struct cPOS    {
+static const struct cPOS    {
    char        grp;                         /* major group                    */
    char        sub;                         /* sub group for clarity          */
    char        pos;                         /* position in major group        */
@@ -118,7 +118,7 @@ struct cLABEL {
    char        high;
    char        terse       [LEN_TERSE];
    char        desc        [LEN_TITLE];
-} s_labels [MAX_LABELS] = {
+} const s_labels [MAX_LABELS] = {
    /*--   -   -123456789012345678901234567890- */
    { 1,  1, 'e', 'e', "extern" ,  "extern (library)"               },
    { 1,  1, 'g', 'g', "global" ,  "global (program wide)"          },

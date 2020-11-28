@@ -110,6 +110,8 @@ poly_action__gather     (tPROJ *a_proj)
          DEBUG_PROG   yLOG_value   ("inventory" , rc);
          rc = poly_code_review    (x_file);
          DEBUG_PROG   yLOG_value   ("review"    , rc);
+         rc = poly_file_footprint (x_file);
+         DEBUG_PROG   yLOG_value   ("footprint" , rc);
       } else {
          rc = poly_units_inventory (x_file);
          DEBUG_PROG   yLOG_value   ("inventory" , rc);

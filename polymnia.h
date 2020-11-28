@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.9a"
-#define     P_VERTXT    "added unit test files and lines to analysis (of course)"
+#define     P_VERNUM    "0.9b"
+#define     P_VERTXT    "added memory footprint code, small unit test, and presentation to tags"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -221,17 +221,20 @@ typedef     struct      cEXTERN     tEXTERN;
 
 
 
-#define     MAX_COUNTS     10
-#define     COUNT_PROJS    counts [0]
-#define     COUNT_FILES    counts [1]
-#define     COUNT_FUNCS    counts [2]
-#define     COUNT_YLIBS    counts [3]
-#define     COUNT_LINES    counts [4]
-#define     COUNT_EMPTY    counts [5]
-#define     COUNT_DOCS     counts [6]
-#define     COUNT_DEBUG    counts [7]
-#define     COUNT_CODE     counts [8]
-#define     COUNT_SLOCL    counts [9]
+#define     MAX_COUNTS     15
+#define     COUNT_PROJS    counts [ 0]
+#define     COUNT_FILES    counts [ 1]
+#define     COUNT_FUNCS    counts [ 2]
+#define     COUNT_YLIBS    counts [ 3]
+#define     COUNT_LINES    counts [ 4]
+#define     COUNT_EMPTY    counts [ 5]
+#define     COUNT_DOCS     counts [ 6]
+#define     COUNT_DEBUG    counts [ 7]
+#define     COUNT_CODE     counts [ 8]
+#define     COUNT_SLOCL    counts [ 9]
+#define     COUNT_TEXT     counts [10]
+#define     COUNT_DATA     counts [11]
+#define     COUNT_BSS      counts [12]
 
 
 
@@ -674,7 +677,8 @@ char        poly_file_by_name       (uchar *a_name, tFILE **a_file);
 char        poly_file_by_index      (int n, tFILE **a_file);
 char        poly_file_cursor        (char a_dir, tFILE **a_file);
 char        poly_file_line          (tFILE *a_file, char a_style, int a, int b, char a_print);
-/*---(tags)-----------------*/
+/*---(footprint)------------*/
+char        poly_file_footprint    (tFILE *a_file);
 /*---(unittest)-------------*/
 char*       poly_file__unit         (char *a_question, int n);
 

@@ -676,6 +676,92 @@ poly_file_cursor        (char a_dir, tFILE **a_file)
 
 
 /*====================------------------------------------====================*/
+/*===----                   size and memory footprint                  ----===*/
+/*====================------------------------------------====================*/
+static void  o___FOOTPRINT_______o () { return; }
+
+char
+poly_file_footprint    (tFILE *a_file)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_name      [LEN_TITLE] = "";
+   char        x_cmd       [LEN_RECD]  = "";
+   int         x_len       =    0;
+   FILE       *f           = NULL;
+   char        x_recd      [LEN_RECD]  = "";
+   char       *p           = NULL;
+   char       *r           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_info    ("name"      , a_file->name);
+   DEBUG_INPT   yLOG_char    ("type"      , a_file->type);
+   --rce;  if (a_file->type != 'c') {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(defaults)-----------------------*/
+   a_file->COUNT_TEXT = 0;
+   a_file->COUNT_DATA = 0;
+   a_file->COUNT_BSS  = 0;
+   /*---(prepare name)--------------------------*/
+   strlcpy (x_name, a_file->name, LEN_TITLE);
+   x_len = strlen (x_name);
+   x_name [--x_len] = 'o';
+   x_name [++x_len] = 's';
+   x_name [++x_len] = '\0';
+   DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
+   /*---(get data)------------------------------*/
+   sprintf (x_cmd, "size %s > /tmp/polymnia_footprint.txt", x_name);
+   rc = system (x_cmd);
+   DEBUG_INPT   yLOG_value   ("size"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(pull data)-----------------------------*/
+   f = fopen ("/tmp/polymnia_footprint.txt", "rt");
+   DEBUG_INPT   yLOG_point   ("f"         , f);
+   --rce;  if (f == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get data line)-------------------------*/
+   fgets  (x_recd, LEN_RECD, f);
+   fgets  (x_recd, LEN_RECD, f);
+   /*---(parse)---------------------------------*/
+   p = strtok_r (x_recd, " ", &r);
+   a_file->proj->COUNT_TEXT += a_file->COUNT_TEXT = atoi (p);
+   p = strtok_r (NULL  , " ", &r);
+   a_file->proj->COUNT_DATA += a_file->COUNT_DATA = atoi (p);
+   p = strtok_r (NULL  , " ", &r);
+   a_file->proj->COUNT_BSS  += a_file->COUNT_BSS  = atoi (p);
+   /*---(close)---------------------------------*/
+   rc = fclose (f);
+   DEBUG_INPT   yLOG_point   ("close"     , rc);
+   /*---(destroy temp file)---------------------*/
+   sprintf (x_cmd, "rm -f /tmp/polymnia_footprint.txt  2> /dev/null");
+   rc = system (x_cmd);
+   DEBUG_INPT   yLOG_value   ("size"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)------------------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                       reporting support                      ----===*/
 /*====================------------------------------------====================*/
 static void  o___REPORTING_______o () { return; }
@@ -792,6 +878,15 @@ poly_file__unit         (char *a_question, int i)
          snprintf (unit_answer, LEN_RECD, "FILE funcs  (%2d) : %-22.22s   %3dc %3df %3db   %-17.17s %s", i, t, u->count, x_fore, x_back, s, r);
       } else {
          snprintf (unit_answer, LEN_RECD, "FILE funcs  (%2d) : []                         -c   -f   -b   []                []", i);
+      }
+   }
+   else if (strcmp (a_question, "footprint" )     == 0) {
+      poly_file_by_index (i, &u);
+      if (u != NULL) {
+         sprintf  (t, "[%.20s]", u->name);
+         snprintf (unit_answer, LEN_RECD, "FILE foot   (%2d) : %-22.22s   %7d text, %7d data, %7d bss", i, t, u->COUNT_TEXT, u->COUNT_DATA, u->COUNT_BSS);
+      } else {
+         snprintf (unit_answer, LEN_RECD, "FILE foot   (%2d) : []                             - text,       - data,       - bss", i);
       }
    }
    /*---(complete)-----------------------*/

@@ -883,6 +883,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, int a, char a_print)
    char       *x_system    = "---system------------------------------------------------------------- § ---language----------------------------------------------------------- § ---codesize----------------------------- § ---dependencies-------------------------------------------------------";
    char       *x_author    = "---author------------------------------- § ---created----------";
    char       *x_version   = "---vermajor----------------------------------------------------------- § ---verminor----------------------------------------------------------- § --vernum-- § ---vertxt-------------------------------------------------------------";
+   char       *x_vernum    = "vernum § ---codesize---";
    char        t           [LEN_RECD] = "";
    char        x_type      = '-';
    /*---(prepare)------------------------*/
@@ -999,6 +1000,14 @@ poly_proj_line          (tPROJ *a_proj, char a_style, int a, char a_print)
                        a_proj->vernum  , a_proj->vertxt  );
                  break;
       case 'h' : sprintf (t, "%s § "      , x_version);            break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   if (strchr ("p"  , a_style) != NULL) {
+      switch (x_type) {
+      case '-' : sprintf (t, "%-6.6s § %-14.14s § ", a_proj->vernum, a_proj->codesize);
+                 break;
+      case 'h' : sprintf (t, "%s § "      , x_vernum);            break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
