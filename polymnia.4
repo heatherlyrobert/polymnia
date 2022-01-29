@@ -1,0 +1,102 @@
+.TH polymnia· 4 2019-jan "linux" "shared devices, files, and configuration"
+.na
+
+.SH NAME
+polymnia \- ansi-c code analysis, research, and navigation
+
+.SH PATRON
+.B polymnia-hymnos
+(many praises) muse of divine hymns, dancing, geometry
+
+.SH IMAGERY
+tall, beautiful woman wearing a viel and looking toward heaven
+
+.SH SUMMARY
+polymnia is a custom code analysis tool offering -- tag navigation for
+vim-ide, detailed function complexity analysis, and code-base wide reporting
+and research -- for the one-true language (c).
+
+.SH DOCUMENTATION FILES
+.nf
+.B polymnia (1)·······command-line initiation, use, and options
+polymnia (4)       shared devices, files, and configuration
+polymnia (7)       decision rationale, objectives, and overview
+
+.SH TABLE OF CONTENTS
+.nf  
+a) central         centralized storage lcoation
+b) database        primary database
+c) configuration   files containing configuration
+d) local           local files supporting programming
+
+.SH A) CENTRAL
+along with all major system tools, the database and supporting files are
+stored in /var/lib under a unique sub-directory.  this directory must be
+created and secured for polymnia to work properly.
+
+.B /var/lib/polymnia/
+
+.SH B) DATABASE
+polymnia stores all primary information in a single centralized database.
+the stored data is volumous and detailed.  in violation of my general
+principles, this database is binary (not plain-text) for speed and lack of
+need for human access.
+
+.B /var/lib/polymnia/polymnia.db
+
+.SH C) CONFIGURATION
+there are only two files and they are dead simple.
+
+remember, you may NOT use any wildcards or truncated strings, each entry
+will be an exact match or it will be ignored.  if ignored, an error will be
+reported for later human update/maintenance.
+
+.SS ext_files.txt
+this file is a list of headers for all central libraries used by any programs
+to be analyzed.  these headers are reviewed to extract public symbols --
+macros, defined constants, and prototypes.
+
+.B /var/lib/polymnia/ext_files.txt
+
+each entry is a single line and only contains the absolute path of a public
+header.
+
+example entry : 
+.B /usr/include/ncurses.h
+
+a shell script called
+.B poly.collect.sh
+uses this file to gather all macros, defined constants, and public prototypes
+from these headers (using ctags) so polymnia can tie it all together.
+the result is stored in external.txt which is read by polymnia at run-time.
+
+.B /var/lib/polymnia/external.txt
+
+.SS world.txt
+this is a list of directories that polymnia will analyze and gather data from
+when the --system option is invoked.
+
+.B /var/lib/polymnia/world.txt
+
+each entry is a single line and only contains the absolute path of the
+program directory to be including in automated, batch analysis.
+
+example entry : 
+.B /home/system/eos.goddess_of_dawn_and_startup
+
+.SH D) LOCAL
+a few standard files are stored locally in the program directory.
+
+.SS polymnia.htags
+this is the output of the --htags option which is used in my vim-ide to
+navigate and understand my program.  it provides quick access tags called by ;;.
+
+.SS polymnia.mystry
+this is also the output of the --htags which lists all symbols that could not
+be resolved by polymnia.  anything on this list usually means a custom program
+must be added to the database (to include its symbols) or a public header added
+to the configuration file ext_files.txt.
+
+
+
+

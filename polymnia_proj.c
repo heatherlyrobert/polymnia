@@ -29,7 +29,7 @@ poly_proj_cli           (char *a_name, char a_loud)
    /*---(defense)------------------------*/
    DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --project <name>, name can not be null");
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be null");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
@@ -38,19 +38,19 @@ poly_proj_cli           (char *a_name, char a_loud)
    l = strlen (a_name);
    DEBUG_ARGS  yLOG_value   ("l"         , l);
    --rce;  if (l <= 0) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --project <name>, name can not be blank/empty");
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be blank/empty");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    --rce;  if (l >= LEN_LABEL) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --project <name>, name can not be longer than %d chars", LEN_LABEL);
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be longer than %d chars", LEN_LABEL);
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(check characters)---------------*/
    --rce;  for (i = 0; i < l; ++i) {
       if (strchr (x_valid, a_name [i]) != NULL)  continue;
-      if (a_loud == 'y')  yURG_error ("FATAL, --project <name>, name can not have a <%c> at character %d", a_name [i], i);
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not have a <%c> at character %d", a_name [i], i);
       DEBUG_TOPS  yLOG_char  ("bad char"  , a_name [i]);
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
@@ -856,7 +856,7 @@ poly_proj_header        (tPROJ *a_proj)
 }
 
 char
-poly_proj_line          (tPROJ *a_proj, char a_style, int a, char a_print)
+poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_print)
 {
    /*  n  name    , just the name
     *  s  stats   , short count, name, plus statistics
@@ -884,135 +884,227 @@ poly_proj_line          (tPROJ *a_proj, char a_style, int a, char a_print)
    char       *x_author    = "---author------------------------------- § ---created----------";
    char       *x_version   = "---vermajor----------------------------------------------------------- § ---verminor----------------------------------------------------------- § --vernum-- § ---vertxt-------------------------------------------------------------";
    char       *x_vernum    = "vernum § ---codesize---";
-   char        t           [LEN_RECD] = "";
+   char        t           [LEN_RECD]  = "";
+   char        x_projs     [LEN_TERSE] = "";
+   char        x_files     [LEN_TERSE] = "";
+   char        x_funcs     [LEN_TERSE] = "";
+   char        x_ylibs     [LEN_TERSE] = "";
+   char        x_lines     [LEN_TERSE] = "";
+   char        x_empty     [LEN_TERSE] = "";
+   char        x_docs      [LEN_TERSE] = "";
+   char        x_debug     [LEN_TERSE] = "";
+   char        x_code      [LEN_TERSE] = "";
+   char        x_slocl     [LEN_TERSE] = "";
    char        x_type      = '-';
    /*---(prepare)------------------------*/
    strlcpy (s_print, "", LEN_RECD);
-   if (a_proj == NULL)  x_type = 'h';
+   x_type = a_use;
+   if (a_proj == NULL) {
+      if (a_use == '-')  x_type = 'h';
+      if (a_use == 'd')  x_type = 'n';
+   }
    /*---(index)--------------------------*/
    if (strchr ("aA", a_style) != NULL) {
       switch (x_type) {
-      case '-' :   sprintf (t, "%-3d § -   § -   § ", a + 1);  break;
-      case 'h' :   sprintf (t, "%s § ", x_all);                break;
+      case 'h' :   sprintf (t, "prj fil fnc  ");               break;
+      case 'p' :   sprintf (t, "Ï--·Ï--·Ï--··");               break;
+      case 't' :   sprintf (t, "prj·fil·fnc··");               break;
+      case '-' :
+      case 'd' :   sprintf (t, "%-3d -   -    ", a + 1);       break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    if (strchr ("sLp", a_style) != NULL) {
       switch (x_type) {
-      case '-' :   sprintf (t, "%-3d § ", a + 1);  break;
-      case 'h' :   sprintf (t, "%s § ", x_count);              break;
+      case 'h' :   sprintf (t, "prj  ");                       break;
+      case 'p' :   sprintf (t, "Ï--··");                       break;
+      case 't' :   sprintf (t, "prj··");                       break;
+      case '-' :
+      case 'd' :   sprintf (t, "%-3d  ", a + 1);               break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(name)---------------------------*/
    switch (x_type) {
-   case '-' :   sprintf (t, "%-15.15s § ", a_proj->name);      break;
-   case 'h' :   sprintf (t, "%s § "      , x_name);            break;
+   case 'h' :   sprintf (t, "---name--------  ");              break;
+   case 'p' :   sprintf (t, "Ï--------------··");              break;
+   case 't' :   sprintf (t, "name·············");              break;
+   case '-' :
+   case 'd' :   sprintf (t, "%-15.15s  ", a_proj->name);       break;
+   default  :   strlcpy (t, "", LEN_RECD);                     break;
    }
    strlcat (s_print, t, LEN_RECD);
    /*---(statistics)---------------------*/
    if (strchr ("sLaAPp", a_style) != NULL) {
+      if (a_proj != NULL) {
+         strl4main (a_proj->COUNT_FILES, x_files, 0, 'c', '-', LEN_TERSE);
+         strl4main (a_proj->COUNT_FUNCS, x_funcs, 0, 'c', '-', LEN_TERSE);
+         strl4main (a_proj->COUNT_YLIBS, x_ylibs, 0, 'c', '-', LEN_TERSE);
+         strl4main (a_proj->COUNT_LINES, x_lines, 0, 'c', '-', LEN_TERSE);
+         strl4main (a_proj->COUNT_EMPTY, x_empty, 0, 'c', '-', LEN_TERSE);
+         strl4main (a_proj->COUNT_DOCS , x_docs , 0, 'c', '-', LEN_TERSE);
+         strl4main (a_proj->COUNT_DEBUG, x_debug, 0, 'c', '-', LEN_TERSE);
+         strl4main (a_proj->COUNT_CODE , x_code , 0, 'c', '-', LEN_TERSE);
+         strl4main (a_proj->COUNT_SLOCL, x_slocl, 0, 'c', '-', LEN_TERSE);
+      }
       switch (x_type) {
-      case '-' : sprintf (t, "%5d § %5d § %5d § %7d § %7d § %7d § %7d § %7d § %7d § ",
-                       a_proj->COUNT_FILES, a_proj->COUNT_FUNCS, a_proj->COUNT_YLIBS,
-                       a_proj->COUNT_LINES, a_proj->COUNT_EMPTY,
-                       a_proj->COUNT_DOCS , a_proj->COUNT_DEBUG,
-                       a_proj->COUNT_CODE , a_proj->COUNT_SLOCL);
-                 break;
-      case 'h' : sprintf (t, "%-s § "   , x_stats);            break;
+      case 'h' :
+         sprintf (t, "-files -funcs -ylibs ---lines ---empty ----docs ---debug ----code ---slocl  ");
+         break;
+      case 'p' :
+         sprintf (t, "Ï-----·Ï-----·Ï-----·Ï-------·Ï-------·Ï-------·Ï-------·Ï-------·Ï-------··");
+         break;
+      case 't' :
+         sprintf (t, "files··funcs··ylibs··lines····empty····docs·····debug····code·····slocl·····");
+         break;
+      case '-' :
+         sprintf (t, "%6.6s %6.6s %6.6s %8.8s %8.8s %8.8s %8.8s %8.8s %8.8s  ",
+               x_files, x_funcs, x_ylibs,
+               x_lines, x_empty, x_docs , x_debug, x_code , x_slocl);
+         break;
+      case 'd' :
+         sprintf (t, "%5d %5d %5d %8d %8d %8d %8d %8d %8d  ",
+               a_proj->COUNT_FILES, a_proj->COUNT_FUNCS, a_proj->COUNT_YLIBS,
+               a_proj->COUNT_LINES, a_proj->COUNT_EMPTY, a_proj->COUNT_DOCS ,
+               a_proj->COUNT_DEBUG, a_proj->COUNT_CODE , a_proj->COUNT_SLOCL);
+         break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(header flags)-------------------*/
    if (strchr ("sLaA" , a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-35.35s § ", a_proj->header);    break;
-      case 'h' : sprintf (t, "%s § "      , x_header);          break;
+      case 'h' : sprintf (t, "---header-checklist----------------  ");    break;
+      case 'p' : sprintf (t, "Ï----------------------------------··");    break;
+      case 't' : sprintf (t, "header-checklist·····················");    break;
+      case '-' :
+      case 'd' : sprintf (t, "%-35.35s  ", a_proj->header);               break;
+      default  :   strlcpy (t, "", LEN_RECD);                             break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(master)-------------------------*/
    if (strchr ("LAm", a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-30.30s § %-30.30s § %-30.30s § %-70.70s § ",
+      case 'h' : sprintf (t, "---focus---------------------- ---niche---------------------- ---subject-------------------- ---purpose------------------------------------------------------------  ");  break;
+      case 'p' : sprintf (t, "Ï-----------------------------·Ï-----------------------------·Ï-----------------------------·Ï---------------------------------------------------------------------··");  break;
+      case 't' : sprintf (t, "focus··························niche··························subject························purpose·································································");  break;
+      case 'd' :
+      case '-' : sprintf (t, "%-30.30s %-30.30s %-30.30s %-70.70s ",
                        a_proj->focus   , a_proj->niche   ,
                        a_proj->subject , a_proj->purpose );
                  break;
-      case 'h' : sprintf (t, "%s § "      , x_master);          break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(greek)--------------------------*/
    if (strchr ("LAg", a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-40.40s § %-70.70s § %-70.70s § %-70.70s § %-70.70s § ",
+      case 'h' : sprintf (t, "---namesake----------------------------- ---heritage----------------------------------------------------------- ---imagery------------------------------------------------------------ ---reason-chosen------------------------------------------------------ ---oneline------------------------------------------------------------  ");  break;
+      case 'p' : sprintf (t, "Ï---------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------··");  break;
+      case 't' : sprintf (t, "namesake·································heritage·······························································imagery································································reason-chosen··························································oneline·································································");  break;
+      case '-' :
+      case 'd' : sprintf (t, "%-40.40s %-70.70s %-70.70s %-70.70s %-70.70s  ",
                        a_proj->namesake, a_proj->heritage, a_proj->imagery ,
                        a_proj->reason  , a_proj->oneline );
                  break;
-      case 'h' : sprintf (t, "%s § "      , x_greek);           break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    if (strchr ("Op" , a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-70.70s § ", a_proj->oneline);   break;
-      case 'h' : sprintf (t, "%s § "      , x_oneline);         break;
+      case 'h' : sprintf (t, "---oneline------------------------------------------------------------  ");  break;
+      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------··");  break;
+      case 't' : sprintf (t, "oneline·································································");  break;
+      case '-' :
+      case 'd' : sprintf (t, "%-70.70s  ", a_proj->oneline);   break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(location)-----------------------*/
    if (strchr ("LAl", a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-70.70s § %-20.20s § %-70.70s § %-6.6s § %-30.30s § ",
+      case 'h' : sprintf (t, "---homedir------------------------------------------------------------ ---basename--------- ---fullpath----------------------------------------------------------- suffix ---content--------------------  ");  break;
+      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï-------------------·Ï---------------------------------------------------------------------·Ï-----·Ï-----------------------------··");  break;
+      case 't' : sprintf (t, "homedir···························································· ···basename········· ···fullpath······························································ suffix·content·························");  break;
+      case '-' :
+      case 'd' : sprintf (t, "%-70.70s %-20.20s %-70.70s %-6.6s %-30.30s  ",
                        a_proj->homedir , a_proj->progname,
                        a_proj->fullpath, a_proj->suffix  , a_proj->content );
                  break;
-      case 'h' : sprintf (t, "%s § "      , x_location);           break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(chars)--------------------------*/
    if (strchr ("LAc", a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-70.70s § %-70.70s § %-40.40s § %-70.70s § ",
+      case 'h' : sprintf (t, "---system------------------------------------------------------------- ---language----------------------------------------------------------- ---codesize----------------------------- ---dependencies-------------------------------------------------------  ");  break;
+      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï--------------------------------------- Ï---------------------------------------------------------------------··");  break;
+      case 't' : sprintf (t, "system·································································language·······························································codesize·································dependencies····························································");  break;
+      case '-' : sprintf (t, "%-70.70s %-70.70s %-40.40s %-70.70s  ",
                        a_proj->systems , a_proj->language,
                        a_proj->codesize, a_proj->depends );
                  break;
-      case 'h' : sprintf (t, "%s § "      , x_system);             break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(author)-------------------------*/
    if (strchr ("LAw", a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-40.40s § %-20.20s § ",
+      case 'h' : sprintf (t, "---system------------------------------------------------------------- ---language----------------------------------------------------------- ---codesize----------------------------- ---dependencies-------------------------------------------------------  ");  break;
+      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------·Ï---------------------------------------------------------------------··");  break;
+      case 't' : sprintf (t, "system·································································language·······························································codesize·································dependencies····························································");  break;
+      case '-' :
+      case 'd' : sprintf (t, "%-40.40s %-20.20s  ",
                        a_proj->author  , a_proj->created );
                  break;
-      case 'h' : sprintf (t, "%s § "      , x_author);             break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(version)------------------------*/
    if (strchr ("LAv", a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-70.70s § %-70.70s § %-10.10s § %-70.70s § ",
+      case 'h' : sprintf (t, "---vermajor----------------------------------------------------------- ---verminor----------------------------------------------------------- --vernum-- ---vertxt-------------------------------------------------------------  ");  break;
+      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------·Ï---------------------------------------------------------------------··");  break;
+      case 't' : sprintf (t, "vermajor·······························································verminor······························································vernum······vertxt··································································");  break;
+      case '-' :
+      case 'd' : sprintf (t, "%-70.70s %-70.70s %-10.10s %-70.70s  ",
                        a_proj->vermajor, a_proj->verminor,
                        a_proj->vernum  , a_proj->vertxt  );
                  break;
-      case 'h' : sprintf (t, "%s § "      , x_version);            break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    if (strchr ("p"  , a_style) != NULL) {
       switch (x_type) {
-      case '-' : sprintf (t, "%-6.6s § %-14.14s § ", a_proj->vernum, a_proj->codesize);
+      case 'h' : sprintf (t, "vernum ---codesize---  ");  break;
+      case 'p' : sprintf (t, "Ï-----·Ï-------------··");  break;
+      case 't' : sprintf (t, "vernum·codesize········");  break;
+      case '-' :
+      case 'd' : sprintf (t, "%-6.6s %-14.14s", a_proj->vernum, a_proj->codesize);
                  break;
-      case 'h' : sprintf (t, "%s § "      , x_vernum);            break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(newline)------------------------*/
-   if (a_print == 'y')  printf ("%s\n", s_print);
+   if (a_print == 'y') {
+      if      (x_type == 'p')  printf ("#@ x-parse   å%sæ\n", s_print);
+      else if (x_type == 't')  printf ("#@ titles    å%sæ\n", s_print);
+      else if (x_type == 'h')  printf ("#%s\n", s_print + 1);
+      else if (x_type == 'n')  printf ("#%s\n", s_print + 1);
+      else                     printf ("%s\n", s_print);
+   }
    /*---(complete)-----------------------*/
    return 0;
 }

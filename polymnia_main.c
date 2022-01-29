@@ -13,7 +13,7 @@ main (int argc, char *argv[])
    /*---(initialize)---------------------*/
    if (rc >= 0)  rc = yURG_logger  (argc, argv);
    if (rc >= 0)  rc = yURG_urgs    (argc, argv);
-   yURG_stage_check (YURG_STAGE_INIT);
+   yURG_stage_check (YURG_BEG);
    if (rc >= 0)  rc = PROG_init    (argc, argv);
    if (rc >= 0)  rc = PROG_args    (argc, argv);
    if (rc >= 0)  rc = PROG_begin   ();
@@ -22,14 +22,14 @@ main (int argc, char *argv[])
       PROG_end ();
       return -1;
    }
-   yURG_stage_check (YURG_STAGE_MAIN);
+   yURG_stage_check (YURG_MID);
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(dispatch)-----------------------*/
    rc = PROG_dispatch ();
    DEBUG_PROG   yLOG_value   ("dispatch"  , rc);
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   yURG_stage_check (YURG_STAGE_WRAP);
+   yURG_stage_check (YURG_END);
    PROG_end     ();
    return rc;
 }

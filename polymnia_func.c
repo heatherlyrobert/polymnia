@@ -12,24 +12,24 @@ static char s_print     [LEN_RECD] = "";
 /*====================------------------------------------====================*/
 static void  o___SUPPORT_________o () { return; }
 
-char
-poly_func__hint         (int n, char *a_label)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;           /* return code for errors         */
-   char       *x_1st       = "abcdefghijklmnopqrstuvwxyz";
-   int         x_1len      = strlen (x_1st);
-   char       *x_2nd       = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-   int         x_2len      = strlen (x_2nd);
-   --rce;  if (a_label == NULL)  return rce;
-   strlcpy (a_label, "··", LEN_LABEL);
-   --rce;  if (n < 0)            return rce;
-   --rce;  if (n > 1351)         return rce;
-   a_label [0] = x_1st [n / x_2len];
-   a_label [1] = x_2nd [n % x_2len];
-   a_label [2] = '\0';
-   return 0;
-}
+/*> char                                                                                   <* 
+ *> poly_func__hint         (int n, char *a_label)                                         <* 
+ *> {                                                                                      <* 
+ *>    /+---(locals)-----------+-----------+-+/                                            <* 
+ *>    char        rce         = -10;           /+ return code for errors         +/       <* 
+ *>    char       *x_1st       = "abcdefghijklmnopqrstuvwxyz";                             <* 
+ *>    int         x_1len      = strlen (x_1st);                                           <* 
+ *>    char       *x_2nd       = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";   <* 
+ *>    int         x_2len      = strlen (x_2nd);                                           <* 
+ *>    --rce;  if (a_label == NULL)  return rce;                                           <* 
+ *>    strlcpy (a_label, "··", LEN_LABEL);                                                 <* 
+ *>    --rce;  if (n < 0)            return rce;                                           <* 
+ *>    --rce;  if (n > 1351)         return rce;                                           <* 
+ *>    a_label [0] = x_1st [n / x_2len];                                                   <* 
+ *>    a_label [1] = x_2nd [n % x_2len];                                                   <* 
+ *>    a_label [2] = '\0';                                                                 <* 
+ *>    return 0;                                                                           <* 
+ *> }                                                                                      <*/
 
 char
 poly_func_cli           (char *a_hint, char a_loud)
@@ -47,7 +47,7 @@ poly_func_cli           (char *a_hint, char a_loud)
    /*---(defense)------------------------*/
    DEBUG_ARGS  yLOG_point   ("a_hint"    , a_hint);
    --rce;  if (a_hint == NULL) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, name can not be null");
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name can not be null");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
@@ -56,14 +56,14 @@ poly_func_cli           (char *a_hint, char a_loud)
    x_len = strlen (a_hint);
    DEBUG_ARGS  yLOG_value   ("x_len"     , x_len);
    --rce;  if (x_len != 2) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, name must be two characters long");
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name must be two characters long");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(check characters)---------------*/
    --rce;  for (i = 0; i < x_len; ++i) {
       if (strchr (x_valid, a_hint [i]) != NULL)  continue;
-      if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, name can not have a <%c> at character %d", a_hint [i], i);
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name can not have a <%c> at character %d", a_hint [i], i);
       DEBUG_TOPS  yLOG_char  ("bad char"  , a_hint [i]);
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
@@ -71,14 +71,14 @@ poly_func_cli           (char *a_hint, char a_loud)
    /*---(find it)------------------------*/
    /*> DEBUG_ARGS  yLOG_point   ("g_proj"    , my.g_proj);                            <*/
    /*> --rce;  if (my.g_proj == NULL) {                                                         <* 
-    *>    if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, no current project set");      <* 
+    *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, no current project set");      <* 
     *>    DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);                                           <* 
     *>    return rce;                                                                           <* 
     *> }                                                                                        <* 
     *> poly_func_by_hint (my.g_proj, x_recd, &x_found);                                         <* 
     *> DEBUG_ARGS  yLOG_point   ("x_found"   , x_found);                                        <* 
     *> --rce;  if (x_found == NULL) {                                                           <* 
-    *>    if (a_loud == 'y')  yURG_error ("FATAL, --hint <name>, name not found in project");   <* 
+    *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name not found in project");   <* 
     *>    DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);                                           <* 
     *>    return rce;                                                                           <* 
     *> }                                                                                        <*/
@@ -370,7 +370,8 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
       return rce;
    }
    /*---(create hint)--------------------*/
-   rc = poly_func__hint (poly_btree_count (B_FUNCS) - 1, x_new->hint);
+   /*> rc = poly_func__hint (poly_btree_count (B_FUNCS) - 1, x_new->hint);            <*/
+   rc = strlhint (poly_btree_count (B_FUNCS) - 1, "lA", x_new->hint);
    DEBUG_DATA   yLOG_value   ("hint"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);

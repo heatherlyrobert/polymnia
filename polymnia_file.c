@@ -738,10 +738,22 @@ poly_file_footprint    (tFILE *a_file)
    fgets  (x_recd, LEN_RECD, f);
    /*---(parse)---------------------------------*/
    p = strtok_r (x_recd, " ", &r);
+   --rce;  if (p == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    a_file->proj->COUNT_TEXT += a_file->COUNT_TEXT = atoi (p);
    p = strtok_r (NULL  , " ", &r);
+   --rce;  if (p == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    a_file->proj->COUNT_DATA += a_file->COUNT_DATA = atoi (p);
    p = strtok_r (NULL  , " ", &r);
+   --rce;  if (p == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    a_file->proj->COUNT_BSS  += a_file->COUNT_BSS  = atoi (p);
    /*---(close)---------------------------------*/
    rc = fclose (f);

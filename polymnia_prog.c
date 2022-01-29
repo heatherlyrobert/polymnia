@@ -104,7 +104,7 @@ PROG_init          (int a_argc, char *a_argv[])
    return 0;
 }
 
-#define  TWOARG  if (++i >= a_argc)  yURG_error ("FATAL, %s argument requires an additional string", a, --rc); else 
+#define  TWOARG  if (++i >= a_argc)  yURG_err (YURG_FATAL, "%s argument requires an additional string", a, --rc); else 
 
 char         /*-> process the command line args ------[ ------ [gz.952.251.B4]*/ /*-[01.0000.121.!]-*/ /*-[--.---.---.--]-*/
 PROG_args          (int a_argc, char *a_argv[])

@@ -22,7 +22,7 @@ poly_db_cli             (char *a_name, char a_loud)
    /*---(defense)------------------------*/
    DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --database <name>, name can not be null");
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "database <name>, name can not be null");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
@@ -32,14 +32,14 @@ poly_db_cli             (char *a_name, char a_loud)
    l = strlen (x_recd);
    DEBUG_ARGS  yLOG_value   ("l"         , l);
    --rce;  if (l <= 0) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --database <name>, name can not be blank/empty");
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "database <name>, name can not be blank/empty");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(check characters)---------------*/
    --rce;  for (i = 0; i < l; ++i) {
       if (strchr (x_valid, x_recd [i]) != NULL)  continue;
-      if (a_loud == 'y')  yURG_error ("FATAL, --database <name>, name can not have a <%c> at character %d", x_recd [i], i);
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "database <name>, name can not have a <%c> at character %d", x_recd [i], i);
       DEBUG_TOPS  yLOG_char  ("bad char"  , x_recd [i]);
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;

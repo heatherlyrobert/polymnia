@@ -32,7 +32,7 @@ poly_world_cli          (char *a_name, char a_loud)
    /*---(defense)------------------------*/
    DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --world <name>, name can not be null");
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "world <name>, name can not be null");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
@@ -42,14 +42,14 @@ poly_world_cli          (char *a_name, char a_loud)
    l = strlen (x_recd);
    DEBUG_ARGS  yLOG_value   ("l"         , l);
    --rce;  if (l <= 0) {
-      if (a_loud == 'y')  yURG_error ("FATAL, --world <name>, name can not be blank/empty");
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "world <name>, name can not be blank/empty");
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(check characters)---------------*/
    --rce;  for (i = 0; i < l; ++i) {
       if (strchr (x_valid, x_recd [i]) != NULL)  continue;
-      if (a_loud == 'y')  yURG_error ("FATAL, --world <name>, name can not have a <%c> at character %d", x_recd [i], i);
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "world <name>, name can not have a <%c> at character %d", x_recd [i], i);
       DEBUG_TOPS  yLOG_char  ("bad char"  , x_recd [i]);
       DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
@@ -542,7 +542,7 @@ poly_world_system       (void)
    while (rc >= 0 && x_world != NULL) {
       DEBUG_DATA   yLOG_point ("x_world"   , x_world);
       DEBUG_DATA   yLOG_info  ("->name"    , x_world->name);
-      yURG_message ("%-15.15s %s", x_world->name, x_world->home);
+      yURG_msg     (YURG_BASE, "%-15.15s %s", x_world->name, x_world->home);
       /*---(return to current)--------------*/
       rc = chdir (x_world->home);
       DEBUG_INPT   yLOG_value   ("chdir"     , rc);

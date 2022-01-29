@@ -304,7 +304,8 @@ poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
    }
    /*---(prepare)------------------------*/
    DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
-   strlunall (t, a_recd, LEN_RECD);
+   strlcpy   (t, a_recd, LEN_RECD);
+   strlunall (t, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("t"         , t);
    x_len = strlen (t);
    DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
@@ -457,7 +458,8 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
    }
    /*---(prepare)------------------------*/
    DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
-   strlunall (t, a_recd, LEN_RECD);
+   strlcpy   (t, a_recd, LEN_RECD);
+   strlunall (t, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("t"         , t);
    x_len = strlen (t);
    DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
@@ -703,7 +705,8 @@ poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act)
       return rce;
    }
    DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
-   strlunall (t, a_recd, LEN_RECD);
+   strlcpy   (t, a_recd, LEN_RECD);
+   strlunall (t, LEN_RECD);
    x_len = strlen (t);
    DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
    --rce;  if (x_len <= 0) {

@@ -31,12 +31,47 @@ poly_rptg__inc          (tPROJ *a_proj)
 char
 poly_rptg__total        (void)
 {
+   int         x_nproj     = 0;
+   int         x_nfile     = 0;
+   int         x_nfunc     = 0;
+   char        x_projs     [LEN_TERSE] = "";
+   char        x_files     [LEN_TERSE] = "";
+   char        x_funcs     [LEN_TERSE] = "";
+   char        x_ylibs     [LEN_TERSE] = "";
+   char        x_lines     [LEN_TERSE] = "";
+   char        x_empty     [LEN_TERSE] = "";
+   char        x_docs      [LEN_TERSE] = "";
+   char        x_debug     [LEN_TERSE] = "";
+   char        x_code      [LEN_TERSE] = "";
+   char        x_slocl     [LEN_TERSE] = "";
+   x_nproj  = poly_btree_count (B_PROJ );
+   x_nfile  = poly_btree_count (B_FILES);
+   x_nfunc  = poly_func_count  ();
+   strl4main (x_nproj, x_projs, 0, 'c', '-', LEN_TERSE);
+   strl4main (x_nfile, x_files, 0, 'c', '-', LEN_TERSE);
+   strl4main (x_nfunc, x_funcs, 0, 'c', '-', LEN_TERSE);
+   strl4main (g_nylib, x_ylibs, 0, 'c', '-', LEN_TERSE);
+   strl4main (s_lines, x_lines, 0, 'c', '-', LEN_TERSE);
+   strl4main (s_empty, x_empty, 0, 'c', '-', LEN_TERSE);
+   strl4main (s_docs , x_docs , 0, 'c', '-', LEN_TERSE);
+   strl4main (s_debug, x_debug, 0, 'c', '-', LEN_TERSE);
+   strl4main (s_code , x_code , 0, 'c', '-', LEN_TERSE);
+   strl4main (s_slocl, x_slocl, 0, 'c', '-', LEN_TERSE);
    printf ("\n");
-   printf ("#        TOTALS (%3d) § %5d § %5d § %5d § %7d § %7d § %7d § %7d § %7d § %7d § \n",
-         poly_btree_count (B_PROJ), poly_btree_count (B_FILES),
-         poly_func_count (), g_nylib,
-         s_lines, s_empty, s_debug, s_docs, s_code, s_slocl);
-   printf ("#          percents   §       §       §       §         § %7.2f § %7.2f § %7.2f § %7.2f § %7.2f § \n",
+   printf ("#         totals %3s  %6.6s %6.6s %6.6s %8.8s %8.8s %8.8s %8.8s %8.8s %8.8s  \n",
+          x_projs, x_files, x_funcs, x_ylibs, x_lines, x_empty, x_docs , x_debug, x_code , x_slocl);
+   strl4main (x_nfile / x_nproj, x_files, 0, 'c', '-', LEN_TERSE);
+   strl4main (x_nfunc / x_nproj, x_funcs, 0, 'c', '-', LEN_TERSE);
+   strl4main (g_nylib / x_nproj, x_ylibs, 0, 'c', '-', LEN_TERSE);
+   strl4main (s_lines / x_nproj, x_lines, 0, 'c', '-', LEN_TERSE);
+   strl4main (s_empty / x_nproj, x_empty, 0, 'c', '-', LEN_TERSE);
+   strl4main (s_docs  / x_nproj, x_docs , 0, 'c', '-', LEN_TERSE);
+   strl4main (s_debug / x_nproj, x_debug, 0, 'c', '-', LEN_TERSE);
+   strl4main (s_code  / x_nproj, x_code , 0, 'c', '-', LEN_TERSE);
+   strl4main (s_slocl / x_nproj, x_slocl, 0, 'c', '-', LEN_TERSE);
+   printf ("#            averages %6.6s %6.6s %6.6s %8.8s %8.8s %8.8s %8.8s %8.8s %8.8s  \n",
+          x_files, x_funcs, x_ylibs, x_lines, x_empty, x_docs , x_debug, x_code , x_slocl);
+   printf ("#                                       percentages %8.2f %8.2f %8.2f %8.2f %8.2f\n",
          (float) s_empty / s_lines, (float) s_debug / s_lines,
          (float) s_docs  / s_lines, (float) s_code  / s_lines,
          (float) s_slocl / s_lines);
@@ -169,22 +204,26 @@ poly_rptg_projects      (void)
    printf ("#!/usr/local/bin/polymnia --projects\n");
    printf ("\n");
    printf ("# %s %s\n", P_NAMESAKE, P_HERITAGE);
-   printf ("# version %s, %s\n", P_VERNUM, P_VERTXT);
-   printf ("# core project inventory with summary statistics\n");
+   printf ("#   version %s, %s\n", P_VERNUM, P_VERTXT);
+   printf ("#   core project inventory with summary statistics\n");
+   printf ("\n");
+   printf ("#@ style     V = pure printable values\n");
+   poly_proj_line (NULL, my.g_rptg, 'p', 0, 'y');
+   poly_proj_line (NULL, my.g_rptg, 't', 0, 'y');
    printf ("\n");
    /*---(prepare)------------------------*/
    poly_rptg__prep ();
    DEBUG_RPTG   yLOG_value   ("projects"  , poly_btree_count (B_PROJ));
    rc = poly_proj_cursor ('[', &x_proj);
    DEBUG_RPTG   yLOG_point   ("proj"      , x_proj);
-   poly_proj_line (NULL, my.g_rptg, 0, 'y');
+   poly_proj_line (NULL, my.g_rptg, 'h', 0, 'y');
    /*---(walk projects)------------------*/
    while (rc >= 0 && x_proj != NULL) {
       /*---(prepare)---------------------*/
       DEBUG_RPTG   yLOG_info    ("->name"    , x_proj->name);
       DEBUG_RPTG   yLOG_value   ("files"     , x_proj->count);
       if (c % 5 == 0)  printf ("\n");
-      poly_proj_line (x_proj, my.g_rptg, c, 'y');
+      poly_proj_line (x_proj, my.g_rptg, '-', c, 'y');
       poly_rptg__inc  (x_proj);
       /*---(next)------------------------*/
       rc = poly_proj_cursor ('>', &x_proj);
@@ -193,7 +232,7 @@ poly_rptg_projects      (void)
       /*---(done)------------------------*/
    }
    printf ("\n");
-   poly_proj_line (NULL, my.g_rptg, 0, 'y');
+   poly_proj_line (NULL, my.g_rptg, 'h', 0, 'y');
    poly_rptg__total ();
    printf ("\n");
    printf ("# end-of-file.  done, finito, completare, whimper.\n");
@@ -275,8 +314,7 @@ poly_rptg_proj          (void)
    if (my.g_mode != POLY_RPTG_DUMP && my.g_titles == RPTG_TITLES) {
       printf ("## project listing report\n");
       printf ("##    generated by polymnia-hymnos (many praises) muse of divine hymns, c language, dance, geometry, and grammar\n");
-      printf ("\n");;
-      printf ("##---name---------------- § --files § --funcs § --lines § --empty § ---docs § --debug § ---code § --slocl § ---code-size---  ---greek-heritage-------------------------------------------  ---purpose-statement----------------------------------------  -ver- ---version-description--------------------------------------  ---focus------------  ---niche------------  --created-  ---home-directory-------------------------------------------\n");
+      printf ("##---name---------------- --files --funcs --lines --empty ---docs --debug ---code --slocl ---code-size--- ---greek-heritage-------------------------------------------  ---purpose-statement---------------------------------------- -ver- ---version-description--------------------------------------  ---focus------------  ---niche------------  --created-  ---home-directory-------------------------------------------\n");
    }
    /*---(find target)--------------------*/
    rc = poly_rptg_projfilter ();

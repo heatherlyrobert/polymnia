@@ -497,7 +497,8 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    strlcpy   (x_full, a_curr   , LEN_RECD);
    strltrim  (x_full, ySTR_BOTH, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
-   strlunall (x_recd, a_curr   , LEN_RECD);
+   strlcpy   (x_recd, a_curr   , LEN_RECD);
+   strlunall (x_recd, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
    /*---(outside functions)-----------*/
    DEBUG_INPT   yLOG_point   ("a_func"    , a_func);

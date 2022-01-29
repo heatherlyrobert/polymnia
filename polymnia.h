@@ -7,13 +7,15 @@
 
 #define     P_FOCUS     "DE (development environment)"
 #define     P_NICHE     "ca (code anaylsis)"
-#define     P_SUBJECT   "ansi-c code analysis"
+#define     P_SUBJECT   "ansi-c analysis and research"
 #define     P_PURPOSE   "c language code-base navigation, research, and analysis"
 
-#define     P_NAMESAKE  "polymnia-hymnos (she of many praises)"
+#define     P_NAMESAKE  "polymnia-hymnos (many praises)"
 #define     P_HERITAGE  "greek muse of divine hymns, poetry, dancing, geometry, grammer"
 #define     P_IMAGERY   "beautiful woman wearing a veil and looking up at the heavens"
 #define     P_REASON    "she is the muse of divine hymns (c is the divine language)"
+#define     P_SHORTER   "muse of divine hymns"
+#define     P_PRONOUNCE ""
 
 #define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
 
@@ -32,8 +34,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.9b"
-#define     P_VERTXT    "added memory footprint code, small unit test, and presentation to tags"
+#define     P_VERNUM    "0.9c"
+#define     P_VERTXT    "back from the dead.  improved projects reporting"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -811,7 +813,7 @@ char        poly_proj_system        (char *a_path);
 /*---(reporting)------------*/
 char        poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
 char        poly_proj_header        (tPROJ *a_proj);
-char        poly_proj_line          (tPROJ *a_proj, char a_style, int c, char a_print);
+char        poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int c, char a_print);
 /*---(unittest)-------------*/
 char*       poly_proj__unit         (char *a_question, int i);
 
@@ -880,7 +882,7 @@ char        poly_func__wipe         (tFUNC *a_func);
 char*       poly_func__memory       (tFUNC *a_func);
 char        poly_work__wipe         (tWORK *a_work);
 char*       poly_work__memory       (tWORK *a_work);
-char        poly_func__hint         (int n, char *a_label);
+/*> char        poly_func__hint         (int n, char *a_label);                       <*/
 char        poly_func_cli           (char *a_hint, char a_loud);
 /*---(memory)---------------*/
 char        poly_func__new          (tFUNC **a_func);
