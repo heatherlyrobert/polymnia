@@ -869,6 +869,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
     *  c  chars   , name plus system data
     *  w  who     , name plus author data
     *  v  version , name plus versioning data
+    *  f  version , memory footprint
     *
     */
    char       *x_count     = "prj";
@@ -895,6 +896,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
    char        x_debug     [LEN_TERSE] = "";
    char        x_code      [LEN_TERSE] = "";
    char        x_slocl     [LEN_TERSE] = "";
+   char        x_text      [LEN_TERSE] = "";
+   char        x_data      [LEN_TERSE] = "";
+   char        x_bss       [LEN_TERSE] = "";
    char        x_type      = '-';
    /*---(prepare)------------------------*/
    strlcpy (s_print, "", LEN_RECD);
@@ -909,7 +913,6 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       case 'h' :   sprintf (t, "prj fil fnc  ");               break;
       case 'p' :   sprintf (t, "Ï--·Ï--·Ï--··");               break;
       case 't' :   sprintf (t, "prj·fil·fnc··");               break;
-      case '-' :
       case 'd' :   sprintf (t, "%-3d -   -    ", a + 1);       break;
       default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
@@ -920,7 +923,6 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       case 'h' :   sprintf (t, "prj  ");                       break;
       case 'p' :   sprintf (t, "Ï--··");                       break;
       case 't' :   sprintf (t, "prj··");                       break;
-      case '-' :
       case 'd' :   sprintf (t, "%-3d  ", a + 1);               break;
       default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
@@ -931,7 +933,6 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
    case 'h' :   sprintf (t, "---name--------  ");              break;
    case 'p' :   sprintf (t, "Ï--------------··");              break;
    case 't' :   sprintf (t, "name·············");              break;
-   case '-' :
    case 'd' :   sprintf (t, "%-15.15s  ", a_proj->name);       break;
    default  :   strlcpy (t, "", LEN_RECD);                     break;
    }
@@ -959,16 +960,10 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       case 't' :
          sprintf (t, "files··funcs··ylibs··lines····empty····docs·····debug····code·····slocl·····");
          break;
-      case '-' :
+      case 'd' :
          sprintf (t, "%6.6s %6.6s %6.6s %8.8s %8.8s %8.8s %8.8s %8.8s %8.8s  ",
                x_files, x_funcs, x_ylibs,
                x_lines, x_empty, x_docs , x_debug, x_code , x_slocl);
-         break;
-      case 'd' :
-         sprintf (t, "%5d %5d %5d %8d %8d %8d %8d %8d %8d  ",
-               a_proj->COUNT_FILES, a_proj->COUNT_FUNCS, a_proj->COUNT_YLIBS,
-               a_proj->COUNT_LINES, a_proj->COUNT_EMPTY, a_proj->COUNT_DOCS ,
-               a_proj->COUNT_DEBUG, a_proj->COUNT_CODE , a_proj->COUNT_SLOCL);
          break;
       default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
@@ -980,7 +975,6 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       case 'h' : sprintf (t, "---header-checklist----------------  ");    break;
       case 'p' : sprintf (t, "Ï----------------------------------··");    break;
       case 't' : sprintf (t, "header-checklist·····················");    break;
-      case '-' :
       case 'd' : sprintf (t, "%-35.35s  ", a_proj->header);               break;
       default  :   strlcpy (t, "", LEN_RECD);                             break;
       }
@@ -992,8 +986,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       case 'h' : sprintf (t, "---focus---------------------- ---niche---------------------- ---subject-------------------- ---purpose------------------------------------------------------------  ");  break;
       case 'p' : sprintf (t, "Ï-----------------------------·Ï-----------------------------·Ï-----------------------------·Ï---------------------------------------------------------------------··");  break;
       case 't' : sprintf (t, "focus··························niche··························subject························purpose·································································");  break;
-      case 'd' :
-      case '-' : sprintf (t, "%-30.30s %-30.30s %-30.30s %-70.70s ",
+      case 'd' : sprintf (t, "%-30.30s %-30.30s %-30.30s %-70.70s  ",
                        a_proj->focus   , a_proj->niche   ,
                        a_proj->subject , a_proj->purpose );
                  break;
@@ -1007,7 +1000,6 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       case 'h' : sprintf (t, "---namesake----------------------------- ---heritage----------------------------------------------------------- ---imagery------------------------------------------------------------ ---reason-chosen------------------------------------------------------ ---oneline------------------------------------------------------------  ");  break;
       case 'p' : sprintf (t, "Ï---------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------··");  break;
       case 't' : sprintf (t, "namesake·································heritage·······························································imagery································································reason-chosen··························································oneline·································································");  break;
-      case '-' :
       case 'd' : sprintf (t, "%-40.40s %-70.70s %-70.70s %-70.70s %-70.70s  ",
                        a_proj->namesake, a_proj->heritage, a_proj->imagery ,
                        a_proj->reason  , a_proj->oneline );
@@ -1021,7 +1013,6 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       case 'h' : sprintf (t, "---oneline------------------------------------------------------------  ");  break;
       case 'p' : sprintf (t, "Ï---------------------------------------------------------------------··");  break;
       case 't' : sprintf (t, "oneline·································································");  break;
-      case '-' :
       case 'd' : sprintf (t, "%-70.70s  ", a_proj->oneline);   break;
       default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
@@ -1032,8 +1023,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       switch (x_type) {
       case 'h' : sprintf (t, "---homedir------------------------------------------------------------ ---basename--------- ---fullpath----------------------------------------------------------- suffix ---content--------------------  ");  break;
       case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï-------------------·Ï---------------------------------------------------------------------·Ï-----·Ï-----------------------------··");  break;
-      case 't' : sprintf (t, "homedir···························································· ···basename········· ···fullpath······························································ suffix·content·························");  break;
-      case '-' :
+      case 't' : sprintf (t, "homedir································································basename·············fullpath·······························································suffix·content·························");  break;
       case 'd' : sprintf (t, "%-70.70s %-20.20s %-70.70s %-6.6s %-30.30s  ",
                        a_proj->homedir , a_proj->progname,
                        a_proj->fullpath, a_proj->suffix  , a_proj->content );
@@ -1046,9 +1036,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
    if (strchr ("LAc", a_style) != NULL) {
       switch (x_type) {
       case 'h' : sprintf (t, "---system------------------------------------------------------------- ---language----------------------------------------------------------- ---codesize----------------------------- ---dependencies-------------------------------------------------------  ");  break;
-      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï--------------------------------------- Ï---------------------------------------------------------------------··");  break;
+      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------·Ï---------------------------------------------------------------------··");  break;
       case 't' : sprintf (t, "system·································································language·······························································codesize·································dependencies····························································");  break;
-      case '-' : sprintf (t, "%-70.70s %-70.70s %-40.40s %-70.70s  ",
+      case 'd' : sprintf (t, "%-70.70s %-70.70s %-40.40s %-70.70s  ",
                        a_proj->systems , a_proj->language,
                        a_proj->codesize, a_proj->depends );
                  break;
@@ -1059,10 +1049,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
    /*---(author)-------------------------*/
    if (strchr ("LAw", a_style) != NULL) {
       switch (x_type) {
-      case 'h' : sprintf (t, "---system------------------------------------------------------------- ---language----------------------------------------------------------- ---codesize----------------------------- ---dependencies-------------------------------------------------------  ");  break;
-      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------·Ï---------------------------------------------------------------------··");  break;
-      case 't' : sprintf (t, "system·································································language·······························································codesize·································dependencies····························································");  break;
-      case '-' :
+      case 'h' : sprintf (t, "---author------------------------------- ---created----------  ");   break;
+      case 'p' : sprintf (t, "Ï---------------------------------------·Ï-------------------··");   break;
+      case 't' : sprintf (t, "author···································created···············");   break;
       case 'd' : sprintf (t, "%-40.40s %-20.20s  ",
                        a_proj->author  , a_proj->created );
                  break;
@@ -1075,8 +1064,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       switch (x_type) {
       case 'h' : sprintf (t, "---vermajor----------------------------------------------------------- ---verminor----------------------------------------------------------- --vernum-- ---vertxt-------------------------------------------------------------  ");  break;
       case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------·Ï---------------------------------------------------------------------··");  break;
-      case 't' : sprintf (t, "vermajor·······························································verminor······························································vernum······vertxt··································································");  break;
-      case '-' :
+      case 't' : sprintf (t, "vermajor·······························································verminor·······························································vernum·····vertxt··································································");  break;
       case 'd' : sprintf (t, "%-70.70s %-70.70s %-10.10s %-70.70s  ",
                        a_proj->vermajor, a_proj->verminor,
                        a_proj->vernum  , a_proj->vertxt  );
@@ -1090,8 +1078,27 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       case 'h' : sprintf (t, "vernum ---codesize---  ");  break;
       case 'p' : sprintf (t, "Ï-----·Ï-------------··");  break;
       case 't' : sprintf (t, "vernum·codesize········");  break;
-      case '-' :
-      case 'd' : sprintf (t, "%-6.6s %-14.14s", a_proj->vernum, a_proj->codesize);
+      case 'd' : sprintf (t, "%-6.6s %-14.14s  ", a_proj->vernum, a_proj->codesize);
+                 break;
+      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      }
+      strlcat (s_print, t, LEN_RECD);
+   }
+   /*---(memory)-------------------------*/
+   if (strchr ("pm"  , a_style) != NULL) {
+      if (a_proj != NULL) {
+         strl4main (a_proj->COUNT_TEXT , x_text , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_TEXT  == 0)  strlcpy (x_text, "·", LEN_TERSE);
+         strl4main (a_proj->COUNT_DATA , x_data , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_DATA  == 0)  strlcpy (x_data, "·", LEN_TERSE);
+         strl4main (a_proj->COUNT_BSS  , x_bss  , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_BSS   == 0)  strlcpy (x_bss , "·", LEN_TERSE);
+      }
+      switch (x_type) {
+      case 'h' : sprintf (t, "---text-- ---data-- ---bss---  ");  break;
+      case 'p' : sprintf (t, "Ï--------·Ï--------·Ï--------··");  break;
+      case 't' : sprintf (t, "text······data······bss········");  break;
+      case 'd' : sprintf (t, "%9.9s %9.9s %9.9s  ", x_text, x_data, x_bss);
                  break;
       default  :   strlcpy (t, "", LEN_RECD);                  break;
       }

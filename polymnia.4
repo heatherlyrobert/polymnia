@@ -18,8 +18,8 @@ and research -- for the one-true language (c).
 
 .SH DOCUMENTATION FILES
 .nf
-.B polymnia (1)·······command-line initiation, use, and options
-polymnia (4)       shared devices, files, and configuration
+polymnia (1)       command-line initiation, use, and options
+.B polymnia (4)·······shared devices, files, and configuration
 polymnia (7)       decision rationale, objectives, and overview
 
 .SH TABLE OF CONTENTS
@@ -37,10 +37,12 @@ created and secured for polymnia to work properly.
 .B /var/lib/polymnia/
 
 .SH B) DATABASE
-polymnia stores all primary information in a single centralized database.
-the stored data is volumous and detailed.  in violation of my general
-principles, this database is binary (not plain-text) for speed and lack of
-need for human access.
+polymnia stores all primary information in a single centralized database.  the
+stored data is volumous and detailed.  in violation of my general principles,
+this database is binary (not plain-text).
+
+i think this exception is reasonable as the data is frequently updated and
+can not be reasonably hand-maintained.  its also fast as sin ;)
 
 .B /var/lib/polymnia/polymnia.db
 

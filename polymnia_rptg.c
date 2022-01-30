@@ -216,14 +216,14 @@ poly_rptg_projects      (void)
    DEBUG_RPTG   yLOG_value   ("projects"  , poly_btree_count (B_PROJ));
    rc = poly_proj_cursor ('[', &x_proj);
    DEBUG_RPTG   yLOG_point   ("proj"      , x_proj);
-   poly_proj_line (NULL, my.g_rptg, 'h', 0, 'y');
    /*---(walk projects)------------------*/
    while (rc >= 0 && x_proj != NULL) {
       /*---(prepare)---------------------*/
       DEBUG_RPTG   yLOG_info    ("->name"    , x_proj->name);
       DEBUG_RPTG   yLOG_value   ("files"     , x_proj->count);
-      if (c % 5 == 0)  printf ("\n");
-      poly_proj_line (x_proj, my.g_rptg, '-', c, 'y');
+      if (c %  5 == 0)  printf ("\n");
+      if (c % 25 == 0)  { poly_proj_line (NULL, my.g_rptg, 'h', 0, 'y'); printf ("\n"); }
+      poly_proj_line (x_proj, my.g_rptg, 'd', c, 'y');
       poly_rptg__inc  (x_proj);
       /*---(next)------------------------*/
       rc = poly_proj_cursor ('>', &x_proj);
@@ -232,7 +232,7 @@ poly_rptg_projects      (void)
       /*---(done)------------------------*/
    }
    printf ("\n");
-   poly_proj_line (NULL, my.g_rptg, 'h', 0, 'y');
+   if (c % 45 > 5)  poly_proj_line (NULL, my.g_rptg, 'h', 0, 'y');
    poly_rptg__total ();
    printf ("\n");
    printf ("# end-of-file.  done, finito, completare, whimper.\n");
@@ -626,6 +626,8 @@ poly_rptg_htags         (tPROJ *a_proj)
    tFILE      *x_file      = NULL;
    tFUNC      *x_func      = NULL;
    int         i           =    0;
+   char        t           [LEN_TERSE] = "";
+   char        s           [LEN_TERSE] = "";
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -647,12 +649,18 @@ poly_rptg_htags         (tPROJ *a_proj)
       DEBUG_PROG   yLOG_info    ("file name" , x_file->name);
       printf ("%-29.29s   FILE\n", x_file->name);
       if (my.g_rptg == POLY_RPTG_HTAGS) {
-         printf ("%s\n", poly_cats_header (7, "lines", x_file->COUNT_LINES, x_file->proj->COUNT_LINES));
-         printf ("%s\n", poly_cats_header (6, "empty", x_file->COUNT_EMPTY, x_file->proj->COUNT_EMPTY));
+         /*> printf ("%s\n", poly_cats_header (7, "lines", x_file->COUNT_LINES, x_file->proj->COUNT_LINES));   <* 
+          *> printf ("%s\n", poly_cats_header (6, "empty", x_file->COUNT_EMPTY, x_file->proj->COUNT_EMPTY));   <* 
+          *> printf ("%s\n", poly_cats_header (5, "docs" , x_file->COUNT_DOCS , x_file->proj->COUNT_DOCS ));   <* 
+          *> printf ("%s\n", poly_cats_header (4, "debug", x_file->COUNT_DEBUG, x_file->proj->COUNT_DEBUG));   <* 
+          *> printf ("%s\n", poly_cats_header (3, "code" , x_file->COUNT_CODE , x_file->proj->COUNT_CODE ));   <* 
+          *> printf ("%s\n", poly_cats_header (2, "slocl", x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL));   <*/
+         printf ("%s\n", poly_cats_header (7, "line" , x_file->COUNT_LINES, x_file->proj->COUNT_LINES));
+         printf ("%s\n", poly_cats_header (6, "empt" , x_file->COUNT_EMPTY, x_file->proj->COUNT_EMPTY));
          printf ("%s\n", poly_cats_header (5, "docs" , x_file->COUNT_DOCS , x_file->proj->COUNT_DOCS ));
-         printf ("%s\n", poly_cats_header (4, "debug", x_file->COUNT_DEBUG, x_file->proj->COUNT_DEBUG));
+         printf ("%s\n", poly_cats_header (4, "dbug" , x_file->COUNT_DEBUG, x_file->proj->COUNT_DEBUG));
          printf ("%s\n", poly_cats_header (3, "code" , x_file->COUNT_CODE , x_file->proj->COUNT_CODE ));
-         printf ("%s\n", poly_cats_header (2, "slocl", x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL));
+         printf ("%s\n", poly_cats_header (2, "sloc" , x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL));
          printf ("%s\n", poly_cats_header (1, ""     , 0                   , 0                       ));
          printf ("%s\n", poly_func_line   (NULL, POLY_RPTG_HTAGS, 0, 0, x_file->count, '-'));
       }
@@ -669,9 +677,18 @@ poly_rptg_htags         (tPROJ *a_proj)
       }
       printf ("\n");
       printf ("footprint\n");
-      printf ("text %6d %7d\n", x_file->COUNT_TEXT, x_file->proj->COUNT_TEXT);
-      printf ("data %6d %7d\n", x_file->COUNT_DATA, x_file->proj->COUNT_DATA);
-      printf ("bss  %6d %7d\n", x_file->COUNT_BSS , x_file->proj->COUNT_BSS);
+      strl4main (x_file->COUNT_TEXT       , s , 0, 'c', '-', LEN_TERSE);
+      strl4main (x_file->proj->COUNT_TEXT , t , 0, 'c', '-', LEN_TERSE);
+      printf ("txt %7.7s %8.8s\n", s, t);
+      strl4main (x_file->COUNT_DATA       , s , 0, 'c', '-', LEN_TERSE);
+      strl4main (x_file->proj->COUNT_DATA , t , 0, 'c', '-', LEN_TERSE);
+      printf ("dat %7.7s %8.8s\n", s, t);
+      strl4main (x_file->COUNT_BSS        , s , 0, 'c', '-', LEN_TERSE);
+      strl4main (x_file->proj->COUNT_BSS  , t , 0, 'c', '-', LEN_TERSE);
+      printf ("bss %7.7s %8.8s\n", s, t);
+      /*> printf ("text %6d %7d\n", x_file->COUNT_TEXT, x_file->proj->COUNT_TEXT);    <* 
+       *> printf ("data %6d %7d\n", x_file->COUNT_DATA, x_file->proj->COUNT_DATA);    <* 
+       *> printf ("bss  %6d %7d\n", x_file->COUNT_BSS , x_file->proj->COUNT_BSS);     <*/
       if (my.g_rptg == POLY_RPTG_HTAGS)  for (i = 0; i < 70 - x_file->count; ++i)  printf ("\n");
       else         printf ("\n\n");
       x_file = x_file->next;

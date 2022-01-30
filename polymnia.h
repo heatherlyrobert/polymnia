@@ -3,19 +3,17 @@
 
 
 /*===[[ ONE_LINERS ]]=========================================================*/
-/*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
+/*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-"  */
 
 #define     P_FOCUS     "DE (development environment)"
 #define     P_NICHE     "ca (code anaylsis)"
 #define     P_SUBJECT   "ansi-c analysis and research"
-#define     P_PURPOSE   "c language code-base navigation, research, and analysis"
+#define     P_PURPOSE   "pervasive and detailed ansi-c code analysis, research, and navigation"
 
 #define     P_NAMESAKE  "polymnia-hymnos (many praises)"
 #define     P_HERITAGE  "greek muse of divine hymns, poetry, dancing, geometry, grammer"
 #define     P_IMAGERY   "beautiful woman wearing a veil and looking up at the heavens"
 #define     P_REASON    "she is the muse of divine hymns (c is the divine language)"
-#define     P_SHORTER   "muse of divine hymns"
-#define     P_PRONOUNCE ""
 
 #define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
 
@@ -33,9 +31,9 @@
 #define     P_CREATED   "2019-01"
 
 #define     P_VERMAJOR  "0.--, pre-production"
-#define     P_VERMINOR  "0.8-, working out final issues"
-#define     P_VERNUM    "0.9c"
-#define     P_VERTXT    "back from the dead.  improved projects reporting"
+#define     P_VERMINOR  "0.9-, bring back to life ;)"
+#define     P_VERNUM    "0.9d"
+#define     P_VERTXT    "cats and code unit tests are up to date now"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

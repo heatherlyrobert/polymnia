@@ -777,11 +777,18 @@ poly_cats_header        (int n, char *a_title, int a_curr, int a_total)
    int         i           =    0;
    int         m           =    0;
    char        x_len       =    0;
-   char        t           [LEN_RECD]  = "";
+   char        t           [LEN_TERSE] = "";
    char        s           [LEN_TERSE] = "";
    strlcpy (s_print, "", LEN_RECD);
    if (n <= 0 || n > 7)  return s_print;
-   if (n > 1)  sprintf (s_print, "%-5.5s : %4d  %5d             ", a_title, a_curr, a_total);
+   if (n > 1) {
+      strl4main (a_curr , t , 0, 'c', '-', LEN_TERSE);
+      if (a_curr  == 0)  strlcpy (t, "·", LEN_TERSE);
+      strl4main (a_total, s , 0, 'c', '-', LEN_TERSE);
+      if (a_total == 0)  strlcpy (s, "·", LEN_TERSE);
+      sprintf (s_print, "%-4.4s%7.7s %8.8s            ", a_title, t, s);
+      /*> sprintf (s_print, "%-5.5s : %4d  %5d             ", a_title, a_curr, a_total);   <*/
+   }
    else        sprintf (s_print, "                                ");
    for (i = 0; i < MAX_CATS; ++i) {
       /*---(end-of-data)-----------------*/

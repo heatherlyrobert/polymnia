@@ -132,13 +132,17 @@ PROG_args          (int a_argc, char *a_argv[])
       /*---(complicated)-----------------*/
       else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_rptg = POLY_RPTG_HTAGS;   }
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
+      /*---(system-wide)-----------------*/
+      else if (strcmp (a, "--register"  ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REG;     }
+      else if (strcmp (a, "--unregister") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UNREG;   }
+      else if (strcmp (a, "--system"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_SYSTEM;  }
+      /*---(configuration)---------------*/
+      else if (strcmp (a, "--database"  ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
+      else if (strcmp (a, "--world"     ) == 0)  TWOARG rc = poly_world_cli   (a_argv [i], 'y');
       /*---(data handling)---------------*/
       else if (strcmp (a, "--new"       ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_NEW;     }
       else if (strcmp (a, "--update"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UPDATE;  }
       else if (strcmp (a, "--remove"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }
-      else if (strcmp (a, "--register"  ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REG;     }
-      else if (strcmp (a, "--unregister") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UNREG;   }
-      else if (strcmp (a, "--system"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_SYSTEM;  }
       /*---(reports)---------------------*/
       else if (strcmp (a, "--projects"  ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_PROJS;   }
       else if (strcmp (a, "--oneline"   ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ONELINE; }
@@ -155,9 +159,7 @@ PROG_args          (int a_argc, char *a_argv[])
        *> else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;      <* 
        *> else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;        <* 
        *> else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;       <*/
-      /*---(configuration)---------------*/
-      else if (strcmp (a, "--database"  ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
-      else if (strcmp (a, "--world"     ) == 0)  TWOARG rc = poly_world_cli   (a_argv [i], 'y');
+      /*---(filtering)-------------------*/
       else if (strcmp (a, "--project"   ) == 0)  TWOARG rc = poly_proj_cli    (a_argv [i], 'y');
       else if (strcmp (a, "--hint"      ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
       /*> else if (strcmp (a, "--extern"   ) == 0)  TWOARG rc = poly_extern_name (a_argv [i], 'y');   <*/

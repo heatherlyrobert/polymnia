@@ -667,15 +667,21 @@ poly_code__unit         (char *a_question, int i)
          if (u->WORK_CHOICE > 0)  sprintf (s, " %3dc", u->WORK_CHOICE);
          else                     sprintf (s, "   ·c");
          strlcat (r, s, LEN_RECD);
+         if (u->WORK_LOOP   > 0)  sprintf (s, " %3dl", u->WORK_LOOP);
+         else                     sprintf (s, "   ·l");
+         strlcat (r, s, LEN_RECD);
          if (u->WORK_RETURN > 0)  sprintf (s, " %3dr", u->WORK_RETURN);
          else                     sprintf (s, "   ·r");
+         strlcat (r, s, LEN_RECD);
+         if (u->WORK_RCE    > 0)  sprintf (s, " %3de", u->WORK_RCE);
+         else                     sprintf (s, "   ·e");
          strlcat (r, s, LEN_RECD);
          if (u->WORK_INDENT > 0)  sprintf (s, " %3di", u->WORK_INDENT);
          else                     sprintf (s, "   ·i");
          strlcat (r, s, LEN_RECD);
          snprintf (unit_answer, LEN_RECD, "CODE work   (%2d) : %-22.22s  %s", i, t, r);
       }  else
-         snprintf (unit_answer, LEN_RECD, "CODE work   (%2d) : %-22.22s    -c   -r   -i", i, t);
+         snprintf (unit_answer, LEN_RECD, "CODE work   (%2d) : %-22.22s    -c   -l   -r   -e   -i", i, t);
    }
    else if (strcmp (a_question, "file"      )     == 0) {
       if (s_file != NULL)  sprintf  (t, "[%.20s]", s_name);

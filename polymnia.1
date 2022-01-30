@@ -24,8 +24,11 @@ polymnia (7)       decision rationale, objectives, and overview
 
 .SH TABLE OF CONTENTS
 .nf  
-a) synopsis        standard command line overview
-b) database        central database interaction
+a) synopsis        command overview
+a) system-wide     standard command line overview
+b) project data    effecting a single project
+b) database        alternate database usage
+c) world file      alternate world file usage
 c) tagging         ide navigation and support
 d) reporting       content query and output
 e) filtering       cutting reporting volume
@@ -40,45 +43,82 @@ e) filtering       cutting reporting volume
   which can perform all actions, but with debugging and tracing
   (see yURG for documentation on debugging options)
 
-.SH B) DATABASE OPTIONS
-polymnia creates and maintains a binary-file database of programs, files,
-and functions to support off-line analysis and resarch.
+.SH B) SYSTEM-WIDE OPTIONS
+these options help automate polymnia and turn it into a system-wide code
+analysis and research platform.  these commands interact with the central
+.B world.txt
+file.  see polymnia (4) for more information.
 
-.B --write
-.RS 8
-create/overwrite database using current code project
-.RE
+.SS --register
+adds the current project directory to the world list.  always do this from the
+programs home directory, not a sub-directory.  no duplicates will be added,
+so do not worry.
 
-.B --update
-.RS 8
-append database with data from current code project
-.RE
+.SS --unregister
+removes the current project directory from the world list.  existing information
+will not be removed, but it will no longer be automatically updated.
 
-.B --system
-.RS 8
-append database with all code projects in key directories
-.RE
+.SS --system
+updates all projects listed in the world list.  this is quite quick and is
+designed to be run in batch.  but, it prints a single line for each update
+in case it is used interactively.
 
-.B --remove <name>
-.RS 8
-remove project <name> related data from database
-.RE
+.SH C) PROJECT DATA OPTIONS
+the central database can also perform a few operations on individual projects
+in order to keep the database clean.
+
+.SS --update
+appends the database with new data from current code project.  if the project
+already exists, it is updated.  if not, it is added.  the project does not need
+to be removed first.
+
+.SS --remove
+remove current project data from database.  the only reason to remove data is
+if a project is no longer in use.  if the project remains registered, it will
+be re-added when --system is used.
+
+.SH D) DATABASE OPTIONS
+to aide analysis, limited databases or full database copies can be useful.
+polymnia does not care.
+
+.SS --database <name>
+orders polymnia to use an alternate database as is source and destination.
+whatever the name, it will be the same binary format.  every time an alternate
+database is used, this option is required.
+
+.SS --new
+create/overwrite database using current code project as the only entry.  this
+option ensures the database starts fresh.
+
+.SS --update, --system, --remove
+these all work exactly like the central database versions above.
+
+.SH E) WORLD FILE OPTIONS
+exactly like with alternate databases, alternative world files enable more
+varied analysis.
+
+.SS --world <name>
+orders polymnia to use an alternate world file.  every time an alternate
+world file is used, this option is required.
+
+.SS --register, --unregister, --system
+these all work exactly like the central database versions above.
 
 .SH C) TAGGING OPTIONS
 polymnia analyzes current code project, including files, headers, and fuctions,
 to provide a custom tagging and navigation file for my vim-ide without any
 impact to the shared database.
 
-.B --htags
-.RS 8
-write detailed tags format to stdout for use by vim-ide
-.RE
+.SS --htags
+write detailed tags format to stdout for use by vim-ide.  this report is
+specifically designed to support my vim-macros and be loaded into a navigation
+window next to the code.
 
 .SH D) REPORTING OPTIONS
 polymnia supports several overviews of database content that provide all
 information stored, typically for use in a spreadsheet.
 
-.B --projs
+.B --projects
 .RS 8
 write detailed info for each project in database
 .RE
