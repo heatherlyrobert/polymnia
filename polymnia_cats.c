@@ -419,12 +419,16 @@ poly_cats__group_1b     (tFUNC *a_func)
    --rce;  if (a_func->work == NULL)  return rce;
    poly_cats_scaled  ("lines"   , a_func->COUNT_LINES, &a_func->STATS_TOTAL , '-');
    /*> poly_cats_scaled  ("debug"   , a_func->COUNT_DEBUG, &a_func->STATS_DEBUG , '-');   <*/
-   a = ((float) a_func->COUNT_DEBUG / a_func->COUNT_LINES);
-   b = round (a * 10);
+   if (a_func->COUNT_LINES > 0) {
+      a = ((float) a_func->COUNT_DEBUG / a_func->COUNT_LINES);
+      b = round (a * 10);
+   }
    poly_cats_exact   ("debug"   , b                  , &a_func->STATS_DEBUG , '-');
    /*> poly_cats_scaled  ("slocl"   , a_func->COUNT_SLOCL, &a_func->STATS_SLOCL , '-');   <*/
-   c = ((float) a_func->COUNT_SLOCL / a_func->COUNT_LINES);
-   d = round (c * 10);
+   if (a_func->COUNT_LINES > 0) {
+      c = ((float) a_func->COUNT_SLOCL / a_func->COUNT_LINES);
+      d = round (c * 10);
+   }
    poly_cats_exact   ("slocl"   , d                  , &a_func->STATS_SLOCL , '-');
    /*> printf ("%-15.15s %3d   %3d %4.2f %2d %c   %3d %4.2f %2d %c\n",                <* 
     *>       a_func->name, a_func->COUNT_LINES,                                       <* 

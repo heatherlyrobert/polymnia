@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.9-, bring back to life ;)"
-#define     P_VERNUM    "0.9d"
-#define     P_VERTXT    "cats and code unit tests are up to date now"
+#define     P_VERNUM    "0.9e"
+#define     P_VERTXT    "all unit tests passing again"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

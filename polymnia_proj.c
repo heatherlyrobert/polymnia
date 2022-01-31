@@ -858,18 +858,18 @@ poly_proj_header        (tPROJ *a_proj)
 char
 poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_print)
 {
-   /*  n  name    , just the name
-    *  s  stats   , short count, name, plus statistics
-    *  L  long    , short count plus everything
-    *  a  all     , long count plus statistics
-    *  A  all     , long count plus everything
-    *  m  master  , name plus master data
-    *  g  greek   , name plus master data
-    *  l  location, name plus master data
-    *  c  chars   , name plus system data
-    *  w  who     , name plus author data
-    *  v  version , name plus versioning data
-    *  f  version , memory footprint
+   /*  n  name     , just the name
+    *  s  stats    , short count, name, plus statistics
+    *  L  long     , short count plus everything
+    *  a  all      , long count plus statistics
+    *  A  all      , long count plus everything
+    *  m  master   , name plus master data
+    *  g  greek    , name plus greek data
+    *  l  location , name plus location data
+    *  c  chars    , name plus characteristic data
+    *  w  who      , name plus author data
+    *  v  version  , name plus versioning data
+    *  f  footprint, memory footprint
     *
     */
    char       *x_count     = "prj";
@@ -1085,7 +1085,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int a, char a_
       strlcat (s_print, t, LEN_RECD);
    }
    /*---(memory)-------------------------*/
-   if (strchr ("pm"  , a_style) != NULL) {
+   if (strchr ("pf"  , a_style) != NULL) {
       if (a_proj != NULL) {
          strl4main (a_proj->COUNT_TEXT , x_text , 0, 'c', '-', LEN_TERSE);
          if (a_proj->COUNT_TEXT  == 0)  strlcpy (x_text, "·", LEN_TERSE);

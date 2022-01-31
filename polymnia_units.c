@@ -55,10 +55,12 @@ poly_units_by_func      (void)
       /*> printf ("%4d[%s]\n", strlen (x_name), x_name);                              <*/
       /*---(test change)-----------------*/
       if (strncmp (x_verb, "PREP", 4) == 0) {
+         DEBUG_INPT   yLOG_note    ("increment tests, continue");
          ++x_test;
          continue;
       }
       if (strncmp (x_verb, "SCRP", 4) == 0) {
+         DEBUG_INPT   yLOG_note    ("increment scripts, continue");
          ++x_scrp;
          continue;
       }
@@ -70,6 +72,8 @@ poly_units_by_func      (void)
          continue;
       }
       DEBUG_INPT   yLOG_info    ("function"  , x_func->name);
+      DEBUG_INPT   yLOG_point   ("project"   , x_func->file->proj);
+      DEBUG_INPT   yLOG_point   ("g_proj"    , my.g_proj);
       /*---(verify the right project)-------*/
       while (x_func->file->proj != my.g_proj) {
          DEBUG_INPT   yLOG_note    ("project does not match, next function");
