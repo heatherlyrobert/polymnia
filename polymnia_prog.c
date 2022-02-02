@@ -64,6 +64,7 @@ PROG_init          (int a_argc, char *a_argv[])
    /*---(run-time-config)----------------*/
    DEBUG_PROG   yLOG_note    ("initialize run-time settings");
    my.g_mode      = POLY_NONE;
+   my.g_scope     = POLY_PROJ;
    my.g_data      = POLY_DATA_NONE;
    my.g_unit      = 'y';
    my.g_rptg      = POLY_RPTG_NONE;
@@ -71,8 +72,12 @@ PROG_init          (int a_argc, char *a_argv[])
    my.g_filter    = FILTER_NONE;
    /*---(filtering)----------------------*/
    DEBUG_PROG   yLOG_note    ("initialize global filtering");
-   my.g_project [0]  = '\0';
+   my.g_projno       =   -1;
    my.g_proj         = NULL;
+   my.g_projname [0] = '\0';
+   my.g_fileno       =   -1;
+   my.g_file         = NULL;
+   my.g_filename [0] = '\0';
    my.g_extern [0]   = '\0';
    strlcpy (my.g_hint, "--", LEN_TERSE);
    /*---(files)--------------------------*/
@@ -117,6 +122,9 @@ PROG_args          (int a_argc, char *a_argv[])
    int         x_args      = 0;
    char        x_name      [LEN_RECD]   = "";
    char        t           [LEN_RECD]   = "";
+   int         x_proj      =    0;
+   int         x_file      =    0;
+   int         b           =    0;
    /*---(header)-------------------------*/
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
    /*> FILE_rename ("");                                                              <*/
@@ -128,9 +136,12 @@ PROG_args          (int a_argc, char *a_argv[])
       DEBUG_ARGS  yLOG_info    ("cli arg", a);
       ++x_args;
       /*---(simple)----------------------*/
-      if      (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
+      rc = poly_rptg_args (a);
+      if (rc == 1)   continue;
+      /*---(simple)----------------------*/
+      if       (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
       /*---(complicated)-----------------*/
-      else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_rptg = POLY_RPTG_HTAGS;   }
+      else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
       /*---(system-wide)-----------------*/
       else if (strcmp (a, "--register"  ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REG;     }
@@ -144,11 +155,12 @@ PROG_args          (int a_argc, char *a_argv[])
       else if (strcmp (a, "--update"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UPDATE;  }
       else if (strcmp (a, "--remove"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }
       /*---(reports)---------------------*/
-      else if (strcmp (a, "--projects"  ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_PROJS;   }
-      else if (strcmp (a, "--oneline"   ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ONELINE; }
-      else if (strcmp (a, "--about"     ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ABOUT;   }
-      else if (strcmp (a, "--dump"      ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_DUMP;    }
-      else if (strcmp (a, "--detail"    ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_FUNC;    }
+      /*> else if (strcmp (a, "--projects"  ) == 0) { my.g_mode  = POLY_RPTG;  my.g_scope = POLY_PROJ;  my.g_rptg = POLY_RPTG_PROJS;   }   <*/
+      /*> else if (strcmp (a, "--oneline"   ) == 0) { my.g_mode  = POLY_RPTG;  my.g_scope = POLY_PROJ;  my.g_rptg = POLY_RPTG_ONELINE; }   <*/
+      /*> else if (strcmp (a, "--files"     ) == 0) { my.g_mode  = POLY_RPTG;  my.g_scope = POLY_FILE;  my.g_rptg = POLY_RPTG_FILES;   }   <*/
+      /*> else if (strcmp (a, "--about"     ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ABOUT;   }   <*/
+      /*> else if (strcmp (a, "--dump"      ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_DUMP;    }   <*/
+      /*> else if (strcmp (a, "--detail"    ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_FUNC;    }   <*/
       /*---(others)----------------------*/
       /*> else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;          <* 
        *> else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = POLY_RPTG_VARS;          <* 
@@ -190,7 +202,17 @@ PROG_args          (int a_argc, char *a_argv[])
        *> else if (strncmp (a, "--layout-"           ,  9) == 0)  PROG_layout_set ("cli", "layout"   , a +  9);   <* 
        *> else if (strncmp (a, "--function-list"     ,  9) == 0)  CALC_func_list  ();                             <*/
       /*---(other)-----------------------*/
-      /*> else if (a[0] != '-'                     )   strlcpy (x_name , a_argv[i]  , LEN_RECD);   <*/
+      else if (a[0] != '-'                     ) {
+         b = atoi (a_argv [i]);
+         if      (x_proj == 0 && b > 0)   my.g_projno = b - 1;
+         else if (x_file == 0 && b > 0)   my.g_fileno = b - 1;
+      }
+      else {
+         DEBUG_TOPS  yLOG_note  ("argument not understood");
+         DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
+         return -1;
+      }
+      /*> printf ("GLOBAL %c, %c, %c\n", my.g_mode, my.g_scope, my.g_rptg);           <*/
       if (rc < 0)  break;
    }
    DEBUG_ARGS  yLOG_value  ("entries"   , x_total);
@@ -198,6 +220,7 @@ PROG_args          (int a_argc, char *a_argv[])
    if (x_args == 0) {
       DEBUG_ARGS  yLOG_note   ("no arguments identified");
    }
+   /*> printf ("FINAL  %c, %c, %c\n", my.g_mode, my.g_scope, my.g_rptg);              <*/
    /*---(complete)-----------------------*/
    DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
    return rc;
@@ -314,47 +337,59 @@ PROG_dispatch           (void)
    }
    /*---(reporting)----------------------*/
    if (my.g_mode == POLY_RPTG || my.g_mode == POLY_BOTH) {
-      DEBUG_PROG   yLOG_char    ("g_rptg"    , my.g_rptg);
-      switch (my.g_rptg) {
-      case POLY_RPTG_PROJS   : case POLY_RPTG_ONELINE :
-         rc = poly_db_read       ();
-         rc = poly_rptg_projects ();
-         break;
-      case POLY_RPTG_FUNC    :
-         rc = poly_action_detail ();
-         break;
-
-
-      case POLY_RPTG_ABOUT   :
-         rc = poly_action_about ();
-         break;
-      case POLY_RPTG_DUMP   :
-         DEBUG_TOPS   yLOG_note    ("rptg processing, file read, nor htags or write");
-         rc = poly_db_read     ();
-         rc = poly_rptg_dump   ();
-         break;
-      case MODE_SEARCH :
-         DEBUG_TOPS   yLOG_note    ("search processing, read, but no htags or write");
-         rc = poly_action_search ();
-         break;
-      case MODE_FILE   :
-         DEBUG_TOPS   yLOG_note    ("project processing, read, but no htags or write");
-         rc = poly_db_read     ();
-         rc = poly_rptg_proj   ();
-         break;
-      case POLY_RPTG_EXTERN :
-         DEBUG_TOPS   yLOG_note    ("extern processing, read, but no htags or write");
-         rc = poly_action_extern ();
-         break;
-      case POLY_RPTG_YLIB   :
-         DEBUG_TOPS   yLOG_note    ("libuse processing, read, but no htags or write");
-         rc = poly_action_libuse ();
-         break;
-      case POLY_RPTG_VARS   :
-         DEBUG_TOPS   yLOG_note    ("htag gathering, then var/macros analysis");
-         rc = poly_action_vars ();
-         break;
+      rc = poly_db_read       ();
+      if (my.g_projno >= 0) {
+         rc     = poly_proj_by_index (my.g_projno, &(my.g_proj));
+         strlcpy (my.g_projname, my.g_proj->name, LEN_LABEL);
+         /*> printf ("project %2d, %p, %s\n", my.g_projno, my.g_proj, my.g_projname);   <*/
       }
+      if (my.g_fileno >= 0) {
+         rc     = poly_file_by_proj_index (my.g_proj, my.g_fileno, &(my.g_file));
+         strlcpy (my.g_filename, my.g_file->name, LEN_LABEL);
+         /*> printf ("file    %2d, %p, %s\n", my.g_fileno, my.g_proj, my.g_projname);   <*/
+      }
+      DEBUG_PROG   yLOG_char    ("g_rptg"    , my.g_rptg);
+      if      (my.g_scope == POLY_PROJ)    rc = poly_rptg_projects ();
+      else if (my.g_scope == POLY_FILE)    rc = poly_rptg_files    ();
+      /*> else {                                                                                 <* 
+       *>    switch (my.g_rptg) {                                                                <* 
+       *>    case POLY_RPTG_PROJS   : case POLY_RPTG_ONELINE :                                   <* 
+       *>       rc = poly_rptg_projects ();                                                      <* 
+       *>       break;                                                                           <* 
+       *>    case POLY_RPTG_FUNC    :                                                            <* 
+       *>       rc = poly_action_detail ();                                                      <* 
+       *>       break;                                                                           <* 
+       *>    case POLY_RPTG_ABOUT   :                                                            <* 
+       *>       rc = poly_action_about ();                                                       <* 
+       *>       break;                                                                           <* 
+       *>    case POLY_RPTG_DUMP   :                                                             <* 
+       *>       DEBUG_TOPS   yLOG_note    ("rptg processing, file read, nor htags or write");    <* 
+       *>       rc = poly_db_read     ();                                                        <* 
+       *>       rc = poly_rptg_dump   ();                                                        <* 
+       *>       break;                                                                           <* 
+       *>    case MODE_SEARCH :                                                                  <* 
+       *>       DEBUG_TOPS   yLOG_note    ("search processing, read, but no htags or write");    <* 
+       *>       rc = poly_action_search ();                                                      <* 
+       *>       break;                                                                           <* 
+       *>    case MODE_FILE   :                                                                  <* 
+       *>       DEBUG_TOPS   yLOG_note    ("project processing, read, but no htags or write");   <* 
+       *>       rc = poly_db_read     ();                                                        <* 
+       *>       rc = poly_rptg_proj   ();                                                        <* 
+       *>       break;                                                                           <* 
+       *>    case POLY_RPTG_EXTERN :                                                             <* 
+       *>       DEBUG_TOPS   yLOG_note    ("extern processing, read, but no htags or write");    <* 
+       *>       rc = poly_action_extern ();                                                      <* 
+       *>       break;                                                                           <* 
+       *>    case POLY_RPTG_YLIB   :                                                             <* 
+       *>       DEBUG_TOPS   yLOG_note    ("libuse processing, read, but no htags or write");    <* 
+       *>       rc = poly_action_libuse ();                                                      <* 
+       *>       break;                                                                           <* 
+       *>    case POLY_RPTG_VARS   :                                                             <* 
+       *>       DEBUG_TOPS   yLOG_note    ("htag gathering, then var/macros analysis");          <* 
+       *>       rc = poly_action_vars ();                                                        <* 
+       *>       break;                                                                           <* 
+       *>    }                                                                                   <* 
+       *> }                                                                                      <*/
    }
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);

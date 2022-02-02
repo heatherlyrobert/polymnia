@@ -132,6 +132,7 @@ struct cLABEL {
    { 1,  2, 'p', 'p', "point"  ,  "pointer (* of any type)"        },
    { 1,  2, 'n', 'n', "number" ,  "number (int or real)"           },
    { 1,  2, 'o', 'o', "other"  ,  "other/unknown"                  },
+   { 1,  2, '_', '_', "title"  ,  "sub-title function"             },
    /*--   -   -123456789012345678901234567890- */
    { 1,  3, '#', '#', "JESUS"  ,  "out of control"                 },
    { 1,  3, '*', '*', "DANGER" ,  "none (dangerous)"               },
@@ -365,6 +366,7 @@ poly_cats_logic    (tFUNC *a_tag, char a_type)
    case 'l' :  /* do, until */
       IN_TAG  ++(a_tag->WORK_LOOP);
       ++(a_tag->file->COUNT_SLOCL);
+      ++(a_tag->file->proj->COUNT_SLOCL);
       break;
    case 'L' :  /* for (remove one semi-colon from SLOCL */
       IN_TAG  ++(a_tag->WORK_LOOP);

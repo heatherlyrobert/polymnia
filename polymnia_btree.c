@@ -593,6 +593,8 @@ poly_btree_cursor       (char a_btree, char a_dir, void **a_data)
    tBTREE     *o           = NULL;
    /*---(header)-------------------------*/
    DEBUG_SORT   yLOG_senter  (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (a_data != NULL)  *a_data = NULL;
    /*---(defense)------------------------*/
    DEBUG_SORT   yLOG_schar   (a_btree);
    n = poly_btree__by_abbr   (a_btree);
@@ -616,19 +618,19 @@ poly_btree_cursor       (char a_btree, char a_dir, void **a_data)
    /*---(navigate)-----------------------*/
    DEBUG_SORT   yLOG_schar   (a_dir);
    --rce;  switch (a_dir) {
-   case '[' :
+   case YDLST_HEAD :
       o = B_HEAD;
       break;
-   case '<' :
+   case YDLST_PREV :
       o = B_SAVED->prev;
       break;
-   case '.' :
+   case YDLST_CURR :
       o = B_SAVED;
       break;
-   case '>' :
+   case YDLST_NEXT :
       o = B_SAVED->next;
       break;
-   case ']' :
+   case YDLST_TAIL :
       o = B_TAIL;
       break;
    default  :
@@ -737,7 +739,11 @@ poly_btree_entry        (char a_btree, int i)
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return NULL;
    }
-   /*---(walk)---------------------------*/
+   DEBUG_DATA   yLOG_value   ("i"         , i);
+   --rce;  if (i < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return NULL;
+   }
    DEBUG_DATA   yLOG_note    ("walking");
    u = B_HEAD;
    while (c < i) {

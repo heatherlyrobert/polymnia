@@ -1,4 +1,6 @@
 /*============================[[ beg-of-code ]]===============================*/
+#ifndef POLYMNIA
+#define POLYMNIA yes
 
 
 
@@ -32,8 +34,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.9-, bring back to life ;)"
-#define     P_VERNUM    "0.9e"
-#define     P_VERTXT    "all unit tests passing again"
+#define     P_VERNUM    "0.9f"
+#define     P_VERTXT    "project selection, files reporting, and memory reporting updated"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -145,6 +147,7 @@
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
 #include    <yREGEX.h>       /* CUSTOM  heatherly regular expressions         */
+#include    <yDLST_solo.h>   /* CUSTOM  heatherly regular expressions         */
 
 
 
@@ -163,10 +166,26 @@ typedef     struct      cBTREE      tBTREE;
 typedef     struct      cEXTERN     tEXTERN;
 
 
+/*---(modes)----------------*/
 #define     POLY_NONE           '-'
 #define     POLY_DATA           'd'
 #define     POLY_RPTG           'r'
 #define     POLY_BOTH           'B'
+/*---(scopes)---------------*/
+#define     POLY_FULL           '*'
+#define     POLY_PROJ           'P'
+#define     POLY_FILE           'I'
+#define     POLY_FUNC           'F'
+#define     POLY_EXTR           'E'
+#define     POLY_VARS           'V'
+#define     POLY_YLIB           'Y'
+/*---(projects)-------------*/
+#define     POLY_PROJS          'p'
+#define     POLY_GREEK          'g'
+#define     POLY_ONELINE        'o'
+
+
+
 
 #define     POLY_DATA_VALIDS    "-hwurLSRU"
 #define     POLY_DATA_NONE      '-'
@@ -179,7 +198,10 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_DATA_REG       'R'
 #define     POLY_DATA_UNREG     'U'
 
-#define     POLY_RPTG_VALIDS    "-adefhopvy"
+#define     POLY_RPTG_FILES     'I'
+#define     POLY_RPTG_FUNCS     'F'
+
+#define     POLY_RPTG_VALIDS    "-adefhopvyF"
 #define     POLY_RPTG_NONE      '-'
 #define     POLY_RPTG_ABOUT     'a'
 #define     POLY_RPTG_DUMP      'd'
@@ -188,6 +210,7 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_RPTG_HTAGS     'h'
 #define     POLY_RPTG_ONELINE   'o'
 #define     POLY_RPTG_PROJS     'p'
+#define     POLY_RPTG_FILES     'F'
 #define     POLY_RPTG_VARS      'v'
 #define     POLY_RPTG_YLIB      'y'
 
@@ -242,14 +265,19 @@ struct cMY {
    /*---(runtime config)------*/
    char        version     [LEN_HUND];      /* version string                 */
    char        g_mode;                 /* switch for data/reporting           */
+   char        g_scope;                /* scope for action (proj, file, ...)  */
    char        g_data;                 /* data handling mode                  */
    char        g_unit;                 /* include unit test metrics (slower)  */
    char        g_rptg;                 /* reporting mode                      */
    char        g_titles;               /* use/hide report titles              */
    char        g_filter;               /* report filtering criteria           */
    /*---(filtering)-----------*/
-   char        g_project   [LEN_LABEL];/* project name for filtering          */
+   int         g_projno;
+   char        g_projname  [LEN_LABEL];/* project name for filtering          */
    tPROJ      *g_proj;                 /* limit output to this project        */
+   int         g_fileno;
+   char        g_filename  [LEN_LABEL];/* file name for filtering             */
+   tFILE      *g_file;                 /* limit output to this file           */
    char        g_extern    [LEN_RECD]; /* name for focus/filtering            */
    char        g_libuse    [LEN_RECD]; /* extern library for filtering        */
    char        g_hint      [LEN_TERSE];/* function hint for filtering         */
@@ -675,8 +703,9 @@ char        poly_file_purge         (tPROJ *a_proj, char a_update);
 char        poly_file_review        (tPROJ *a_proj);
 char        poly_file_by_name       (uchar *a_name, tFILE **a_file);
 char        poly_file_by_index      (int n, tFILE **a_file);
-char        poly_file_cursor        (char a_dir, tFILE **a_file);
-char        poly_file_line          (tFILE *a_file, char a_style, int a, int b, char a_print);
+char        poly_file_by_proj_index (tPROJ *a_proj, int n, tFILE **a_file);
+char        poly_file_by_cursor     (char a_dir, tFILE **a_file);
+char        poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, int a, int b, char a_print);
 /*---(footprint)------------*/
 char        poly_file_footprint    (tFILE *a_file);
 /*---(unittest)-------------*/
@@ -811,7 +840,7 @@ char        poly_proj_system        (char *a_path);
 /*---(reporting)------------*/
 char        poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
 char        poly_proj_header        (tPROJ *a_proj);
-char        poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, int c, char a_print);
+char        poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
 /*---(unittest)-------------*/
 char*       poly_proj__unit         (char *a_question, int i);
 
@@ -825,11 +854,14 @@ char        poly_db_write           (void);
 char        poly_db_read            (void);
 char*       poly_db__unit           (char *a_question);
 
+char        poly_rptg_args          (char *a_option);
 char        poly_rptg_projects      (void);
+char        poly_rptg_files         (void);
 char        poly_rptg_htags         (tPROJ *x_proj);
 char        poly_rptg_dump          (void);
 char        poly_rptg_extern        (tEXTERN *a_extern);
 
+char        poly_action_whoami      (void);
 char        poly_action_htags       (void);
 char        poly_action_generate    (void);
 char        poly_action_search      (void);
@@ -1022,3 +1054,6 @@ char        poly_units__scripts     (tFILE *a_file, int x_line, char *a_recd, tF
 char        poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd);
 char        poly_units_inventory    (tFILE *a_file);
 
+
+
+#endif

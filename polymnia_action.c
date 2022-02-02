@@ -119,6 +119,8 @@ poly_action__gather     (tPROJ *a_proj)
       x_file = x_file->next;
       DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    }
+   /*---(executable)---------------------*/
+   rc = poly_proj_footprint (a_proj);
    /*---(prepare for use)----------------*/
    DEBUG_PROG   yLOG_note    ("prepare for use");
    rc = poly_btree_prepare_all ();
@@ -168,6 +170,34 @@ poly_action__here       (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_action_whoami      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tPROJ      *x_proj      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(setup project)------------------*/
+   rc  = poly_proj_here    (&x_proj);
+   DEBUG_PROG   yLOG_value   ("proj_here"  , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
+   --rce;  if (x_proj == NULL) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(save off)-----------------------*/
+   my.g_proj = x_proj;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -393,7 +423,7 @@ poly_action_about       (void)
       return rce;
    }
    /*---(find target)--------------------*/
-   poly_proj_by_name  (my.g_project, &x_proj);
+   poly_proj_by_name  (my.g_projname, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exit    (__FUNCTION__);
@@ -473,8 +503,8 @@ poly_action_remove      (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(setup project)------------------*/
-   DEBUG_PROG   yLOG_info    ("g_project" , my.g_project);
-   x_len = strlen (my.g_project);
+   DEBUG_PROG   yLOG_info    ("g_projname", my.g_projname);
+   x_len = strlen (my.g_projname);
    DEBUG_PROG   yLOG_value   ("x_len"      , x_len);
    --rce;  if (x_len <= 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -488,7 +518,7 @@ poly_action_remove      (void)
       return rce;
    }
    /*---(find target)--------------------*/
-   poly_proj_by_name  (my.g_project, &x_proj);
+   poly_proj_by_name  (my.g_projname, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -679,9 +709,9 @@ poly_action_detail      (void)
       return rce;
    }
    /*---(find project)-------------------*/
-   printf ("project  [%s]\n", my.g_project);
+   printf ("project  [%s]\n", my.g_projname);
    printf ("hint     [%s]\n", my.g_hint);
-   poly_proj_by_name  (my.g_project, &x_proj);
+   poly_proj_by_name  (my.g_projname, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

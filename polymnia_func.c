@@ -5,6 +5,17 @@
 
 static char s_print     [LEN_RECD] = "";
 
+/*
+ * function types (expanded on ctags)
+ *    p prototype                (ctags)
+ *    f function definition      (ctags)
+ *    _ sub-title break
+ *    s unit testing script
+ *    S unit testing shared script
+ *
+ *
+ */
+
 
 
 /*====================------------------------------------====================*/
