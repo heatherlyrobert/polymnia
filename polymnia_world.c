@@ -233,31 +233,10 @@ poly_world__remove      (char *a_name)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int poly_world__count    (void) { return poly_btree_count (B_WORLD); }
-
-char
-poly_world__by_name      (uchar *a_name, tWORLD **a_world)
-{
-   if (a_world == NULL)   return -1;
-   *a_world = (tWORLD *) poly_btree_search  (B_WORLD, a_name);
-   if (*a_world == NULL)  return -2;
-   return 0;
-}
-
-char
-poly_world__by_index     (int n, tWORLD **a_world)
-{
-   if (a_world == NULL)   return -1;
-   *a_world = (tWORLD *) poly_btree_entry (B_WORLD, n);
-   if (*a_world == NULL)  return -2;
-   return 0;
-}
-
-char
-poly_world__by_cursor   (char a_dir, tWORLD **a_world)
-{
-   return poly_btree_cursor  (B_WORLD, a_dir, a_world);
-}
+int  poly_world__count        (void)                            { return poly_btree_count     (B_WORLD); }
+char poly_world__by_name      (uchar *a_name, tWORLD **r_world) { return poly_btree_by_name   (B_WORLD, a_name, r_world); }
+char poly_world__by_index     (int n, tWORLD **r_world)         { return poly_btree_by_index  (B_WORLD, n, r_world); }
+char poly_world__by_cursor    (char a_dir, tWORLD **r_world)    { return poly_btree_by_cursor (B_WORLD, a_dir, r_world); }
 
 
 
@@ -272,12 +251,13 @@ poly_world__import      (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   char        x_curr      [LEN_RECD]  = "";
+   /*> char        x_curr      [LEN_RECD]  = "";                                      <*/
    char        x_home      [LEN_RECD]  = "";
    char        x_name      [LEN_LABEL] = "";
-   char       *p           = NULL;
+   /*> char       *p           = NULL;                                                <*/
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   yURG_msg ('-', "world registry is in file å%sæ", my.n_world);
    /*---(open)---------------------------*/
    rc = poly_shared_open ('w', NULL);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
@@ -286,12 +266,12 @@ poly_world__import      (void)
       return  rce;
    }
    /*---(save present directory)---------*/
-   p = getcwd (x_curr, LEN_RECD);
-   DEBUG_INPT   yLOG_point   ("getcwd"    , p);
-   --rce;  if (p == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> p = getcwd (x_curr, LEN_RECD);                                                 <* 
+    *> DEBUG_INPT   yLOG_point   ("getcwd"    , p);                                   <* 
+    *> --rce;  if (p == NULL) {                                                       <* 
+    *>    DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(walk)---------------------------*/
    while (1) {
       /*---(read)------------------------*/
@@ -303,7 +283,7 @@ poly_world__import      (void)
       }
       DEBUG_INPT   yLOG_info    ("x_home"    , x_home);
       /*---(parse)-----------------------*/
-      strltrim (x_home, ySTR_BOTH, LEN_RECD);
+      /*> strltrim (x_home, ySTR_BOTH, LEN_RECD);                                     <*/
       /*> rc = chdir (x_home);                                                        <* 
        *> DEBUG_INPT   yLOG_value   ("chdir"     , rc);                               <* 
        *> if (rc < 0) {                                                               <* 
@@ -328,12 +308,13 @@ poly_world__import      (void)
       return  rce;
    }
    /*---(return to current)--------------*/
-   rc = chdir (x_curr);
-   DEBUG_INPT   yLOG_value   ("chdir"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = chdir (x_curr);                                                           <* 
+    *> DEBUG_INPT   yLOG_value   ("chdir"     , rc);                                  <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
+   yURG_msg ('-', "imported %d entries from world registry", poly_world__count ());
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -370,6 +351,7 @@ poly_world__export      (void)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
+   yURG_msg ('-', "exported %d entries to world registry", poly_world__count ());
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -385,17 +367,38 @@ static void  o___REGISTER________o () { return; }
 char
 poly_world__register    (void)
 {
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    tWORLD     *x_world     = NULL;
    char        x_name      [LEN_LABEL] = "";
    char        x_home      [LEN_HUND]  = "";
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(get current project)------------*/
    rc = poly_proj_identify (x_name, x_home);
-   --rce;  if (rc < 0)  return rce;
+   --rce;  if (rc < 0) {
+      yURG_err ('f', "could not determine current project");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   yURG_msg ('-', "current directory is å%sæ", x_home);
+   yURG_msg ('-', "therefore, project is named å%sæ", x_name);
+   /*---(get current project)------------*/
    rc = poly_world__by_name (x_name, &x_world);
-   if (x_world != NULL) poly_world__remove (x_name);
+   if (x_world != NULL) {
+      yURG_msg ('-', "project exists in registry, replacing in case subtle changes");
+      poly_world__remove (x_name);
+   } else {
+      yURG_msg ('-', "project is new to registry, adding");
+   }
    rc = poly_world__add    (x_name, x_home);
-   --rce;  if (rc < 0)  return rce;
+   --rce;  if (rc < 0) {
+      yURG_err ('f', "project could not be added");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -431,6 +434,8 @@ poly_world_register     (void)
    char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(verify header)------------------*/
+   yURG_msg ('>', "register project in world file...");
    /*---(purge)--------------------------*/
    rc = poly_world__purge ();
    DEBUG_INPT   yLOG_value   ("purge"     , rc);
@@ -458,6 +463,9 @@ poly_world_register     (void)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
+   /*---(mute)---------------------------*/
+   yURG_msg ('-', "success, current project confirmed in world file");
+   yURG_msg (' ', "");
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -609,9 +617,11 @@ poly_world__purge       (void)
    /*---(check)--------------------------*/
    DEBUG_DATA   yLOG_value   ("count"     , poly_world__count ());
    --rce;  if (poly_world__count () > 0) {
+      yURG_msg ('f', "could not prepare/clear registry, %d entries remain", poly_world__count ());
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   yURG_msg ('-', "current registry prepared for import");
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;

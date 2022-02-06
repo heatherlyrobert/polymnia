@@ -211,9 +211,11 @@ poly_proj_purge         (void)
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(walk-through)-------------------*/
    DEBUG_DATA   yLOG_value   ("count"     , poly_btree_count (B_PROJ));
-   x_proj = (tPROJ * ) poly_btree_first (B_PROJ);
+   rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    while (x_proj != NULL) {
-      x_next = (tPROJ *) poly_btree_next  (B_PROJ);
+      rc = poly_btree_by_cursor (B_PROJ, YDLST_NEXT, &x_next);
+      DEBUG_PROG   yLOG_point   ("x_next"     , x_next);
       DEBUG_DATA   yLOG_point ("x_proj"    , x_proj);
       DEBUG_DATA   yLOG_info  ("->name"    , x_proj->name);
       rc = poly_proj_remove (&x_proj);
@@ -373,6 +375,7 @@ poly_proj__adder         (char *a_name, char *a_home, tPROJ **a_proj, char a_for
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+      yURG_msg ('-', "project exists, clear all current data");
       rc = poly_proj_remove (&x_new);
       DEBUG_DATA   yLOG_value   ("remove"    , rc);
       DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
@@ -380,6 +383,8 @@ poly_proj__adder         (char *a_name, char *a_home, tPROJ **a_proj, char a_for
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+   } else {
+      yURG_msg ('-', "project does not exist, creating");
    }
    /*---(create project)-----------------*/
    poly_proj__new (&x_new);
@@ -661,38 +666,10 @@ poly_proj_here           (tPROJ **a_proj)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int poly_proj_count         (void) { return poly_btree_count (B_PROJ); }
-
-char
-poly_proj_by_name       (uchar *a_name, tPROJ **a_proj)
-{
-   char        rce         =  -10;
-   --rce;  if (a_proj == NULL)         return rce;
-   *a_proj = NULL;
-   --rce;  if (a_name == NULL)         return rce;
-   --rce;  if (strlen (a_name) <= 0)   return rce;
-   *a_proj = (tPROJ *) poly_btree_search  (B_PROJ, a_name);
-   --rce;  if (*a_proj == NULL)        return rce;
-   return 0;
-}
-
-char
-poly_proj_by_index      (int n, tPROJ **a_proj)
-{
-   char        rce         =  -10;
-   --rce;  if (a_proj == NULL)         return rce;
-   *a_proj = NULL;
-   --rce;  if (n      <  0)            return rce;
-   *a_proj = (tPROJ *) poly_btree_entry (B_PROJ, n);
-   --rce;  if (*a_proj == NULL)        return rce;
-   return 0;
-}
-
-char
-poly_proj_cursor        (char a_dir, tPROJ **a_proj)
-{
-   return poly_btree_cursor  (B_PROJ, a_dir, a_proj);
-}
+int  poly_proj_count         (void)                          { return poly_btree_count     (B_PROJ); }
+char poly_proj_by_name       (uchar *a_name, tPROJ **r_proj) { return poly_btree_by_name   (B_PROJ, a_name, r_proj); }
+char poly_proj_by_index      (int n, tPROJ **r_proj)         { return poly_btree_by_index  (B_PROJ, n, r_proj); }
+char poly_proj_by_cursor     (char a_dir, tPROJ **r_proj)    { return poly_btree_by_cursor (B_PROJ, a_dir, r_proj); }
 
 
 
@@ -873,19 +850,19 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
     *
     */
    char        t           [LEN_RECD]  = "";
-   char        x_projs     [LEN_TERSE] = "";
-   char        x_files     [LEN_TERSE] = "";
-   char        x_funcs     [LEN_TERSE] = "";
-   char        x_ylibs     [LEN_TERSE] = "";
-   char        x_lines     [LEN_TERSE] = "";
-   char        x_empty     [LEN_TERSE] = "";
-   char        x_docs      [LEN_TERSE] = "";
-   char        x_debug     [LEN_TERSE] = "";
-   char        x_code      [LEN_TERSE] = "";
-   char        x_slocl     [LEN_TERSE] = "";
-   char        x_text      [LEN_TERSE] = "";
-   char        x_data      [LEN_TERSE] = "";
-   char        x_bss       [LEN_TERSE] = "";
+   char        x_projs     [LEN_TERSE] = "·";
+   char        x_files     [LEN_TERSE] = "·";
+   char        x_funcs     [LEN_TERSE] = "·";
+   char        x_ylibs     [LEN_TERSE] = "·";
+   char        x_lines     [LEN_TERSE] = "·";
+   char        x_empty     [LEN_TERSE] = "·";
+   char        x_docs      [LEN_TERSE] = "·";
+   char        x_debug     [LEN_TERSE] = "·";
+   char        x_code      [LEN_TERSE] = "·";
+   char        x_slocl     [LEN_TERSE] = "·";
+   char        x_text      [LEN_TERSE] = "·";
+   char        x_data      [LEN_TERSE] = "·";
+   char        x_bss       [LEN_TERSE] = "·";
    char        x_type      = '-';
    /*---(prepare)------------------------*/
    strlcpy (s_print, "", LEN_RECD);
@@ -907,7 +884,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 'h' :   sprintf (t, "prj fil fnc  ");               break;
       case 'p' :   sprintf (t, "Ï--·Ï--·Ï--··");               break;
       case 't' :   sprintf (t, "prj·fil·fnc··");               break;
-      case 'd' :   sprintf (t, "%-3d -   -    ", a + 1);       break;
+      case 'd' :   sprintf (t, "%-3d ·   ·    ", a + 1);       break;
       default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
       strlcat (s_print, t, LEN_RECD);
@@ -941,15 +918,15 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    /*---(statistics)---------------------*/
    if (strchr ("sLaApPT", a_style) != NULL) {
       if (a_proj != NULL) {
-         strl4main (a_proj->COUNT_FILES, x_files, 0, 'c', '-', LEN_TERSE);
-         strl4main (a_proj->COUNT_FUNCS, x_funcs, 0, 'c', '-', LEN_TERSE);
-         strl4main (a_proj->COUNT_YLIBS, x_ylibs, 0, 'c', '-', LEN_TERSE);
-         strl4main (a_proj->COUNT_LINES, x_lines, 0, 'c', '-', LEN_TERSE);
-         strl4main (a_proj->COUNT_EMPTY, x_empty, 0, 'c', '-', LEN_TERSE);
-         strl4main (a_proj->COUNT_DOCS , x_docs , 0, 'c', '-', LEN_TERSE);
-         strl4main (a_proj->COUNT_DEBUG, x_debug, 0, 'c', '-', LEN_TERSE);
-         strl4main (a_proj->COUNT_CODE , x_code , 0, 'c', '-', LEN_TERSE);
-         strl4main (a_proj->COUNT_SLOCL, x_slocl, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_FILES > 0)  strl4main (a_proj->COUNT_FILES, x_files, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_FUNCS > 0)  strl4main (a_proj->COUNT_FUNCS, x_funcs, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_YLIBS > 0)  strl4main (a_proj->COUNT_YLIBS, x_ylibs, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_LINES > 0)  strl4main (a_proj->COUNT_LINES, x_lines, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_EMPTY > 0)  strl4main (a_proj->COUNT_EMPTY, x_empty, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_DOCS  > 0)  strl4main (a_proj->COUNT_DOCS , x_docs , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_DEBUG > 0)  strl4main (a_proj->COUNT_DEBUG, x_debug, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_CODE  > 0)  strl4main (a_proj->COUNT_CODE , x_code , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_SLOCL > 0)  strl4main (a_proj->COUNT_SLOCL, x_slocl, 0, 'c', '-', LEN_TERSE);
       }
       switch (x_type) {
       case 'h' :
@@ -1088,12 +1065,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    /*---(memory)-------------------------*/
    if (strchr ("pfT"  , a_style) != NULL) {
       if (a_proj != NULL) {
-         strl4main (a_proj->COUNT_TEXT , x_text , 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_TEXT  == 0)  strlcpy (x_text, "·", LEN_TERSE);
-         strl4main (a_proj->COUNT_DATA , x_data , 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_DATA  == 0)  strlcpy (x_data, "·", LEN_TERSE);
-         strl4main (a_proj->COUNT_BSS  , x_bss  , 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_BSS   == 0)  strlcpy (x_bss , "·", LEN_TERSE);
+         if (a_proj->COUNT_TEXT  > 0)  strl4main (a_proj->COUNT_TEXT , x_text , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_DATA  > 0)  strl4main (a_proj->COUNT_DATA , x_data , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_BSS   > 0)  strl4main (a_proj->COUNT_BSS  , x_bss  , 0, 'c', '-', LEN_TERSE);
       }
       switch (x_type) {
       case 'h' : sprintf (t, "---text-- ---data-- ---bss---  ");  break;
@@ -1123,6 +1097,7 @@ poly_proj_footprint    (tPROJ *a_proj)
    char        rce         =  -10;
    char        rc          =    0;
    char        x_name      [LEN_TITLE] = "";
+   char        x_base      [LEN_LABEL] = "";
    char        x_cmd       [LEN_RECD]  = "";
    int         x_len       =    0;
    FILE       *f           = NULL;
@@ -1146,7 +1121,11 @@ poly_proj_footprint    (tPROJ *a_proj)
    }
    DEBUG_INPT   yLOG_info    ("name"      , a_proj->name);
    /*---(prepare name)--------------------------*/
+   strlcpy (x_base, a_proj->name, LEN_LABEL);
    strlcpy (x_name, a_proj->name, LEN_TITLE);
+   if (x_name [0] == 'y' && strchr (YSTR_UPPER, x_name [1]) != NULL) {
+      sprintf (x_name, "lib%s.so.%c.%c.%c", a_proj->name, a_proj->vernum [0], a_proj->vernum [2], a_proj->vernum [3]);
+   }
    x_len = strlen (x_name);
    DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
    /*---(save totals)--------------------*/
@@ -1220,8 +1199,8 @@ poly_proj_footprint    (tPROJ *a_proj)
       return rce;
    }
    /*---(place extra)---------------------------*/
-   sprintf (x_public , "%s.h"     , x_name);
-   sprintf (x_private, "%s_priv.h", x_name);
+   sprintf (x_public , "%s.h"     , x_base);
+   sprintf (x_private, "%s_priv.h", x_base);
    x_file = a_proj->head;
    while (x_file != NULL) {
       if (strcmp (x_file->name, x_private) == 0) {

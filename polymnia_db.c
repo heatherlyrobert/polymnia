@@ -282,7 +282,8 @@ poly_db_write         (void)
       return rce;
    }
    /*---(prepare)------------------------*/
-   x_proj = (tPROJ *) poly_btree_first (B_PROJ);
+   rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    /*---(walk projects)------------------*/
    while (x_proj != NULL) {
       /*---(write)-----------------------*/
@@ -295,7 +296,8 @@ poly_db_write         (void)
          return rc;
       }
       /*---(next)------------------------*/
-      x_proj = (tPROJ *) poly_btree_next  (B_PROJ);
+      rc = poly_btree_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
+      DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    }
    /*---(close)--------------------------*/
    rc = poly_db__close ();
@@ -506,6 +508,10 @@ poly_db_read          (void)
    int         x_nfile     =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(initialize)---------------------*/
+   my.COUNT_PROJS = my.COUNT_FILES = my.COUNT_FUNCS = my.COUNT_YLIBS = 0;
+   my.COUNT_LINES = my.COUNT_EMPTY = my.COUNT_DOCS  = my.COUNT_DEBUG = my.COUNT_CODE  = my.COUNT_SLOCL = 0;
+   my.COUNT_TEXT  = my.COUNT_DATA  = my.COUNT_BSS   = 0;
    /*---(open)---------------------------*/
    rc = poly_db__open ('r', &n, NULL, NULL, NULL);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
@@ -545,6 +551,20 @@ poly_db_read          (void)
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+      /*---(update)-------------------------*/
+      ++my.COUNT_PROJS;
+      my.COUNT_FILES += x_proj->COUNT_FILES;
+      my.COUNT_FUNCS += x_proj->COUNT_FUNCS;
+      my.COUNT_YLIBS += x_proj->COUNT_YLIBS;
+      my.COUNT_LINES += x_proj->COUNT_LINES;
+      my.COUNT_EMPTY += x_proj->COUNT_EMPTY;
+      my.COUNT_DOCS  += x_proj->COUNT_DOCS ;
+      my.COUNT_DEBUG += x_proj->COUNT_DEBUG;
+      my.COUNT_CODE  += x_proj->COUNT_CODE ;
+      my.COUNT_SLOCL += x_proj->COUNT_SLOCL;
+      my.COUNT_TEXT  += x_proj->COUNT_TEXT ;
+      my.COUNT_DATA  += x_proj->COUNT_DATA ;
+      my.COUNT_BSS   += x_proj->COUNT_BSS  ;
    }
    /*---(close)--------------------------*/
    rc = poly_db__close ();

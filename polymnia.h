@@ -34,8 +34,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.9-, bring back to life ;)"
-#define     P_VERNUM    "0.9f"
-#define     P_VERTXT    "project selection, files reporting, and memory reporting updated"
+#define     P_VERNUM    "0.9g"
+#define     P_VERTXT    "successfully brought over yJOBS args interface for install and update"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -146,6 +146,7 @@
 #include    <yURG.h>         /* CUSTOM  heatherly urgent processing           */
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
+#include    <yJOBS.h>             /* heatherly job execution and control      */
 #include    <yREGEX.h>       /* CUSTOM  heatherly regular expressions         */
 #include    <yDLST_solo.h>   /* CUSTOM  heatherly regular expressions         */
 
@@ -184,6 +185,52 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_GREEK          'g'
 #define     POLY_ONELINE        'o'
 
+/*
+ *  maintenance-----------------------------
+ *  
+ *  v = verify (before install)
+ *  i = install (and register)
+ *  u = update (quick single refresh)
+ *
+ *  l = count/list
+ *  ? = report
+ *  c = check
+ *  a = audit
+ *  f = fix
+ *  h = reload (system)
+ *
+ *  ? = upload   (from central to elsewhere)
+ *  ? = download (to central from elsewhere)
+ *
+ *  x = clear (quick single prune)
+ *  r = remove (and unregister)
+ *  e = extract (copy/one time)
+ *
+ *  execution--------------------------------
+ *
+ *  d = daemon
+ *  p = prickly
+ *
+ *  n = normal
+ *  s = strict
+ *
+ *
+ *
+ */
+
+#define     ACT_INSTALL         'i'
+#define     ACT_CINSTALL        'I'
+#define     ACT_VINSTALL        'ð'
+#define     ACT_REMOVE          'r'
+#define     ACT_CREMOVE         'R'
+#define     ACT_VREMOVE         'ø'
+
+#define     ACT_WITHDRAW        'u'
+#define     ACT_CWITHDRAW       'U'
+#define     ACT_VWITHDRAW       'û'
+#define     ACT_SYSTEM          's'
+#define     ACT_CSYSTEM         'S'
+#define     ACT_VSYSTEM         'ù'
 
 
 
@@ -262,6 +309,11 @@ typedef     struct      cEXTERN     tEXTERN;
 
 
 struct cMY {
+   /*---(yJOBS)----------------*/
+   char        run_as;                      /* khronos, eos, heracles, ...    */
+   char        run_mode;                    /* verify, install, audit, ...    */
+   char        run_file    [LEN_PATH];      /* file to act on                 */
+   int         run_uid;                     /* uid of person who launched     */
    /*---(runtime config)------*/
    char        version     [LEN_HUND];      /* version string                 */
    char        g_mode;                 /* switch for data/reporting           */
@@ -741,6 +793,8 @@ char*       poly_cats_full          (tFUNC *a_func, char *a_out);
 char        poly_cats_func          (tFUNC *a_func);
 char*       poly_cats__unit         (char *a_question, int n);
 
+char        PROG_reset_yjobs        (void);
+char        PROG_init               (int a_argc, char *a_argv[]);
 char        PROG_args               (int a_argc, char *a_argv[]);
 char        PROG_prepare            (void);
 char        PROG_dispatch           (void);
@@ -748,6 +802,7 @@ char        PROG_summarize          (tPROJ *x_proj);
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);
+char*       prog__unit              (char *a_question, int i);
 
 
 
@@ -768,10 +823,13 @@ char        poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext,
 char        poly_extern_review      (void);
 char        poly_extern_list        (void);
 int         poly_extern_count       (void);
+/*---(search)---------------*/
 char        poly_extern_by_name     (uchar *a_name, tEXTERN **a_func);
 char        poly_extern_by_index    (int n, tEXTERN **a_ext);
-char        poly_extern_cursor      (char a_dir, tEXTERN **a_ext);
+char        poly_extern_by_cursor   (char a_dir, tEXTERN **a_ext);
+/*---(unittest)-------------*/
 char*       poly_extern__unit       (char *a_question, int n);
+/*---(done)-----------------*/
 
 
 
@@ -796,12 +854,11 @@ char        poly_btree_prepare      (char a_btree);
 char        poly_btree_prepare_all  (void);
 char        poly_btree_purge_all    (void);
 char        poly_btree_list         (char a_btree);
-void*       poly_btree_first        (char a_btree);
-void*       poly_btree_next         (char a_btree);
-void*       poly_btree_entry        (char a_btree, int i);
+/*---(search)---------------*/
+char        poly_btree_by_cursor    (char a_btree, char a_dir, void **r_data);
+char        poly_btree_by_index     (char a_btree, int i, void **r_data);
+char        poly_btree_by_name      (char a_btree, char *a_name, void **r_data);
 int         poly_btree_count        (char a_btree);
-char        poly_btree_cursor       (char a_btree, char a_dir, void **a_data);
-void*       poly_btree_search       (char a_btree, char *a_name);
 char*       poly_btree__unit        (char a_btree, char *a_question, int i);
 
 
@@ -830,7 +887,7 @@ char        poly_proj_here          (tPROJ **a_proj);
 int         poly_proj_count         (void);
 char        poly_proj_by_name       (uchar *a_name, tPROJ **a_proj);
 char        poly_proj_by_index      (int n, tPROJ **a_proj);
-char        poly_proj_cursor        (char a_dir, tPROJ **a_proj);
+char        poly_proj_by_cursor     (char a_dir, tPROJ **a_proj);
 /*---(program)--------------*/
 char        poly_proj_init          (void);
 char        poly_proj_purge         (void);
@@ -854,12 +911,13 @@ char        poly_db_write           (void);
 char        poly_db_read            (void);
 char*       poly_db__unit           (char *a_question);
 
-char        poly_rptg_args          (char *a_option);
+char        poly_rptg_lookup        (char *a_option);
 char        poly_rptg_projects      (void);
 char        poly_rptg_files         (void);
 char        poly_rptg_htags         (tPROJ *x_proj);
 char        poly_rptg_dump          (void);
 char        poly_rptg_extern        (tEXTERN *a_extern);
+char        poly_rptg_dispatch      (void);
 
 char        poly_action_whoami      (void);
 char        poly_action_htags       (void);
@@ -889,6 +947,13 @@ char        poly_ylib_add           (tFUNC *a_tag, tEXTERN *a_extern, int a_line
 char        poly_ylib_remove        (tYLIB **a_ylib);
 /*---(program)--------------*/
 char        poly_ylib_purge         (tFUNC *a_func, char a_update);
+/*---(search)---------------*/
+int         poly_ylib_count         (void);
+char        poly_ylib_by_name       (uchar *a_name, tYLIB **a_ylib);
+char        poly_ylib_by_index      (int n, tYLIB **a_ylib);
+char        poly_ylib_by_cursor     (char a_dir, tYLIB **a_ylib);
+char        poly_ylib_by_func_index (tFUNC *a_func, int n, tYLIB **r_ylib);
+char        poly_ylib_use_by_index  (char *a_name, int n, tYLIB **r_ylib);
 /*---(unittest)-------------*/
 char*       poly_ylib__unit         (char *a_question, char *a_name);
 /*---(done)-----------------*/

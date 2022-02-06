@@ -542,31 +542,10 @@ poly_func_inside        (tFUNC *a_func)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int poly_func_count         (void) { return poly_btree_count (B_FUNCS); }
-
-char
-poly_func_by_name       (uchar *a_name, tFUNC **a_func)
-{
-   if (a_func == NULL)   return -1;
-   *a_func = (tFUNC *) poly_btree_search  (B_FUNCS, a_name);
-   if (*a_func == NULL)  return -2;
-   return 0;
-}
-
-char
-poly_func_by_index      (int n, tFUNC **a_func)
-{
-   if (a_func == NULL)   return -1;
-   *a_func = (tFUNC *) poly_btree_entry (B_FUNCS, n);
-   if (*a_func == NULL)  return -2;
-   return 0;
-}
-
-char
-poly_func_cursor        (char a_dir, tFUNC **a_func)
-{
-   return poly_btree_cursor  (B_FUNCS, a_dir, a_func);
-}
+int  poly_func_count         (void)                          { return poly_btree_count    (B_FUNCS); }
+char poly_func_by_name       (uchar *a_name, tFUNC **r_func) { return poly_btree_by_name  (B_FUNCS, a_name, r_func); }
+char poly_func_by_index      (int n, tFUNC **r_func)         { return poly_btree_by_index (B_FUNCS, n, r_func); }
+char poly_func_cursor        (char a_dir, tFUNC **r_func)   { return poly_btree_by_cursor (B_FUNCS, a_dir, r_func); }
 
 
 char

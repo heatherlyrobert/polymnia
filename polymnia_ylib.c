@@ -446,6 +446,63 @@ poly_ylib_purge         (tFUNC *a_func, char a_update)
 
 
 /*====================------------------------------------====================*/
+/*===----                        searching                             ----===*/
+/*====================------------------------------------====================*/
+static void  o___SEARCH__________o () { return; }
+
+int  poly_ylib_count         (void)                          { return poly_btree_count     (B_FILES); }
+char poly_ylib_by_name       (uchar *a_name, tYLIB **a_ylib) { return poly_btree_by_name   (B_FILES, a_name, a_ylib); }
+char poly_ylib_by_index      (int n, tYLIB **a_ylib)         { return poly_btree_by_index  (B_FILES, n, a_ylib); }
+char poly_ylib_by_cursor     (char a_dir, tYLIB **a_ylib)    { return poly_btree_by_cursor (B_FILES, a_dir, a_ylib); }
+
+char
+poly_ylib_by_func_index (tFUNC *a_func, int n, tYLIB **r_ylib)
+{
+   char        rce         =  -10;
+   tYLIB      *x_ylib      = NULL;
+   int         c           =    0;
+   --rce;  if (a_func == NULL)   return rce;
+   --rce;  if (r_ylib == NULL)   return rce;
+   *r_ylib = NULL;
+   x_ylib = a_func->y_head;
+   while (x_ylib != NULL) {
+      if (c == n) {
+         *r_ylib = x_ylib;
+         return 0;
+      }
+      x_ylib = x_ylib->f_next;
+      ++c;
+   }
+   --rce;  return rce;
+}
+
+char
+poly_ylib_use_by_index  (char *a_name, int n, tYLIB **r_ylib)
+{
+   char        rce         =  -10;
+   tEXTERN    *x_ext       = NULL;
+   tYLIB      *x_ylib      = NULL;
+   int         c           =    0;
+   if (r_ylib != NULL)  *r_ylib = NULL;
+   --rce;  if (a_name == NULL)   return rce;
+   --rce;  if (r_ylib == NULL)   return rce;
+   poly_extern_by_name (a_name, &x_ext);
+   --rce;  if (r_ylib == NULL)   return rce;
+   x_ylib = x_ext->y_head;
+   while (x_ylib != NULL) {
+      if (c == n) {
+         *r_ylib = x_ylib;
+         return 0;
+      }
+      x_ylib = x_ylib->e_next;
+      ++c;
+   }
+   --rce;  return rce;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }

@@ -585,7 +585,7 @@ poly_btree_dgnome       (char a_btree)
 static void  o___SEQUENCE________o () { return; }
 
 char
-poly_btree_cursor       (char a_btree, char a_dir, void **a_data)
+poly_btree_by_cursor       (char a_btree, char a_dir, void **r_data)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -594,7 +594,7 @@ poly_btree_cursor       (char a_btree, char a_dir, void **a_data)
    /*---(header)-------------------------*/
    DEBUG_SORT   yLOG_senter  (__FUNCTION__);
    /*---(default)------------------------*/
-   if (a_data != NULL)  *a_data = NULL;
+   if (r_data != NULL)  *r_data = NULL;
    /*---(defense)------------------------*/
    DEBUG_SORT   yLOG_schar   (a_btree);
    n = poly_btree__by_abbr   (a_btree);
@@ -603,8 +603,8 @@ poly_btree_cursor       (char a_btree, char a_dir, void **a_data)
       DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SORT   yLOG_spoint  (a_data);
-   --rce;  if (a_data == NULL) {
+   DEBUG_SORT   yLOG_spoint  (r_data);
+   --rce;  if (r_data == NULL) {
       DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
@@ -617,26 +617,16 @@ poly_btree_cursor       (char a_btree, char a_dir, void **a_data)
    if (B_SAVED == NULL)  B_SAVED = B_HEAD;
    /*---(navigate)-----------------------*/
    DEBUG_SORT   yLOG_schar   (a_dir);
-   --rce;  switch (a_dir) {
-   case YDLST_HEAD :
-      o = B_HEAD;
-      break;
-   case YDLST_PREV :
-      o = B_SAVED->prev;
-      break;
-   case YDLST_CURR :
-      o = B_SAVED;
-      break;
-   case YDLST_NEXT :
-      o = B_SAVED->next;
-      break;
-   case YDLST_TAIL :
-      o = B_TAIL;
-      break;
-   default  :
+   --rce;  if (strchr ("[<.>]", a_dir) == NULL) {
       DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
-      break;
+   }
+   --rce;  switch (a_dir) {
+   case YDLST_HEAD : o = B_HEAD;         break;
+   case YDLST_PREV : o = B_SAVED->prev;  break;
+   case YDLST_CURR : o = B_SAVED;        break;
+   case YDLST_NEXT : o = B_SAVED->next;  break;
+   case YDLST_TAIL : o = B_TAIL;         break;
    }
    /*---(bounds)-------------------------*/
    DEBUG_SORT   yLOG_spoint  (o);
@@ -648,117 +638,67 @@ poly_btree_cursor       (char a_btree, char a_dir, void **a_data)
    B_SAVED   = o;
    /*---(save results)-------------------*/
    DEBUG_SORT   yLOG_spoint  (B_SAVED->data);
-   *a_data = o->data;
+   *r_data = o->data;
    /*---(complete)-----------------------*/
    DEBUG_SORT   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
-void*
-poly_btree_first        (char a_btree)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   int         n           =   -1;
-   tBTREE     *u           = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_SORT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_SORT   yLOG_char    ("a_btree"   , a_btree);
-   n = poly_btree__by_abbr   (a_btree);
-   DEBUG_SORT   yLOG_value   ("a_btree"   , n);
-   --rce;  if (n < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
-   }
-   /*---(save)---------------------------*/
-   B_SAVED   = B_HEAD;
-   DEBUG_SORT   yLOG_point   ("B_SAVED"    , B_SAVED);
-   if (B_SAVED == NULL)  {
-      DEBUG_SORT   yLOG_note    ("head is null");
-      DEBUG_SORT   yLOG_exit    (__FUNCTION__);
-      return NULL;
-   }
-   DEBUG_SORT   yLOG_point   ("->data"     , B_SAVED->data);
-   /*---(complete)-----------------------*/
-   DEBUG_SORT   yLOG_exit    (__FUNCTION__);
-   return B_SAVED->data;
-}
-
-void*
-poly_btree_next         (char a_btree)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   int         n           =   -1;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
-   n = poly_btree__by_abbr   (a_btree);
-   DEBUG_DATA   yLOG_value   ("a_btree"   , n);
-   --rce;  if (n < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
-   }
-   /*---(walk)---------------------------*/
-   DEBUG_DATA   yLOG_point   ("saved"     , B_SAVED);
-   if (B_SAVED == NULL)  {
-      DEBUG_DATA   yLOG_note    ("already null");
-      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-      return NULL;
-   }
-   B_SAVED = B_SAVED->next;
-   DEBUG_DATA   yLOG_point   ("B_SAVED"    , B_SAVED);
-   if (B_SAVED == NULL)  {
-      DEBUG_DATA   yLOG_note    ("now null");
-      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-      return NULL;
-   }
-   DEBUG_DATA   yLOG_point   ("->data"     , B_SAVED->data);
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return B_SAVED->data;
-}
-
-void*
-poly_btree_entry        (char a_btree, int i)
+char
+poly_btree_by_index     (char a_btree, int i, void **r_data)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    int         n           =   -1;
    int         c           =    0;
-   tBTREE     *u           = NULL;
+   tBTREE     *o           = NULL;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (r_data != NULL)  *r_data = NULL;
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
    n = poly_btree__by_abbr   (a_btree);
    DEBUG_DATA   yLOG_value   ("a_btree"   , n);
    --rce;  if (n < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
+      return rce;
+   }
+   DEBUG_SORT   yLOG_spoint  (r_data);
+   --rce;  if (r_data == NULL) {
+      DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
    }
    DEBUG_DATA   yLOG_value   ("i"         , i);
    --rce;  if (i < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
+      return rce;
+   }
+   DEBUG_SORT   yLOG_spoint  (B_HEAD);
+   --rce;  if (B_HEAD == NULL) {
+      DEBUG_SORT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
    }
    DEBUG_DATA   yLOG_note    ("walking");
-   u = B_HEAD;
+   o = B_HEAD;
    while (c < i) {
-      if (u == NULL)  break;
-      u = u->next;
+      if (o == NULL)  break;
+      o = o->next;
       ++c;
    }
-   DEBUG_DATA   yLOG_point   ("u"         , u);
-   --rce;  if (u == NULL) {
+   DEBUG_DATA   yLOG_point   ("o"         , o);
+   --rce;  if (o == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
+      return rce;
    }
+   /*---(save position)------------------*/
+   B_SAVED   = o;
+   /*---(save results)-------------------*/
+   DEBUG_SORT   yLOG_spoint  (B_SAVED->data);
+   *r_data = o->data;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return u->data;
+   return 0;
 }
 
 int
@@ -954,62 +894,68 @@ poly_btree__searchdown  (tBTREE *a_node, char *a_dir, char *a_name)
    return a_node;
 }
 
-void*   
-poly_btree_search       (char a_btree, char *a_name)
+char
+poly_btree_by_name      (char a_btree, char *a_name, void **r_data)
 {
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    int         n           =   -1;
-   tBTREE     *x_node      = NULL;
+   tBTREE     *o           = NULL;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    DEBUG_DATA   yLOG_char    ("a_btree"   , a_btree);
+   /*---(default)------------------------*/
+   if (r_data != NULL)  *r_data = NULL;
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
+      return rce;
    }
    DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
+   DEBUG_DATA   yLOG_point   ("r_data"    , r_data);
+   --rce;  if (r_data == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(find tree)----------------------*/
    n = poly_btree__by_abbr   (a_btree);
    DEBUG_DATA   yLOG_value   ("a_btree"   , n);
    --rce;  if (n < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
+      return rce;
    }
    /*---(check ready)--------------------*/
    --rce;  if (B_READY != 'y') {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
+      return rce;
    }
    /*---(prepare)------------------------*/
    g_depth = 0;
    strlcpy (g_path, "", LEN_HUND);
-   /*---(short-cut)----------------------*/
-   /*> if (B_SEARCH != NULL && strcmp (B_SEARCH, a_name) == 0) {                      <* 
-    *>    DEBUG_DATA   yLOG_note    ("shortcut");                                     <* 
-    *>    DEBUG_DATA   yLOG_exit    (__FUNCTION__);                                   <* 
-    *>    return B_LAST;                                                              <* 
-    *> }                                                                              <*/
    /*---(search)-------------------------*/
    DEBUG_DATA   yLOG_note    ("dive into btree");
-   x_node = poly_btree__searchdown (B_ROOT, "@", a_name);
+   o = poly_btree__searchdown (B_ROOT, "@", a_name);
    DEBUG_DATA   yLOG_value   ("max depth" , B_DEPTH);
    DEBUG_DATA   yLOG_value   ("g_depth"   , g_depth);
    DEBUG_DATA   yLOG_info    ("g_path"    , g_path);
    /*---(check)--------------------------*/
-   --rce;  if (x_node == NULL) {
+   --rce;  if (o == NULL) {
       DEBUG_DATA   yLOG_note    ("not found");
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return NULL;
+      return rce;
    }
    /*---(save)---------------------------*/
    DEBUG_DATA   yLOG_note    ("found");
    strlcpy (B_SEARCH, a_name, LEN_TITLE);
-   B_LAST   = x_node->data;
+   /*> B_LAST    = o->data;                                                           <*/
+   B_SAVED   = o;
+   /*---(save results)-------------------*/
+   DEBUG_SORT   yLOG_spoint  (B_SAVED->data);
+   *r_data = o->data;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return x_node->data;
+   return 0;
 }
 
 

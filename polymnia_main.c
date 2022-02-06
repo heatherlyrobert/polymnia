@@ -11,6 +11,7 @@ main (int argc, char *argv[])
    tPROJ      *x_proj      = NULL;
    tFILE      *x_file      = NULL;
    /*---(initialize)---------------------*/
+   yURG_all_mute ();
    if (rc >= 0)  rc = yURG_logger  (argc, argv);
    if (rc >= 0)  rc = yURG_urgs    (argc, argv);
    yURG_stage_check (YURG_BEG);

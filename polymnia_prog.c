@@ -56,11 +56,23 @@ PROG_preinit       (void)
    return 0;
 }
 
+char
+PROG_reset_yjobs   (void)
+{
+   my.run_as   = IAM_POLYMNIA;
+   my.run_mode = ACT_NONE;
+   strcpy (my.run_file, "");
+   return 0;
+}
+
 char         /*-> very first setup -------------------[ shoot  [gz.633.201.0A]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
 PROG_init          (int a_argc, char *a_argv[])
 {
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(yJOB config)--------------------*/
+   PROG_reset_yjobs ();
+   my.run_uid     = getuid ();
    /*---(run-time-config)----------------*/
    DEBUG_PROG   yLOG_note    ("initialize run-time settings");
    my.g_mode      = POLY_NONE;
@@ -115,45 +127,57 @@ char         /*-> process the command line args ------[ ------ [gz.952.251.B4]*/
 PROG_args          (int a_argc, char *a_argv[])
 {
    /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    char        rc          =    0;
    int         i           = 0;
    char       *a           = NULL;
+   char       *b           = NULL;          /* next argument                  */
    int         x_total     = 0;
    int         x_args      = 0;
    char        x_name      [LEN_RECD]   = "";
    char        t           [LEN_RECD]   = "";
    int         x_proj      =    0;
    int         x_file      =    0;
-   int         b           =    0;
+   int         c           =    0;
    /*---(header)-------------------------*/
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
    /*> FILE_rename ("");                                                              <*/
+   if (a_argv > 0)  yJOBS_runas (&(my.run_as), a_argv [0]);
    /*---(process)------------------------*/
    for (i = 1; i < a_argc; ++i) {
       a = a_argv [i];
+      if (a == NULL) {
+         yURG_err ('f', "arg %d is NULL", i);
+         DEBUG_TOPS   yLOG_note    ("FATAL, found a null argument, really bad news");
+         DEBUG_TOPS   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
       ++x_total;
       if (a[0] == '@')  continue;
       DEBUG_ARGS  yLOG_info    ("cli arg", a);
       ++x_args;
+      if (i < a_argc - 1)  b = a_argv [i + 1];
+      else                 b = NULL;
       /*---(simple)----------------------*/
-      rc = poly_rptg_args (a);
-      if (rc == 1)   continue;
+      /*> rc = poly_rptg_args (a);                                                    <*/
+      /*> if (rc == 1)   continue;                                                    <*/
       /*---(simple)----------------------*/
       if       (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
       /*---(complicated)-----------------*/
       else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
       /*---(system-wide)-----------------*/
-      else if (strcmp (a, "--register"  ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REG;     }
-      else if (strcmp (a, "--unregister") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UNREG;   }
-      else if (strcmp (a, "--system"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_SYSTEM;  }
+      /*> else if (strcmp (a, "--unregister") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UNREG;   }   <*/
+      /*> else if (strcmp (a, "--system"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_SYSTEM;  }   <*/
       /*---(configuration)---------------*/
       else if (strcmp (a, "--database"  ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
       else if (strcmp (a, "--world"     ) == 0)  TWOARG rc = poly_world_cli   (a_argv [i], 'y');
       /*---(data handling)---------------*/
-      else if (strcmp (a, "--new"       ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_NEW;     }
-      else if (strcmp (a, "--update"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UPDATE;  }
-      else if (strcmp (a, "--remove"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }
+      /*> else if (strcmp (a, "--new"       ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_NEW;     }   <*/
+      /*> else if (strcmp (a, "--remove"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }   <*/
+      /*---(extern)----------------------*/
+      /*> else if (strcmp (a, "--add-extern") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_YLIB;    }   <*/
+      /*> else if (strcmp (a, "--rem-extern") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }   <*/
       /*---(reports)---------------------*/
       /*> else if (strcmp (a, "--projects"  ) == 0) { my.g_mode  = POLY_RPTG;  my.g_scope = POLY_PROJ;  my.g_rptg = POLY_RPTG_PROJS;   }   <*/
       /*> else if (strcmp (a, "--oneline"   ) == 0) { my.g_mode  = POLY_RPTG;  my.g_scope = POLY_PROJ;  my.g_rptg = POLY_RPTG_ONELINE; }   <*/
@@ -162,15 +186,15 @@ PROG_args          (int a_argc, char *a_argv[])
       /*> else if (strcmp (a, "--dump"      ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_DUMP;    }   <*/
       /*> else if (strcmp (a, "--detail"    ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_FUNC;    }   <*/
       /*---(others)----------------------*/
-      /*> else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;          <* 
-       *> else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = POLY_RPTG_VARS;          <* 
-       *> else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;        <* 
-       *> else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;      <* 
-       *> else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;      <* 
-       *> else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;       <* 
-       *> else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;      <* 
-       *> else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;        <* 
-       *> else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;       <*/
+      /*> else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;          <*/
+      /*> else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = POLY_RPTG_VARS;     <*/
+      else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;
+      else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;
+      else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;
+      else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;
+      else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;
+      else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;
+      else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;
       /*---(filtering)-------------------*/
       else if (strcmp (a, "--project"   ) == 0)  TWOARG rc = poly_proj_cli    (a_argv [i], 'y');
       else if (strcmp (a, "--hint"      ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
@@ -203,14 +227,22 @@ PROG_args          (int a_argc, char *a_argv[])
        *> else if (strncmp (a, "--function-list"     ,  9) == 0)  CALC_func_list  ();                             <*/
       /*---(other)-----------------------*/
       else if (a[0] != '-'                     ) {
-         b = atoi (a_argv [i]);
-         if      (x_proj == 0 && b > 0)   my.g_projno = b - 1;
-         else if (x_file == 0 && b > 0)   my.g_fileno = b - 1;
+         c = atoi (a_argv [i]);
+         if (c > 0) {
+            if      (x_proj == 0)   my.g_projno = c - 1;
+            else if (x_file == 0)   my.g_fileno = c - 1;
+         } else {
+            if      (my.g_projname [0] == '\0')   strlcpy (my.g_projname, a_argv [i], LEN_LABEL);
+            else if (my.g_filename [0] == '\0')   strlcpy (my.g_filename, a_argv [i], LEN_LABEL);
+         }
       }
       else {
-         DEBUG_TOPS  yLOG_note  ("argument not understood");
-         DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
-         return -1;
+         rc = yJOBS_args_handle (&(my.run_as), &(my.run_mode), my.run_file, &i, a, b);
+         if (rc < 0) {
+            DEBUG_TOPS  yLOG_note  ("argument not understood");
+            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
+            return -1;
+         }
       }
       /*> printf ("GLOBAL %c, %c, %c\n", my.g_mode, my.g_scope, my.g_rptg);           <*/
       if (rc < 0)  break;
@@ -221,6 +253,7 @@ PROG_args          (int a_argc, char *a_argv[])
       DEBUG_ARGS  yLOG_note   ("no arguments identified");
    }
    /*> printf ("FINAL  %c, %c, %c\n", my.g_mode, my.g_scope, my.g_rptg);              <*/
+   yJOBS_final (my.run_uid);
    /*---(complete)-----------------------*/
    DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
    return rc;
@@ -315,6 +348,82 @@ static void      o___DISPATCH________________o (void) {;}
 
 char
 PROG_dispatch           (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         rce         =  -10;
+   int         rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YEXEC   yLOG_enter   (__FUNCTION__);
+   /*---(TEMPORARY)----------------------*/
+   if (my.g_data == POLY_DATA_HTAGS) {
+      rc = poly_action_htags     ();
+      return 0;
+   }
+   /*---(title)--------------------------*/
+   IF_VERBOSE   yURG_msg ('>', "%s", P_ONELINE);
+   /*---(route action)-------------------*/
+   --rce;  switch (my.run_mode) {
+      /*---(incomming)-------------------*/
+   case CASE_UPDATE     :
+      IF_VERBOSE   yURG_msg ('>', "  option --vupdate, analyze current project and add to database");
+      IF_VERBOSE   yURG_msg (' ', "");
+      rc = poly_action_update    ();
+      break;
+   case CASE_INSTALL    :
+      IF_VERBOSE   yURG_msg ('>', "  option --vinstall, analyze current project and add to registry plus database");
+      IF_VERBOSE   yURG_msg (' ', "");
+      rc = poly_world_register   ();
+      if (rc < 0) {
+         if (my.run_mode == ACT_CINSTALL)   yURG_msg_live ();
+         if (my.run_mode == ACT_CINSTALL)   yURG_msg ('>', "FAILED, project could not be registered, run --vinstall to identify reasons");
+         if (my.run_mode == ACT_VINSTALL)   yURG_msg ('>', "FAILED, project could not be registered, the reasons are shown above");
+         if (my.run_mode == ACT_CINSTALL)   yURG_msg_mute ();
+         break;
+      }
+      rc = poly_action_update    ();
+      if (rc < 0) {
+         if (my.run_mode == ACT_CINSTALL)   yURG_msg_live ();
+         if (my.run_mode == ACT_CINSTALL)   yURG_msg ('>', "FAILED, project registered, but could not update database, run --vinstall to identify reasons");
+         if (my.run_mode == ACT_VINSTALL)   yURG_msg ('>', "FAILED, project registered, but could not update database, the reasons are shown above");
+         if (my.run_mode == ACT_CINSTALL)   yURG_msg_mute ();
+         break;
+      }
+      if (my.run_mode == ACT_CINSTALL)   yURG_msg_live ();
+      yURG_msg ('>', "SUCCESS, project was both registered and updated in the database");
+      if (my.run_mode == ACT_CINSTALL)   yURG_msg_mute ();
+      break;
+      /*---(outgoing)--------------------*/
+   case CASE_REMOVE     :
+      rc = poly_world_unregister ();
+      rc = poly_action_remove    ();
+      break;
+   case CASE_CLEAR      :
+      rc = poly_action_remove    ();
+      break;
+      /*---(central)---------------------*/
+   case CASE_REPORT     :
+      rc = poly_rptg_dispatch    ();
+      break;
+   case CASE_AUDIT      :
+      break;
+      /*---(execute)---------------------*/
+   case CASE_NORMAL     :
+   case CASE_STRICT     :
+      break;
+      /*---(trouble)---------------------*/
+   default              :
+      rc = rce;
+      break;
+   }
+   /*---(cut-off)------------------------*/
+   yURG_all_mute ();
+   /*---(complete)-----------------------*/
+   DEBUG_YEXEC   yLOG_exit    (__FUNCTION__);
+   return rc;
+}
+
+char
+PROG_dispatch_OLD       (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -446,6 +555,8 @@ PROG__unit_loud      (void)
    yURG_logger (4, x_args);
    PROG_init   (4, x_args);
    yURG_urgs   (4, x_args);
+   yURG_name  ("kitchen"      , YURG_ON);
+   yURG_name  ("yexec"        , YURG_ON);
    PROG_args   (4, x_args);
    PROG_begin  ();
    return 0;
@@ -458,4 +569,21 @@ PROG__unit_end       (void)
    return 0;
 }
 
+char*        /*-[ unit test accessor ]---------------------[us2---·A-7·6--·B21-]¬[----·T-B1H---·---·----]¬[---·------]*/
+prog__unit              (char *a_question, int i)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        s           [LEN_TITLE] = " 0[]";
+   char        t           [LEN_TITLE] = " 0[]";
+   /*---(defense)------------------------*/
+   snprintf (unit_answer, LEN_RECD, "PROG unit        : question unknown");
+   /*---(simple)-------------------------*/
+   if      (strcmp (a_question, "mode"    )        == 0) {
+      yJOBS_iam  (my.run_as  , s);
+      yJOBS_mode (my.run_mode, t);
+      snprintf (unit_answer, LEN_RECD, "PROG mode        : iam (%c) %-18.18s, run (%c) %-18.18s, å%sæ", my.run_as, s, my.run_mode, t, my.run_file);
+   }
+   /*---(complete)-----------------------*/
+   return unit_answer;
+}
 
