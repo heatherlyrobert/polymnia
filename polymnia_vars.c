@@ -354,7 +354,7 @@ poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
                case CODE_VAR_M :
                   sprintf (s, "<-- potenial internal or mystery");
                   if (x_ext != NULL) {
-                     sprintf (s, "%-20.20s  %-20.20s  %4d  %c  %c  %c", x_ext->lib, x_ext->name, x_ext->line, x_ext->type, x_ext->cat, x_ext->sub);
+                     sprintf (s, "%-20.20s  %-20.20s  %4d  %c  %c  %c", x_ext->elib->name, x_ext->name, x_ext->line, x_ext->type, x_ext->cat, x_ext->sub);
                      strlcpy (s_sextern, s_extern, LEN_RECD);
                   }
                   printf ("%4d   - -  %-20.20s  %3d  %3d  %3d    %s\n", a_line, x_name, b - t, i, n, s);

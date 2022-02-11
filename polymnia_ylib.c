@@ -134,6 +134,7 @@ poly_ylib__fhook        (tFUNC *a_func, tYLIB *a_ylib)
    ++(a_func->y_count);
    DEBUG_DATA   yLOG_sint    (a_func->y_count);
    /*---(global counts)------------------*/
+   ++(my.COUNT_YLIBS);
    ++(a_func->file->proj->COUNT_YLIBS);
    ++(a_func->file->COUNT_YLIBS);
    ++(a_func->COUNT_YLIBS);
@@ -176,6 +177,7 @@ poly_ylib__funhook      (tYLIB *a_ylib)
    --(x_func->y_count);
    DEBUG_DATA   yLOG_sint    (x_func->y_count);
    /*---(global counts)------------------*/
+   --(my.COUNT_YLIBS);
    --(x_func->file->proj->COUNT_YLIBS);
    --(x_func->file->COUNT_YLIBS);
    --(x_func->COUNT_YLIBS);

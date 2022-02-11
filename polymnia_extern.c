@@ -5,6 +5,64 @@
 
 static char   s_print         [LEN_RECD] = "";
 
+static tELIB  *s_head   = NULL;
+static int     s_count  = 0;
+
+
+/*====================------------------------------------====================*/
+/*===----                       basic support                          ----===*/
+/*====================------------------------------------====================*/
+static void  o___CLI_____________o () { return; }
+
+char
+poly_extern_cli         (char *a_name, char a_loud)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        x_recd      [LEN_RECD]  = "";
+   int         l           =    0;
+   char       *x_valid     = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_/.";
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_FILE   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
+   --rce;  if (a_name == NULL) {
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "external <name>, name can not be null");
+      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_ARGS  yLOG_info    ("a_name"    , a_name);
+   strlcpy (x_recd, a_name, LEN_RECD);
+   /*---(check length)-------------------*/
+   l = strlen (x_recd);
+   DEBUG_ARGS  yLOG_value   ("l"         , l);
+   --rce;  if (l <= 0) {
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "external <name>, name can not be blank/empty");
+      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(check characters)---------------*/
+   --rce;  for (i = 0; i < l; ++i) {
+      if (strchr (x_valid, x_recd [i]) != NULL)  continue;
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "external <name>, name can not have a <%c> at character %d", x_recd [i], i);
+      DEBUG_TOPS  yLOG_char  ("bad char"  , x_recd [i]);
+      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(check extension)----------------*/
+   if (l >= 5 && strcmp (x_recd + l - 4, ".txt") != 0) {
+      strlcat (x_recd, ".txt", LEN_RECD);
+      DEBUG_ARGS  yLOG_info    ("fixed"     , x_recd);
+   }
+   /*---(copy)---------------------------*/
+   strlcpy (my.n_extern, x_recd, LEN_RECD);
+   DEBUG_ARGS  yLOG_info    ("external"  , my.n_extern);
+   /*---(complete)-----------------------*/
+   DEBUG_FILE   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -81,17 +139,41 @@ poly_extern__mark        (tEXTERN *a_curr, char *a_lib, char *a_name)
 char
 poly_extern__wipe        (tEXTERN *a_ext)
 {
-   a_ext->lib [0]  = '\0';
+   /*---(info)--------------*/
+   a_ext->elib     = NULL;
    a_ext->name [0] = '\0';
    a_ext->line     = -1;
    a_ext->type     = '-';
    a_ext->cat      = '-';
    a_ext->sub      = '-';
-   a_ext->uses     = 0;
+   /*---(working)-----------*/
+   a_ext->wuse     = 0;
+   /*---(elibs)-------------*/
+   a_ext->l_next   = NULL;
+   a_ext->l_prev   = NULL;
+   /*---(ylibs)-------------*/
    a_ext->y_head   = NULL;
    a_ext->y_tail   = NULL;
    a_ext->y_count  = 0;
+   /*---(btree)-------------*/
    a_ext->btree    = NULL;
+   /*---(done)--------------*/
+   return 1;
+}
+
+char
+poly_elib__wipe          (tELIB *a_elib)
+{
+   /*---(info)--------------*/
+   a_elib->name [0] = '\0';
+   a_elib->wuse     = 0;
+   /*---(externs)-----------*/
+   a_elib->count  = 0;
+   a_elib->head   = NULL;
+   a_elib->tail   = NULL;
+   /*---(btree)-------------*/
+   a_elib->btree    = NULL;
+   /*---(done)--------------*/
    return 1;
 }
 
@@ -100,13 +182,13 @@ poly_extern__memory     (tEXTERN *a_ext)
 {
    /*---(master)-------------------------*/
    strlcpy (s_print, "["  , LEN_RECD);
-   poly_shared__check_str  (s_print, a_ext->lib);
+   poly_shared__check_ptr  (s_print, a_ext->elib);
    poly_shared__check_str  (s_print, a_ext->name);
    poly_shared__check_num  (s_print, a_ext->line);
    poly_shared__check_char (s_print, a_ext->type);
    poly_shared__check_char (s_print, a_ext->cat);
    poly_shared__check_char (s_print, a_ext->sub);
-   poly_shared__check_num  (s_print, a_ext->uses);
+   poly_shared__check_num  (s_print, a_ext->wuse);
    poly_shared__spacer     (s_print);
    poly_shared__check_ptr  (s_print, a_ext->y_head);
    poly_shared__check_ptr  (s_print, a_ext->y_tail);
@@ -125,9 +207,116 @@ poly_extern__memory     (tEXTERN *a_ext)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char poly_extern__new  (tEXTERN **a_new) { return poly_shared_new  ("ext", sizeof (tEXTERN), a_new, NULL, '-', poly_extern__wipe); }
-char poly_extern_force (tEXTERN **a_new) { return poly_shared_new  ("ext", sizeof (tEXTERN), a_new, NULL, 'y', poly_extern__wipe); }
-char poly_extern__free (tEXTERN **a_old) { return poly_shared_free ("ext", a_old, NULL); }
+char poly_extern__new   (tEXTERN **a_new) { return poly_shared_new  ("ext" , sizeof (tEXTERN), a_new, NULL, '-', poly_extern__wipe); }
+char poly_extern_force  (tEXTERN **a_new) { return poly_shared_new  ("ext" , sizeof (tEXTERN), a_new, NULL, 'y', poly_extern__wipe); }
+char poly_extern__free  (tEXTERN **a_old) { return poly_shared_free ("ext" , a_old, NULL); }
+
+char poly_extern__lnew  (tEXTERN **a_new) { return poly_shared_new  ("elib", sizeof (tELIB), a_new, NULL, '-', poly_elib__wipe); }
+char poly_extern__lfree (tEXTERN **a_old) { return poly_shared_free ("elib", a_old, NULL); }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                   hooking and unhooking                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___HOOKING_________o () { return; }
+
+char
+poly_extern_hook         (tELIB *a_elib, tEXTERN *a_ext)
+{
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   /*> DEBUG_DATA   yLOG_senter  (__FUNCTION__);                                      <*/
+   DEBUG_DATA   yLOG_enter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point  ("a_elib", a_elib);
+   --rce;  if (a_elib == NULL) {
+      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> DEBUG_DATA   yLOG_spoint  (a_file);                                            <*/
+   DEBUG_DATA   yLOG_point  ("a_ext", a_ext);
+   --rce;  if (a_ext == NULL) {
+      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> DEBUG_DATA   yLOG_spoint  (a_ext->proj);                                      <*/
+   DEBUG_DATA   yLOG_point  ("->proj", a_ext->elib);
+   --rce;  if (a_ext->elib != NULL) {
+      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> DEBUG_DATA   yLOG_snote   (a_ext->name);                                      <*/
+   DEBUG_DATA   yLOG_note   (a_ext->name);
+   /*---(into linked list)---------------*/
+   /*> DEBUG_DATA   yLOG_sint    (a_ext->elib->count);                               <* 
+    *> DEBUG_DATA   yLOG_spoint  (a_elib->head);                                      <* 
+    *> DEBUG_DATA   yLOG_spoint  (a_elib->tail);                                      <*/
+   DEBUG_DATA   yLOG_value   ("count", a_elib->count);
+   DEBUG_DATA   yLOG_point  ("head" , a_elib->head);
+   DEBUG_DATA   yLOG_point  ("tail", a_elib->tail);
+   if (a_elib->head == NULL) {
+      /*> DEBUG_DATA   yLOG_snote   ("first");                                        <*/
+      DEBUG_DATA   yLOG_note   ("first");
+      a_elib->head = a_elib->tail = a_ext;
+   } else {
+      /*> DEBUG_DATA   yLOG_snote   ("append");                                       <*/
+      DEBUG_DATA   yLOG_note   ("append");
+      a_ext->l_prev         = a_elib->tail;
+      a_elib->tail->l_next  = a_ext;
+      a_elib->tail          = a_ext;
+   }
+   /*---(tie file back to elib)----------*/
+   a_ext->elib  = a_elib;
+   /*---(update count)-------------------*/
+   ++a_elib->count;
+   DEBUG_DATA   yLOG_value   ("count", a_elib->count);
+   /*---(complete)------------------------------*/
+   /*> DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                      <*/
+   DEBUG_DATA   yLOG_exit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_extern_unhook        (tEXTERN *a_ext)
+{
+   /*---(header)-------------------------*/
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (a_ext);
+   if (a_ext == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
+      return -1;
+   }
+   DEBUG_DATA   yLOG_spoint  (a_ext->elib);
+   if (a_ext->elib == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -2);
+      return -2;
+   }
+   DEBUG_DATA   yLOG_snote   (a_ext->name);
+   /*---(out of linked list)-------------*/
+   DEBUG_DATA   yLOG_sint    (a_ext->elib->count);
+   DEBUG_DATA   yLOG_spoint  (a_ext->elib->head);
+   DEBUG_DATA   yLOG_spoint  (a_ext->elib->tail);
+   DEBUG_DATA   yLOG_snote   ("unlink");
+   if (a_ext->l_next != NULL)  a_ext->l_next->l_prev = a_ext->l_prev;
+   else                        a_ext->elib->tail     = a_ext->l_prev;
+   if (a_ext->l_prev != NULL)  a_ext->l_prev->l_next = a_ext->l_next;
+   else                        a_ext->elib->head     = a_ext->l_next;
+   /*---(update count)-------------------*/
+   --(a_ext->elib->count);
+   DEBUG_DATA   yLOG_sint    (a_ext->elib->count);
+   /*---(ground pointers)----------------*/
+   a_ext->elib   = NULL;
+   a_ext->l_prev = NULL;
+   a_ext->l_next = NULL;
+   /*---(complete)------------------------------*/
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
 
 
 
@@ -142,6 +331,7 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
+   tELIB      *x_lib       = NULL;
    tEXTERN    *x_new       = NULL;
    int         x_tries     =    0;
    int         x_len       =    0;
@@ -165,6 +355,20 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
       return rce;
    }
    DEBUG_DATA   yLOG_info    ("a_lib"     , a_lib);
+   /*---(find lib)-----------------------*/
+   poly_btree_by_name (B_ELIB, a_lib, &x_lib);
+   --rce;  if (x_lib == NULL) {
+      poly_extern__lnew (&x_lib);
+      DEBUG_DATA   yLOG_point   ("x_lib"     , x_lib);
+      --rce;  if (x_lib == NULL) {
+         DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      poly_elib__wipe (x_lib);
+      strlcpy (x_lib->name, a_lib , LEN_LABEL);
+      rc = poly_btree_hook (B_ELIB, x_lib, x_lib->name, &x_lib->btree);
+      poly_btree_prepare (B_ELIB);
+   }
    /*---(create cell)--------------------*/
    poly_extern__new (&x_new);
    DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
@@ -175,7 +379,7 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
    poly_extern__wipe (x_new);
-   strlcpy (x_new->lib , a_lib , LEN_TITLE);
+   x_new->elib     = x_lib;
    strlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->line     = a_line;
    x_new->type     = a_type;
@@ -363,6 +567,30 @@ poly_extern__purge      (void)
 }
 
 char
+poly_extern_clear_uses  (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tEXTERN    *u           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   DEBUG_PROG   yLOG_value   ("count"     , poly_extern_count ());
+   /*---(walk through list)--------------*/
+   rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &u);
+   DEBUG_PROG   yLOG_point   ("u"          , u);
+   while (u != NULL) {
+      DEBUG_PROG   yLOG_value   ("extern"    , u->name);
+      u->wuse = 0;
+      rc = poly_btree_by_cursor (B_EXTERN, YDLST_NEXT, &u);
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 poly_extern_wrap        (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -476,10 +704,14 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, 
    /*---(get destination tag)---------*/
    poly_func_by_name (a_func, a_dst);
    DEBUG_INPT   yLOG_point   ("*a_dst"    , *a_dst);
-   if (*a_dst != NULL)  DEBUG_INPT   yLOG_info    ("->name"    , (*a_dst)->name);
+   if (*a_dst != NULL) {
+      DEBUG_INPT   yLOG_info    ("->name"    , (*a_dst)->name);
+   }
    poly_extern_by_name (a_func, a_ext);
    DEBUG_INPT   yLOG_point   ("*a_ext"    , *a_ext);
-   if (*a_ext != NULL)  DEBUG_INPT   yLOG_info    ("->name"    , (*a_ext)->name);
+   if (*a_ext != NULL)  {
+      DEBUG_INPT   yLOG_info    ("->name"    , (*a_ext)->name);
+   }
    /*---(mystry)----------------------*/
    --rce;  if (*a_dst == NULL && *a_ext == NULL) {
       /*> if (x_mystry %  5 == 0)  fprintf (s_mystry, "¦");                                                                                           <* 
@@ -508,6 +740,8 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    char       *q           = " :";
    char       *s           = NULL;
    tFILE      *x_file      = NULL;
+   char        x_cat       =  '-';
+   char        x_sub       =  '-';
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -524,21 +758,28 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   --rce;  if (a_dst != NULL && a_ext != NULL) {
-      /*> DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <*/
-      /*> return 0;                                                                   <*/
-      a_ext = NULL;
+   if (a_ext != NULL) {
+      x_cat = a_ext->cat;
+      DEBUG_INPT   yLOG_char    ("x_cat"     , x_cat);
+      x_sub = a_ext->sub;
+      DEBUG_INPT   yLOG_char    ("x_sub"     , x_sub);
    }
+   /*> --rce;  if (a_dst != NULL && a_ext != NULL) {                                            <* 
+    *>    /+> DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <+/   <* 
+    *>    /+> return 0;                                                                   <+/   <* 
+    *>    a_ext = NULL;                                                                         <* 
+    *>    DEBUG_INPT   yLOG_note    ("nulled out a_ext");                                       <* 
+    *> }                                                                                        <*/
    /*---(general)------------------------*/
    ++a_src->WORK_FUNCS;
    /*---(recursive)----------------------*/
    if (a_src == a_dst) {
-      DEBUG_INPT   yLOG_note    ("found a recursive reverence");
+      DEBUG_INPT   yLOG_note    ("found a recursive reference");
       ++a_src->WORK_RECURS;
       --a_src->WORK_FUNCS;
    }
    /*---(internal)-----------------------*/
-   else if (a_dst != NULL) {
+   else if (a_dst != NULL && a_ext == NULL) {
       DEBUG_INPT   yLOG_note    ("found a local/global internal call");
       DEBUG_INPT   yLOG_point   ("a_src"     , a_src);
       DEBUG_INPT   yLOG_point   ("->file"    , a_src->file);
@@ -556,20 +797,20 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
       }
    }
    /*---(debugging)----------------------*/
-   else if (strchr ("Dd", a_ext->cat) != NULL) {
-      DEBUG_INPT   yLOG_char    ("cat"       , a_ext->cat);
+   else if (strchr ("Dd", x_cat) != NULL) {
+      DEBUG_INPT   yLOG_note    ("found debugging code");
       ++a_src->WORK_DFUNCS;
-      switch (a_ext->cat) {
+      switch (x_cat) {
       case 'd' :
          ++a_src->WORK_DSHORT;
-         switch (a_ext->sub) {
+         switch (x_sub) {
          case 'e' :   ++a_src->WORK_DENTER;      break;
          case 'x' :   ++a_src->WORK_DEXIT;       break;
          }
          break;
       case 'D' :
          ++a_src->WORK_DLONG;
-         switch (a_ext->sub) {
+         switch (x_sub) {
          case 'e' :   ++a_src->WORK_DENTER;      break;
          case 'x' :   ++a_src->WORK_DEXIT;       break;
          }
@@ -578,9 +819,10 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    }
    /*---(standard library)---------------*/
    /*> else if (strchr ("owWirRmpfsTC", a_ext->sub) != NULL) {                        <*/
-   else if (a_ext->cat == 'C') {
+   else if (x_cat == 'C') {
+      DEBUG_INPT   yLOG_note    ("found a standard c library reference");
       ++a_src->WORK_CSTD;
-      switch (a_ext->sub) {
+      switch (x_sub) {
       case 'o' : ++a_src->WORK_OUTPUT;           break;
       case 'w' : ++a_src->WORK_TWRITE;           break;
       case 'W' : ++a_src->WORK_BWRITE;           break;
@@ -595,7 +837,8 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    }
    /*---(other libraries)----------------*/
    else {
-      switch (a_ext->cat) {
+      DEBUG_INPT   yLOG_note    ("found outside library reference");
+      switch (x_cat) {
       case 'N' : ++a_src->WORK_NCURSE;
                  ++a_src->WORK_OFUNCS;
                  break;
@@ -607,6 +850,7 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
                  break;
       case 'y' : ++a_src->WORK_MYX;
       case 'Y' : ++a_src->WORK_YLIB;
+                 DEBUG_INPT   yLOG_note    ("found yLIB library reference");
                  poly_ylib_add (a_src, a_ext, a_line, NULL);
                  break;
       case '-' : ++a_src->WORK_OFUNCS;
@@ -722,6 +966,8 @@ char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/
 poly_extern__unit       (char *a_question, int i)
 {
    /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   char        x_exist     =  '-';
    tEXTERN    *u           = NULL;
    tFUNC      *v           = NULL;
    char        t           [LEN_RECD]  = "";
@@ -732,16 +978,24 @@ poly_extern__unit       (char *a_question, int i)
    if (i <  0)       return unit_answer;
    poly_extern_by_index (i, &u);
    /*---(simple)-------------------------*/
-   if        (strcmp (a_question, "file"      )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "EXTERN file      : %s", my.n_extern);
+   if      (strcmp (a_question, "file"      )     == 0) {
+      rc = poly_shared_verify (my.n_extern);
+      if      (rc >  0)  x_exist = 'y';
+      else if (rc <= 0)  x_exist = '-';
+      snprintf (unit_answer, LEN_RECD, "EXTERN file      : %c  %-10p  %c  %2d[%s]",
+            (my.f_extern == NULL) ? '-' : 'y', my.f_extern,
+            x_exist, strlen (my.n_extern), my.n_extern);
    }
+   /*> if        (strcmp (a_question, "file"      )     == 0) {                       <* 
+    *>    snprintf (unit_answer, LEN_RECD, "EXTERN file      : %s", my.n_extern);     <* 
+    *> }                                                                              <*/
    if (u != NULL) sprintf  (s, "[%.20s]", u->name);
    if        (strcmp (a_question, "count"     )     == 0) {
       snprintf (unit_answer, LEN_RECD, "EXTERN count     : %3d", poly_extern_count ());
    }
    else if   (strcmp (a_question, "entry"     )     == 0) {
-      if (u != NULL)  sprintf  (r, "[%.20s]", u->lib);
-      if (u != NULL)  sprintf  (t, "%2d%-22.22s   %2d%-22.22s   %4d   %c   %c   %c   %4d", strlen (u->lib), r, strlen (u->name), s, u->line, u->type, u->cat, u->sub, u->uses);
+      if (u != NULL)  sprintf  (r, "[%.20s]", u->elib->name);
+      if (u != NULL)  sprintf  (t, "%2d%-22.22s   %2d%-22.22s   %4d   %c   %c   %c   %4d", strlen (u->elib->name), r, strlen (u->name), s, u->line, u->type, u->cat, u->sub, u->wuse);
       else            sprintf  (t, "%2d%-22.22s   %2d%-22.22s   %4d   %c   %c   %c   %4d", 0, "[]", 0, "[]", 0, '-', '-', '-', 0);
       snprintf (unit_answer, LEN_RECD, "EXTERN entry(%2d) : %s", i, t);
    }

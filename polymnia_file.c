@@ -133,6 +133,7 @@ poly_file_hook          (tPROJ *a_proj, tFILE *a_file)
    /*---(update count)-------------------*/
    ++a_proj->count;
    ++a_proj->COUNT_FILES;
+   ++my.COUNT_FILES;
    /*> DEBUG_DATA   yLOG_sint    (a_proj->count);                                     <*/
    DEBUG_DATA   yLOG_value   ("count", a_proj->count);
    /*---(complete)------------------------------*/
@@ -170,6 +171,7 @@ poly_file_unhook        (tFILE *a_file)
    /*---(update count)-------------------*/
    --(a_file->proj->count);
    --(a_file->proj->COUNT_FILES);
+   --(my.COUNT_FILES);
    DEBUG_DATA   yLOG_sint    (a_file->proj->count);
    /*---(ground pointers)----------------*/
    a_file->proj = NULL;
@@ -295,6 +297,19 @@ poly_file_remove        (tFILE **a_file)
       return rce;
    }
    DEBUG_DATA   yLOG_info    ("->name"    , x_file->name);
+   /*---(remove line counts first)-------*/
+   x_file->proj->COUNT_LINES -= x_file->COUNT_LINES;
+   x_file->proj->COUNT_EMPTY -= x_file->COUNT_EMPTY;
+   x_file->proj->COUNT_DOCS  -= x_file->COUNT_DOCS ;
+   x_file->proj->COUNT_DEBUG -= x_file->COUNT_DEBUG;
+   x_file->proj->COUNT_CODE  -= x_file->COUNT_CODE ;
+   x_file->proj->COUNT_SLOCL -= x_file->COUNT_SLOCL;
+   my.COUNT_LINES            -= x_file->COUNT_LINES;
+   my.COUNT_EMPTY            -= x_file->COUNT_EMPTY;
+   my.COUNT_DOCS             -= x_file->COUNT_DOCS ;
+   my.COUNT_DEBUG            -= x_file->COUNT_DEBUG;
+   my.COUNT_CODE             -= x_file->COUNT_CODE ;
+   my.COUNT_SLOCL            -= x_file->COUNT_SLOCL;
    /*---(purge assigned tags)------------*/
    rc = poly_func_purge (x_file, '-');
    DEBUG_DATA   yLOG_value   ("purge"     , rc);
@@ -570,12 +585,21 @@ poly_file_review        (tPROJ *a_proj)
       if (x_point == '.') {
          x_type = x_name [x_len - 1];
          DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
+         if (strchr ("12345678", x_type) != NULL) {
+            DEBUG_INPT   yLOG_note    ("manual/documentation file");
+            a_proj->manual [x_type - '1'] = x_type;
+            continue;
+         }
          if (strchr ("ch", x_type) == NULL) {
             DEBUG_INPT   yLOG_note    ("not a c or h file, SKIP");
             continue;
          }
          if (x_len > 7 && strcmp ("_unit.c", x_name + x_len - 7) == 0) {
             DEBUG_INPT   yLOG_note    ("cut the unit testing code files, SKIP");
+            continue;
+         }
+         if (strcmp ("master.h", x_name) == 0) {
+            DEBUG_INPT   yLOG_note    ("never look at testing header");
             continue;
          }
       }
@@ -864,11 +888,11 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
    }
    /*---(name)---------------------------*/
    switch (x_type) {
-   case 'h' :   sprintf (t, "---name------------------  ");    break;
-   case 'p' :   sprintf (t, "Ï------------------------··");    break;
-   case 't' :   sprintf (t, "name·······················");    break;
-   case 'd' :   sprintf (t, "%-25.25s  ", a_file->name);       break;
-   default  :   strlcpy (t, "", LEN_RECD);                     break;
+   case 'h' :   sprintf (t, "---name---------------  ");    break;
+   case 'p' :   sprintf (t, "Ï---------------------··");    break;
+   case 't' :   sprintf (t, "name····················");    break;
+   case 'd' :   sprintf (t, "%-22.22s  ", a_file->name);    break;
+   default  :   strlcpy (t, "", LEN_RECD);                  break;
    }
    strlcat (s_print, t, LEN_RECD);
    /*---(statistics)---------------------*/

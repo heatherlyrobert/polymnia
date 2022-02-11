@@ -255,6 +255,7 @@ poly_func_hook          (tFILE *a_file, tFUNC *a_func)
    if (strchr ("fsS", a_func->type) != NULL)  {
       ++(a_file->COUNT_FUNCS);
       ++(a_file->proj->COUNT_FUNCS);
+      ++(my.COUNT_FUNCS);
    }
    /*---(complete)------------------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
@@ -288,6 +289,7 @@ poly_func_unhook        (tFUNC *a_func)
    if (strchr ("fsS", a_func->type) != NULL)  {
       --(a_func->file->COUNT_FUNCS);
       --(a_func->file->proj->COUNT_FUNCS);
+      --(my.COUNT_FUNCS);
    }
    /*---(untie func from file)-----------*/
    DEBUG_DATA   yLOG_snote   ("unset file");

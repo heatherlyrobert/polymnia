@@ -382,13 +382,14 @@ poly_world__register    (void)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   yURG_msg ('-', "current directory is å%sæ", x_home);
-   yURG_msg ('-', "therefore, project is named å%sæ", x_name);
+   /*> yURG_msg ('-', "current directory is å%sæ", x_home);                           <*/
+   /*> yURG_msg ('-', "therefore, project is named å%sæ", x_name);                    <*/
    /*---(get current project)------------*/
    rc = poly_world__by_name (x_name, &x_world);
    if (x_world != NULL) {
-      yURG_msg ('-', "project exists in registry, replacing in case subtle changes");
-      poly_world__remove (x_name);
+      yURG_err ('w', "project already exists in registry, nothing to do");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 1;
    } else {
       yURG_msg ('-', "project is new to registry, adding");
    }
@@ -408,14 +409,32 @@ poly_world__unregister  (void)
    char        rce         =  -10;
    char        rc          =    0;
    tWORLD     *x_world     = NULL;
-   char        x_name      [LEN_LABEL] = "";
-   char        x_home      [LEN_HUND]  = "";
-   rc = poly_proj_identify (x_name, x_home);
-   --rce;  if (rc < 0)  return rce;
-   rc = poly_world__by_name (x_name, &x_world);
-   --rce;  if (x_world == NULL)  return rce;
-   rc = poly_world__remove (x_name);
-   --rce;  if (rc < 0)  return rce;
+   int         x_len       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(setup project)------------------*/
+   DEBUG_PROG   yLOG_info    ("g_projname", my.g_projname);
+   x_len = strlen (my.g_projname);
+   DEBUG_PROG   yLOG_value   ("x_len"      , x_len);
+   --rce;  if (x_len <= 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_world__by_name (my.g_projname, &x_world);
+   --rce;  if (x_world == NULL) {
+      yURG_err ('w', "project is not in registry, nothing to withdraw");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 1;
+   } else {
+      yURG_msg ('-', "project exists in registry, prepared for change");
+   }
+   rc = poly_world__remove (my.g_projname);
+   --rce;  if (rc < 0) {
+      yURG_err ('f', "project could not be withdrawn");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -457,18 +476,19 @@ poly_world_register     (void)
       return  rce;
    }
    /*---(export)-------------------------*/
-   rc = poly_world__export ();
-   DEBUG_INPT   yLOG_value   ("export"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
+   if (rc == 0) {
+      rc = poly_world__export ();
+      DEBUG_INPT   yLOG_value   ("export"    , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+         return  rce;
+      }
    }
    /*---(mute)---------------------------*/
-   yURG_msg ('-', "success, current project confirmed in world file");
-   yURG_msg (' ', "");
+   if (rc == 0)   yURG_msg ('-', "success, current project confirmed in world file");
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -479,6 +499,8 @@ poly_world_unregister   (void)
    char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(verify header)------------------*/
+   yURG_msg ('>', "withdraw project from world file...");
    /*---(purge)--------------------------*/
    rc = poly_world__purge ();
    DEBUG_INPT   yLOG_value   ("purge"     , rc);
@@ -501,15 +523,19 @@ poly_world_unregister   (void)
       return  rce;
    }
    /*---(export)-------------------------*/
-   rc = poly_world__export ();
-   DEBUG_INPT   yLOG_value   ("export"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
+   if (rc == 0) {
+      rc = poly_world__export ();
+      DEBUG_INPT   yLOG_value   ("export"    , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+         return  rce;
+      }
    }
+   /*---(mute)---------------------------*/
+   if (rc == 0)  yURG_msg ('-', "success, current project withdrawn from world file");
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -550,7 +576,10 @@ poly_world_system       (void)
    while (rc >= 0 && x_world != NULL) {
       DEBUG_DATA   yLOG_point ("x_world"   , x_world);
       DEBUG_DATA   yLOG_info  ("->name"    , x_world->name);
+      IF_VERBOSE   yURG_msg (' ', "");
+      IF_CONFIRM  yURG_msg_live ();
       yURG_msg     (YURG_BASE, "%-15.15s %s", x_world->name, x_world->home);
+      IF_CONFIRM  yURG_msg_mute ();
       /*---(return to current)--------------*/
       rc = chdir (x_world->home);
       DEBUG_INPT   yLOG_value   ("chdir"     , rc);

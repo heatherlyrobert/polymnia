@@ -11,27 +11,17 @@ main (int argc, char *argv[])
    tPROJ      *x_proj      = NULL;
    tFILE      *x_file      = NULL;
    /*---(initialize)---------------------*/
-   yURG_all_mute ();
-   if (rc >= 0)  rc = yURG_logger  (argc, argv);
-   if (rc >= 0)  rc = yURG_urgs    (argc, argv);
-   yURG_stage_check (YURG_BEG);
-   if (rc >= 0)  rc = PROG_init    (argc, argv);
-   if (rc >= 0)  rc = PROG_args    (argc, argv);
-   if (rc >= 0)  rc = PROG_begin   ();
-   if (rc >= 0)  rc = PROG_final   ();
-   if (rc <  0) {
-      PROG_end ();
-      return -1;
-   }
-   yURG_stage_check (YURG_MID);
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   if (rc >= 0)  rc = PROG_urgents   (argc, argv);
+   if (rc >= 0)  rc = PROG_startup   (argc, argv);
+   if (rc <  0) { PROG_shutdown (); return -1; }
    /*---(dispatch)-----------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    rc = PROG_dispatch ();
    DEBUG_PROG   yLOG_value   ("dispatch"  , rc);
-   /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   yURG_stage_check (YURG_END);
-   PROG_end     ();
+   /*---(wrap-up)------------------------*/
+   PROG_shutdown ();
+   /*---(complete)-----------------------*/
    return rc;
 }
 

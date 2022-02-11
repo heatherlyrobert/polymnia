@@ -263,6 +263,7 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    l = strlen (a_recd);
    /*---(add a line)------------------*/
    DEBUG_INPT   yLOG_note    ("found empty");
+   ++(my.COUNT_LINES);
    ++(a_file->proj->COUNT_LINES);
    ++(a_file->COUNT_LINES);
    if (a_func != NULL)  ++(a_func->COUNT_LINES);
@@ -281,6 +282,7 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    /*---(empties)---------------------*/
    if (l <= 0) {
       DEBUG_INPT   yLOG_note    ("found empty");
+      ++my.COUNT_EMPTY;
       ++(a_file->proj->COUNT_EMPTY);
       ++(a_file->COUNT_EMPTY);
       if (a_func != NULL)  ++(a_func->COUNT_EMPTY);
@@ -288,6 +290,7 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    /*---(comments)--------------------*/
    else if (a_recd [0] == '#') {
       DEBUG_INPT   yLOG_note    ("found comment");
+      ++(my.COUNT_DOCS);
       ++(a_file->proj->COUNT_DOCS);
       ++(a_file->COUNT_DOCS);
       if (a_func != NULL)  ++(a_func->COUNT_DOCS);
@@ -295,6 +298,7 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    /*---(breaks/debugging)------------*/
    else if (g == 'y') {
       DEBUG_INPT   yLOG_note    ("found debugging");
+      ++(my.COUNT_DEBUG);
       ++(a_file->proj->COUNT_DEBUG);
       ++(a_file->COUNT_DEBUG);
       if (a_func != NULL)  ++(a_func->COUNT_DEBUG);
@@ -302,9 +306,11 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    /*---(others)----------------------*/
    else {
       DEBUG_INPT   yLOG_note    ("found code");
+      ++(my.COUNT_CODE);
       ++(a_file->proj->COUNT_CODE);
       ++(a_file->COUNT_CODE);
       if (a_func != NULL)  ++(a_func->COUNT_CODE);
+      ++(my.COUNT_SLOCL);
       ++(a_file->proj->COUNT_SLOCL);
       ++(a_file->COUNT_SLOCL);
       if (a_func != NULL)  ++(a_func->COUNT_SLOCL);

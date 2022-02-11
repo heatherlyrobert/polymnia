@@ -365,11 +365,13 @@ poly_cats_logic    (tFUNC *a_tag, char a_type)
       break;
    case 'l' :  /* do, until */
       IN_TAG  ++(a_tag->WORK_LOOP);
+      ++(my.COUNT_SLOCL);
       ++(a_tag->file->COUNT_SLOCL);
       ++(a_tag->file->proj->COUNT_SLOCL);
       break;
    case 'L' :  /* for (remove one semi-colon from SLOCL */
       IN_TAG  ++(a_tag->WORK_LOOP);
+      --(my.COUNT_SLOCL);
       --(a_tag->file->COUNT_SLOCL);
       --(a_tag->file->proj->COUNT_SLOCL);
       IN_TAG  --(a_tag->COUNT_SLOCL);

@@ -99,7 +99,7 @@ poly_code__oneliners    (tFILE *a_file, char *a_recd)
    --rce;
    if      (strncmp (q, "P_FOCUS    ", 11) == 0)  poly_code__unquote (a_file->proj->focus   , r, LEN_DESC);
    else if (strncmp (q, "P_NICHE    ", 11) == 0)  poly_code__unquote (a_file->proj->niche   , r, LEN_DESC);
-   else if (strncmp (q, "P_SUBJECT  ", 11) == 0)  poly_code__unquote (a_file->proj->subject , r, LEN_TITLE);
+   else if (strncmp (q, "P_SUBJECT  ", 11) == 0)  poly_code__unquote (a_file->proj->subject , r, LEN_DESC);
    else if (strncmp (q, "P_PURPOSE  ", 11) == 0)  poly_code__unquote (a_file->proj->purpose , r, LEN_HUND);
    /*---(greek)--------------------*/
    else if (strncmp (q, "P_NAMESAKE ", 11) == 0)  poly_code__unquote (a_file->proj->namesake, r, LEN_HUND);
@@ -215,10 +215,12 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
    x_inside = poly_func_inside (a_func);
    if (x_inside == 0)    DEBUG_DATA   yLOG_note   ("inside a function");
    /*---(line counts)--------------------*/
+   ++my.COUNT_LINES;
    ++a_file->proj->COUNT_LINES;
    ++a_file->COUNT_LINES;
    if (x_inside == 0) ++a_func->COUNT_LINES;
    /*---(code counts)--------------------*/
+   ++my.COUNT_CODE;
    ++a_file->proj->COUNT_CODE;
    ++a_file->COUNT_CODE;
    if (x_inside == 0) ++a_func->COUNT_CODE;
@@ -228,6 +230,7 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
       DEBUG_DATA   yLOG_value   ("c"         , c);
       if (c < 0)  c = 0;
       DEBUG_DATA   yLOG_note   ("slocl");
+      my.COUNT_SLOCL += c;
       a_file->COUNT_SLOCL += c;
       a_file->proj->COUNT_SLOCL += c;
       if (x_inside == 0) a_func->COUNT_SLOCL += c;

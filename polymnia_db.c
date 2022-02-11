@@ -73,12 +73,31 @@ poly_db_init            (void)
 static void  o___FILES___________o () { return; }
 
 char
+poly_db__read_head      (char *a_name, int *a_var)
+{
+   int         n           =    0;
+   fread  (&n, sizeof (int), 1, my.f_db);
+   DEBUG_FILE   yLOG_value   (a_name      , n);
+   if (a_var != NULL)  *a_var = n;
+   return 0;
+}
+
+char
+poly_db__write_head     (char *a_name, int a_var)
+{
+   DEBUG_FILE   yLOG_value   (a_name      , a_var);
+   fwrite (&a_var, sizeof (int), 1, my.f_db);
+   return 0;
+}
+
+char
 poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, int *a_nylib)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        x_mode      [LEN_TERSE] = "";
    int         n           =    0;
+   char        t           [LEN_LABEL] = "";
    /*---(header)-------------------------*/
    DEBUG_FILE   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -112,33 +131,44 @@ poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, 
    /*---(project count)------------------*/
    switch (a_mode) {
    case 'r' :
-      fread  (&n, sizeof (int), 1, my.f_db);
-      DEBUG_FILE   yLOG_value   ("projs"     , n);
-      if (a_nproj != NULL)  *a_nproj = n;
-      fread  (&n, sizeof (int), 1, my.f_db);
-      DEBUG_FILE   yLOG_value   ("files"     , n);
-      if (a_nfile != NULL)  *a_nfile = n;
-      fread  (&n, sizeof (int), 1, my.f_db);
-      DEBUG_FILE   yLOG_value   ("funcs"     , n);
-      if (a_nfunc != NULL)  *a_nfunc = n;
-      fread  (&n, sizeof (int), 1, my.f_db);
-      DEBUG_FILE   yLOG_value   ("ylib"      , n);
-      if (a_nylib != NULL)  *a_nylib = n;
+      fread  (&(g_audit.name)  , LEN_LABEL, 1, my.f_db);
+      DEBUG_FILE   yLOG_info    ("name"      , g_audit.name);
+      fread  (&(g_audit.vernum), LEN_SHORT, 1, my.f_db);
+      DEBUG_FILE   yLOG_info    ("vernum"    , g_audit.vernum);
+      poly_db__read_head  ("projs", &(g_audit.COUNT_PROJS));
+      if (a_nproj != NULL)  *a_nproj = g_audit.COUNT_PROJS;
+      poly_db__read_head  ("files", &(g_audit.COUNT_FILES));
+      if (a_nfile != NULL)  *a_nfile = g_audit.COUNT_FILES;
+      poly_db__read_head  ("funcs", &(g_audit.COUNT_FUNCS));
+      if (a_nfunc != NULL)  *a_nfunc = g_audit.COUNT_FUNCS;
+      poly_db__read_head  ("ylibs", &(g_audit.COUNT_YLIBS));
+      if (a_nylib != NULL)  *a_nylib = g_audit.COUNT_YLIBS;
+      poly_db__read_head  ("lines", &(g_audit.COUNT_LINES));
+      poly_db__read_head  ("empty", &(g_audit.COUNT_EMPTY));
+      poly_db__read_head  ("docs" , &(g_audit.COUNT_DOCS));
+      poly_db__read_head  ("debug", &(g_audit.COUNT_DEBUG));
+      poly_db__read_head  ("code" , &(g_audit.COUNT_CODE));
+      poly_db__read_head  ("slocl", &(g_audit.COUNT_SLOCL));
       break;
    case 'w' :
-      n = poly_btree_count (B_PROJ);
-      DEBUG_FILE   yLOG_value   ("projs"     , n);
-      fwrite (&n, sizeof (int), 1, my.f_db);
-      n = poly_btree_count (B_FILES);
-      DEBUG_FILE   yLOG_value   ("files"     , n);
-      fwrite (&n, sizeof (int), 1, my.f_db);
-      /*> n = poly_btree_count (B_FUNCS);                                             <*/
-      n = poly_func_count ();
-      DEBUG_FILE   yLOG_value   ("funcs"     , n);
-      fwrite (&n, sizeof (int), 1, my.f_db);
-      n = g_nylib;
-      DEBUG_FILE   yLOG_value   ("ylib"      , n);
-      fwrite (&n, sizeof (int), 1, my.f_db);
+      for (n = 0; n < LEN_LABEL; n++)  t [n] = ' ';
+      strlcpy (t, P_BASENAME, LEN_LABEL);
+      fwrite (t, LEN_LABEL, 1, my.f_db);
+      DEBUG_FILE   yLOG_info    ("name"      , t);
+      for (n = 0; n < LEN_LABEL; n++)  t [n] = ' ';
+      strlcpy (t, P_VERNUM  , LEN_SHORT);
+      fwrite (t, LEN_SHORT, 1, my.f_db);
+      DEBUG_FILE   yLOG_info    ("vernum"    , t);
+      poly_db__write_head ("projs", my.COUNT_PROJS);
+      poly_db__write_head ("files", my.COUNT_FILES);
+      poly_db__write_head ("funcs", my.COUNT_FUNCS);
+      poly_db__write_head ("ylibs", my.COUNT_YLIBS);
+      poly_db__write_head ("lines", my.COUNT_LINES);
+      poly_db__write_head ("empty", my.COUNT_EMPTY);
+      poly_db__write_head ("docs" , my.COUNT_DOCS);
+      poly_db__write_head ("debug", my.COUNT_DEBUG);
+      poly_db__write_head ("code" , my.COUNT_CODE);
+      poly_db__write_head ("slocl", my.COUNT_SLOCL);
       break;
    }
    DEBUG_FILE   yLOG_value   ("n"         , n);
@@ -405,7 +435,7 @@ poly_db__read_func      (tFILE *a_file, int n)
       x_func->next    = x_func->prev    = NULL;
       x_func->y_head  = x_func->y_tail  = NULL;
       x_func->y_count = 0;
-      x_func->COUNT_FILES = x_func->COUNT_FUNCS = x_func->COUNT_YLIBS = 0;
+      x_func->COUNT_PROJS = x_func->COUNT_FILES = x_func->COUNT_FUNCS = x_func->COUNT_YLIBS = 0;
       x_func->work    = NULL;
       x_func->btree   = NULL;
       /*---(add to project)-----------------*/
@@ -466,7 +496,7 @@ poly_db__read_file      (tPROJ *a_proj, int n)
       x_file->proj  = NULL;
       x_file->head  = x_file->tail  = NULL;
       x_file->next  = x_file->prev  = NULL;
-      x_file->count = x_file->COUNT_FILES = x_file->COUNT_FUNCS = x_file->COUNT_YLIBS = 0;
+      x_file->count = x_file->COUNT_PROJS = x_file->COUNT_FILES = x_file->COUNT_FUNCS = x_file->COUNT_YLIBS = 0;
       x_file->btree = NULL;
       /*---(add to project)-----------------*/
       DEBUG_INPT   yLOG_note    ("prepare for hook");
@@ -496,6 +526,31 @@ poly_db__read_file      (tPROJ *a_proj, int n)
    return 0;
 }
 
+char
+poly_db__read_zero      (void)
+{
+   my.COUNT_PROJS = my.COUNT_FILES = my.COUNT_FUNCS = my.COUNT_YLIBS = 0;
+   my.COUNT_LINES = my.COUNT_EMPTY = my.COUNT_DOCS  = my.COUNT_DEBUG = my.COUNT_CODE  = my.COUNT_SLOCL = 0;
+   my.COUNT_TEXT  = my.COUNT_DATA  = my.COUNT_BSS   = 0;
+   g_audit.COUNT_PROJS = g_audit.COUNT_FILES = g_audit.COUNT_FUNCS = g_audit.COUNT_YLIBS = 0;
+   g_audit.COUNT_LINES = g_audit.COUNT_EMPTY = g_audit.COUNT_DOCS  = g_audit.COUNT_DEBUG = g_audit.COUNT_CODE  = g_audit.COUNT_SLOCL = 0;
+   g_audit.COUNT_TEXT  = g_audit.COUNT_DATA  = g_audit.COUNT_BSS   = 0;
+   return 0;
+}
+
+char
+poly_db__stats          (void)
+{
+   DEBUG_FILE   yLOG_complex ("my"        , "%4dp  %4df  %4df  %4dy     %4dl  %4de  %4dd  %4dd  %4dc  %4ds", my.COUNT_PROJS, my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS, my.COUNT_LINES, my.COUNT_EMPTY, my.COUNT_DOCS , my.COUNT_DEBUG, my.COUNT_CODE , my.COUNT_SLOCL);
+   DEBUG_FILE   yLOG_complex ("g_audit"   , "%4dp  %4df  %4df  %4dy     %4dl  %4de  %4dd  %4dd  %4dc  %4ds", g_audit.COUNT_PROJS, g_audit.COUNT_FILES, g_audit.COUNT_FUNCS, g_audit.COUNT_YLIBS, g_audit.COUNT_LINES, g_audit.COUNT_EMPTY, g_audit.COUNT_DOCS , g_audit.COUNT_DEBUG, g_audit.COUNT_CODE , g_audit.COUNT_SLOCL);
+   return 0;
+}
+
+char
+poly_db__read_audit     (void)
+{
+}
+
 char         /*===[[ write binary file ]]=================[ ------ [ ------ ]=*/
 poly_db_read          (void)
 {
@@ -509,9 +564,9 @@ poly_db_read          (void)
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
-   my.COUNT_PROJS = my.COUNT_FILES = my.COUNT_FUNCS = my.COUNT_YLIBS = 0;
-   my.COUNT_LINES = my.COUNT_EMPTY = my.COUNT_DOCS  = my.COUNT_DEBUG = my.COUNT_CODE  = my.COUNT_SLOCL = 0;
-   my.COUNT_TEXT  = my.COUNT_DATA  = my.COUNT_BSS   = 0;
+   poly_proj_purge    ();
+   poly_db__read_zero ();
+   poly_db__stats     ();
    /*---(open)---------------------------*/
    rc = poly_db__open ('r', &n, NULL, NULL, NULL);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
@@ -520,6 +575,7 @@ poly_db_read          (void)
       return rce;
    }
    DEBUG_INPT   yLOG_value   ("projects"  , n);
+   poly_db__stats     ();
    /*---(walk projects)------------------*/
    for (i = 0; i < n; ++i) {
       /*---(allocate)-----------------------*/
@@ -535,7 +591,7 @@ poly_db_read          (void)
       /*---(clear the pointers)-------------*/
       x_nfile = x_proj->count;
       x_proj->head  = x_proj->tail  = NULL;
-      x_proj->count = x_proj->COUNT_FILES = x_proj->COUNT_FUNCS = x_proj->COUNT_YLIBS = 0;
+      x_proj->count = x_proj->COUNT_PROJS = x_proj->COUNT_FILES = x_proj->COUNT_FUNCS = x_proj->COUNT_YLIBS = 0;
       x_proj->btree = NULL;
       /*---(into btree)---------------------*/
       rc = poly_btree_hook (B_PROJ, x_proj, x_proj->name, &x_proj->btree);
@@ -544,6 +600,8 @@ poly_db_read          (void)
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+      /*---(update count)-------------------*/
+      ++(my.COUNT_PROJS);
       /*---(dive)---------------------------*/
       rc = poly_db__read_file (x_proj, x_nfile);
       DEBUG_INPT   yLOG_value   ("read_file" , rc);
@@ -552,10 +610,6 @@ poly_db_read          (void)
          return rce;
       }
       /*---(update)-------------------------*/
-      ++my.COUNT_PROJS;
-      my.COUNT_FILES += x_proj->COUNT_FILES;
-      my.COUNT_FUNCS += x_proj->COUNT_FUNCS;
-      my.COUNT_YLIBS += x_proj->COUNT_YLIBS;
       my.COUNT_LINES += x_proj->COUNT_LINES;
       my.COUNT_EMPTY += x_proj->COUNT_EMPTY;
       my.COUNT_DOCS  += x_proj->COUNT_DOCS ;
@@ -580,6 +634,8 @@ poly_db_read          (void)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(statistics)---------------------*/
+   poly_db__stats     ();
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -610,10 +666,22 @@ poly_db__unit           (char *a_question)
             (my.f_db     == NULL) ? '-' : 'y', my.f_db,
             x_exist, strlen (my.n_db), my.n_db);
    }
+   else if (strcmp (a_question, "btrees"    )     == 0) {
+      snprintf (unit_answer, LEN_RECD, "DB btrees        : %4dp  %4df  %4df",
+            poly_btree_count (B_PROJ) , poly_btree_count (B_FILES),
+            poly_btree_count (B_FUNCS));
+   }
    else if (strcmp (a_question, "counts"    )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "DB counts        : %4dp, %4df, %4df, %4dy",
-            poly_btree_count (B_PROJ), poly_btree_count (B_FILES),
-            poly_func_count (), g_nylib);
+      snprintf (unit_answer, LEN_RECD, "DB counts        : %4dp  %4df  %4df  %4dy     %4dl  %4de  %4dd  %4dd  %4dc  %4ds",
+            my.COUNT_PROJS, my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS, 
+            my.COUNT_LINES, my.COUNT_EMPTY, my.COUNT_DOCS ,
+            my.COUNT_DEBUG, my.COUNT_CODE , my.COUNT_SLOCL);
+   }
+   else if (strcmp (a_question, "audits"    )     == 0) {
+      snprintf (unit_answer, LEN_RECD, "DB audits        : %4dp  %4df  %4df  %4dy     %4dl  %4de  %4dd  %4dd  %4dc  %4ds",
+            g_audit.COUNT_PROJS, g_audit.COUNT_FILES, g_audit.COUNT_FUNCS, g_audit.COUNT_YLIBS, 
+            g_audit.COUNT_LINES, g_audit.COUNT_EMPTY, g_audit.COUNT_DOCS ,
+            g_audit.COUNT_DEBUG, g_audit.COUNT_CODE , g_audit.COUNT_SLOCL);
    }
    /*---(complete)-----------------------*/
    return unit_answer;

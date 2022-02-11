@@ -4,6 +4,7 @@
 
 
 tMY         my;
+tAUDIT      g_audit;
 
 
 char      unit_answer [LEN_RECD] = "";
@@ -46,15 +47,29 @@ PROG_vershow       (void)
 
 
 /*====================------------------------------------====================*/
+/*===----                       pre-initialization                     ----===*/
+/*====================------------------------------------====================*/
+static void      o___PREINIT_________________o (void) {;}
+
+
+char
+PROG_urgents            (int argc, char *argv[])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   /*---(initialize)---------------------*/
+   yURG_all_mute ();
+   rc = yURG_logger  (argc, argv);
+   rc = yURG_urgs    (argc, argv);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                        program startup                       ----===*/
 /*====================------------------------------------====================*/
 static void      o___STARTUP_________________o (void) {;}
-
-char         /*--> pre-debugging code --------------------[ leaf   [ ------ ]-*/
-PROG_preinit       (void)
-{
-   return 0;
-}
 
 char
 PROG_reset_yjobs   (void)
@@ -66,13 +81,14 @@ PROG_reset_yjobs   (void)
 }
 
 char         /*-> very first setup -------------------[ shoot  [gz.633.201.0A]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
-PROG_init          (int a_argc, char *a_argv[])
+PROG__init              (int a_argc, char *a_argv[])
 {
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(yJOB config)--------------------*/
    PROG_reset_yjobs ();
    my.run_uid     = getuid ();
+   my.runtime     = time (NULL);
    /*---(run-time-config)----------------*/
    DEBUG_PROG   yLOG_note    ("initialize run-time settings");
    my.g_mode      = POLY_NONE;
@@ -124,7 +140,7 @@ PROG_init          (int a_argc, char *a_argv[])
 #define  TWOARG  if (++i >= a_argc)  yURG_err (YURG_FATAL, "%s argument requires an additional string", a, --rc); else 
 
 char         /*-> process the command line args ------[ ------ [gz.952.251.B4]*/ /*-[01.0000.121.!]-*/ /*-[--.---.---.--]-*/
-PROG_args          (int a_argc, char *a_argv[])
+PROG__args              (int a_argc, char *a_argv[])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -162,19 +178,18 @@ PROG_args          (int a_argc, char *a_argv[])
       /*> rc = poly_rptg_args (a);                                                    <*/
       /*> if (rc == 1)   continue;                                                    <*/
       /*---(simple)----------------------*/
-      if       (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
+      if      (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
       /*---(complicated)-----------------*/
       else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
       /*---(system-wide)-----------------*/
-      /*> else if (strcmp (a, "--unregister") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_UNREG;   }   <*/
-      /*> else if (strcmp (a, "--system"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_SYSTEM;  }   <*/
+      else if (strcmp (a, "--system"    ) == 0)  a = "--normal";
+      else if (strcmp (a, "--csystem"   ) == 0)  a = "--cnormal";
+      else if (strcmp (a, "--vsystem"   ) == 0)  a = "--vnormal";
       /*---(configuration)---------------*/
       else if (strcmp (a, "--database"  ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
       else if (strcmp (a, "--world"     ) == 0)  TWOARG rc = poly_world_cli   (a_argv [i], 'y');
-      /*---(data handling)---------------*/
-      /*> else if (strcmp (a, "--new"       ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_NEW;     }   <*/
-      /*> else if (strcmp (a, "--remove"    ) == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }   <*/
+      else if (strcmp (a, "--external"  ) == 0)  TWOARG rc = poly_extern_cli  (a_argv [i], 'y');
       /*---(extern)----------------------*/
       /*> else if (strcmp (a, "--add-extern") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_YLIB;    }   <*/
       /*> else if (strcmp (a, "--rem-extern") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }   <*/
@@ -260,7 +275,7 @@ PROG_args          (int a_argc, char *a_argv[])
 }
 
 char         /*-> initialize program and variables ---[ ------ [gz.741.041.07]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
-PROG_begin         (void)
+PROG__begin             (void)
 {
    /*---(header)-------------------------*/
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
@@ -269,19 +284,37 @@ PROG_begin         (void)
    rc = poly_extern_load ();
    /*---(complete)-----------------------*/
    DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
-   return rc;
+   return 0;
 }
 
-char         /*-> initialize program and variables ---[ ------ [gz.741.041.07]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
-PROG_final         (void)
+char
+PROG_startup            (int argc, char *argv[])
 {
    /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    char        rc          =    0;
    /*---(header)-------------------------*/
+   yURG_stage_check (YURG_BEG);
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
+   /*---(initialize)---------------------*/
+   if (rc >= 0) {
+      rc = PROG__init    (argc, argv);
+      DEBUG_TOPS  yLOG_value   ("init"      , rc);
+   }
+   /*---(arguments)----------------------*/
+   if (rc >= 0) {
+      rc = PROG__args    (argc, argv);
+      DEBUG_TOPS  yLOG_value   ("args"      , rc);
+   }
+   /*---(begin)--------------------------*/
+   if (rc >= 0) {
+      rc = PROG__begin   ();
+      DEBUG_TOPS  yLOG_value   ("args"      , rc);
+   }
    /*---(complete)-----------------------*/
    DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
-   return 0;
+   yURG_stage_check (YURG_MID);
+   return rc;
 }
 
 
@@ -347,13 +380,353 @@ PROG_summarize          (tPROJ *a_proj)
 static void      o___DISPATCH________________o (void) {;}
 
 char
+PROG__stats             (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        t           [LEN_LABEL] = "";
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(call action)--------------------*/
+   rc = poly_action__read    ();
+   if (rc < 0)  {
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(display)------------------------*/
+   printf ("#!/usr/local/bin/polymnia --stats\n");
+   printf ("db     å%sæ\n" , my.n_db);
+   printf ("name   å%sæ\n" , g_audit.name);
+   printf ("ver    å%sæ\n" , g_audit.vernum);
+   strl4main (g_audit.COUNT_PROJS, t , 0, 'c', '-', LEN_LABEL);
+   printf ("projs  %7.7s\n", t);
+   strl4main (g_audit.COUNT_FILES, t , 0, 'c', '-', LEN_LABEL);
+   printf ("files  %7.7s\n", t);
+   strl4main (g_audit.COUNT_FUNCS, t , 0, 'c', '-', LEN_LABEL);
+   printf ("funcs  %7.7s\n", t);
+   strl4main (g_audit.COUNT_YLIBS, t , 0, 'c', '-', LEN_LABEL);
+   printf ("ylibs  %7.7s\n", t);
+   strl4main (g_audit.COUNT_LINES, t , 0, 'c', '-', LEN_LABEL);
+   printf ("lines  %7.7s\n", t);
+   strl4main (g_audit.COUNT_EMPTY, t , 0, 'c', '-', LEN_LABEL);
+   printf ("empty  %7.7s\n", t);
+   strl4main (g_audit.COUNT_DOCS , t , 0, 'c', '-', LEN_LABEL);
+   printf ("docs   %7.7s\n", t);
+   strl4main (g_audit.COUNT_DEBUG, t , 0, 'c', '-', LEN_LABEL);
+   printf ("debug  %7.7s\n", t);
+   strl4main (g_audit.COUNT_CODE , t , 0, 'c', '-', LEN_LABEL);
+   printf ("code   %7.7s\n", t);
+   strl4main (g_audit.COUNT_SLOCL, t , 0, 'c', '-', LEN_LABEL);
+   printf ("slocl  %7.7s\n", t);
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__verify            (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   yURG_msg ('>', "  option --vverify, check current project suitability for usage");
+   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   rc = poly_action__here      ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CVERIFY )   yURG_msg_live ();
+      if (my.run_mode == ACT_CVERIFY )   yURG_msg ('>', "FAILED, project could not be analyzed, run --vverify to identify reasons");
+      if (my.run_mode == ACT_VVERIFY )   yURG_msg ('>', "FAILED, project could not be analyzed, the reasons are shown above");
+      if (my.run_mode == ACT_CVERIFY )   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   yURG_msg ('>', "SUCCESS, project is suitable for inclusion in database");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__register          (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   IF_VERBOSE   yURG_msg ('>', "  option --vregister, analyze current project and add to registry");
+   IF_VERBOSE   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   rc = poly_world_register   ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CREGISTER)  yURG_msg_live ();
+      if (my.run_mode == ACT_CREGISTER)  yURG_msg ('>', "FAILED, project could not be registered, run --vregister to identify reasons");
+      if (my.run_mode == ACT_VREGISTER)  yURG_msg ('>', "FAILED, project could not be registered, the reasons are shown above");
+      if (my.run_mode == ACT_CREGISTER)  yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   if (rc == 0)  yURG_msg ('>', "SUCCESS, project was registered in the database");
+   else          yURG_msg ('>', "WARNING, project was already registered in the database");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__update            (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   IF_VERBOSE   yURG_msg ('>', "  option --vupdate, analyze current project and add to database");
+   IF_VERBOSE   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   rc = poly_action_update    ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CUPDATE )   yURG_msg_live ();
+      if (my.run_mode == ACT_CUPDATE )   yURG_msg ('>', "FAILED, could not update database, run --vupdate to identify reasons");
+      if (my.run_mode == ACT_VUPDATE )   yURG_msg ('>', "FAILED, but could not update database, the reasons are shown above");
+      if (my.run_mode == ACT_CUPDATE )   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   yURG_msg ('>', "SUCCESS, project was updated in the database");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__install           (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   IF_VERBOSE   yURG_msg ('>', "  option --vinstall, analyze current project and add to registry plus database");
+   IF_VERBOSE   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   rc = poly_world_register   ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CINSTALL)   yURG_msg_live ();
+      if (my.run_mode == ACT_CINSTALL)   yURG_msg ('>', "FAILED, project could not be registered, run --vinstall to identify reasons");
+      if (my.run_mode == ACT_VINSTALL)   yURG_msg ('>', "FAILED, project could not be registered, the reasons are shown above");
+      if (my.run_mode == ACT_CINSTALL)   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(call action)--------------------*/
+   yURG_msg (' ', "");
+   rc = poly_action_update    ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CINSTALL)   yURG_msg_live ();
+      if (my.run_mode == ACT_CINSTALL)   yURG_msg ('>', "FAILED, project registered, but could not update database, run --vinstall to identify reasons");
+      if (my.run_mode == ACT_VINSTALL)   yURG_msg ('>', "FAILED, project registered, but could not update database, the reasons are shown above");
+      if (my.run_mode == ACT_CINSTALL)   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   yURG_msg ('>', "SUCCESS, project was both registered and updated in the database");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__withdraw          (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   IF_VERBOSE   yURG_msg ('>', "  option --vwithdraw, remove named project from the to registry");
+   IF_VERBOSE   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   strlcpy (my.g_projname, my.run_file, LEN_LABEL);
+   rc = poly_world_unregister ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CWITHDRAW)  yURG_msg_live ();
+      if (my.run_mode == ACT_CWITHDRAW)  yURG_msg ('>', "FAILED, project could not be unregistered, run --vwithdraw to identify reasons");
+      if (my.run_mode == ACT_VWITHDRAW)  yURG_msg ('>', "FAILED, project could not be unregistered, the reasons are shown above");
+      if (my.run_mode == ACT_CWITHDRAW)  yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   if (rc == 0)  yURG_msg ('>', "SUCCESS, project was removed from the registry");
+   else          yURG_msg ('>', "WARNING, project was not in the registry, nothing to do");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__clear             (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   IF_VERBOSE   yURG_msg ('>', "  option --vclear, remove named project from the database");
+   IF_VERBOSE   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   strlcpy (my.g_projname, my.run_file, LEN_LABEL);
+   rc = poly_action_remove    ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CCLEAR  )   yURG_msg_live ();
+      if (my.run_mode == ACT_CCLEAR  )   yURG_msg ('>', "FAILED, project could not be removed, run --vclear to identify reasons");
+      if (my.run_mode == ACT_VCLEAR  )   yURG_msg ('>', "FAILED, project could not be removed, the reasons are shown above");
+      if (my.run_mode == ACT_CCLEAR  )   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   if (rc == 0)  yURG_msg ('>', "SUCCESS, project was removed from the database");
+   else          yURG_msg ('>', "WARNING, project was not in database, nothing to do");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__remove            (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   IF_VERBOSE   yURG_msg ('>', "  option --vremove, remove named project from database and registry");
+   IF_VERBOSE   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   strlcpy (my.g_projname, my.run_file, LEN_LABEL);
+   rc = poly_world_unregister ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CREMOVE )   yURG_msg_live ();
+      if (my.run_mode == ACT_CREMOVE )   yURG_msg ('>', "FAILED, project could not be unregistered, run --vremove to identify reasons");
+      if (my.run_mode == ACT_VREMOVE )   yURG_msg ('>', "FAILED, project could not be unregistered, the reasons are shown above");
+      if (my.run_mode == ACT_CREMOVE )   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(call action)--------------------*/
+   yURG_msg (' ', "");
+   rc = poly_action_remove    ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CREMOVE )   yURG_msg_live ();
+      if (my.run_mode == ACT_CREMOVE )   yURG_msg ('>', "FAILED, project could not be removed, run --vremove to identify reasons");
+      if (my.run_mode == ACT_VREMOVE )   yURG_msg ('>', "FAILED, project could not be removed, the reasons are shown above");
+      if (my.run_mode == ACT_CREMOVE )   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   if (rc == 0)  yURG_msg ('>', "SUCCESS, project was removed from database and registry");
+   else          yURG_msg ('>', "WARNING, project was not in database, nothing to do");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__system            (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   IF_CONFIRM {
+      yURG_msg_live ();
+      yURG_msg ('>', "%s", P_ONELINE);
+      yURG_msg ('>', "  option --cnormal, update data with all projects from registry");
+      yURG_msg_mute ();
+   }
+   IF_VERBOSE   yURG_msg ('>', "  option --vnormal, update data with all projects from registry");
+   IF_VERBOSE   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   rc = poly_world_system     ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CNORMAL )   yURG_msg_live ();
+      if (my.run_mode == ACT_CNORMAL )   yURG_msg ('>', "FAILED, system update was not completed, run --vnormal to identify reasons");
+      if (my.run_mode == ACT_VNORMAL )   yURG_msg ('>', "FAILED, system update was not completed, the reasons are shown above");
+      if (my.run_mode == ACT_CNORMAL )   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   yURG_msg ('>', "SUCCESS, system update was completed for all registry projects");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 PROG_dispatch           (void)
 {
    /*---(locals)-----------+-----+-----+-*/
-   int         rce         =  -10;
-   int         rc          =    0;
+   char        rce         =  -10;
+   char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC   yLOG_enter   (__FUNCTION__);
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
    /*---(TEMPORARY)----------------------*/
    if (my.g_data == POLY_DATA_HTAGS) {
       rc = poly_action_htags     ();
@@ -363,52 +736,43 @@ PROG_dispatch           (void)
    IF_VERBOSE   yURG_msg ('>', "%s", P_ONELINE);
    /*---(route action)-------------------*/
    --rce;  switch (my.run_mode) {
+      /*---(basic)-----------------------*/
+   case ACT_STATS       :
+      rc = PROG__stats    ();
+      break;
       /*---(incomming)-------------------*/
+   case CASE_VERIFY     :
+      rc = PROG__verify   ();
+      break;
+   case CASE_REGISTER   :
+      rc = PROG__register ();
+      break;
    case CASE_UPDATE     :
-      IF_VERBOSE   yURG_msg ('>', "  option --vupdate, analyze current project and add to database");
-      IF_VERBOSE   yURG_msg (' ', "");
-      rc = poly_action_update    ();
+      rc = PROG__update   ();
       break;
    case CASE_INSTALL    :
-      IF_VERBOSE   yURG_msg ('>', "  option --vinstall, analyze current project and add to registry plus database");
-      IF_VERBOSE   yURG_msg (' ', "");
-      rc = poly_world_register   ();
-      if (rc < 0) {
-         if (my.run_mode == ACT_CINSTALL)   yURG_msg_live ();
-         if (my.run_mode == ACT_CINSTALL)   yURG_msg ('>', "FAILED, project could not be registered, run --vinstall to identify reasons");
-         if (my.run_mode == ACT_VINSTALL)   yURG_msg ('>', "FAILED, project could not be registered, the reasons are shown above");
-         if (my.run_mode == ACT_CINSTALL)   yURG_msg_mute ();
-         break;
-      }
-      rc = poly_action_update    ();
-      if (rc < 0) {
-         if (my.run_mode == ACT_CINSTALL)   yURG_msg_live ();
-         if (my.run_mode == ACT_CINSTALL)   yURG_msg ('>', "FAILED, project registered, but could not update database, run --vinstall to identify reasons");
-         if (my.run_mode == ACT_VINSTALL)   yURG_msg ('>', "FAILED, project registered, but could not update database, the reasons are shown above");
-         if (my.run_mode == ACT_CINSTALL)   yURG_msg_mute ();
-         break;
-      }
-      if (my.run_mode == ACT_CINSTALL)   yURG_msg_live ();
-      yURG_msg ('>', "SUCCESS, project was both registered and updated in the database");
-      if (my.run_mode == ACT_CINSTALL)   yURG_msg_mute ();
+      rc = PROG__install  ();
       break;
       /*---(outgoing)--------------------*/
-   case CASE_REMOVE     :
-      rc = poly_world_unregister ();
-      rc = poly_action_remove    ();
+   case CASE_WITHDRAW   :
+      rc = PROG__withdraw ();
       break;
    case CASE_CLEAR      :
-      rc = poly_action_remove    ();
+      rc = PROG__clear    ();
+      break;
+   case CASE_REMOVE     :
+      rc = PROG__remove   ();
       break;
       /*---(central)---------------------*/
    case CASE_REPORT     :
-      rc = poly_rptg_dispatch    ();
+      rc = poly_rptg_dispatch ();
       break;
    case CASE_AUDIT      :
       break;
       /*---(execute)---------------------*/
    case CASE_NORMAL     :
    case CASE_STRICT     :
+      rc = PROG__system   ();
       break;
       /*---(trouble)---------------------*/
    default              :
@@ -418,7 +782,7 @@ PROG_dispatch           (void)
    /*---(cut-off)------------------------*/
    yURG_all_mute ();
    /*---(complete)-----------------------*/
-   DEBUG_YEXEC   yLOG_exit    (__FUNCTION__);
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -460,6 +824,7 @@ PROG_dispatch_OLD       (void)
       DEBUG_PROG   yLOG_char    ("g_rptg"    , my.g_rptg);
       if      (my.g_scope == POLY_PROJ)    rc = poly_rptg_projects ();
       else if (my.g_scope == POLY_FILE)    rc = poly_rptg_files    ();
+      else if (my.g_scope == POLY_YLIB)    rc = poly_rptg_ylibs    ();
       /*> else {                                                                                 <* 
        *>    switch (my.g_rptg) {                                                                <* 
        *>    case POLY_RPTG_PROJS   : case POLY_RPTG_ONELINE :                                   <* 
@@ -512,9 +877,10 @@ PROG_dispatch_OLD       (void)
 static void      o___SHUTDOWN________________o (void) {;}
 
 char         /*-> shutdown program and free memory ---[ ------ [gz.422.001.03]*/ /*-[00.0000.111.!]-*/ /*-[--.---.---.--]-*/
-PROG_end             (void)
+PROG__end               (void)
 {
    /*---(header)-------------------------*/
+   yURG_stage_check (YURG_END);
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(wrap-up)------------------------*/
    poly_proj_purge   ();
@@ -529,6 +895,12 @@ PROG_end             (void)
    return 0;
 }
 
+char         /*-> shutdown program and free memory ---[ ------ [gz.422.001.03]*/ /*-[00.0000.111.!]-*/ /*-[--.---.---.--]-*/
+PROG_shutdown          (void)
+{
+   return PROG__end ();
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -539,33 +911,30 @@ static void      o___UNITTEST________________o (void) {;}
 char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.#]-*/ /*-[--.---.---.--]-*/
 PROG__unit_quiet   (void)
 {
+   char        x_argc      = 1;
    char       *x_args [1]  = { "polymnia" };
-   yURG_logger (1, x_args);
-   PROG_init   (1, x_args);
-   yURG_urgs   (1, x_args);
-   PROG_args   (1, x_args);
-   PROG_begin  ();
+   PROG_urgents (x_argc, x_args);
+   PROG_startup (x_argc, x_args);
    return 0;
 }
 
 char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 PROG__unit_loud      (void)
 {
-   char       *x_args [4]  = { "polymnia_unit", "@@kitchen", "@@nosort", "@@main_only" };
-   yURG_logger (4, x_args);
-   PROG_init   (4, x_args);
-   yURG_urgs   (4, x_args);
+   char        x_argc      = 4;
+   char       *x_args [4]  = { "polymnia_unit", "@@kitchen", "@@nosort", "@@mid" };
+   PROG_urgents (x_argc, x_args);
+   /*> yURG_name  ("mid"          , YURG_ON);                                         <*/
    yURG_name  ("kitchen"      , YURG_ON);
    yURG_name  ("yexec"        , YURG_ON);
-   PROG_args   (4, x_args);
-   PROG_begin  ();
+   PROG_startup (x_argc, x_args);
    return 0;
 }
 
 char         /*-> set up program urgents/debugging ---[ light  [uz.210.001.01]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 PROG__unit_end       (void)
 {
-   PROG_end       ();
+   PROG_shutdown  ();
    return 0;
 }
 

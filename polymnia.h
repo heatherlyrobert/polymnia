@@ -34,8 +34,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.9-, bring back to life ;)"
-#define     P_VERNUM    "0.9g"
-#define     P_VERTXT    "successfully brought over yJOBS args interface for install and update"
+#define     P_VERNUM    "0.9h"
+#define     P_VERTXT    "successful ylibs report (beautiful) but not fully tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -157,6 +157,7 @@ typedef     struct      dirent      tDIRENT;
 typedef     struct      stat        tSTAT;
 
 typedef     struct      cMY         tMY;
+typedef     struct      cAUDIT      tAUDIT;
 typedef     struct      cPROJ       tPROJ;
 typedef     struct      cFILE       tFILE;
 typedef     struct      cFUNC       tFUNC;
@@ -164,6 +165,7 @@ typedef     struct      cYLIB       tYLIB;
 typedef     struct      cWORK       tWORK;
 
 typedef     struct      cBTREE      tBTREE;
+typedef     struct      cELIB       tELIB;
 typedef     struct      cEXTERN     tEXTERN;
 
 
@@ -186,11 +188,14 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_ONELINE        'o'
 
 /*
- *  maintenance-----------------------------
+ *  incomming-------------------------------
  *  
- *  v = verify (before install)
- *  i = install (and register)
- *  u = update (quick single refresh)
+ *  v = verify
+ *  b = register  = verify and register
+ *  i = install   = verify, install, register
+ *  u = update    = verify and install (no register)
+ *
+ *  central---------------------------------
  *
  *  l = count/list
  *  ? = report
@@ -199,9 +204,14 @@ typedef     struct      cEXTERN     tEXTERN;
  *  f = fix
  *  h = reload (system)
  *
+ *  behind----------------------------------
+ *
  *  ? = upload   (from central to elsewhere)
  *  ? = download (to central from elsewhere)
  *
+ *  outgoing--------------------------------
+ *
+ *  q = withdraw  = unregister
  *  x = clear (quick single prune)
  *  r = remove (and unregister)
  *  e = extract (copy/one time)
@@ -210,7 +220,6 @@ typedef     struct      cEXTERN     tEXTERN;
  *
  *  d = daemon
  *  p = prickly
- *
  *  n = normal
  *  s = strict
  *
@@ -218,19 +227,6 @@ typedef     struct      cEXTERN     tEXTERN;
  *
  */
 
-#define     ACT_INSTALL         'i'
-#define     ACT_CINSTALL        'I'
-#define     ACT_VINSTALL        'ð'
-#define     ACT_REMOVE          'r'
-#define     ACT_CREMOVE         'R'
-#define     ACT_VREMOVE         'ø'
-
-#define     ACT_WITHDRAW        'u'
-#define     ACT_CWITHDRAW       'U'
-#define     ACT_VWITHDRAW       'û'
-#define     ACT_SYSTEM          's'
-#define     ACT_CSYSTEM         'S'
-#define     ACT_VSYSTEM         'ù'
 
 
 
@@ -308,12 +304,21 @@ typedef     struct      cEXTERN     tEXTERN;
 
 
 
+struct cAUDIT {
+   char        name        [LEN_LABEL];
+   char        vernum      [LEN_SHORT];
+   int         counts      [MAX_COUNTS];    /* line counts                    */
+};
+extern      tAUDIT      g_audit;
+
+
 struct cMY {
    /*---(yJOBS)----------------*/
    char        run_as;                      /* khronos, eos, heracles, ...    */
    char        run_mode;                    /* verify, install, audit, ...    */
    char        run_file    [LEN_PATH];      /* file to act on                 */
    int         run_uid;                     /* uid of person who launched     */
+   long        runtime;
    /*---(runtime config)------*/
    char        version     [LEN_HUND];      /* version string                 */
    char        g_mode;                 /* switch for data/reporting           */
@@ -366,11 +371,12 @@ extern      tMY         my;
 struct cPROJ {
    /*---(overall)-----------*/
    char        name        [LEN_TITLE];
-   char        header      [LEN_DESC];      /* flags on each header onelineer */
+   char        header      [LEN_DESC];      /* flags on each header oneliner  */
+   long        written;
    /*---(master)------------*/
    char        focus       [LEN_DESC]; 
    char        niche       [LEN_DESC]; 
-   char        subject     [LEN_TITLE];
+   char        subject     [LEN_DESC];
    char        purpose     [LEN_HUND];
    /*---(greek)-------------*/
    char        namesake    [LEN_HUND];
@@ -397,6 +403,8 @@ struct cPROJ {
    char        verminor    [LEN_HUND];
    char        vernum      [LEN_LABEL];
    char        vertxt      [LEN_HUND];
+   /*---(other)-------------*/
+   char        manual      [LEN_LABEL];
    /*---(new stats interface)-*/
    int         funcs;
    int         counts      [MAX_COUNTS];    /* line counts                    */
@@ -696,22 +704,39 @@ struct      cBTREE {
 #define     B_FUNCS     't'
 #define     B_PROTO     'p'
 #define     B_EXTERN    'e'
-#define     B_WORLD     'p'
+#define     B_WORLD     'w'
+#define     B_ELIB      'l'
 #define     B_UNIT      'U'
-#define     B_ALL       "TftpewU"
+#define     B_ALL       "TftpewlU"
 
+struct      cELIB {
+   /*---(info)--------------*/
+   char        name        [LEN_LABEL];
+   int         wuse;
+   /*---(extern)------------*/
+   int         count;
+   tEXTERN    *head;
+   tEXTERN    *tail;
+   /*---(btree)-------------*/
+   tBTREE     *btree;
+   /*---(done)--------------*/
+};
 
 
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct      cEXTERN {
    /*---(information)-------*/
-   char        lib         [LEN_TITLE];
+   tELIB      *elib;
    char        name        [LEN_TITLE];
    int         line;
    char        type;
    char        cat;
    char        sub;
-   int         uses;
+   /*---(working)-----------*/
+   int         wuse;
+   /*---(elib)--------------*/
+   tEXTERN    *l_next;
+   tEXTERN    *l_prev;
    /*---(ylib)--------------*/
    tYLIB      *y_head;
    tYLIB      *y_tail;
@@ -793,16 +818,29 @@ char*       poly_cats_full          (tFUNC *a_func, char *a_out);
 char        poly_cats_func          (tFUNC *a_func);
 char*       poly_cats__unit         (char *a_question, int n);
 
+
+
+/*---(support)--------------*/
 char        PROG_reset_yjobs        (void);
-char        PROG_init               (int a_argc, char *a_argv[]);
-char        PROG_args               (int a_argc, char *a_argv[]);
-char        PROG_prepare            (void);
+/*---(urgents)--------------*/
+char        PROG_urgents            (int a_argc, char *a_argv[]);
+/*---(startup)--------------*/
+char        PROG__init              (int a_argc, char *a_argv[]);
+char        PROG__args              (int a_argc, char *a_argv[]);
+char        PROG__begin             (void);
+char        PROG_startup            (int a_argc, char *a_argv[]);
+/*---(main)-----------------*/
 char        PROG_dispatch           (void);
 char        PROG_summarize          (tPROJ *x_proj);
+/*---(shutdown)-------------*/
+char        PROG__end               (void);
+char        PROG_shutdown           (void);
+/*---(unittest)-------------*/
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);
 char*       prog__unit              (char *a_question, int i);
+/*---(done)-----------------*/
 
 
 
@@ -814,6 +852,7 @@ char        poly_extern__wipe       (tEXTERN *a_ext);
 char*       poly_extern__memory     (tEXTERN *a_ext);
 /*---(program)--------------*/
 char        poly_extern_init        (void);
+char        poly_extern_clear_uses  (void);
 char        poly_extern_wrap        (void);
 /*---(existance)------------*/
 char        poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type);

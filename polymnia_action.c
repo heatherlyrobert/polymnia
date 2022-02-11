@@ -167,10 +167,9 @@ poly_action__here       (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   yURG_msg ('-', "current directory is å%sæ", x_proj->homedir);
-   yURG_msg ('-', "therefore, project is named å%sæ", x_proj->name);
    /*---(save off)-----------------------*/
    my.g_proj = x_proj;
+   x_proj->written = my.runtime;
    /*---(analyze project)----------------*/
    rc = poly_action__gather (x_proj);
    DEBUG_PROG   yLOG_value   ("gather"     , rc);
@@ -291,16 +290,19 @@ poly_action_update      (void)
    rc = poly_action__read    ();
    DEBUG_PROG   yLOG_value   ("read"       , rc);
    --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      DEBUG_PROG   yLOG_note    ("database does not exist, potential security issue");
+      yURG_err ('w', "database does not exist, will create");
+   } else {
+      yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
    }
-   yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
    /*---(generate tags)------------------*/
    rc = poly_action__here ();
    DEBUG_PROG   yLOG_value   ("htags"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
+   } else {
+      yURG_msg ('-', "project successfully handled");
    }
    /*---(write database)-----------------*/
    yURG_msg ('-', "write database back to disk");
@@ -312,7 +314,6 @@ poly_action_update      (void)
    }
    yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
    yURG_msg ('-', "success, project updated in database");
-   yURG_msg (' ', "");
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -519,6 +520,8 @@ poly_action_remove      (void)
    int         x_len       =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(verify header)------------------*/
+   yURG_msg ('>', "clear/remove project details to database...");
    /*---(setup project)------------------*/
    DEBUG_PROG   yLOG_info    ("g_projname", my.g_projname);
    x_len = strlen (my.g_projname);
@@ -528,18 +531,26 @@ poly_action_remove      (void)
       return rce;
    }
    /*---(read database)------------------*/
+   yURG_msg ('-', "import the current database å%sæ", my.n_db);
    rc = poly_db_read     ();
    DEBUG_PROG   yLOG_value   ("db_read"    , rc);
    --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_note    ("database does not exist, potential security issue");
+      yURG_err ('w', "database does not exist, will create");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
+   } else {
+      yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
    }
    /*---(find target)--------------------*/
    poly_proj_by_name  (my.g_projname, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      yURG_err ('w', "project does not exist in the database, nothing to do");
+      DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+      return 1;
+   } else {
+      yURG_msg ('-', "found project in current data");
    }
    DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);
    /*---(remove existing target)---------*/
@@ -547,16 +558,22 @@ poly_action_remove      (void)
    rc = poly_proj_remove (&x_proj);
    DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
    --rce;  if (rc < 0) {
+      yURG_err ('f', "could not remove project from database");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
+   } else {
+      yURG_msg ('-', "project successfully removed");
    }
    /*---(save)---------------------------*/
+   yURG_msg ('-', "write database back to disk");
    rc = poly_db_write    ();
    DEBUG_PROG   yLOG_value   ("db_write"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
+   yURG_msg ('-', "success, project cleared from database");
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -636,7 +653,7 @@ poly_action_libuse      (void)
    rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &x_extern);
    DEBUG_PROG   yLOG_point   ("x_extern"   , x_extern);
    while (x_extern != NULL) {
-      if (strcmp (x_extern->lib, my.g_libuse) == 0) {
+      if (strcmp (x_extern->elib->name, my.g_libuse) == 0) {
          rc = poly_rptg_extern (x_extern);
       }
       rc = poly_btree_by_cursor (B_EXTERN, YDLST_NEXT, &x_extern);

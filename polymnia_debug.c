@@ -137,6 +137,7 @@ poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type)
    }
    if (x_inside == 0)    DEBUG_DATA   yLOG_snote   ("inside a function");
    /*---(line counts)--------------------*/
+   ++my.COUNT_LINES;
    ++a_file->proj->COUNT_LINES;
    ++a_file->COUNT_LINES;
    if (x_inside == 0) ++a_func->COUNT_LINES;
@@ -145,6 +146,7 @@ poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type)
    switch (a_type) {
    case 'n' :  case 'f' :
       DEBUG_DATA   yLOG_snote   ("DEBUG");
+      ++my.COUNT_DEBUG;
       ++a_file->proj->COUNT_DEBUG;
       ++a_file->COUNT_DEBUG;
       if (x_inside == 0) {
@@ -156,6 +158,7 @@ poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type)
       break;
    case 'd' :
       DEBUG_DATA   yLOG_snote   ("DOCS");
+      ++my.COUNT_DOCS;
       ++a_file->proj->COUNT_DOCS;
       ++a_file->COUNT_DOCS;
       if (x_inside == 0) ++a_func->COUNT_DOCS;
@@ -163,6 +166,7 @@ poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type)
       break;
    case 'e' :
       DEBUG_DATA   yLOG_snote   ("EMPTY");
+      ++my.COUNT_EMPTY;
       ++a_file->proj->COUNT_EMPTY;
       ++a_file->COUNT_EMPTY;
       if (x_inside == 0) ++a_func->COUNT_EMPTY;

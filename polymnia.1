@@ -25,13 +25,12 @@ polymnia (7)       decision rationale, objectives, and overview
 .SH TABLE OF CONTENTS
 .nf  
 a) synopsis        command overview
-a) system-wide     standard command line overview
-b) project data    effecting a single project
-b) database        alternate database usage
-c) world file      alternate world file usage
-c) tagging         ide navigation and support
-d) reporting       content query and output
-e) filtering       cutting reporting volume
+b) system-wide     standard command line overview
+c) project data    effecting a single project
+d) local           alternate source and destinations
+e) tagging         ide navigation and support
+f) reporting       content query and output
+g) filtering       cutting reporting volume
 
 .SH A) SYNOPSIS
 .B polymnia [OPTIONS]
@@ -50,73 +49,71 @@ analysis and research platform.  these commands interact with the central
 file.  see polymnia (4) for more information.
 
 .SS --register
-adds the current project directory to the world list.  always do this from the
-programs home directory, not a sub-directory.  no duplicates will be added,
-so do not worry.
+adds the current project directory to the world list.  no duplicates will be
+added, so do not worry.
 
-.SS --unregister
-removes the current project directory from the world list.  existing information
-will not be removed, but it will no longer be automatically updated.
+.SS --withdraw <name>
+removes the named project directory from the world list.  existing database
+information will not be removed.
 
-.SS --system
+.SS --system, --normal
 updates all projects listed in the world list.  this is quite quick and is
-designed to be run in batch.  but, it prints a single line for each update
-in case it is used interactively.
+designed to be run either in batch or interactively.
 
 .SH C) PROJECT DATA OPTIONS
 the central database can also perform a few operations on individual projects
 in order to keep the database clean.
 
+.SS --verify
+checks the current project's location, structure, and data to verify suitability
+for inclusion.  does not effect main registry or database.
+
 .SS --update
 appends the database with new data from current code project.  if the project
-already exists, it is updated.  if not, it is added.  the project does not need
-to be removed first.
+already exists, it is updated.  if not, it is added.
+
+.SS --install
+does a combination of --register and --update so that both the registry and
+database are updated immediately.
+
+.SS --clear
+remove data for the current project data from database.  but, the project
+is not removed from the registry.
 
 .SS --remove
-remove current project data from database.  the only reason to remove data is
-if a project is no longer in use.  if the project remains registered, it will
-be re-added when --system is used.
+does a combination of --withdraw and --clear so that both the registry and
+database are updated immediately.
 
-.SH D) DATABASE OPTIONS
-to aide analysis, limited databases or full database copies can be useful.
-polymnia does not care.
+.SH D) LOCAL OPTIONS
+to aide analysis, limited or full databases, world files, or external function
+lists can be useful.  polymnia does not care.
 
 .SS --database <name>
-orders polymnia to use an alternate database as is source and destination.
-whatever the name, it will be the same binary format.  every time an alternate
-database is used, this option is required.
-
-.SS --new
-create/overwrite database using current code project as the only entry.  this
-option ensures the database starts fresh.
-
-.SS --update, --system, --remove
-these all work exactly like the central database versions above.
-
-.SH E) WORLD FILE OPTIONS
-exactly like with alternate databases, alternative world files enable more
-varied analysis.
+orders polymnia to use an alternate database as source and destination for
+all the options above.
 
 .SS --world <name>
-orders polymnia to use an alternate world file.  every time an alternate
-world file is used, this option is required.
+orders polymnia to use an alternate world file as source and destination for
+all the options above.
 
-.SS --register, --unregister, --system
-these all work exactly like the central database versions above.
+.SS --external <name>
+orders polymnia to use an alternate external function file as source for all
+the options above.
 
-.SH C) TAGGING OPTIONS
-polymnia analyzes current code project, including files, headers, and fuctions,
-to provide a custom tagging and navigation file for my vim-ide without any
-impact to the shared database.
-
-.SS --htags
-write detailed tags format to stdout for use by vim-ide.  this report is
-specifically designed to support my vim-macros and be loaded into a navigation
-window next to the code.
-
-.SH D) REPORTING OPTIONS
+.SH E) REPORTING OPTIONS
 polymnia supports several overviews of database content that provide all
 information stored, typically for use in a spreadsheet.
+
+.SS --htags
+refresh data and write detailed tags format specifically designed to support
+my vim-macros and vim-ide.  does not update database.
+
+.SS --report <name>
+.nf
+projects        full project inventory with statistics
+
+
+
 
 .B --projects
 .RS 8

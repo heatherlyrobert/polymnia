@@ -216,13 +216,11 @@ poly_shared_verify      (uchar *a_name)
    DEBUG_FILE   yLOG_value   ("lstat"     , rci);
    --rce; if (rci < 0) {
       DEBUG_FILE   yLOG_note    ("file does not exist, can not read");
-      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    /*---(check for regular file)---------*/
    --rce;  if (!S_ISREG (st.st_mode)) {
       DEBUG_FILE   yLOG_note    ("not a regular file, rejected");
-      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    /*---(output)-------------------------*/
