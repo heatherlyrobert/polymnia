@@ -34,8 +34,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.9-, bring back to life ;)"
-#define     P_VERNUM    "0.9h"
-#define     P_VERTXT    "successful ylibs report (beautiful) but not fully tested"
+#define     P_VERNUM    "0.9i"
+#define     P_VERTXT    "externals reporting and better ylib summary complete"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -179,7 +179,7 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_PROJ           'P'
 #define     POLY_FILE           'I'
 #define     POLY_FUNC           'F'
-#define     POLY_EXTR           'E'
+#define     POLY_EXTS           'E'
 #define     POLY_VARS           'V'
 #define     POLY_YLIB           'Y'
 /*---(projects)-------------*/
@@ -732,15 +732,16 @@ struct      cEXTERN {
    char        type;
    char        cat;
    char        sub;
+   int         count;
    /*---(working)-----------*/
    int         wuse;
    /*---(elib)--------------*/
    tEXTERN    *l_next;
    tEXTERN    *l_prev;
    /*---(ylib)--------------*/
+   int         y_count;
    tYLIB      *y_head;
    tYLIB      *y_tail;
-   int         y_count;
    /*---(btree)-------------*/
    tBTREE     *btree;
    /*---(done)--------------*/

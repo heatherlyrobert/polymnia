@@ -53,6 +53,7 @@ struct {
    { "oneline"         , POLY_PROJ , "o---"      , ""                           },
    { "files"           , POLY_FILE , "Ta--"      , "single project files inventory with statistics"     },
    { "ylibs"           , POLY_YLIB , "Ta--"      , "single project files inventory with statistics"     },
+   { "externs"         , POLY_EXTS , "Ta--"      , "single project files inventory with statistics"     },
    { ""                , -1        , ""          , ""                           },
 };
 
@@ -531,6 +532,50 @@ poly_rptg_ylibs         (void)
    poly_extern_clear_uses ();
    printf ("\n");
    printf ("# total available tracked library dependencies %d\n", poly_btree_count (B_ELIB));
+   /*---(walk through list)--------------*/
+   printf ("\n");
+   printf ("# end-of-file.  done, finito, completare, whimper.\n");
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+poly_rptg_exts          (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tELIB      *x_elib      = NULL;
+   tEXTERN    *x_ext       = NULL;
+   int         l           =    0;
+   int         n           =    0;
+   int         c           =    0;
+   char        x_count     [LEN_TERSE] = "";
+   char        x_ylibs     [LEN_TERSE] = "";
+   /*---(walk projects)------------------*/
+   poly_rptg__header    ();
+   printf ("#@ x-parse   åÏ---·Ï-----------·Ï---···Ï-------------------·Ï---···Ï------------------------·Ï---·Ï---·Ï---·Ï---···Ï---·Ï---·Ï-------------------···Ï-------------------·Ï---·Ï·Ï·Ï·Ï-----æ\n");
+   printf ("#@ titles    åcum··project······cnt····file·················cnt····func······················cnt··top··beg··end····ref··line·ylib···················source···············line·t·c·s·uses··æ\n");
+   rc = poly_btree_by_cursor (B_ELIB, YDLST_HEAD, &x_elib);
+   while (x_elib != NULL) {
+      rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &x_ext);
+      c = 0;
+      while (x_ext != NULL) {
+         if (x_ext->elib == x_elib && x_ext->type == 'p') {
+            /*> if (x_ext->y_count > 0) {                                             <*/
+               if (c == 0) {
+                  printf ("\n");
+                  printf ("%-20.20s (%d)\n", x_elib->name, x_elib->count);
+               }
+               strl4main (x_ext->count  , x_count, 0, 'c', '-', LEN_TERSE);
+               strl4main (x_ext->y_count, x_ylibs, 0, 'c', '-', LEN_TERSE);
+               printf ("%5d %4d %-20.20s %6.6s %6.6s %4.4d %c %c %c\n", ++n, ++c, x_ext->name, x_count, x_ylibs, x_ext->line, x_ext->type, x_ext->cat, x_ext->sub);
+            /*> }                                                                     <*/
+         }
+         rc = poly_btree_by_cursor (B_EXTERN, YDLST_NEXT, &x_ext);
+      }
+      rc = poly_btree_by_cursor (B_ELIB, YDLST_NEXT, &x_elib);
+   }
    /*---(walk through list)--------------*/
    printf ("\n");
    printf ("# end-of-file.  done, finito, completare, whimper.\n");
@@ -1021,6 +1066,7 @@ poly_rptg_dispatch      (void)
    if      (my.g_scope == POLY_PROJ)    rc = poly_rptg_projects ();
    else if (my.g_scope == POLY_FILE)    rc = poly_rptg_files    ();
    else if (my.g_scope == POLY_YLIB)    rc = poly_rptg_ylibs    ();
+   else if (my.g_scope == POLY_EXTS)    rc = poly_rptg_exts     ();
    return 0;
 }
 

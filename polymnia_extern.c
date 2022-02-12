@@ -146,6 +146,7 @@ poly_extern__wipe        (tEXTERN *a_ext)
    a_ext->type     = '-';
    a_ext->cat      = '-';
    a_ext->sub      = '-';
+   a_ext->count    = 0;
    /*---(working)-----------*/
    a_ext->wuse     = 0;
    /*---(elibs)-------------*/
@@ -379,7 +380,8 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
    poly_extern__wipe (x_new);
-   x_new->elib     = x_lib;
+   /*> x_new->elib     = x_lib;                                                       <*/
+   poly_extern_hook (x_lib, x_new);
    strlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->line     = a_line;
    x_new->type     = a_type;
@@ -647,9 +649,9 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, 
    char        rc          =    0;
    char        x_recd      [LEN_RECD]  = "";
    char       *p           = NULL;
-   char       *q           = " :";
-   char       *s           = NULL;
    tFILE      *x_file      = NULL;
+   int         x_len       =    0;
+   char        x_proj      [LEN_TITLE] = "";
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -701,16 +703,30 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, 
       return rce;
    }
    DEBUG_INPT   yLOG_info    ("->name"    , (*a_src)->name);
+   DEBUG_INPT   yLOG_info    ("->file"    , (*a_src)->file->name);
+   DEBUG_INPT   yLOG_info    ("->proj"    , (*a_src)->file->proj->name);
+   x_len = strlen ((*a_src)->file->proj->name);
+   if ((*a_src)->file->proj->name [0] == 'y') {
+      if (strchr (YSTR_UPPER, (*a_src)->file->proj->name [1]) != NULL) {
+         DEBUG_INPT   yLOG_note    ("found a heatherly library reference");
+         strlcpy (x_proj, (*a_src)->file->proj->name, LEN_TITLE);
+      }
+   }
    /*---(get destination tag)---------*/
    poly_func_by_name (a_func, a_dst);
    DEBUG_INPT   yLOG_point   ("*a_dst"    , *a_dst);
    if (*a_dst != NULL) {
       DEBUG_INPT   yLOG_info    ("->name"    , (*a_dst)->name);
+      DEBUG_INPT   yLOG_info    ("->file"    , (*a_dst)->file->name);
+      DEBUG_INPT   yLOG_info    ("->proj"    , (*a_dst)->file->proj->name);
    }
+   /*---(get external tag)------------*/
    poly_extern_by_name (a_func, a_ext);
    DEBUG_INPT   yLOG_point   ("*a_ext"    , *a_ext);
    if (*a_ext != NULL)  {
-      DEBUG_INPT   yLOG_info    ("->name"    , (*a_ext)->name);
+      DEBUG_INPT   yLOG_info    ("->name"    , (*a_ext)->elib->name);
+      if      (strncmp (x_proj, (*a_ext)->elib->name, x_len) == 0)  *a_ext = NULL;
+      else if (strcmp  (x_proj, "ySTR") == 0 && strncmp ((*a_ext)->name, "strl", 4) == 0)  *a_ext = NULL;
    }
    /*---(mystry)----------------------*/
    --rce;  if (*a_dst == NULL && *a_ext == NULL) {
@@ -800,6 +816,7 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    else if (strchr ("Dd", x_cat) != NULL) {
       DEBUG_INPT   yLOG_note    ("found debugging code");
       ++a_src->WORK_DFUNCS;
+      ++a_ext->count;
       switch (x_cat) {
       case 'd' :
          ++a_src->WORK_DSHORT;
@@ -822,6 +839,7 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    else if (x_cat == 'C') {
       DEBUG_INPT   yLOG_note    ("found a standard c library reference");
       ++a_src->WORK_CSTD;
+      ++a_ext->count;
       switch (x_sub) {
       case 'o' : ++a_src->WORK_OUTPUT;           break;
       case 'w' : ++a_src->WORK_TWRITE;           break;
@@ -838,6 +856,7 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    /*---(other libraries)----------------*/
    else {
       DEBUG_INPT   yLOG_note    ("found outside library reference");
+      ++a_ext->count;
       switch (x_cat) {
       case 'N' : ++a_src->WORK_NCURSE;
                  ++a_src->WORK_OFUNCS;

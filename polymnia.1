@@ -108,22 +108,16 @@ information stored, typically for use in a spreadsheet.
 refresh data and write detailed tags format specifically designed to support
 my vim-macros and vim-ide.  does not update database.
 
+.SS --stats
+present database and system-wide statistics contained within for auditing
+and quick access.
+
 .SS --report <name>
 .nf
-projects        full project inventory with statistics
-
-
-
-
-.B --projects
-.RS 8
-write detailed info for each project in database
-.RE
-
-.B --files
-.RS 8
-write detailed info for each project and file in database
-.RE
+projects        full project inventory
+files           file inventory for a project
+ylibs           ylib inventory for a project
+externs         external inventory
 
 .B --dump
 .RS 8
