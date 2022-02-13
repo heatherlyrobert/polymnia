@@ -6,6 +6,15 @@
 
 #>  data structure waves è to ì
 
+#
+#    WAVE      è  single file, no ties to other files other than headers
+#
+#
+#
+#
+#
+#
+
 
 #==(verb)===  ===========(description)===========  =====(function)=====  ========================(arguments)===================================  ==(test)==  ==========================(results)===================================  t  ========(var)======= 
 #MASTER        layering of testing to coordinate sequence                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((26.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  

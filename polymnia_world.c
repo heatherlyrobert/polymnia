@@ -382,14 +382,21 @@ poly_world__register    (void)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> yURG_msg ('-', "current directory is å%sæ", x_home);                           <*/
-   /*> yURG_msg ('-', "therefore, project is named å%sæ", x_name);                    <*/
    /*---(get current project)------------*/
    rc = poly_world__by_name (x_name, &x_world);
    if (x_world != NULL) {
-      yURG_err ('w', "project already exists in registry, nothing to do");
-      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-      return 1;
+      if (strcmp (x_home, x_world->home) == 0) {
+         yURG_err ('w', "project already exists in registry, home is same, nothing to do");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 1;
+      }
+      yURG_msg ('-', "project already exists in registry, but home changed");
+      rc = poly_world__remove (x_name);
+      --rce;  if (rc < 0) {
+         yURG_err ('f', "project could not be withdrawn");
+         DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    } else {
       yURG_msg ('-', "project is new to registry, adding");
    }
@@ -635,13 +642,12 @@ poly_world__purge       (void)
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(walk-through)-------------------*/
    DEBUG_DATA   yLOG_value   ("count"     , poly_world__count ());
-   rc = poly_world__by_cursor ('[', &x_world);
+   rc = poly_world__by_cursor (YDLST_HEAD, &x_world);
    while (rc >= 0 && x_world != NULL) {
-      rc = poly_world__by_cursor ('>', &x_next);
       DEBUG_DATA   yLOG_point ("x_world"   , x_world);
       DEBUG_DATA   yLOG_info  ("->name"    , x_world->name);
       rc = poly_world__remove (x_world->name);
-      x_world = x_next;
+      rc = poly_world__by_cursor (YDLST_HEAD, &x_world);
    }
    /*---(check)--------------------------*/
    DEBUG_DATA   yLOG_value   ("count"     , poly_world__count ());

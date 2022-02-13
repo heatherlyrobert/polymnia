@@ -453,7 +453,7 @@ PROG__verify            (void)
    yURG_msg ('>', "SUCCESS, project is suitable for inclusion in database");
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -486,7 +486,7 @@ PROG__register          (void)
    else          yURG_msg ('>', "WARNING, project was already registered in the database");
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -518,7 +518,7 @@ PROG__update            (void)
    yURG_msg ('>', "SUCCESS, project was updated in the database");
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -563,7 +563,7 @@ PROG__install           (void)
    yURG_msg ('>', "SUCCESS, project was both registered and updated in the database");
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -597,7 +597,7 @@ PROG__withdraw          (void)
    else          yURG_msg ('>', "WARNING, project was not in the registry, nothing to do");
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -631,7 +631,7 @@ PROG__clear             (void)
    else          yURG_msg ('>', "WARNING, project was not in database, nothing to do");
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -678,7 +678,7 @@ PROG__remove            (void)
    else          yURG_msg ('>', "WARNING, project was not in database, nothing to do");
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
-   return 0;
+   return rc;
 }
 
 char
@@ -714,6 +714,38 @@ PROG__system            (void)
    yURG_msg (' ', "");
    IF_CONFIRM  yURG_msg_live ();
    yURG_msg ('>', "SUCCESS, system update was completed for all registry projects");
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG__audit             (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(title)--------------------------*/
+   IF_VERBOSE   yURG_msg ('>', "  option --vaudit, verify central security and files");
+   IF_VERBOSE   yURG_msg (' ', "");
+   /*---(call action)--------------------*/
+   rc = poly_action_audit     ();
+   /*---(failure)------------------------*/
+   if (rc < 0) {
+      yURG_msg (' ', "");
+      if (my.run_mode == ACT_CAUDIT  )   yURG_msg_live ();
+      if (my.run_mode == ACT_CAUDIT  )   yURG_msg ('>', "FAILED, audit was not successful, run --vaudit to identify reasons");
+      if (my.run_mode == ACT_VAUDIT  )   yURG_msg ('>', "FAILED, audit was not successful, the reasons are shown above");
+      if (my.run_mode == ACT_CAUDIT  )   yURG_msg_mute ();
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(success)------------------------*/
+   yURG_msg (' ', "");
+   IF_CONFIRM  yURG_msg_live ();
+   yURG_msg ('>', "SUCCESS, central security and files are clean");
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
    return 0;
@@ -768,6 +800,7 @@ PROG_dispatch           (void)
       rc = poly_rptg_dispatch ();
       break;
    case CASE_AUDIT      :
+      rc = PROG__audit    ();
       break;
       /*---(execute)---------------------*/
    case CASE_NORMAL     :

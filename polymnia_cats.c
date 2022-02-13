@@ -7,14 +7,14 @@ static char   s_print        [LEN_RECD] = "";
 
 
 #define     MAX_CATS    70
-static const struct cPOS    {
+static struct cPOS    {
    char        grp;                         /* major group                    */
    char        sub;                         /* sub group for clarity          */
    char        pos;                         /* position in major group        */
    char        name        [LEN_LABEL];     /* short description              */
    char        desc        [LEN_LABEL];     /* longer description             */
    int         n;                           /* statistics entry               */
-} s_cats [MAX_CATS] = {
+} const s_cats [MAX_CATS] = {
    /*===[[ PREFIX ]]=============================================*/
    /*--  -123456-   -123456789012345678901234567890- */
    {  0,  1,  0, "oneline", "one line function"               ,  0 },
@@ -111,7 +111,7 @@ static const struct cPOS    {
 
 
 #define     MAX_LABELS  2000
-struct cLABEL {
+static struct cLABEL {
    char        grp;
    char        pos;
    char        low;
