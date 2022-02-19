@@ -467,7 +467,7 @@ poly_action_search      (void)
       return rce;
    }
    /*---(get first project)--------------*/
-   rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -708,13 +708,13 @@ poly_action_libuse      (void)
       return rce;
    }
    /*---(find targets)-------------------*/
-   rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &x_extern);
+   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &x_extern);
    DEBUG_PROG   yLOG_point   ("x_extern"   , x_extern);
    while (x_extern != NULL) {
       if (strcmp (x_extern->elib->name, my.g_libuse) == 0) {
          rc = poly_rptg_extern (x_extern);
       }
-      rc = poly_btree_by_cursor (B_EXTERN, YDLST_NEXT, &x_extern);
+      rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &x_extern);
       DEBUG_PROG   yLOG_point   ("x_extern"   , x_extern);
    }
    /*---(complete)-----------------------*/
@@ -742,7 +742,7 @@ poly_action_vars        (void)
       return rce;
    }
    /*---(get project)--------------------*/
-   rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

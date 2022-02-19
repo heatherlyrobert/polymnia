@@ -376,15 +376,15 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
       return rce;
    }
    /*---(into btree)---------------------*/
-   rc = poly_btree_hook (B_FUNCS, x_new, x_new->name, &x_new->btree);
+   rc = ySORT_hook (B_FUNCS, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(create hint)--------------------*/
-   /*> rc = poly_func__hint (poly_btree_count (B_FUNCS) - 1, x_new->hint);            <*/
-   rc = strlhint (poly_btree_count (B_FUNCS) - 1, "lA", x_new->hint);
+   /*> rc = poly_func__hint (ySORT_count (B_FUNCS) - 1, x_new->hint);            <*/
+   rc = strlhint (ySORT_count (B_FUNCS) - 1, "lA", x_new->hint);
    DEBUG_DATA   yLOG_value   ("hint"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -432,7 +432,7 @@ poly_func_remove        (tFUNC **a_func)
       return rce;
    }
    /*---(btree)--------------------------*/
-   rc = poly_btree_unhook (&((*a_func)->btree));
+   rc = ySORT_unhook (&((*a_func)->btree));
    DEBUG_DATA   yLOG_value   ("un-btree"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -544,10 +544,10 @@ poly_func_inside        (tFUNC *a_func)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_func_count         (void)                          { return poly_btree_count    (B_FUNCS); }
-char poly_func_by_name       (uchar *a_name, tFUNC **r_func) { return poly_btree_by_name  (B_FUNCS, a_name, r_func); }
-char poly_func_by_index      (int n, tFUNC **r_func)         { return poly_btree_by_index (B_FUNCS, n, r_func); }
-char poly_func_cursor        (char a_dir, tFUNC **r_func)   { return poly_btree_by_cursor (B_FUNCS, a_dir, r_func); }
+int  poly_func_count         (void)                          { return ySORT_count     (B_FUNCS); }
+char poly_func_by_name       (uchar *a_name, tFUNC **r_func) { return ySORT_by_name   (B_FUNCS, a_name, r_func); }
+char poly_func_by_index      (int n, tFUNC **r_func)         { return ySORT_by_index  (B_FUNCS, n, r_func); }
+char poly_func_cursor        (char a_dir, tFUNC **r_func)    { return ySORT_by_cursor (B_FUNCS, a_dir, r_func); }
 
 
 char
@@ -687,8 +687,8 @@ poly_func_init          (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
-   rc = poly_btree_init (B_FUNCS);
-   DEBUG_PROG   yLOG_value   ("init"      , rc);
+   rc = ySORT_btree (B_FUNCS, "functions");
+   DEBUG_PROG   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -732,7 +732,7 @@ poly_func_purge         (tFILE *a_file, char a_update)
    }
    /*---(update btrees)------------------*/
    --rce;  if (a_update == 'y') {
-      rc = poly_btree_prepare (B_FUNCS);
+      rc = ySORT_prepare (B_FUNCS);
       if (rc < 0) {
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -752,7 +752,7 @@ poly_func_wrap          (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
-   /*> rc = poly_btree_purge (B_FUNCS);                                                <* 
+   /*> rc = ySORT_purge (B_FUNCS);                                                <* 
     *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
     *> --rce;  if (rc < 0) {                                                          <* 
     *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 

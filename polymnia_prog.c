@@ -87,6 +87,7 @@ PROG__init              (int a_argc, char *a_argv[])
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(yJOB config)--------------------*/
    PROG_reset_yjobs ();
+   DEBUG_TOPS  yLOG_char    ("run_as"    , my.run_as);
    my.run_uid     = getuid ();
    my.runtime     = time (NULL);
    /*---(run-time-config)----------------*/
@@ -159,6 +160,7 @@ PROG__args              (int a_argc, char *a_argv[])
    DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
    /*> FILE_rename ("");                                                              <*/
    if (a_argv > 0)  yJOBS_runas (&(my.run_as), a_argv [0]);
+   DEBUG_TOPS  yLOG_char    ("run_as"    , my.run_as);
    /*---(process)------------------------*/
    for (i = 1; i < a_argc; ++i) {
       a = a_argv [i];
@@ -182,11 +184,8 @@ PROG__args              (int a_argc, char *a_argv[])
       /*---(complicated)-----------------*/
       else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
-      /*---(system-wide)-----------------*/
-      else if (strcmp (a, "--system"    ) == 0)  a = "--normal";
-      else if (strcmp (a, "--csystem"   ) == 0)  a = "--cnormal";
-      else if (strcmp (a, "--vsystem"   ) == 0)  a = "--vnormal";
       /*---(configuration)---------------*/
+      else if (strcmp (a, "--local"     ) == 0)  rc = poly_db_cli  ("polymnia_local.db", 'y');
       else if (strcmp (a, "--database"  ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
       else if (strcmp (a, "--world"     ) == 0)  TWOARG rc = poly_world_cli   (a_argv [i], 'y');
       else if (strcmp (a, "--external"  ) == 0)  TWOARG rc = poly_extern_cli  (a_argv [i], 'y');
@@ -203,8 +202,6 @@ PROG__args              (int a_argc, char *a_argv[])
       /*---(others)----------------------*/
       /*> else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;          <*/
       /*> else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = POLY_RPTG_VARS;     <*/
-      else if (strcmp (a, "--titles"   ) == 0)  my.g_titles = RPTG_TITLES;
-      else if (strcmp (a, "--notitles" ) == 0)  my.g_titles = RPTG_NOTITLES;
       else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;
       else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;
       else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;
@@ -803,9 +800,11 @@ PROG_dispatch           (void)
       rc = PROG__audit    ();
       break;
       /*---(execute)---------------------*/
+   case CASE_GATHER     :
+      rc = PROG__system   ();
+      break;
    case CASE_NORMAL     :
    case CASE_STRICT     :
-      rc = PROG__system   ();
       break;
       /*---(trouble)---------------------*/
    default              :
@@ -902,6 +901,7 @@ PROG_dispatch_OLD       (void)
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return rc;
 }
+
 
 
 /*====================------------------------------------====================*/

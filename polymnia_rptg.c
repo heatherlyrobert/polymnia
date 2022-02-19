@@ -169,8 +169,8 @@ poly_rptg__total   (char a_level)
    char        x_bss       [LEN_TERSE] = "";
    if      (a_level == 'p')  strlcpy (t, "", LEN_HUND);
    else if (a_level == 'f')  strlcpy (t, "                    ", LEN_HUND);
-   /*> s_projs  = poly_btree_count (B_PROJ );                                         <* 
-    *> s_files  = poly_btree_count (B_FILES);                                         <* 
+   /*> s_projs  = ySORT_count (B_PROJ );                                         <* 
+    *> s_files  = ySORT_count (B_FILES);                                         <* 
     *> s_funcs  = poly_func_count  ();                                                <*/
    strl4main (s_projs, x_projs, 0, 'c', '-', LEN_TERSE);
    strl4main (s_files, x_files, 0, 'c', '-', LEN_TERSE);
@@ -369,7 +369,7 @@ poly_rptg_projects      (void)
    }
    /*---(prepare)------------------------*/
    poly_rptg__prep ();
-   DEBUG_RPTG   yLOG_value   ("projects"  , poly_btree_count (B_PROJ));
+   DEBUG_RPTG   yLOG_value   ("projects"  , ySORT_count (B_PROJ));
    /*---(walk projects)------------------*/
    rc = poly_proj_by_cursor ('[', &x_proj);
    DEBUG_RPTG   yLOG_point   ("proj"      , x_proj);
@@ -508,30 +508,30 @@ poly_rptg_ylibs         (void)
    printf ("# unique ylib external functions\n");
    printf ("#\n");
    printf ("#  ref- ---ylib------------- ---source--- here ---all\n");
-   rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &x_ext);
+   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &x_ext);
    while (x_ext != NULL) {
       if (x_ext->wuse > 0) {
          strl4main (x_ext->y_count, x_count, 0, 'c', '-', LEN_TERSE);
          strl4main (x_ext->wuse   , x_uses , 0, 'c', '-', LEN_TERSE);
          printf ("#  %4d %-20.20s %-12.12s %4.4s %6.6s\n", ++c, x_ext->name, x_ext->elib->name, x_uses, x_count);
       }
-      rc = poly_btree_by_cursor (B_EXTERN, YDLST_NEXT, &x_ext);
+      rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &x_ext);
    }
    c = 0;
    printf ("\n");
    printf ("# ylib dependencies\n");
    printf ("#\n");
    printf ("#  ref- ---source---\n");
-   rc = poly_btree_by_cursor (B_ELIB, YDLST_HEAD, &x_elib);
+   rc = ySORT_by_cursor (B_ELIB, YDLST_HEAD, &x_elib);
    while (x_elib != NULL) {
       if (x_elib->wuse > 0) {
          printf ("#  %4d %-20.20s\n", ++c, x_elib->name);
       }
-      rc = poly_btree_by_cursor (B_ELIB, YDLST_NEXT, &x_elib);
+      rc = ySORT_by_cursor (B_ELIB, YDLST_NEXT, &x_elib);
    }
    poly_extern_clear_uses ();
    printf ("\n");
-   printf ("# total available tracked library dependencies %d\n", poly_btree_count (B_ELIB));
+   printf ("# total available tracked library dependencies %d\n", ySORT_count (B_ELIB));
    /*---(walk through list)--------------*/
    printf ("\n");
    printf ("# end-of-file.  done, finito, completare, whimper.\n");
@@ -556,9 +556,9 @@ poly_rptg_exts          (void)
    poly_rptg__header    ();
    printf ("#@ x-parse   åÏ---·Ï-----------·Ï---···Ï-------------------·Ï---···Ï------------------------·Ï---·Ï---·Ï---·Ï---···Ï---·Ï---·Ï-------------------···Ï-------------------·Ï---·Ï·Ï·Ï·Ï-----æ\n");
    printf ("#@ titles    åcum··project······cnt····file·················cnt····func······················cnt··top··beg··end····ref··line·ylib···················source···············line·t·c·s·uses··æ\n");
-   rc = poly_btree_by_cursor (B_ELIB, YDLST_HEAD, &x_elib);
+   rc = ySORT_by_cursor (B_ELIB, YDLST_HEAD, &x_elib);
    while (x_elib != NULL) {
-      rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &x_ext);
+      rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &x_ext);
       c = 0;
       while (x_ext != NULL) {
          if (x_ext->elib == x_elib && x_ext->type == 'p') {
@@ -572,9 +572,9 @@ poly_rptg_exts          (void)
                printf ("%5d %4d %-20.20s %6.6s %6.6s %4.4d %c %c %c\n", ++n, ++c, x_ext->name, x_count, x_ylibs, x_ext->line, x_ext->type, x_ext->cat, x_ext->sub);
             /*> }                                                                     <*/
          }
-         rc = poly_btree_by_cursor (B_EXTERN, YDLST_NEXT, &x_ext);
+         rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &x_ext);
       }
-      rc = poly_btree_by_cursor (B_ELIB, YDLST_NEXT, &x_elib);
+      rc = ySORT_by_cursor (B_ELIB, YDLST_NEXT, &x_elib);
    }
    /*---(walk through list)--------------*/
    printf ("\n");
@@ -669,8 +669,8 @@ poly_rptg_proj          (void)
       return rce;
    }
    /*---(projects)-----------------------*/
-   DEBUG_RPTG   yLOG_value   ("projects"  , poly_btree_count (B_PROJ));
-   rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   DEBUG_RPTG   yLOG_value   ("projects"  , ySORT_count (B_PROJ));
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    while (x_proj != NULL) {
       /*---(prepare)---------------------*/
@@ -687,7 +687,7 @@ poly_rptg_proj          (void)
       my.COUNT_SLOCL += x_proj->COUNT_SLOCL;
       /*---(project filtering)-----------*/
       if (my.g_proj != NULL && x_proj != my.g_proj) {
-         rc = poly_btree_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
+         rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
          DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
          continue;
       }
@@ -716,7 +716,7 @@ poly_rptg_proj          (void)
          break;
       }
       /*---(next)------------------------*/
-      rc = poly_btree_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
+      rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
       DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
       ++c;
       /*---(done)------------------------*/
@@ -746,7 +746,7 @@ poly_rptg_dump          (void)
    DEBUG_RPTG   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
    DEBUG_RPTG   yLOG_note    ("review all tags and code");
-   DEBUG_RPTG   yLOG_value   ("projects"  , poly_btree_count (B_PROJ));
+   DEBUG_RPTG   yLOG_value   ("projects"  , ySORT_count (B_PROJ));
    /*---(header)-------------------------*/
    if (my.g_titles == RPTG_TITLES) {
       printf ("## function listing report\n");
@@ -761,7 +761,7 @@ poly_rptg_dump          (void)
       return rce;
    }
    /*---(projects)-----------------------*/
-   rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    while (x_proj != NULL) {
       /*---(prepare)---------------------*/
@@ -772,7 +772,7 @@ poly_rptg_dump          (void)
       }
       /*---(project filtering)-----------*/
       if (my.g_proj != NULL && x_proj != my.g_proj) {
-         rc = poly_btree_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
+         rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
          DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
          continue;
       }
@@ -816,7 +816,7 @@ poly_rptg_dump          (void)
          x_file = x_file->next;
          DEBUG_RPTG   yLOG_point   ("file"      , x_file);
       }
-      rc = poly_btree_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
+      rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
       DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    }
    if (my.g_titles == RPTG_TITLES)  printf ("\n## %d total lines\n", c);
@@ -978,7 +978,7 @@ poly_rptg_htags         (tPROJ *a_proj)
    /*---(defense)------------------------*/
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
    --rce;  if (a_proj == NULL) {
-      rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &a_proj);
+      rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &a_proj);
       DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
       if (a_proj == NULL) {
          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

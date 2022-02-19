@@ -25,12 +25,13 @@ polymnia (7)       decision rationale, objectives, and overview
 .SH TABLE OF CONTENTS
 .nf  
 a) synopsis        command overview
-b) system-wide     standard command line overview
-c) project data    effecting a single project
-d) local           alternate source and destinations
-e) tagging         ide navigation and support
-f) reporting       content query and output
-g) filtering       cutting reporting volume
+b) general         broad, general information
+c) verbosity       options to control feedback
+d) system-wide     standard command line overview
+e) project data    effecting a single project
+f) local           alternate source and destinations
+g) reporting       content query and output
+h) filtering       cutting reporting volume
 
 .SH A) SYNOPSIS
 .B polymnia [OPTIONS]
@@ -42,7 +43,27 @@ g) filtering       cutting reporting volume
   which can perform all actions, but with debugging and tracing
   (see yURG for documentation on debugging options)
 
-.SH B) SYSTEM-WIDE OPTIONS
+.SH B) GENERAL
+polymnia is a command-line tool with zero real-time interaction.  launch it
+with an option, it runs.  that's it.
+
+polymnia only takes one main option per run, i.e., it will update OR report
+OR something else.  all the options listed below are main options.
+
+options to configure files, see polymnia (4), can be added to the command line
+as well as specific data filtering in section H.
+
+.SH C) VERBOSITY
+like most of my applications, there are three levels of feedback optained by
+putting a prefix on the primary option.  below is an example for the --register
+option...
+
+   ···prefix···  ···option····  ···verbosity····················
+   (silent)      --register     only provides a return code
+   c (confirm)   --cregister    single line stating result
+   v (verbose)   --vregister    details about process and result
+
+.SH C) SYSTEM-WIDE OPTIONS
 these options help automate polymnia and turn it into a system-wide code
 analysis and research platform.  these commands interact with the central
 .B world.txt
@@ -56,11 +77,19 @@ added, so do not worry.
 removes the named project directory from the world list.  existing database
 information will not be removed.
 
-.SS --system, --normal
+.SS --normal
 updates all projects listed in the world list.  this is quite quick and is
 designed to be run either in batch or interactively.
 
-.SH C) PROJECT DATA OPTIONS
+.SS --audit
+review security environment and contents of database to see if something
+is amiss.
+
+.SS --fix
+set-up or remedy security setting or central directory issues.  this is
+non-destructive.
+
+.SH D) PROJECT DATA OPTIONS
 the central database can also perform a few operations on individual projects
 in order to keep the database clean.
 
@@ -84,9 +113,14 @@ is not removed from the registry.
 does a combination of --withdraw and --clear so that both the registry and
 database are updated immediately.
 
-.SH D) LOCAL OPTIONS
+.SH E) LOCAL OPTIONS
 to aide analysis, limited or full databases, world files, or external function
-lists can be useful.  polymnia does not care.
+lists can be useful.  polymnia does not care.  these options are helpers and
+do not allow for 'c' (confirm) or 'v' (verbose) options.
+
+.SS --local
+orders polymnia to use the database polymnia_local.db in the current directory
+as source and destination for data.
 
 .SS --database <name>
 orders polymnia to use an alternate database as source and destination for
@@ -100,41 +134,48 @@ all the options above.
 orders polymnia to use an alternate external function file as source for all
 the options above.
 
-.SH E) REPORTING OPTIONS
+.SH F) REPORTING OPTIONS
 polymnia supports several overviews of database content that provide all
 information stored, typically for use in a spreadsheet.
 
 .SS --htags
 refresh data and write detailed tags format specifically designed to support
-my vim-macros and vim-ide.  does not update database.
+my vim-macros and vim-ide.  no database, uses local data.
 
 .SS --stats
 present database and system-wide statistics contained within for auditing
 and quick access.
 
+.SS --tree
+generates a hyleoroi dump of all function interactions for a convergence graph.
+
+.SS --fulltree
+just like --tree, except data for all ylibs and every other external call
+is included.
+
 .SS --report <name>
+like most of my applications, there are three levels of report formatting
+available by putting a prefix on the report name.  below is an example for the
+"projects" report...
+
+   ···prefix···  ···option····  ···verbosity····················
+   d (dump)      dprojects      single line per record, no formatting
+   f (format)    fprojects      adds titles and spacing
+   (silent)      projects       full format with export-import hints
+
 .nf
 projects        full project inventory
 files           file inventory for a project
 ylibs           ylib inventory for a project
+used            system-wide calls to a specific ylib function
 externs         external inventory
-
-.B --dump
-.RS 8
-write detailed function info for every project in database
-.RE
 
 .B --treeview
 .RS 8
 write heirarchical, intented view for visualization programs
 .RE
 
-.B --titles
-.RS 8
-adds headers, footers, and spacers to reports
-.RE
-
-.SH E) FILTERING OPTIONS
+.SH G) FILTERING OPTIONS
 polymnia supports a series of filters to help reduce the volume and
 target specific settings in certain statistics.
 

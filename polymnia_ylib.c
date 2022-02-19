@@ -452,10 +452,10 @@ poly_ylib_purge         (tFUNC *a_func, char a_update)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_ylib_count         (void)                          { return poly_btree_count     (B_FILES); }
-char poly_ylib_by_name       (uchar *a_name, tYLIB **a_ylib) { return poly_btree_by_name   (B_FILES, a_name, a_ylib); }
-char poly_ylib_by_index      (int n, tYLIB **a_ylib)         { return poly_btree_by_index  (B_FILES, n, a_ylib); }
-char poly_ylib_by_cursor     (char a_dir, tYLIB **a_ylib)    { return poly_btree_by_cursor (B_FILES, a_dir, a_ylib); }
+int  poly_ylib_count         (void)                          { return ySORT_count     (B_FILES); }
+char poly_ylib_by_name       (uchar *a_name, tYLIB **a_ylib) { return ySORT_by_name   (B_FILES, a_name, a_ylib); }
+char poly_ylib_by_index      (int n, tYLIB **a_ylib)         { return ySORT_by_index  (B_FILES, n, a_ylib); }
+char poly_ylib_by_cursor     (char a_dir, tYLIB **a_ylib)    { return ySORT_by_cursor (B_FILES, a_dir, a_ylib); }
 
 char
 poly_ylib_by_func_index (tFUNC *a_func, int n, tYLIB **r_ylib)

@@ -892,6 +892,43 @@ poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name)
    return 0;
 }
 
+char
+poly_btree_prepare_all  (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_SORT   yLOG_enter   (__FUNCTION__);
+   /*---(prepare proj)-------------------*/
+   DEBUG_PROG   yLOG_note    ("prepare projects");
+   rc = ySORT_prepare  (B_PROJ);
+   DEBUG_PROG   yLOG_value   ("projects"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare files)------------------*/
+   DEBUG_PROG   yLOG_note    ("prepare files");
+   rc = ySORT_prepare  (B_FILES);
+   DEBUG_PROG   yLOG_value   ("files"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare functions)--------------*/
+   DEBUG_PROG   yLOG_note    ("prepare functions");
+   rc = ySORT_prepare  (B_FUNCS);
+   DEBUG_PROG   yLOG_value   ("functions"  , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_SORT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/

@@ -54,8 +54,20 @@ static void  o___PROGRAM_________o () { return; }
 char
 poly_proto_init         (void)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(initialize)---------------------*/
+   rc = ySORT_btree (B_PROTO, "prototypes");
+   DEBUG_PROG   yLOG_value   ("btree"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    poly_proto__purge ();
+   /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }

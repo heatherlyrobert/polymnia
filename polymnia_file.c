@@ -252,14 +252,14 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
       return rce;
    }
    /*---(into btree)---------------------*/
-   rc = poly_btree_hook (B_FILES, x_new, x_new->name, &x_new->btree);
+   rc = ySORT_hook (B_FILES, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(create hint)--------------------*/
-   /*> rc = strlhint (poly_btree_count (B_FUNCS) - 1 + poly_btree_count (B_FILES) - 1, "uA", x_new->hint);   <* 
+   /*> rc = strlhint (ySORT_count (B_FUNCS) - 1 + ySORT_count (B_FILES) - 1, "uA", x_new->hint);   <* 
     *> DEBUG_DATA   yLOG_value   ("hint"      , rc);                                                         <* 
     *> --rce;  if (rc < 0) {                                                                                 <* 
     *>    DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                                     <* 
@@ -325,7 +325,7 @@ poly_file_remove        (tFILE **a_file)
       return rce;
    }
    /*---(unhook from btree)--------------*/
-   rc = poly_btree_unhook (&x_file->btree);
+   rc = ySORT_unhook (&x_file->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -357,8 +357,8 @@ poly_file_init          (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
-   rc = poly_btree_init (B_FILES);
-   DEBUG_PROG   yLOG_value   ("init"      , rc);
+   rc = ySORT_btree (B_FILES, "files");
+   DEBUG_PROG   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -402,12 +402,12 @@ poly_file_purge         (tPROJ *a_proj, char a_update)
    }
    /*---(update btrees)------------------*/
    --rce;  if (a_update == 'y') {
-      rc = poly_btree_prepare (B_FILES);
+      rc = ySORT_prepare (B_FILES);
       if (rc < 0) {
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      rc = poly_btree_prepare (B_FUNCS);
+      rc = ySORT_prepare (B_FUNCS);
       if (rc < 0) {
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -427,7 +427,7 @@ poly_file_wrap          (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
-   /*> rc = poly_btree_purge (B_FILES);                                               <* 
+   /*> rc = ySORT_purge (B_FILES);                                               <* 
     *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
     *> --rce;  if (rc < 0) {                                                          <* 
     *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
@@ -644,8 +644,8 @@ poly_file_review        (tPROJ *a_proj)
    rc = closedir (x_dir);
    DEBUG_INPT   yLOG_value   ("close_rc"  , rc);
    /*---(check count)--------------------*/
-   DEBUG_INPT   yLOG_value   ("count"     , poly_btree_count (B_FILES));
-   --rce;  if (poly_btree_count (B_FILES) <= 0) {
+   DEBUG_INPT   yLOG_value   ("count"     , ySORT_count (B_FILES));
+   --rce;  if (ySORT_count (B_FILES) <= 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
@@ -656,14 +656,8 @@ poly_file_review        (tPROJ *a_proj)
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = poly_btree_dgnome   (B_FILES);
-   DEBUG_SORT   yLOG_value   ("dgnome"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   rc = poly_btree_build (B_FILES);
-   DEBUG_SORT   yLOG_value   ("build"      , rc);
+   rc = ySORT_prepare   (B_FILES);
+   DEBUG_SORT   yLOG_value   ("btree"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -681,10 +675,10 @@ poly_file_review        (tPROJ *a_proj)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_file_count         (void)                          { return poly_btree_count     (B_FILES); }
-char poly_file_by_name       (uchar *a_name, tFILE **r_file) { return poly_btree_by_name   (B_FILES, a_name, r_file); }
-char poly_file_by_index      (int n, tFILE **r_file)         { return poly_btree_by_index  (B_FILES, n, r_file); }
-char poly_file_by_cursor     (char a_dir, tFILE **r_file)    { return poly_btree_by_cursor (B_FILES, a_dir, r_file); }
+int  poly_file_count         (void)                          { return ySORT_count     (B_FILES); }
+char poly_file_by_name       (uchar *a_name, tFILE **r_file) { return ySORT_by_name   (B_FILES, a_name, r_file); }
+char poly_file_by_index      (int n, tFILE **r_file)         { return ySORT_by_index  (B_FILES, n, r_file); }
+char poly_file_by_cursor     (char a_dir, tFILE **r_file)    { return ySORT_by_cursor (B_FILES, a_dir, r_file); }
 
 char
 poly_file_by_proj_index (tPROJ *a_proj, int n, tFILE **r_file)
@@ -976,7 +970,7 @@ poly_file__unit         (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "FILE unit        : file number unknown");
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "FILE count       : %3d", poly_btree_count (B_FILES));
+      snprintf (unit_answer, LEN_RECD, "FILE count       : %3d", ySORT_count (B_FILES));
       return unit_answer;
    }
    else if (strcmp (a_question, "print"     )     == 0) {

@@ -357,7 +357,7 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
    }
    DEBUG_DATA   yLOG_info    ("a_lib"     , a_lib);
    /*---(find lib)-----------------------*/
-   poly_btree_by_name (B_ELIB, a_lib, &x_lib);
+   ySORT_by_name (B_ELIB, a_lib, &x_lib);
    --rce;  if (x_lib == NULL) {
       poly_extern__lnew (&x_lib);
       DEBUG_DATA   yLOG_point   ("x_lib"     , x_lib);
@@ -367,8 +367,8 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
       }
       poly_elib__wipe (x_lib);
       strlcpy (x_lib->name, a_lib , LEN_LABEL);
-      rc = poly_btree_hook (B_ELIB, x_lib, x_lib->name, &x_lib->btree);
-      poly_btree_prepare (B_ELIB);
+      rc = ySORT_hook (B_ELIB, x_lib, x_lib->name, &x_lib->btree);
+      ySORT_prepare (B_ELIB);
    }
    /*---(create cell)--------------------*/
    poly_extern__new (&x_new);
@@ -387,7 +387,7 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
    x_new->type     = a_type;
    poly_extern__mark (x_new, a_lib, a_name);
    /*---(into btree)---------------------*/
-   rc = poly_btree_hook (B_EXTERN, x_new, x_new->name, &x_new->btree);
+   rc = ySORT_hook (B_EXTERN, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -413,7 +413,7 @@ poly_extern_remove       (tEXTERN *a_old)
       return rce;
    }
    /*---(btree)--------------------------*/
-   rc = poly_btree_unhook (&a_old->btree);
+   rc = ySORT_unhook (&a_old->btree);
    DEBUG_DATA   yLOG_value   ("unhook"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -449,7 +449,7 @@ poly_extern_load        (void)
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(purge existing)-----------------*/
-   rc = poly_btree_purge (B_EXTERN);
+   rc = ySORT_purge (B_EXTERN);
    /*---(open)---------------------------*/
    rc = poly_shared_open ('e', NULL);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
@@ -488,14 +488,8 @@ poly_extern_load        (void)
       return  rce;
    }
    /*---(prepare for use)----------------*/
-   rc = poly_btree_dgnome   (B_EXTERN);
-   DEBUG_INPT   yLOG_value   ("dgnome"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   rc = poly_btree_build (B_EXTERN);
-   DEBUG_INPT   yLOG_value   ("build"      , rc);
+   rc = ySORT_prepare   (B_EXTERN);
+   DEBUG_INPT   yLOG_value   ("btree"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -522,7 +516,13 @@ poly_extern_init        (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
-   rc = poly_btree_init (B_EXTERN);
+   rc = ySORT_btree (B_EXTERN, "externals");
+   DEBUG_PROG   yLOG_value   ("init"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = ySORT_btree (B_ELIB  , "libraries");
    DEBUG_PROG   yLOG_value   ("init"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -549,7 +549,7 @@ poly_extern__purge      (void)
    /*---(prepare)------------------------*/
    DEBUG_PROG   yLOG_value   ("count"     , poly_extern_count ());
    /*---(walk through list)--------------*/
-   rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &u);
+   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u);
    DEBUG_PROG   yLOG_point   ("u"          , u);
    while (u != NULL) {
       DEBUG_PROG   yLOG_value   ("extern"    , u->name);
@@ -559,7 +559,7 @@ poly_extern__purge      (void)
          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
          return rc;
       }
-      rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &u);
+      rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u);
    }
    /*---(check)--------------------------*/
    DEBUG_PROG   yLOG_value   ("count"     , poly_extern_count ());
@@ -580,12 +580,12 @@ poly_extern_clear_uses  (void)
    /*---(prepare)------------------------*/
    DEBUG_PROG   yLOG_value   ("count"     , poly_extern_count ());
    /*---(walk through list)--------------*/
-   rc = poly_btree_by_cursor (B_EXTERN, YDLST_HEAD, &u);
+   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u);
    DEBUG_PROG   yLOG_point   ("u"          , u);
    while (u != NULL) {
       DEBUG_PROG   yLOG_value   ("extern"    , u->name);
       u->wuse = 0;
-      rc = poly_btree_by_cursor (B_EXTERN, YDLST_NEXT, &u);
+      rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &u);
    }
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
@@ -610,7 +610,7 @@ poly_extern_wrap        (void)
    }
    /*> printf ("%d\n", poly_extern_count ());                                         <*/
    /*> DEBUG_PROG   printf ("%s %d\n", __FUNCTION__, poly_extern_count ());           <*/
-   /*> rc = poly_btree_purge (B_EXTERN);                                              <* 
+   /*> rc = ySORT_purge (B_EXTERN);                                              <* 
     *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
     *> --rce;  if (rc < 0) {                                                          <* 
     *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
@@ -628,11 +628,11 @@ poly_extern_wrap        (void)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_extern_count       (void)                           { return poly_btree_count     (B_EXTERN); }
-char poly_extern_by_name     (uchar *a_name, tEXTERN **a_ext) { return poly_btree_by_name   (B_EXTERN, a_name, a_ext); }
-char poly_extern_by_index    (int n, tEXTERN **a_ext)         { return poly_btree_by_index  (B_EXTERN, n, a_ext); }
-char poly_extern_by_cursor   (char a_dir, tEXTERN **a_ext)    { return poly_btree_by_cursor (B_EXTERN, a_dir, a_ext); }
-char poly_extern_list        (void)                           { return poly_btree_list      (B_EXTERN); }
+int  poly_extern_count       (void)                           { return ySORT_count     (B_EXTERN); }
+char poly_extern_by_name     (uchar *a_name, tEXTERN **a_ext) { return ySORT_by_name   (B_EXTERN, a_name, a_ext); }
+char poly_extern_by_index    (int n, tEXTERN **a_ext)         { return ySORT_by_index  (B_EXTERN, n, a_ext); }
+char poly_extern_by_cursor   (char a_dir, tEXTERN **a_ext)    { return ySORT_by_cursor (B_EXTERN, a_dir, a_ext); }
+char poly_extern_list        (void)                           { return ySORT_list      (B_EXTERN); }
 
 
 

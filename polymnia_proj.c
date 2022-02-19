@@ -191,8 +191,8 @@ poly_proj_init          (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
-   rc = poly_btree_init (B_PROJ);
-   DEBUG_PROG   yLOG_value   ("init"      , rc);
+   rc = ySORT_btree (B_PROJ, "progects");
+   DEBUG_PROG   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -213,11 +213,11 @@ poly_proj_purge         (void)
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(walk-through)-------------------*/
-   DEBUG_DATA   yLOG_value   ("count"     , poly_btree_count (B_PROJ));
-   rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   DEBUG_DATA   yLOG_value   ("count"     , ySORT_count (B_PROJ));
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    while (x_proj != NULL) {
-      rc = poly_btree_by_cursor (B_PROJ, YDLST_NEXT, &x_next);
+      rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_next);
       DEBUG_PROG   yLOG_point   ("x_next"     , x_next);
       DEBUG_DATA   yLOG_point ("x_proj"    , x_proj);
       DEBUG_DATA   yLOG_info  ("->name"    , x_proj->name);
@@ -225,8 +225,8 @@ poly_proj_purge         (void)
       x_proj = x_next;
    }
    /*---(check)--------------------------*/
-   DEBUG_DATA   yLOG_value   ("count"     , poly_btree_count (B_PROJ));
-   --rce;  if (poly_btree_count (B_PROJ) > 0) {
+   DEBUG_DATA   yLOG_value   ("count"     , ySORT_count (B_PROJ));
+   --rce;  if (ySORT_count (B_PROJ) > 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -244,7 +244,7 @@ poly_proj_wrap          (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
-   /*> rc = poly_btree_purge (B_PROJ);                                                <* 
+   /*> rc = ySORT_purge (B_PROJ);                                                <* 
     *> DEBUG_PROG   yLOG_value   ("purge"     , rc);                                  <* 
     *> --rce;  if (rc < 0) {                                                          <* 
     *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
@@ -293,7 +293,7 @@ poly_proj__hook         (tPROJ *a_proj)
       return rce;
    }
    /*---(into btree)---------------------*/
-   rc = poly_btree_hook (B_PROJ, a_proj, a_proj->name, &a_proj->btree);
+   rc = ySORT_hook (B_PROJ, a_proj, a_proj->name, &a_proj->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -321,7 +321,7 @@ poly_proj__unhook       (tPROJ *a_proj)
       return rce;
    }
    /*---(unhook from btree)--------------*/
-   rc = poly_btree_unhook (&a_proj->btree);
+   rc = ySORT_unhook (&a_proj->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -415,7 +415,7 @@ poly_proj__adder         (char *a_name, char *a_home, tPROJ **a_proj, char a_for
    /*---(save back)----------------------*/
    if (a_proj != NULL)  *a_proj = x_new;
    /*---(update)-------------------------*/
-   rc = poly_btree_prepare (B_PROJ);
+   rc = ySORT_prepare (B_PROJ);
    if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -479,7 +479,7 @@ poly_proj_remove        (tPROJ **a_proj)
       return rce;
    }
    /*---(update)-------------------------*/
-   rc = poly_btree_prepare (B_PROJ);
+   rc = ySORT_prepare (B_PROJ);
    if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -688,10 +688,10 @@ poly_proj_here           (tPROJ **a_proj)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_proj_count         (void)                          { return poly_btree_count     (B_PROJ); }
-char poly_proj_by_name       (uchar *a_name, tPROJ **r_proj) { return poly_btree_by_name   (B_PROJ, a_name, r_proj); }
-char poly_proj_by_index      (int n, tPROJ **r_proj)         { return poly_btree_by_index  (B_PROJ, n, r_proj); }
-char poly_proj_by_cursor     (char a_dir, tPROJ **r_proj)    { return poly_btree_by_cursor (B_PROJ, a_dir, r_proj); }
+int  poly_proj_count         (void)                          { return ySORT_count     (B_PROJ); }
+char poly_proj_by_name       (uchar *a_name, tPROJ **r_proj) { return ySORT_by_name   (B_PROJ, a_name, r_proj); }
+char poly_proj_by_index      (int n, tPROJ **r_proj)         { return ySORT_by_index  (B_PROJ, n, r_proj); }
+char poly_proj_by_cursor     (char a_dir, tPROJ **r_proj)    { return ySORT_by_cursor (B_PROJ, a_dir, r_proj); }
 
 
 
@@ -770,7 +770,7 @@ poly_proj_system        (char *a_path)
          DEBUG_INPT   yLOG_note    ("could not update project");
       }
       /*---(clean up)--------------------*/
-      /*> rc = poly_btree_purge_all ();                                               <* 
+      /*> rc = ySORT_purge_all ();                                               <* 
        *> DEBUG_INPT   yLOG_value   ("purge"     , rc);                               <* 
        *> if (rc < 0) {                                                               <* 
        *>    DEBUG_INPT   yLOG_note    ("could not purge btree");                     <* 
@@ -1304,7 +1304,7 @@ poly_proj__unit     (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "PROJ unit        : index number unknown");
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "PROJ count       : %3d", poly_btree_count (B_PROJ));
+      snprintf (unit_answer, LEN_RECD, "PROJ count       : %3d", ySORT_count (B_PROJ));
       return unit_answer;
    }
    else if (strcmp (a_question, "print"     )     == 0) {

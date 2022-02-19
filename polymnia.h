@@ -34,8 +34,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.9-, bring back to life ;)"
-#define     P_VERNUM    "0.9j"
-#define     P_VERTXT    "--audit now in place for directory and database"
+#define     P_VERNUM    "0.9k"
+#define     P_VERTXT    "moved btree code to ySORT to share elsewhere"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -147,6 +147,7 @@
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
 #include    <yJOBS.h>             /* heatherly job execution and control      */
+#include    <ySORT.h>             /* heatherly sorting and searching          */
 #include    <yREGEX.h>       /* CUSTOM  heatherly regular expressions         */
 #include    <yDLST_solo.h>   /* CUSTOM  heatherly regular expressions         */
 
@@ -882,23 +883,23 @@ char*       poly_proto__unit        (char *a_question, int i);
 
 
 
-char        poly_btree_init         (char a_btree);
-char        poly_btree_hook         (char a_btree, void *a_data, char *a_sort, tBTREE **a_link);
-char        poly_btree_unhook       (tBTREE **a_link);
-char        poly_btree_purge        (char a_btree);
-int         poly_btree__depth       (int a_size);
-int         poly_btree__span        (int a_levels);
-char        poly_btree_dgnome       (char a_btree);
-char        poly_btree_build        (char a_btree);
-char        poly_btree_prepare      (char a_btree);
+/*> char        poly_btree_init         (char a_btree);                               <*/
+/*> char        poly_btree_hook         (char a_btree, void *a_data, char *a_sort, tBTREE **a_link);   <*/
+/*> char        poly_btree_unhook       (tBTREE **a_link);                            <*/
+/*> char        poly_btree_purge        (char a_btree);                               <*/
+/*> int         poly_btree__depth       (int a_size);                                 <*/
+/*> int         poly_btree__span        (int a_levels);                               <*/
+/*> char        poly_btree_dgnome       (char a_btree);                               <*/
+/*> char        poly_btree_build        (char a_btree);                               <*/
+/*> char        poly_btree_prepare      (char a_btree);                               <*/
 char        poly_btree_prepare_all  (void);
-char        poly_btree_purge_all    (void);
-char        poly_btree_list         (char a_btree);
+/*> char        poly_btree_purge_all    (void);                                       <*/
+/*> char        poly_btree_list         (char a_btree);                               <*/
 /*---(search)---------------*/
-char        poly_btree_by_cursor    (char a_btree, char a_dir, void **r_data);
-char        poly_btree_by_index     (char a_btree, int i, void **r_data);
-char        poly_btree_by_name      (char a_btree, char *a_name, void **r_data);
-int         poly_btree_count        (char a_btree);
+/*> char        poly_btree_by_cursor    (char a_btree, char a_dir, void **r_data);    <*/
+/*> char        poly_btree_by_index     (char a_btree, int i, void **r_data);         <*/
+/*> char        poly_btree_by_name      (char a_btree, char *a_name, void **r_data);   <*/
+/*> int         poly_btree_count        (char a_btree);                               <*/
 char*       poly_btree__unit        (char a_btree, char *a_question, int i);
 
 

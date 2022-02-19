@@ -312,7 +312,7 @@ poly_db_write         (void)
       return rce;
    }
    /*---(prepare)------------------------*/
-   rc = poly_btree_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    /*---(walk projects)------------------*/
    while (x_proj != NULL) {
@@ -326,7 +326,7 @@ poly_db_write         (void)
          return rc;
       }
       /*---(next)------------------------*/
-      rc = poly_btree_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
+      rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
       DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    }
    /*---(close)--------------------------*/
@@ -446,7 +446,7 @@ poly_db__read_func      (tFILE *a_file, int n)
          return rce;
       }
       /*---(into btree)---------------------*/
-      rc = poly_btree_hook (B_FUNCS, x_func, x_func->name, &x_func->btree);
+      rc = ySORT_hook (B_FUNCS, x_func, x_func->name, &x_func->btree);
       DEBUG_INPT   yLOG_value   ("btree"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -507,7 +507,7 @@ poly_db__read_file      (tPROJ *a_proj, int n)
          return rce;
       }
       /*---(into btree)---------------------*/
-      rc = poly_btree_hook (B_FILES, x_file, x_file->name, &x_file->btree);
+      rc = ySORT_hook (B_FILES, x_file, x_file->name, &x_file->btree);
       DEBUG_INPT   yLOG_value   ("btree"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -594,7 +594,7 @@ poly_db_read          (void)
       x_proj->count = x_proj->COUNT_PROJS = x_proj->COUNT_FILES = x_proj->COUNT_FUNCS = x_proj->COUNT_YLIBS = 0;
       x_proj->btree = NULL;
       /*---(into btree)---------------------*/
-      rc = poly_btree_hook (B_PROJ, x_proj, x_proj->name, &x_proj->btree);
+      rc = ySORT_hook (B_PROJ, x_proj, x_proj->name, &x_proj->btree);
       DEBUG_INPT   yLOG_value   ("btree"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -668,8 +668,8 @@ poly_db__unit           (char *a_question)
    }
    else if (strcmp (a_question, "btrees"    )     == 0) {
       snprintf (unit_answer, LEN_RECD, "DB btrees        : %4dp  %4df  %4df",
-            poly_btree_count (B_PROJ) , poly_btree_count (B_FILES),
-            poly_btree_count (B_FUNCS));
+            ySORT_count (B_PROJ) , ySORT_count (B_FILES),
+            ySORT_count (B_FUNCS));
    }
    else if (strcmp (a_question, "counts"    )     == 0) {
       snprintf (unit_answer, LEN_RECD, "DB counts        : %4dp  %4df  %4df  %4dy     %4dl  %4de  %4dd  %4dd  %4dc  %4ds",

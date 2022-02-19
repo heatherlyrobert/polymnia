@@ -157,7 +157,7 @@ poly_world__add         (char *a_name, char *a_home)
    strlcpy (x_new->name, a_name, LEN_LABEL);
    strlcpy (x_new->home, a_home, LEN_HUND);
    /*---(into btree)---------------------*/
-   rc = poly_btree_hook (B_WORLD, x_new, x_new->name, &x_new->btree);
+   rc = ySORT_hook (B_WORLD, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -165,7 +165,7 @@ poly_world__add         (char *a_name, char *a_home)
    }
    /*---(prepare functions)--------------*/
    DEBUG_PROG   yLOG_note    ("prepare btree");
-   rc = poly_btree_prepare  (B_WORLD);
+   rc = ySORT_prepare  (B_WORLD);
    DEBUG_PROG   yLOG_value   ("prepare"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -200,7 +200,7 @@ poly_world__remove      (char *a_name)
       return rce;
    }
    /*---(btree)--------------------------*/
-   rc = poly_btree_unhook (&(x_old->btree));
+   rc = ySORT_unhook (&(x_old->btree));
    DEBUG_DATA   yLOG_value   ("un-btree"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -215,7 +215,7 @@ poly_world__remove      (char *a_name)
    }
    /*---(prepare functions)--------------*/
    DEBUG_PROG   yLOG_note    ("prepare btree");
-   rc = poly_btree_prepare  (B_WORLD);
+   rc = ySORT_prepare  (B_WORLD);
    DEBUG_PROG   yLOG_value   ("prepare"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -233,10 +233,10 @@ poly_world__remove      (char *a_name)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_world__count        (void)                            { return poly_btree_count     (B_WORLD); }
-char poly_world__by_name      (uchar *a_name, tWORLD **r_world) { return poly_btree_by_name   (B_WORLD, a_name, r_world); }
-char poly_world__by_index     (int n, tWORLD **r_world)         { return poly_btree_by_index  (B_WORLD, n, r_world); }
-char poly_world__by_cursor    (char a_dir, tWORLD **r_world)    { return poly_btree_by_cursor (B_WORLD, a_dir, r_world); }
+int  poly_world__count        (void)                            { return ySORT_count     (B_WORLD); }
+char poly_world__by_name      (uchar *a_name, tWORLD **r_world) { return ySORT_by_name   (B_WORLD, a_name, r_world); }
+char poly_world__by_index     (int n, tWORLD **r_world)         { return ySORT_by_index  (B_WORLD, n, r_world); }
+char poly_world__by_cursor    (char a_dir, tWORLD **r_world)    { return ySORT_by_cursor (B_WORLD, a_dir, r_world); }
 
 
 
@@ -624,9 +624,24 @@ static void  o___PROGRAM_________o () { return; }
 char
 poly_world_init         (void)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(initialize)---------------------*/
+   rc = ySORT_btree (B_WORLD, "registry");
+   DEBUG_PROG   yLOG_value   ("btree"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    poly_world_cli (F_WORLD, '-');
    my.f_world = NULL;
    poly_world__purge ();
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
    return 0;
 }
 
