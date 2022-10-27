@@ -336,7 +336,7 @@ poly_action_audit       (void)
    /*---(verify header)------------------*/
    yURG_msg ('>', "central directory setup/security...");
    /*---(defense)-------------------------------*/
-   rc = yJOBS_central_dir  (my.run_as, NULL, x_orig, NULL, NULL);
+   rc = yJOBS_central_dirs (my.run_as, NULL, x_orig, NULL, NULL);
    --rce;  if (rc <  0) {
       DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -354,8 +354,8 @@ poly_action_audit       (void)
    /*---(check each level)----------------------*/
    --rce;  while (p != NULL) {
       sprintf (x_path, "%s/%s", x_path, p);
-      if (c < 2)  rc = yJOBS_act_checkdir (x_path, 0755);
-      else        rc = yJOBS_act_checkdir (x_path, 0700);
+      /*> if (c < 2)  rc = yJOBS_act_checkdir (x_path, 0755);                         <*/
+      /*> else        rc = yJOBS_act_checkdir (x_path, 0700);                         <*/
       if (rc < 0) {
          DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;

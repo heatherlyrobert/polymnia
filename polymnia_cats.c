@@ -6,13 +6,12 @@ static char   s_print        [LEN_RECD] = "";
 
 
 
-#define     MAX_CATS    70
 static struct cPOS    {
    char        grp;                         /* major group                    */
    char        sub;                         /* sub group for clarity          */
    char        pos;                         /* position in major group        */
    char        name        [LEN_LABEL];     /* short description              */
-   char        desc        [LEN_LABEL];     /* longer description             */
+   char        desc        [LEN_DESC];      /* longer description             */
    int         n;                           /* statistics entry               */
 } const s_cats [MAX_CATS] = {
    /*===[[ PREFIX ]]=============================================*/
@@ -30,9 +29,9 @@ static struct cPOS    {
    {  1,  1,  5, "ptwo"   , "params use double pointers"      ,  5 },
    {  1,  1,  6, "proto"  , "prototype location"              ,  6 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  2,  7, "total"  , "total lines of any type"         ,  7 },
-   {  1,  2,  8, "debug"  , "debugging lines"                 ,  8 },
-   {  1,  2,  9, "slocl"  , "source lines of code logical"    ,  9 },
+   {  1,  2,  7, "total"  , "total actual lines (div 5)"      ,  7 },
+   {  1,  2,  8, "debug"  , "debugging lines (% total)"       ,  8 },
+   {  1,  2,  9, "slocl"  , "lines of code logical (% total)" ,  9 },
    /*--  -123456-   -123456789012345678901234567890- */
    {  1,  3, 10, "Lvars"  , "number of local vars used"       , 10 },
    {  1,  3, 11, "Fvars"  , "number of file vars used"        , 11 },
@@ -960,6 +959,25 @@ poly_cats_func          (tFUNC *a_func)
       /*---(done)------------------------*/
    }
    printf ("\n");
+   return 0;
+}
+
+char
+poly_cats_by_index      (tFUNC *a_func, char n, char *a_grp, char *a_sub, char *a_name, char *a_desc, char *a_set)
+{
+   char        rce         =  -10;
+   /*---(defense)------------------------*/
+   --rce;  if (a_func == NULL)          return rce;
+   --rce;  if (n < 0)                   return rce;
+   --rce;  if (n >= MAX_CATS)           return rce;
+   --rce;  if (s_cats [n].grp < 0)      return rce;
+   /*---(populate)-----------------------*/
+   if (a_grp  != NULL)  *a_grp = s_cats [n].grp;
+   if (a_sub  != NULL)  *a_sub = s_cats [n].sub;
+   if (a_name != NULL)  strlcpy (a_name, s_cats [n].name, LEN_LABEL);
+   if (a_desc != NULL)  strlcpy (a_desc, s_cats [n].desc, LEN_DESC);
+   if (a_set  != NULL)  *a_set = a_func->stats [s_cats [n].n];
+   /*---(complete)-----------------------*/
    return 0;
 }
 

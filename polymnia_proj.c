@@ -30,7 +30,7 @@ poly_proj_cli           (char *a_name, char a_loud)
    DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
       if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be null");
-      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_ARGS  yLOG_info    ("a_name"    , a_name);
@@ -39,20 +39,20 @@ poly_proj_cli           (char *a_name, char a_loud)
    DEBUG_ARGS  yLOG_value   ("l"         , l);
    --rce;  if (l <= 0) {
       if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be blank/empty");
-      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    --rce;  if (l >= LEN_LABEL) {
       if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be longer than %d chars", LEN_LABEL);
-      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(check characters)---------------*/
    --rce;  for (i = 0; i < l; ++i) {
       if (strchr (x_valid, a_name [i]) != NULL)  continue;
       if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not have a <%c> at character %d", a_name [i], i);
-      DEBUG_TOPS  yLOG_char  ("bad char"  , a_name [i]);
-      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      DEBUG_PROG  yLOG_char  ("bad char"  , a_name [i]);
+      DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(copy)---------------------------*/
@@ -558,7 +558,7 @@ poly_proj__get_home     (char *a_home)
 }
 
 char
-poly_proj__get_name     (char *a_home, char *a_name)
+poly_proj__get_name     (cchar *a_home, char *a_name)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;

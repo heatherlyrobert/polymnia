@@ -87,7 +87,7 @@ PROG__init              (int a_argc, char *a_argv[])
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(yJOB config)--------------------*/
    PROG_reset_yjobs ();
-   DEBUG_TOPS  yLOG_char    ("run_as"    , my.run_as);
+   DEBUG_PROG  yLOG_char    ("run_as"    , my.run_as);
    my.run_uid     = getuid ();
    my.runtime     = time (NULL);
    /*---(run-time-config)----------------*/
@@ -108,6 +108,7 @@ PROG__init              (int a_argc, char *a_argv[])
    my.g_file         = NULL;
    my.g_filename [0] = '\0';
    my.g_extern [0]   = '\0';
+   my.g_funcname [0] = '\0';
    strlcpy (my.g_hint, "--", LEN_TERSE);
    /*---(files)--------------------------*/
    DEBUG_PROG   yLOG_note    ("initialize file pointers");
@@ -157,17 +158,22 @@ PROG__args              (int a_argc, char *a_argv[])
    int         x_file      =    0;
    int         c           =    0;
    /*---(header)-------------------------*/
-   DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
+   DEBUG_PROG  yLOG_enter   (__FUNCTION__);
    /*> FILE_rename ("");                                                              <*/
-   if (a_argv > 0)  yJOBS_runas (&(my.run_as), a_argv [0]);
-   DEBUG_TOPS  yLOG_char    ("run_as"    , my.run_as);
+   rc = yJOBS_runas (a_argv [0], &(my.run_as), 30, P_FOCUS, P_NICHE, P_SUBJECT, P_PURPOSE, P_NAMESAKE, P_HERITAGE, P_IMAGERY, P_REASON, P_ONELINE, P_HOMEDIR, P_BASENAME, P_FULLPATH, P_SUFFIX, P_CONTENT, P_SYSTEM, P_LANGUAGE, P_CODESIZE, P_DEPENDS, P_AUTHOR, P_CREATED, P_VERMAJOR, P_VERMINOR, P_VERNUM, P_VERTXT, P_ITCH, P_EXISTS, P_AVOID, P_SCRATCH, P_SUMMARY, P_ASSUME);
+   DEBUG_PROG  yLOG_value   ("runas"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG  yLOG_char    ("run_as"    , my.run_as);
    /*---(process)------------------------*/
    for (i = 1; i < a_argc; ++i) {
       a = a_argv [i];
       if (a == NULL) {
          yURG_err ('f', "arg %d is NULL", i);
-         DEBUG_TOPS   yLOG_note    ("FATAL, found a null argument, really bad news");
-         DEBUG_TOPS   yLOG_exitr   (__FUNCTION__, rce);
+         DEBUG_PROG   yLOG_note    ("FATAL, found a null argument, really bad news");
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       ++x_total;
@@ -176,32 +182,27 @@ PROG__args              (int a_argc, char *a_argv[])
       ++x_args;
       if (i < a_argc - 1)  b = a_argv [i + 1];
       else                 b = NULL;
-      /*---(simple)----------------------*/
+      /*---(standards first)-------------*/
+      if (strcmp (a, "--htags"     ) == 0)  a = "--local";
+      rc = yJOBS_argument (&i, a, b, &(my.run_as), &(my.run_mode), my.run_file);
+      if (rc < 0) {
+         DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
+         return rce;
+      }
+      if (rc == 1)  continue;
       /*> rc = poly_rptg_args (a);                                                    <*/
       /*> if (rc == 1)   continue;                                                    <*/
       /*---(simple)----------------------*/
       if      (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
       /*---(complicated)-----------------*/
-      else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }
+      /*> else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }   <*/
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
       /*---(configuration)---------------*/
-      else if (strcmp (a, "--local"     ) == 0)  rc = poly_db_cli  ("polymnia_local.db", 'y');
+      /*> else if (strcmp (a, "--local"     ) == 0)  rc = poly_db_cli  ("polymnia_local.db", 'y');   <*/
       else if (strcmp (a, "--database"  ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
       else if (strcmp (a, "--world"     ) == 0)  TWOARG rc = poly_world_cli   (a_argv [i], 'y');
       else if (strcmp (a, "--external"  ) == 0)  TWOARG rc = poly_extern_cli  (a_argv [i], 'y');
-      /*---(extern)----------------------*/
-      /*> else if (strcmp (a, "--add-extern") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_YLIB;    }   <*/
-      /*> else if (strcmp (a, "--rem-extern") == 0) { my.g_mode  = POLY_DATA;  my.g_data = POLY_DATA_REMOVE;  }   <*/
-      /*---(reports)---------------------*/
-      /*> else if (strcmp (a, "--projects"  ) == 0) { my.g_mode  = POLY_RPTG;  my.g_scope = POLY_PROJ;  my.g_rptg = POLY_RPTG_PROJS;   }   <*/
-      /*> else if (strcmp (a, "--oneline"   ) == 0) { my.g_mode  = POLY_RPTG;  my.g_scope = POLY_PROJ;  my.g_rptg = POLY_RPTG_ONELINE; }   <*/
-      /*> else if (strcmp (a, "--files"     ) == 0) { my.g_mode  = POLY_RPTG;  my.g_scope = POLY_FILE;  my.g_rptg = POLY_RPTG_FILES;   }   <*/
-      /*> else if (strcmp (a, "--about"     ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_ABOUT;   }   <*/
-      /*> else if (strcmp (a, "--dump"      ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_DUMP;    }   <*/
-      /*> else if (strcmp (a, "--detail"    ) == 0) { my.g_mode  = POLY_RPTG;  my.g_rptg = POLY_RPTG_FUNC;    }   <*/
       /*---(others)----------------------*/
-      /*> else if (strcmp (a, "--files"    ) == 0)  my.g_mode   = MODE_FILE;          <*/
-      /*> else if (strcmp (a, "--vars"     ) == 0)  my.g_mode   = POLY_RPTG_VARS;     <*/
       else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;
       else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;
       else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;
@@ -209,6 +210,7 @@ PROG__args              (int a_argc, char *a_argv[])
       else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;
       /*---(filtering)-------------------*/
       else if (strcmp (a, "--project"   ) == 0)  TWOARG rc = poly_proj_cli    (a_argv [i], 'y');
+      else if (strcmp (a, "--function"  ) == 0)  TWOARG rc = poly_func_cli_name (a_argv [i], 'y');
       else if (strcmp (a, "--hint"      ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
       /*> else if (strcmp (a, "--extern"   ) == 0)  TWOARG rc = poly_extern_name (a_argv [i], 'y');   <*/
       /*> else if (strcmp (a, "--ylib"     ) == 0)  TWOARG rc = poly_ylib_name   (a_argv [i], 'y');   <*/
@@ -217,8 +219,8 @@ PROG__args              (int a_argc, char *a_argv[])
          my.g_mode = POLY_RPTG_EXTERN;
          if (++i < a_argc)  strlcpy (my.g_extern, a_argv [i], LEN_TITLE);
          else {
-            DEBUG_TOPS  yLOG_note  ("extern name not included");
-            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
+            DEBUG_PROG  yLOG_note  ("extern name not included");
+            DEBUG_PROG  yLOG_exitr (__FUNCTION__, -1);
             return -1;
          }
       }
@@ -226,8 +228,8 @@ PROG__args              (int a_argc, char *a_argv[])
          my.g_mode = POLY_RPTG_YLIB;
          if (++i < a_argc)  strlcpy (my.g_libuse, a_argv [i], LEN_TITLE);
          else {
-            DEBUG_TOPS  yLOG_note  ("library name not included");
-            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
+            DEBUG_PROG  yLOG_note  ("library name not included");
+            DEBUG_PROG  yLOG_exitr (__FUNCTION__, -1);
             return -1;
          }
       }
@@ -249,12 +251,9 @@ PROG__args              (int a_argc, char *a_argv[])
          }
       }
       else {
-         rc = yJOBS_args_handle (&(my.run_as), &(my.run_mode), my.run_file, &i, a, b);
-         if (rc < 0) {
-            DEBUG_TOPS  yLOG_note  ("argument not understood");
-            DEBUG_TOPS  yLOG_exitr (__FUNCTION__, -1);
-            return -1;
-         }
+         DEBUG_PROG  yLOG_note  ("argument not understood");
+         DEBUG_PROG  yLOG_exitr (__FUNCTION__, -1);
+         return -1;
       }
       /*> printf ("GLOBAL %c, %c, %c\n", my.g_mode, my.g_scope, my.g_rptg);           <*/
       if (rc < 0)  break;
@@ -267,7 +266,7 @@ PROG__args              (int a_argc, char *a_argv[])
    /*> printf ("FINAL  %c, %c, %c\n", my.g_mode, my.g_scope, my.g_rptg);              <*/
    yJOBS_final (my.run_uid);
    /*---(complete)-----------------------*/
-   DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    return rc;
 }
 
@@ -275,12 +274,12 @@ char         /*-> initialize program and variables ---[ ------ [gz.741.041.07]*/
 PROG__begin             (void)
 {
    /*---(header)-------------------------*/
-   DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
+   DEBUG_PROG  yLOG_enter   (__FUNCTION__);
    /*---(prepare files)------------------*/
    char        rc          =    0;
    rc = poly_extern_load ();
    /*---(complete)-----------------------*/
-   DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    return 0;
 }
 
@@ -292,24 +291,24 @@ PROG_startup            (int argc, char *argv[])
    char        rc          =    0;
    /*---(header)-------------------------*/
    yURG_stage_check (YURG_BEG);
-   DEBUG_TOPS  yLOG_enter   (__FUNCTION__);
+   DEBUG_PROG  yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
    if (rc >= 0) {
       rc = PROG__init    (argc, argv);
-      DEBUG_TOPS  yLOG_value   ("init"      , rc);
+      DEBUG_PROG  yLOG_value   ("init"      , rc);
    }
    /*---(arguments)----------------------*/
    if (rc >= 0) {
       rc = PROG__args    (argc, argv);
-      DEBUG_TOPS  yLOG_value   ("args"      , rc);
+      DEBUG_PROG  yLOG_value   ("args"      , rc);
    }
    /*---(begin)--------------------------*/
    if (rc >= 0) {
       rc = PROG__begin   ();
-      DEBUG_TOPS  yLOG_value   ("args"      , rc);
+      DEBUG_PROG  yLOG_value   ("args"      , rc);
    }
    /*---(complete)-----------------------*/
-   DEBUG_TOPS  yLOG_exit  (__FUNCTION__);
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    yURG_stage_check (YURG_MID);
    return rc;
 }
@@ -749,6 +748,58 @@ PROG__audit             (void)
 }
 
 char
+PROG_callback           (cchar a_req, cchar *a_data)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_name      [LEN_LABEL] = "";
+   tPROJ      *x_proj      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   switch (a_req) {
+   case YJOBS_READ     :
+      DEBUG_PROG    yLOG_note    ("database read action (YJOBS_READ)");
+      rc = poly_db_read  ();
+      break;
+   case YJOBS_WRITE    :
+      DEBUG_PROG    yLOG_note    ("database write action (YJOBS_WRITE)");
+      rc = poly_db_write ();
+      break;
+   case YJOBS_REPORT   :
+      DEBUG_PROG    yLOG_note    ("database report action (YJOBS_REPORT)");
+      rc = poly_rptg_lookup   (a_data);
+      rc = poly_rptg_projects ();
+      break;
+   case YJOBS_PULL     :
+      DEBUG_PROG    yLOG_note    ("database file read/pull action (YJOBS_PULL)");
+      rc = poly_proj__get_name (a_data, x_name);
+      rc = poly_proj_replace (x_name, a_data, &x_proj);
+      /*---(save off)-----------------------*/
+      my.g_proj = x_proj;
+      x_proj->written = my.runtime;
+      /*---(analyze project)----------------*/
+      rc = poly_action__gather (x_proj);
+      DEBUG_PROG   yLOG_value   ("gather"     , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      break;
+   case YJOBS_LOCALRPT :
+      DEBUG_PROG    yLOG_note    ("local report action (YJOBS_LOCALRPT)");
+      my.g_data  = POLY_DATA_HTAGS;
+      my.g_scope = POLY_FULL;
+      my.g_rptg  = POLY_RPTG_HTAGS;
+      rc = poly_rptg_htags (NULL);
+      break;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 PROG_dispatch           (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -764,6 +815,7 @@ PROG_dispatch           (void)
    /*---(title)--------------------------*/
    IF_VERBOSE   yURG_msg ('>', "%s", P_ONELINE);
    /*---(route action)-------------------*/
+   DEBUG_PROG    yLOG_char    ("run_mode"  , my.run_mode);
    --rce;  switch (my.run_mode) {
       /*---(basic)-----------------------*/
    case ACT_STATS       :
@@ -794,6 +846,7 @@ PROG_dispatch           (void)
       break;
       /*---(central)---------------------*/
    case CASE_REPORT     :
+      DEBUG_PROG    yLOG_note    ("reporting");
       rc = poly_rptg_dispatch ();
       break;
    case CASE_AUDIT      :
@@ -869,29 +922,29 @@ PROG_dispatch_OLD       (void)
        *>       rc = poly_action_about ();                                                       <* 
        *>       break;                                                                           <* 
        *>    case POLY_RPTG_DUMP   :                                                             <* 
-       *>       DEBUG_TOPS   yLOG_note    ("rptg processing, file read, nor htags or write");    <* 
+       *>       DEBUG_PROG   yLOG_note    ("rptg processing, file read, nor htags or write");    <* 
        *>       rc = poly_db_read     ();                                                        <* 
        *>       rc = poly_rptg_dump   ();                                                        <* 
        *>       break;                                                                           <* 
        *>    case MODE_SEARCH :                                                                  <* 
-       *>       DEBUG_TOPS   yLOG_note    ("search processing, read, but no htags or write");    <* 
+       *>       DEBUG_PROG   yLOG_note    ("search processing, read, but no htags or write");    <* 
        *>       rc = poly_action_search ();                                                      <* 
        *>       break;                                                                           <* 
        *>    case MODE_FILE   :                                                                  <* 
-       *>       DEBUG_TOPS   yLOG_note    ("project processing, read, but no htags or write");   <* 
+       *>       DEBUG_PROG   yLOG_note    ("project processing, read, but no htags or write");   <* 
        *>       rc = poly_db_read     ();                                                        <* 
        *>       rc = poly_rptg_proj   ();                                                        <* 
        *>       break;                                                                           <* 
        *>    case POLY_RPTG_EXTERN :                                                             <* 
-       *>       DEBUG_TOPS   yLOG_note    ("extern processing, read, but no htags or write");    <* 
+       *>       DEBUG_PROG   yLOG_note    ("extern processing, read, but no htags or write");    <* 
        *>       rc = poly_action_extern ();                                                      <* 
        *>       break;                                                                           <* 
        *>    case POLY_RPTG_YLIB   :                                                             <* 
-       *>       DEBUG_TOPS   yLOG_note    ("libuse processing, read, but no htags or write");    <* 
+       *>       DEBUG_PROG   yLOG_note    ("libuse processing, read, but no htags or write");    <* 
        *>       rc = poly_action_libuse ();                                                      <* 
        *>       break;                                                                           <* 
        *>    case POLY_RPTG_VARS   :                                                             <* 
-       *>       DEBUG_TOPS   yLOG_note    ("htag gathering, then var/macros analysis");          <* 
+       *>       DEBUG_PROG   yLOG_note    ("htag gathering, then var/macros analysis");          <* 
        *>       rc = poly_action_vars ();                                                        <* 
        *>       break;                                                                           <* 
        *>    }                                                                                   <* 
@@ -913,7 +966,6 @@ char         /*-> shutdown program and free memory ---[ ------ [gz.422.001.03]*/
 PROG__end               (void)
 {
    /*---(header)-------------------------*/
-   yURG_stage_check (YURG_END);
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(wrap-up)------------------------*/
    poly_proj_purge   ();
@@ -924,13 +976,14 @@ PROG__end               (void)
    system ("rm -f htags.flow");
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   DEBUG_TOPS   yLOGS_end    ();
+   DEBUG_PROG   yLOGS_end    ();
    return 0;
 }
 
 char         /*-> shutdown program and free memory ---[ ------ [gz.422.001.03]*/ /*-[00.0000.111.!]-*/ /*-[--.---.---.--]-*/
 PROG_shutdown          (void)
 {
+   yURG_stage_check (YURG_END);
    return PROG__end ();
 }
 
@@ -981,8 +1034,8 @@ prog__unit              (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "PROG unit        : question unknown");
    /*---(simple)-------------------------*/
    if      (strcmp (a_question, "mode"    )        == 0) {
-      yJOBS_iam  (my.run_as  , s);
-      yJOBS_mode (my.run_mode, t);
+      strlcpy (s, yJOBS_iam  (), LEN_TITLE);
+      strlcpy (t, yJOBS_mode (), LEN_TITLE);
       snprintf (unit_answer, LEN_RECD, "PROG mode        : iam (%c) %-18.18s, run (%c) %-18.18s, å%sæ", my.run_as, s, my.run_mode, t, my.run_file);
    }
    /*---(complete)-----------------------*/

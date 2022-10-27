@@ -52,14 +52,14 @@ poly_func_cli           (char *a_hint, char a_loud)
    int         i           =    0;
    tFUNC      *x_func      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_FILE   yLOG_enter   (__FUNCTION__);
+   DEBUG_ARGS   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
    strlcpy (my.g_hint, "--", LEN_TERSE);
    /*---(defense)------------------------*/
    DEBUG_ARGS  yLOG_point   ("a_hint"    , a_hint);
    --rce;  if (a_hint == NULL) {
       if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name can not be null");
-      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      DEBUG_ARGS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_ARGS  yLOG_info    ("a_hint"    , a_hint);
@@ -68,36 +68,95 @@ poly_func_cli           (char *a_hint, char a_loud)
    DEBUG_ARGS  yLOG_value   ("x_len"     , x_len);
    --rce;  if (x_len != 2) {
       if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name must be two characters long");
-      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      DEBUG_ARGS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(check characters)---------------*/
    --rce;  for (i = 0; i < x_len; ++i) {
       if (strchr (x_valid, a_hint [i]) != NULL)  continue;
       if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name can not have a <%c> at character %d", a_hint [i], i);
-      DEBUG_TOPS  yLOG_char  ("bad char"  , a_hint [i]);
-      DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);
+      DEBUG_ARGS  yLOG_char  ("bad char"  , a_hint [i]);
+      DEBUG_ARGS  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(find it)------------------------*/
    /*> DEBUG_ARGS  yLOG_point   ("g_proj"    , my.g_proj);                            <*/
    /*> --rce;  if (my.g_proj == NULL) {                                                         <* 
     *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, no current project set");      <* 
-    *>    DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);                                           <* 
+    *>    DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);                                           <* 
     *>    return rce;                                                                           <* 
     *> }                                                                                        <* 
     *> poly_func_by_hint (my.g_proj, x_recd, &x_found);                                         <* 
     *> DEBUG_ARGS  yLOG_point   ("x_found"   , x_found);                                        <* 
     *> --rce;  if (x_found == NULL) {                                                           <* 
     *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name not found in project");   <* 
-    *>    DEBUG_TOPS  yLOG_exitr (__FUNCTION__, rce);                                           <* 
+    *>    DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);                                           <* 
     *>    return rce;                                                                           <* 
     *> }                                                                                        <*/
    /*---(copy)---------------------------*/
    strlcpy (my.g_hint, a_hint, LEN_TERSE);
    DEBUG_ARGS  yLOG_info    ("g_hint"    , my.g_hint);
    /*---(complete)-----------------------*/
-   DEBUG_FILE   yLOG_exit    (__FUNCTION__);
+   DEBUG_ARGS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_func_cli_name      (char *a_name, char a_loud)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         x_len       =    0;
+   char       *x_valid     = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+   int         i           =    0;
+   tFUNC      *x_func      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_ARGS   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   strlcpy (my.g_hint, "--", LEN_TERSE);
+   /*---(defense)------------------------*/
+   DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
+   --rce;  if (a_name == NULL) {
+      if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name can not be null");
+      DEBUG_ARGS  yLOG_exitr (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_ARGS  yLOG_info    ("a_name"    , a_name);
+   /*---(check length)-------------------*/
+   /*> x_len = strlen (a_hint);                                                                         <* 
+    *> DEBUG_ARGS  yLOG_value   ("x_len"     , x_len);                                                  <* 
+    *> --rce;  if (x_len != 2) {                                                                        <* 
+    *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name must be two characters long");   <* 
+    *>    DEBUG_ARGS  yLOG_exitr (__FUNCTION__, rce);                                                   <* 
+    *>    return rce;                                                                                   <* 
+    *> }                                                                                                <*/
+   /*---(check characters)---------------*/
+   /*> --rce;  for (i = 0; i < x_len; ++i) {                                                                                   <* 
+    *>    if (strchr (x_valid, a_hint [i]) != NULL)  continue;                                                                 <* 
+    *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name can not have a <%c> at character %d", a_hint [i], i);   <* 
+    *>    DEBUG_ARGS  yLOG_char  ("bad char"  , a_hint [i]);                                                                   <* 
+    *>    DEBUG_ARGS  yLOG_exitr (__FUNCTION__, rce);                                                                          <* 
+    *>    return rce;                                                                                                          <* 
+    *> }                                                                                                                       <*/
+   /*---(find it)------------------------*/
+   /*> DEBUG_ARGS  yLOG_point   ("g_proj"    , my.g_proj);                            <*/
+   /*> --rce;  if (my.g_proj == NULL) {                                                         <* 
+    *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, no current project set");      <* 
+    *>    DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);                                           <* 
+    *>    return rce;                                                                           <* 
+    *> }                                                                                        <* 
+    *> poly_func_by_hint (my.g_proj, x_recd, &x_found);                                         <* 
+    *> DEBUG_ARGS  yLOG_point   ("x_found"   , x_found);                                        <* 
+    *> --rce;  if (x_found == NULL) {                                                           <* 
+    *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name not found in project");   <* 
+    *>    DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);                                           <* 
+    *>    return rce;                                                                           <* 
+    *> }                                                                                        <*/
+   /*---(copy)---------------------------*/
+   strlcpy (my.g_funcname, a_name, LEN_DESC);
+   DEBUG_ARGS  yLOG_info    ("funcname"  , my.g_funcname);
+   /*---(complete)-----------------------*/
+   DEBUG_ARGS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

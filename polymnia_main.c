@@ -16,8 +16,9 @@ main (int argc, char *argv[])
    if (rc <  0) { PROG_shutdown (); return -1; }
    /*---(dispatch)-----------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   rc = PROG_dispatch ();
-   DEBUG_PROG   yLOG_value   ("dispatch"  , rc);
+   rc = yJOBS_driver (P_ONELINE, PROG_callback);
+   /*> rc = PROG_dispatch ();                                                         <*/
+   DEBUG_PROG   yLOG_value   ("driver"    , rc);
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    /*---(wrap-up)------------------------*/
    PROG_shutdown ();

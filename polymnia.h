@@ -19,6 +19,7 @@
 
 #define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
 
+#define     P_HOMEDIR   "/home/system/polymnia.muse_of_coding_structure"
 #define     P_BASENAME  "polymnia"
 #define     P_FULLPATH  "/usr/local/bin/polymnia"
 #define     P_SUFFIX    "htags"
@@ -26,16 +27,16 @@
 
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
-#define     P_CODESIZE  "small       (appoximately 1,000 slocl)"
-#define     P_DEPENDS   "ySTR"
+#define     P_CODESIZE  "moderate    (appoximately 2,000 to 10,000 slocl)"
+#define     P_DEPENDS   "ySTR,yJOBS,ySORT,yREGEX"
 
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2019-01"
 
-#define     P_VERMAJOR  "0.--, pre-production"
-#define     P_VERMINOR  "0.9-, bring back to life ;)"
-#define     P_VERNUM    "0.9k"
-#define     P_VERTXT    "moved btree code to ySORT to share elsewhere"
+#define     P_VERMAJOR  "1.--, working excellent, keep improving"
+#define     P_VERMINOR  "1.0-, move further to yJOBS"
+#define     P_VERNUM    "1.0a"
+#define     P_VERTXT    "about and htags coming from yJOBS"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -44,19 +45,66 @@
 /*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
 /*===[[ END ONE_LINERS ]]=====================================================*/
 
+#define     P_SAMPLE    \
+   "¦" \
+   "¦" \
+   "¦"
 
+/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+#define     P_ITCH      \
+   "i am growing and have a large, evolving code-base.  the results can be¦" \
+   "chaotic.  i need to make sense of it all, identify potential troubles,¦" \
+   "track inter-dependencies, and help isolate troubles very quickly¦"
+
+#define     P_EXISTS    \
+   "there are fantastic tools, but they change, devolve, and overbuild.¦" \
+   "i need a targeted tool that finds my personal weaknesses and does¦" \
+   "not include a kitchen sink, no say in development, and weird licensing.¦"
+
+#define     P_AVOID     \
+   "polymnia will not replace or compete with lint, valgrind, and other¦" \
+   "detailed code analyis.  it is mean to supplement and help with larger¦" \
+   "troubles and larger context.  i am sure many ide's do this well.¦"
+
+#define     P_SCRATCH   \
+   "code navigation and analysis can mean many things, but i am specifically¦" \
+   "targeting predictive statistics for complexity, integration points, and¦" \
+   "personal blind-spots to help me manage a large code-base by myself.¦"
 
 #define     P_SUMMARY   \
- "polymnia is a custom code analysis tool offering tag navigation for¦" \
- "vim-ide, detailed function complexity analysis, and code-base wide¦" \
- "reporting and research for the one-true language (c) ;)¦"
+  "polymnia is a custom code analysis tool offering tag navigation for¦" \
+  "vim-ide, detailed function complexity analysis, and code-base wide¦" \
+  "reporting and research for the one-true language (c) ;)¦"
 
 #define     P_ASSUME    \
- "-- all applications are only written in c¦" \
- "-- coding practices follow my standards (allowing deeper analysis)¦" \
- "-- program headers and key information are in standard named macros¦" \
- "-- all code stored in system, monkey, and member directories¦" \
- "-- zero configuration ;) written for me, by me, for only me¦"
+   "-- all applications are only written in c¦" \
+   "-- coding practices follow my standards (allowing deeper analysis)¦" \
+   "-- program headers and key information are in standard named macros¦" \
+   "-- zero configuration ;) written for me, by me, for only me¦"
+
+
+#define     P_DEFINE    \
+   "as one of the major user-empowerment tools, spreadsheets allow ad-hoc,¦" \
+   "informal, low skill, quick, and evolving analysis and manipulation of any¦" \
+   "kind of data -- from massive tables to irregular and unclear collections.¦"
+#define     P_CURRENT   \
+   "this is a fairly well-defined category of tool with a relatively stable¦" \
+   "interface and several major alternative products.  while user experiences¦" \
+   "vary, major functions and features are broadly comparable across competitors.¦"
+#define     P_CONCERN   \
+   "these tools have become overly complex, unwieldy, kitchen-sink tools that¦" \
+   "overlap with other major tools rather than complement them.  spreadsheets in¦" \
+   "particular have become dangerous, error-prone replacements for real systems.¦"
+#define     P_ALTERNS   "visicalc, lotus 123, excel, google, oocalc, gnumeric¦"
+#define     P_WHATFOR   \
+   "i love spreadsheets.  love them.  but, in pursuit of market share, they have¦" \
+   "evolved into massive, complex, mouse-driven, productivity suckers that¦" \
+   "integrate poorly with other tools (anti-unix).¦"
+#define     P_DECISION  \
+   "gonna make my own.  crazy and unrealistic, but rewarding and sobering too.¦" \
+   "if you want to learn, pick blisteringly hard goals.  my result will be¦" \
+   "keyboard-driven, scriptable, light, fast, and flexible.¦"
+
 
 /*===[[ GREEK HERITAGE ]]=====================================================*/
 /*
@@ -338,6 +386,7 @@ struct cMY {
    tFILE      *g_file;                 /* limit output to this file           */
    char        g_extern    [LEN_RECD]; /* name for focus/filtering            */
    char        g_libuse    [LEN_RECD]; /* extern library for filtering        */
+   char        g_funcname  [LEN_DESC]; /* file name for filtering             */
    char        g_hint      [LEN_TERSE];/* function hint for filtering         */
    /*---(long-term files)-----*/
    FILE       *f_error;                /* stderr output                       */
@@ -443,6 +492,7 @@ struct cFILE {
 
 
 #define     MAX_STATS      60
+#define     MAX_CATS       70
 
 /*---(overall)------------------------*/
 #define     STATS_SINGLE   stats [ 0]
@@ -818,6 +868,7 @@ char*       poly_cats_database      (tFUNC *a_func);
 char*       poly_cats_comment       (tFUNC *a_func);
 char*       poly_cats_full          (tFUNC *a_func, char *a_out);
 char        poly_cats_func          (tFUNC *a_func);
+char        poly_cats_by_index      (tFUNC *a_func, char n, char *a_grp, char *a_sub, char *a_name, char *a_desc, char *a_set);
 char*       poly_cats__unit         (char *a_question, int n);
 
 
@@ -833,6 +884,7 @@ char        PROG__begin             (void);
 char        PROG_startup            (int a_argc, char *a_argv[]);
 /*---(main)-----------------*/
 char        PROG_dispatch           (void);
+char        PROG_callback           (cchar a_req, cchar *a_data);
 char        PROG_summarize          (tPROJ *x_proj);
 /*---(shutdown)-------------*/
 char        PROG__end               (void);
@@ -921,7 +973,7 @@ char        poly_proj_replace       (char *a_name, char *a_home, tPROJ **a_proj)
 char        poly_proj_remove        (tPROJ **a_proj);
 /*---(special)--------------*/
 char        poly_proj__get_home     (char *a_home);
-char        poly_proj__get_name     (char *a_home, char *a_name);
+char        poly_proj__get_name     (cchar *a_home, char *a_name);
 char        poly_proj_identify      (char *a_name, char *a_home);
 char        poly_proj_here          (tPROJ **a_proj);
 /*---(search)---------------*/
@@ -1019,8 +1071,8 @@ char        poly_func__wipe         (tFUNC *a_func);
 char*       poly_func__memory       (tFUNC *a_func);
 char        poly_work__wipe         (tWORK *a_work);
 char*       poly_work__memory       (tWORK *a_work);
-/*> char        poly_func__hint         (int n, char *a_label);                       <*/
 char        poly_func_cli           (char *a_hint, char a_loud);
+char        poly_func_cli_name      (char *a_name, char a_loud);
 /*---(memory)---------------*/
 char        poly_func__new          (tFUNC **a_func);
 char        poly_func_force         (tFUNC **a_func);
