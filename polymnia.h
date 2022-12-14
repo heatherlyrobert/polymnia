@@ -13,7 +13,9 @@
 #define     P_PURPOSE   "pervasive and detailed ansi-c code analysis, research, and navigation"
 
 #define     P_NAMESAKE  "polymnia-hymnos (many praises)"
+#define     P_PRONOUNCE "poh·lee·mih·nee·uh hihm·nohs"
 #define     P_HERITAGE  "greek muse of divine hymns, poetry, dancing, geometry, grammer"
+#define     P_BRIEFLY   "hymns, dancing, and geometry"
 #define     P_IMAGERY   "beautiful woman wearing a veil and looking up at the heavens"
 #define     P_REASON    "she is the muse of divine hymns (c is the divine language)"
 
@@ -27,6 +29,7 @@
 
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
+#define     P_COMPILER  "gcc 5.3.0"
 #define     P_CODESIZE  "moderate    (appoximately 2,000 to 10,000 slocl)"
 #define     P_DEPENDS   "ySTR,yJOBS,ySORT,yREGEX"
 
@@ -35,8 +38,8 @@
 
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.0-, move further to yJOBS"
-#define     P_VERNUM    "1.0a"
-#define     P_VERTXT    "about and htags coming from yJOBS"
+#define     P_VERNUM    "1.0b"
+#define     P_VERTXT    "waited way too long to upload"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -45,66 +48,52 @@
 /*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
 /*===[[ END ONE_LINERS ]]=====================================================*/
 
-#define     P_SAMPLE    \
-   "¦" \
-   "¦" \
-   "¦"
-
 /*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
-#define     P_ITCH      \
+#define     P_ITCH      "itch¦" \
    "i am growing and have a large, evolving code-base.  the results can be¦" \
    "chaotic.  i need to make sense of it all, identify potential troubles,¦" \
-   "track inter-dependencies, and help isolate troubles very quickly¦"
+   "track inter-dependencies, and help isolate troubles very quickly.¦"
 
-#define     P_EXISTS    \
+/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+#define     P_EXISTS    "exists¦" \
    "there are fantastic tools, but they change, devolve, and overbuild.¦" \
    "i need a targeted tool that finds my personal weaknesses and does¦" \
    "not include a kitchen sink, no say in development, and weird licensing.¦"
 
-#define     P_AVOID     \
+/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+#define     P_AVOID     "avoid¦" \
    "polymnia will not replace or compete with lint, valgrind, and other¦" \
-   "detailed code analyis.  it is mean to supplement and help with larger¦" \
+   "detailed code analyis.  it is meant to supplement and help with larger¦" \
    "troubles and larger context.  i am sure many ide's do this well.¦"
 
-#define     P_SCRATCH   \
+/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+#define     P_SCRATCH   "scratch¦" \
    "code navigation and analysis can mean many things, but i am specifically¦" \
    "targeting predictive statistics for complexity, integration points, and¦" \
    "personal blind-spots to help me manage a large code-base by myself.¦"
 
-#define     P_SUMMARY   \
+/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+#define     P_SUMMARY   "summary¦"\
   "polymnia is a custom code analysis tool offering tag navigation for¦" \
   "vim-ide, detailed function complexity analysis, and code-base wide¦" \
   "reporting and research for the one-true language (c) ;)¦"
 
-#define     P_ASSUME    \
-   "-- all applications are only written in c¦" \
+/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+#define     P_ASSUME    "assume¦" \
+   "-- all applications are only written in c (nearly ansi-c)¦" \
+   "-- file naming follows my standards (headers, source, and units)¦" \
    "-- coding practices follow my standards (allowing deeper analysis)¦" \
    "-- program headers and key information are in standard named macros¦" \
    "-- zero configuration ;) written for me, by me, for only me¦"
 
-
-#define     P_DEFINE    \
-   "as one of the major user-empowerment tools, spreadsheets allow ad-hoc,¦" \
-   "informal, low skill, quick, and evolving analysis and manipulation of any¦" \
-   "kind of data -- from massive tables to irregular and unclear collections.¦"
-#define     P_CURRENT   \
-   "this is a fairly well-defined category of tool with a relatively stable¦" \
-   "interface and several major alternative products.  while user experiences¦" \
-   "vary, major functions and features are broadly comparable across competitors.¦"
-#define     P_CONCERN   \
-   "these tools have become overly complex, unwieldy, kitchen-sink tools that¦" \
-   "overlap with other major tools rather than complement them.  spreadsheets in¦" \
-   "particular have become dangerous, error-prone replacements for real systems.¦"
-#define     P_ALTERNS   "visicalc, lotus 123, excel, google, oocalc, gnumeric¦"
-#define     P_WHATFOR   \
-   "i love spreadsheets.  love them.  but, in pursuit of market share, they have¦" \
-   "evolved into massive, complex, mouse-driven, productivity suckers that¦" \
-   "integrate poorly with other tools (anti-unix).¦"
-#define     P_DECISION  \
-   "gonna make my own.  crazy and unrealistic, but rewarding and sobering too.¦" \
-   "if you want to learn, pick blisteringly hard goals.  my result will be¦" \
-   "keyboard-driven, scriptable, light, fast, and flexible.¦"
-
+/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+#define     P_GREEK     "greek heritage¦" \
+  "polymnia-hymnos (many praises) is the muse and protector of divine hymns¦" \
+  "and lyric poetry, inventor of the lyre, patron of dancing, geometry, and¦" \
+  "grammar.  the muses (mousai) are nine daughters of zeus and mnemosyne¦" \
+  "(titan of memory) and are the goddesses of art, literature, and science.¦" \
+  "they inspire creation, enthusiasm, and the creative impulses.  polymnia¦" \
+  "is usually depicted wearing a veil and looking up to the heavens.¦"
 
 /*===[[ GREEK HERITAGE ]]=====================================================*/
 /*
@@ -430,7 +419,9 @@ struct cPROJ {
    char        purpose     [LEN_HUND];
    /*---(greek)-------------*/
    char        namesake    [LEN_HUND];
+   char        pronounce   [LEN_TITLE];
    char        heritage    [LEN_HUND];
+   char        briefly     [LEN_TITLE];
    char        imagery     [LEN_HUND];
    char        reason      [LEN_HUND];
    char        oneline     [LEN_HUND];
@@ -443,6 +434,7 @@ struct cPROJ {
    /*---(system)------------*/
    char        systems     [LEN_HUND];
    char        language    [LEN_HUND];
+   char        compiler    [LEN_LABEL];
    char        codesize    [LEN_DESC];
    char        depends     [LEN_HUND];
    /*---(author)------------*/
@@ -455,6 +447,7 @@ struct cPROJ {
    char        vertxt      [LEN_HUND];
    /*---(other)-------------*/
    char        manual      [LEN_LABEL];
+   char        git;
    /*---(new stats interface)-*/
    int         funcs;
    int         counts      [MAX_COUNTS];    /* line counts                    */
@@ -883,8 +876,6 @@ char        PROG__args              (int a_argc, char *a_argv[]);
 char        PROG__begin             (void);
 char        PROG_startup            (int a_argc, char *a_argv[]);
 /*---(main)-----------------*/
-char        PROG_dispatch           (void);
-char        PROG_callback           (cchar a_req, cchar *a_data);
 char        PROG_summarize          (tPROJ *x_proj);
 /*---(shutdown)-------------*/
 char        PROG__end               (void);
@@ -986,7 +977,9 @@ char        poly_proj_init          (void);
 char        poly_proj_purge         (void);
 char        poly_proj_wrap          (void);
 /*---(system)---------------*/
-char        poly_proj_system        (char *a_path);
+/*> char        poly_proj_system        (char *a_path);                               <*/
+char        poly_proj_git           (tPROJ *a_proj);
+char        poly_proj_footprint     (tPROJ *a_proj);
 /*---(reporting)------------*/
 char        poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
 char        poly_proj_header        (tPROJ *a_proj);
@@ -1012,14 +1005,14 @@ char        poly_rptg_dump          (void);
 char        poly_rptg_extern        (tEXTERN *a_extern);
 char        poly_rptg_dispatch      (void);
 
-char        poly_action_whoami      (void);
-char        poly_action_htags       (void);
+/*> char        poly_action_whoami      (void);                                       <*/
+/*> char        poly_action_htags       (void);                                       <*/
 char        poly_action_generate    (void);
 char        poly_action_search      (void);
-char        poly_action_update      (void);
-char        poly_action_audit       (void);
-char        poly_action_about       (void);
-char        poly_action_remove      (void);
+/*> char        poly_action_update      (void);                                       <*/
+/*> char        poly_action_audit       (void);                                       <*/
+/*> char        poly_action_about       (void);                                       <*/
+/*> char        poly_action_remove      (void);                                       <*/
 char        poly_action_extern      (void);
 char        poly_action_libuse      (void);
 char        poly_action_vars        (void);
@@ -1177,35 +1170,35 @@ char*       poly_vars__unit         (char *a_question, int i);
 
 
 /*---(cli)------------------*/
-char        poly_world_cli          (char *a_name, char a_loud);
+/*> char        poly_world_cli          (char *a_name, char a_loud);                  <*/
 /*---(cleansing)------------*/
-char        poly_world__wipe        (tWORLD *a_world);
-char*       poly_world__memory      (tWORLD *a_world);
+/*> char        poly_world__wipe        (tWORLD *a_world);                            <*/
+/*> char*       poly_world__memory      (tWORLD *a_world);                            <*/
 /*---(memory)---------------*/
-char        poly_world__new         (tWORLD **a_new);
-char        poly_world__free        (tWORLD **a_old);
+/*> char        poly_world__new         (tWORLD **a_new);                             <*/
+/*> char        poly_world__free        (tWORLD **a_old);                             <*/
 /*---(existance)------------*/
-char        poly_world__add         (char *a_name, char *a_home);
-char        poly_world__remove      (char *a_name);
+/*> char        poly_world__add         (char *a_name, char *a_home);                 <*/
+/*> char        poly_world__remove      (char *a_name);                               <*/
 /*---(searching)------------*/
-int         poly_world__count       (void);
-char        poly_world__by_name     (uchar *a_name, tWORLD **a_world);
-char        poly_world__by_index    (int n, tWORLD **a_world);
-char        poly_world__by_cursor   (char a_dir, tWORLD **a_world);
+/*> int         poly_world__count       (void);                                       <*/
+/*> char        poly_world__by_name     (uchar *a_name, tWORLD **a_world);            <*/
+/*> char        poly_world__by_index    (int n, tWORLD **a_world);                    <*/
+/*> char        poly_world__by_cursor   (char a_dir, tWORLD **a_world);               <*/
 /*---(exim)-----------------*/
-char        poly_world__export      (void);
-char        poly_world__import      (void);
+/*> char        poly_world__export      (void);                                       <*/
+/*> char        poly_world__import      (void);                                       <*/
 /*---(register)-------------*/
-char        poly_world__register    (void);
-char        poly_world__unregister  (void);
+/*> char        poly_world__register    (void);                                       <*/
+/*> char        poly_world__unregister  (void);                                       <*/
 /*---(actions)--------------*/
-char        poly_world_register     (void);
-char        poly_world_unregister   (void);
-char        poly_world_system       (void);
+/*> char        poly_world_register     (void);                                       <*/
+/*> char        poly_world_unregister   (void);                                       <*/
+/*> char        poly_world_system       (void);                                       <*/
 /*---(program)--------------*/
-char        poly_world_init         (void);
-char        poly_world__purge       (void);
-char        poly_world_wrap         (void);
+/*> char        poly_world_init         (void);                                       <*/
+/*> char        poly_world__purge       (void);                                       <*/
+/*> char        poly_world_wrap         (void);                                       <*/
 
 
 char        poly_units_by_func      (void);
@@ -1214,5 +1207,7 @@ char        poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, c
 char        poly_units_inventory    (tFILE *a_file);
 
 
+char        PROG_dispatch           (void);
+char        poly_yjobs_callback     (cchar a_req, cchar *a_data);
 
 #endif

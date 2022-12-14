@@ -122,6 +122,7 @@ poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, 
    DEBUG_FILE   yLOG_info    ("x_mode"    , x_mode);
    /*---(open)---------------------------*/
    DEBUG_FILE   yLOG_info    ("my.n_db"   , my.n_db);
+   yURG_msg ('-', "database is å%sæ", my.n_db);
    my.f_db = fopen (my.n_db, x_mode);
    DEBUG_FILE   yLOG_point   ("my.f_db"   , my.f_db);
    --rce;  if (my.f_db == NULL) {
@@ -304,10 +305,12 @@ poly_db_write         (void)
    tPROJ      *x_proj      = NULL;
    /*---(header)-------------------------*/
    DEBUG_OUTP   yLOG_enter   (__FUNCTION__);
+   yURG_msg ('>', "write central database (write)...");
    /*---(open)---------------------------*/
    rc = poly_db__open ('w', NULL, NULL, NULL, NULL);
    DEBUG_OUTP   yLOG_value   ("open"      , rc);
    --rce;  if (rc < 0) {
+      yURG_err ('f', "database could not be openned for writing");
       DEBUG_OUTP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -333,9 +336,14 @@ poly_db_write         (void)
    rc = poly_db__close ();
    DEBUG_OUTP   yLOG_value   ("close"     , rc);
    --rce;  if (rc < 0) {
+      yURG_err ('f', "database could not be closed after writing");
       DEBUG_OUTP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(summary)------------------------*/
+   yURG_msg ('-', "actual %4dp  %4df  %4df  %4dy     %4dl  %4de  %4dd  %4dd  %4dc  %4ds", my.COUNT_PROJS, my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS, my.COUNT_LINES, my.COUNT_EMPTY, my.COUNT_DOCS , my.COUNT_DEBUG, my.COUNT_CODE , my.COUNT_SLOCL);
+   yURG_msg ('-', "success, current database saved correctly");
+   yURG_msg (' ', "");
    /*---(complete)-----------------------*/
    DEBUG_OUTP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -549,6 +557,60 @@ poly_db__stats          (void)
 char
 poly_db__read_audit     (void)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   --rce;  if (my.COUNT_PROJS != g_audit.COUNT_PROJS) {
+      DEBUG_INPT   yLOG_note    ("project count does not match");
+      yURG_msg ('F', "project count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_FILES != g_audit.COUNT_FILES) {
+      DEBUG_INPT   yLOG_note    ("file count does not match");
+      yURG_msg ('F', "file count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_FUNCS != g_audit.COUNT_FUNCS) {
+      DEBUG_INPT   yLOG_note    ("function count does not match");
+      yURG_msg ('F', "function count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_YLIBS != g_audit.COUNT_YLIBS) {
+      DEBUG_INPT   yLOG_note    ("ylib count does not match");
+      yURG_msg ('F', "ylib count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_LINES != g_audit.COUNT_LINES) {
+      DEBUG_INPT   yLOG_note    ("source line count does not match");
+      yURG_msg ('F', "source line count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_EMPTY != g_audit.COUNT_EMPTY) {
+      DEBUG_INPT   yLOG_note    ("empty line count does not match");
+      yURG_msg ('F', "empty line count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_DOCS  != g_audit.COUNT_DOCS ) {
+      DEBUG_INPT   yLOG_note    ("documentation line count does not match");
+      yURG_msg ('F', "documentation line count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_DEBUG != g_audit.COUNT_DEBUG) {
+      DEBUG_INPT   yLOG_note    ("debug line count does not match");
+      yURG_msg ('F', "debug line count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_CODE  != g_audit.COUNT_CODE ) {
+      DEBUG_INPT   yLOG_note    ("code line count does not match");
+      yURG_msg ('F', "code line count does not match");
+      return rce;
+   }
+   --rce;  if (my.COUNT_SLOCL != g_audit.COUNT_SLOCL) {
+      DEBUG_INPT   yLOG_note    ("slocl line count does not match");
+      yURG_msg ('F', "slocl line count does not match");
+      return rce;
+   }
+   yURG_msg ('-', "success, current database passed load audits");
+   return 0;
 }
 
 char         /*===[[ write binary file ]]=================[ ------ [ ------ ]=*/
@@ -563,6 +625,7 @@ poly_db_read          (void)
    int         x_nfile     =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   yURG_msg ('>', "read central database (read)...");
    /*---(initialize)---------------------*/
    poly_proj_purge    ();
    poly_db__read_zero ();
@@ -571,6 +634,7 @@ poly_db_read          (void)
    rc = poly_db__open ('r', &n, NULL, NULL, NULL);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
    --rce;  if (rc < 0) {
+      yURG_err ('f', "database could not be openned for reading");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -624,6 +688,7 @@ poly_db_read          (void)
    rc = poly_db__close ();
    DEBUG_INPT   yLOG_value   ("close"     , rc);
    --rce;  if (rc < 0) {
+      yURG_err ('f', "database could not be closed after reading");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -631,11 +696,16 @@ poly_db_read          (void)
    rc = poly_btree_prepare_all ();
    DEBUG_INPT   yLOG_value   ("prepare"    , rc);
    --rce;  if (n > 0 && rc < 0) {
+      yURG_err ('f', "btree preparations were not successful");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(statistics)---------------------*/
    poly_db__stats     ();
+   yURG_msg ('-', "audit  %4dp  %4df  %4df  %4dy     %4dl  %4de  %4dd  %4dd  %4dc  %4ds", g_audit.COUNT_PROJS, g_audit.COUNT_FILES, g_audit.COUNT_FUNCS, g_audit.COUNT_YLIBS, g_audit.COUNT_LINES, g_audit.COUNT_EMPTY, g_audit.COUNT_DOCS , g_audit.COUNT_DEBUG, g_audit.COUNT_CODE , g_audit.COUNT_SLOCL);
+   yURG_msg ('-', "actual %4dp  %4df  %4df  %4dy     %4dl  %4de  %4dd  %4dd  %4dc  %4ds", my.COUNT_PROJS, my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS, my.COUNT_LINES, my.COUNT_EMPTY, my.COUNT_DOCS , my.COUNT_DEBUG, my.COUNT_CODE , my.COUNT_SLOCL);
+   poly_db__read_audit ();
+   yURG_msg (' ', "");
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;

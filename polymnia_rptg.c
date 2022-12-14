@@ -17,6 +17,7 @@
  *
  */
 
+
 static char     s_prefix     [LEN_LABEL];
 static int      s_projs     =    0;
 static int      s_files     =    0;
@@ -926,22 +927,30 @@ poly_rptg__htags_header (tPROJ *a_proj)
    printf ("##   version %s, %s\n", P_VERNUM, P_VERTXT);
    printf ("##   htags reporting file for use with vim-ide\n");
    printf ("##\n");
-   printf ("##\n");
-   printf ("##\n");
-   printf ("##   25 headers ·  [%s]\n", a_proj->header);
+   printf ("##   27 headers ·  [%s]\n", a_proj->header);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
    printf ("##   name       n  [%s]\n", a_proj->name);
+   printf ("##\n");
+   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+   printf ("##\n");
    printf ("##   focus      f  [%s]\n", a_proj->focus);
    printf ("##   niche      n  [%s]\n", a_proj->niche);
    printf ("##   subject    s  [%s]\n", a_proj->subject);
    printf ("##   purpose    p  [%s]\n", a_proj->purpose);
    printf ("##\n");
+   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+   printf ("##\n");
    printf ("##   namesake   g  [%s]\n", a_proj->namesake);
+   printf ("##   pronounce  p  [%s]\n", a_proj->pronounce);
    printf ("##   heritage   h  [%s]\n", a_proj->heritage);
+   printf ("##   briefly    b  [%s]\n", a_proj->briefly);
    printf ("##   imagery    i  [%s]\n", a_proj->imagery);
    printf ("##   reason     r  [%s]\n", a_proj->reason);
+   printf ("##\n");
+   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+   printf ("##\n");
    printf ("##   one-line   o  [%s]\n", a_proj->oneline);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
@@ -952,8 +961,11 @@ poly_rptg__htags_header (tPROJ *a_proj)
    printf ("##   suffix     s  [%s]\n", a_proj->suffix);
    printf ("##   content    c  [%s]\n", a_proj->content);
    printf ("##\n");
+   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+   printf ("##\n");
    printf ("##   system     s  [%s]\n", a_proj->systems);
    printf ("##   language   l  [%s]\n", a_proj->language);
+   printf ("##   compiler   c  [%s]\n", a_proj->compiler);
    printf ("##   code-size  z  [%s]\n", a_proj->codesize);
    printf ("##   depends    d  [%s]\n", a_proj->depends);
    printf ("##\n");
@@ -961,6 +973,8 @@ poly_rptg__htags_header (tPROJ *a_proj)
    printf ("##\n");
    printf ("##   author     a  [%s]\n", a_proj->author);
    printf ("##   created    c  [%s]\n", a_proj->created);
+   printf ("##\n");
+   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
    printf ("##   vermajor   x  [%s]\n", a_proj->vermajor);
    printf ("##   verminor   n  [%s]\n", a_proj->verminor);

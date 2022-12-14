@@ -97,38 +97,41 @@ poly_code__oneliners    (tFILE *a_file, char *a_recd)
    DEBUG_INPT   yLOG_info    ("r"         , r);
    /*---(master)-------------------*/
    --rce;
-   if      (strncmp (q, "P_FOCUS    ", 11) == 0)  poly_code__unquote (a_file->proj->focus   , r, LEN_DESC);
-   else if (strncmp (q, "P_NICHE    ", 11) == 0)  poly_code__unquote (a_file->proj->niche   , r, LEN_DESC);
-   else if (strncmp (q, "P_SUBJECT  ", 11) == 0)  poly_code__unquote (a_file->proj->subject , r, LEN_DESC);
-   else if (strncmp (q, "P_PURPOSE  ", 11) == 0)  poly_code__unquote (a_file->proj->purpose , r, LEN_HUND);
+   if      (strncmp (q, "P_FOCUS     ", 12) == 0)  poly_code__unquote (a_file->proj->focus    , r, LEN_DESC);
+   else if (strncmp (q, "P_NICHE     ", 12) == 0)  poly_code__unquote (a_file->proj->niche    , r, LEN_DESC);
+   else if (strncmp (q, "P_SUBJECT   ", 12) == 0)  poly_code__unquote (a_file->proj->subject  , r, LEN_DESC);
+   else if (strncmp (q, "P_PURPOSE   ", 12) == 0)  poly_code__unquote (a_file->proj->purpose  , r, LEN_HUND);
    /*---(greek)--------------------*/
-   else if (strncmp (q, "P_NAMESAKE ", 11) == 0)  poly_code__unquote (a_file->proj->namesake, r, LEN_HUND);
-   else if (strncmp (q, "P_HERITAGE ", 11) == 0)  poly_code__unquote (a_file->proj->heritage, r, LEN_HUND);
-   else if (strncmp (q, "P_IMAGERY  ", 11) == 0)  poly_code__unquote (a_file->proj->imagery , r, LEN_HUND);
-   else if (strncmp (q, "P_REASON   ", 11) == 0)  poly_code__unquote (a_file->proj->reason  , r, LEN_HUND);
-   else if (strncmp (q, "P_ONELINE  ", 11) == 0)  sprintf (a_file->proj->oneline, "%s %s", a_file->proj->namesake, a_file->proj->subject);
+   else if (strncmp (q, "P_NAMESAKE  ", 12) == 0)  poly_code__unquote (a_file->proj->namesake , r, LEN_HUND);
+   else if (strncmp (q, "P_PRONOUNCE ", 12) == 0)  poly_code__unquote (a_file->proj->pronounce, r, LEN_TITLE);
+   else if (strncmp (q, "P_HERITAGE  ", 12) == 0)  poly_code__unquote (a_file->proj->heritage , r, LEN_HUND);
+   else if (strncmp (q, "P_BRIEFLY   ", 12) == 0)  poly_code__unquote (a_file->proj->briefly  , r, LEN_TITLE);
+   else if (strncmp (q, "P_IMAGERY   ", 12) == 0)  poly_code__unquote (a_file->proj->imagery  , r, LEN_HUND);
+   else if (strncmp (q, "P_REASON    ", 12) == 0)  poly_code__unquote (a_file->proj->reason   , r, LEN_HUND);
+   else if (strncmp (q, "P_ONELINE   ", 12) == 0)  sprintf (a_file->proj->oneline, "%s %s", a_file->proj->namesake, a_file->proj->subject);
    /*---(location)-----------------*/
-   else if (strncmp (q, "P_BASENAME ", 11) == 0)  poly_code__unquote (a_file->proj->progname, r, LEN_TITLE);
-   else if (strncmp (q, "P_FULLPATH ", 11) == 0)  poly_code__unquote (a_file->proj->fullpath, r, LEN_HUND);
-   else if (strncmp (q, "P_SUFFIX   ", 11) == 0)  poly_code__unquote (a_file->proj->suffix  , r, LEN_LABEL);
-   else if (strncmp (q, "P_CONTENT  ", 11) == 0)  poly_code__unquote (a_file->proj->content , r, LEN_TITLE);
+   else if (strncmp (q, "P_BASENAME  ", 12) == 0)  poly_code__unquote (a_file->proj->progname , r, LEN_TITLE);
+   else if (strncmp (q, "P_FULLPATH  ", 12) == 0)  poly_code__unquote (a_file->proj->fullpath , r, LEN_HUND);
+   else if (strncmp (q, "P_SUFFIX    ", 12) == 0)  poly_code__unquote (a_file->proj->suffix   , r, LEN_LABEL);
+   else if (strncmp (q, "P_CONTENT   ", 12) == 0)  poly_code__unquote (a_file->proj->content  , r, LEN_TITLE);
    /*---(chars)--------------------*/
-   else if (strncmp (q, "P_SYSTEM   ", 11) == 0)  poly_code__unquote (a_file->proj->systems , r, LEN_HUND);
-   else if (strncmp (q, "P_LANGUAGE ", 11) == 0)  poly_code__unquote (a_file->proj->language, r, LEN_HUND);
-   else if (strncmp (q, "P_CODESIZE ", 11) == 0)  poly_code__unquote (a_file->proj->codesize, r, LEN_DESC);
+   else if (strncmp (q, "P_SYSTEM    ", 12) == 0)  poly_code__unquote (a_file->proj->systems  , r, LEN_HUND);
+   else if (strncmp (q, "P_LANGUAGE  ", 12) == 0)  poly_code__unquote (a_file->proj->language , r, LEN_HUND);
+   else if (strncmp (q, "P_COMPILER  ", 12) == 0)  poly_code__unquote (a_file->proj->compiler , r, LEN_LABEL);
+   else if (strncmp (q, "P_CODESIZE  ", 12) == 0)  poly_code__unquote (a_file->proj->codesize , r, LEN_DESC);
+   else if (strncmp (q, "P_DEPENDS   ", 12) == 0)  poly_code__unquote (a_file->proj->depends  , r, LEN_HUND);
    /*---(created)------------------*/
-   else if (strncmp (q, "P_AUTHOR   ", 11) == 0)  poly_code__unquote (a_file->proj->author  , r, LEN_TITLE);
-   else if (strncmp (q, "P_CREATED  ", 11) == 0)  poly_code__unquote (a_file->proj->created , r, LEN_LABEL);
-   else if (strncmp (q, "P_DEPENDS  ", 11) == 0)  poly_code__unquote (a_file->proj->depends , r, LEN_HUND);
+   else if (strncmp (q, "P_AUTHOR    ", 12) == 0)  poly_code__unquote (a_file->proj->author   , r, LEN_TITLE);
+   else if (strncmp (q, "P_CREATED   ", 12) == 0)  poly_code__unquote (a_file->proj->created  , r, LEN_LABEL);
    /*---(version)------------------*/
-   else if (strncmp (q, "P_VERMAJOR ", 11) == 0)  poly_code__unquote (a_file->proj->vermajor, r, LEN_HUND);
-   else if (strncmp (q, "P_VERMINOR ", 11) == 0)  poly_code__unquote (a_file->proj->verminor, r, LEN_HUND);
-   else if (strncmp (q, "P_VERNUM   ", 11) == 0)  poly_code__unquote (a_file->proj->vernum  , r, LEN_LABEL);
-   else if (strncmp (q, "P_VERTXT   ", 11) == 0)  poly_code__unquote (a_file->proj->vertxt  , r, LEN_HUND);
+   else if (strncmp (q, "P_VERMAJOR  ", 12) == 0)  poly_code__unquote (a_file->proj->vermajor , r, LEN_HUND);
+   else if (strncmp (q, "P_VERMINOR  ", 12) == 0)  poly_code__unquote (a_file->proj->verminor , r, LEN_HUND);
+   else if (strncmp (q, "P_VERNUM    ", 12) == 0)  poly_code__unquote (a_file->proj->vernum   , r, LEN_LABEL);
+   else if (strncmp (q, "P_VERTXT    ", 12) == 0)  poly_code__unquote (a_file->proj->vertxt   , r, LEN_HUND);
    /*---(notes)--------------------*/
-   else if (strncmp (q, "P_PRIORITY ", 11) == 0)  ;
-   else if (strncmp (q, "P_PRINCIPLE", 11) == 0)  ;
-   else if (strncmp (q, "P_REMINDER" , 11) == 0)  ;
+   else if (strncmp (q, "P_PRIORITY  ", 12) == 0)  ;
+   else if (strncmp (q, "P_PRINCIPLE ", 12) == 0)  ;
+   else if (strncmp (q, "P_REMINDER  ", 12) == 0)  ;
    /*---(complete)-----------------------*/
    else {
       a_file->proj->header [33] = '?';

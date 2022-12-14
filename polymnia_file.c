@@ -544,6 +544,13 @@ poly_file_review        (tPROJ *a_proj)
    tFILE      *x_curr      = NULL;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_proj"     , a_proj);
+   --rce;  if (a_proj == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   DEBUG_INPT   yLOG_info    ("a_proj"     , a_proj->name);
    /*---(open dir)-----------------------*/
    x_dir = opendir(".");
    DEBUG_INPT   yLOG_point   ("x_dir"      , x_dir);

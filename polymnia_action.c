@@ -36,33 +36,33 @@ poly_action__read       (void)
    return 0;
 }
 
-char
-poly_action__write      (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   int         c           =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(check results)------------------*/
-   c = poly_proj_count ();
-   DEBUG_PROG   yLOG_point   ("c"          , c);
-   --rce;  if (c <= 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(save the database)--------------*/
-   rc = poly_db_write    ();
-   DEBUG_PROG   yLOG_value   ("db_write"   , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                              <* 
+ *> poly_action__write      (void)                                                    <* 
+ *> {                                                                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    char        rce         =  -10;                                                <* 
+ *>    char        rc          =    0;                                                <* 
+ *>    int         c           =    0;                                                <* 
+ *>    /+---(header)-------------------------+/                                       <* 
+ *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                      <* 
+ *>    /+---(check results)------------------+/                                       <* 
+ *>    c = poly_proj_count ();                                                        <* 
+ *>    DEBUG_PROG   yLOG_point   ("c"          , c);                                  <* 
+ *>    --rce;  if (c <= 0) {                                                          <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(save the database)--------------+/                                       <* 
+ *>    rc = poly_db_write    ();                                                      <* 
+ *>    DEBUG_PROG   yLOG_value   ("db_write"   , rc);                                 <* 
+ *>    --rce;  if (rc < 0) {                                                          <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(complete)-----------------------+/                                       <* 
+ *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                      <* 
+ *>    return 0;                                                                      <* 
+ *> }                                                                                 <*/
 
 
 
@@ -78,6 +78,8 @@ poly_action__gather     (tPROJ *a_proj)
    char        rce         =  -10;
    char        rc          =    0;
    tFILE      *x_file      = NULL;
+   char        t           [LEN_HUND]  = "";
+   char        s           [LEN_LABEL] = "";
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(produce global files)-----------*/
@@ -88,7 +90,7 @@ poly_action__gather     (tPROJ *a_proj)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   yURG_msg ('-', "gathered %d files for analysis", a_proj->count);
+   yURG_msg ('-', "identified %d files requiring analysis", a_proj->count);
    /*---(check for empty result)---------*/
    --rce;  if (a_proj->count == 0) {
       yURG_msg ('f', "no files, so removing project");
@@ -125,6 +127,8 @@ poly_action__gather     (tPROJ *a_proj)
       x_file = x_file->next;
       DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    }
+   /*---(git status)---------------------*/
+   rc = poly_proj_git (a_proj);
    /*---(executable)---------------------*/
    rc = poly_proj_footprint (a_proj);
    /*---(prepare for use)----------------*/
@@ -137,9 +141,34 @@ poly_action__gather     (tPROJ *a_proj)
    }
    /*---(function calls)-----------------*/
    DEBUG_PROG   yLOG_note    ("review function calls");
-   rc = poly_extern_review ();
+   /*> rc = poly_extern_review ();                                                    <*/
    /*---(summarize)----------------------*/
    rc = PROG_summarize (a_proj);
+   strl4main (a_proj->COUNT_LINES, s , 0, 'c', '-', LEN_TERSE);
+   strlcpy   (t, "lines "  , LEN_HUND);
+   strlcat   (t, s         , LEN_HUND);
+   strl4main (a_proj->COUNT_EMPTY, s , 0, 'c', '-', LEN_TERSE);
+   strlcat   (t, ", empty ", LEN_HUND);
+   strlcat   (t, s         , LEN_HUND);
+   strl4main (a_proj->COUNT_DOCS , s , 0, 'c', '-', LEN_TERSE);
+   strlcat   (t, ", docs  ", LEN_HUND);
+   strlcat   (t, s         , LEN_HUND);
+   strl4main (a_proj->COUNT_DEBUG, s , 0, 'c', '-', LEN_TERSE);
+   strlcat   (t, ", debug ", LEN_HUND);
+   strlcat   (t, s         , LEN_HUND);
+   strl4main (a_proj->COUNT_CODE , s , 0, 'c', '-', LEN_TERSE);
+   strlcat   (t, ", code  ", LEN_HUND);
+   strlcat   (t, s         , LEN_HUND);
+   strl4main (a_proj->COUNT_SLOCL, s , 0, 'c', '-', LEN_TERSE);
+   strlcat   (t, ", slocl ", LEN_HUND);
+   strlcat   (t, s         , LEN_HUND);
+   yURG_msg ('-', "%s", t);
+   yURG_msg ('-', "verified %d files, %d functions, %d ylibs", a_proj->COUNT_FILES, a_proj->COUNT_FUNCS, a_proj->COUNT_YLIBS);
+   strlcpy (t, a_proj->codesize, LEN_HUND);
+   strltrim (t, ySTR_SINGLE, LEN_HUND);
+   yURG_msg ('-', "evaluated as å%sæ", t);
+   yURG_msg ('-', "project read and verified successfully ");
+   yURG_msg (' ', "");
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -183,33 +212,33 @@ poly_action__here       (void)
    return 0;
 }
 
-char
-poly_action_whoami      (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tPROJ      *x_proj      = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(setup project)------------------*/
-   rc  = poly_proj_here    (&x_proj);
-   DEBUG_PROG   yLOG_value   ("proj_here"  , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
-   --rce;  if (x_proj == NULL) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(save off)-----------------------*/
-   my.g_proj = x_proj;
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                              <* 
+ *> poly_action_whoami      (void)                                                    <* 
+ *> {                                                                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    char        rce         =  -10;                                                <* 
+ *>    char        rc          =    0;                                                <* 
+ *>    tPROJ      *x_proj      = NULL;                                                <* 
+ *>    /+---(header)-------------------------+/                                       <* 
+ *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                      <* 
+ *>    /+---(setup project)------------------+/                                       <* 
+ *>    rc  = poly_proj_here    (&x_proj);                                             <* 
+ *>    DEBUG_PROG   yLOG_value   ("proj_here"  , rc);                                 <* 
+ *>    --rce;  if (rc < 0) {                                                          <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);                             <* 
+ *>    --rce;  if (x_proj == NULL) {                                                  <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(save off)-----------------------+/                                       <* 
+ *>    my.g_proj = x_proj;                                                            <* 
+ *>    /+---(complete)-----------------------+/                                       <* 
+ *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                      <* 
+ *>    return 0;                                                                      <* 
+ *> }                                                                                 <*/
 
 
 
@@ -218,237 +247,237 @@ poly_action_whoami      (void)
 /*====================------------------------------------====================*/
 static void  o___DRIVERS_________o () { return; }
 
-char
-poly_action_htags       (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tPROJ      *x_proj      = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(generate tags)------------------*/
-   rc = poly_action__here ();
-   DEBUG_PROG   yLOG_value   ("generate"   , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(report)-------------------------*/
-   rc = poly_rptg_htags      (NULL);
-   DEBUG_PROG   yLOG_value   ("report"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                              <* 
+ *> poly_action_htags       (void)                                                    <* 
+ *> {                                                                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    char        rce         =  -10;                                                <* 
+ *>    char        rc          =    0;                                                <* 
+ *>    tPROJ      *x_proj      = NULL;                                                <* 
+ *>    /+---(header)-------------------------+/                                       <* 
+ *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                      <* 
+ *>    /+---(generate tags)------------------+/                                       <* 
+ *>    rc = poly_action__here ();                                                     <* 
+ *>    DEBUG_PROG   yLOG_value   ("generate"   , rc);                                 <* 
+ *>    --rce;  if (rc < 0) {                                                          <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(report)-------------------------+/                                       <* 
+ *>    rc = poly_rptg_htags      (NULL);                                              <* 
+ *>    DEBUG_PROG   yLOG_value   ("report"     , rc);                                 <* 
+ *>    --rce;  if (rc < 0) {                                                          <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(complete)-----------------------+/                                       <* 
+ *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                      <* 
+ *>    return 0;                                                                      <* 
+ *> }                                                                                 <*/
 
-char
-poly_action_new         (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tPROJ      *x_proj      = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(generate tags)------------------*/
-   rc = poly_action__here ();
-   DEBUG_PROG   yLOG_value   ("htags"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(write database)-----------------*/
-   rc = poly_action__write   ();
-   DEBUG_PROG   yLOG_value   ("write"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                              <* 
+ *> poly_action_new         (void)                                                    <* 
+ *> {                                                                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    char        rce         =  -10;                                                <* 
+ *>    char        rc          =    0;                                                <* 
+ *>    tPROJ      *x_proj      = NULL;                                                <* 
+ *>    /+---(header)-------------------------+/                                       <* 
+ *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                      <* 
+ *>    /+---(generate tags)------------------+/                                       <* 
+ *>    rc = poly_action__here ();                                                     <* 
+ *>    DEBUG_PROG   yLOG_value   ("htags"      , rc);                                 <* 
+ *>    --rce;  if (rc < 0) {                                                          <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(write database)-----------------+/                                       <* 
+ *>    rc = poly_action__write   ();                                                  <* 
+ *>    DEBUG_PROG   yLOG_value   ("write"      , rc);                                 <* 
+ *>    --rce;  if (rc < 0) {                                                          <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(complete)-----------------------+/                                       <* 
+ *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                      <* 
+ *>    return 0;                                                                      <* 
+ *> }                                                                                 <*/
 
-char
-poly_action_update      (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tPROJ      *x_proj      = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(verify header)------------------*/
-   yURG_msg ('>', "update/add project details to database...");
-   /*---(read database)------------------*/
-   yURG_msg ('-', "import the current database å%sæ", my.n_db);
-   rc = poly_action__read    ();
-   DEBUG_PROG   yLOG_value   ("read"       , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_note    ("database does not exist, potential security issue");
-      yURG_err ('w', "database does not exist, will create");
-   } else {
-      yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
-   }
-   /*---(generate tags)------------------*/
-   rc = poly_action__here ();
-   DEBUG_PROG   yLOG_value   ("htags"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   } else {
-      yURG_msg ('-', "project successfully handled");
-   }
-   /*---(write database)-----------------*/
-   yURG_msg ('-', "write database back to disk");
-   rc = poly_action__write   ();
-   DEBUG_PROG   yLOG_value   ("write"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
-   yURG_msg ('-', "success, project updated in database");
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                                                        <* 
+ *> poly_action_update      (void)                                                                              <* 
+ *> {                                                                                                           <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                                 <* 
+ *>    char        rce         =  -10;                                                                          <* 
+ *>    char        rc          =    0;                                                                          <* 
+ *>    tPROJ      *x_proj      = NULL;                                                                          <* 
+ *>    /+---(header)-------------------------+/                                                                 <* 
+ *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                                                <* 
+ *>    /+---(verify header)------------------+/                                                                 <* 
+ *>    yURG_msg ('>', "update/add project details to database...");                                             <* 
+ *>    /+---(read database)------------------+/                                                                 <* 
+ *>    yURG_msg ('-', "import the current database å%sæ", my.n_db);                                             <* 
+ *>    rc = poly_action__read    ();                                                                            <* 
+ *>    DEBUG_PROG   yLOG_value   ("read"       , rc);                                                           <* 
+ *>    --rce;  if (rc < 0) {                                                                                    <* 
+ *>       DEBUG_PROG   yLOG_note    ("database does not exist, potential security issue");                      <* 
+ *>       yURG_err ('w', "database does not exist, will create");                                               <* 
+ *>    } else {                                                                                                 <* 
+ *>       yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);   <* 
+ *>    }                                                                                                        <* 
+ *>    /+---(generate tags)------------------+/                                                                 <* 
+ *>    rc = poly_action__here ();                                                                               <* 
+ *>    DEBUG_PROG   yLOG_value   ("htags"      , rc);                                                           <* 
+ *>    --rce;  if (rc < 0) {                                                                                    <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                        <* 
+ *>       return rce;                                                                                           <* 
+ *>    } else {                                                                                                 <* 
+ *>       yURG_msg ('-', "project successfully handled");                                                       <* 
+ *>    }                                                                                                        <* 
+ *>    /+---(write database)-----------------+/                                                                 <* 
+ *>    yURG_msg ('-', "write database back to disk");                                                           <* 
+ *>    rc = poly_action__write   ();                                                                            <* 
+ *>    DEBUG_PROG   yLOG_value   ("write"      , rc);                                                           <* 
+ *>    --rce;  if (rc < 0) {                                                                                    <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                        <* 
+ *>       return rce;                                                                                           <* 
+ *>    }                                                                                                        <* 
+ *>    yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);      <* 
+ *>    yURG_msg ('-', "success, project updated in database");                                                  <* 
+ *>    /+---(complete)-----------------------+/                                                                 <* 
+ *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                                <* 
+ *>    return 0;                                                                                                <* 
+ *> }                                                                                                           <*/
 
-char
-poly_action_audit       (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tPROJ      *x_proj      = NULL;
-   char        x_orig      [LEN_PATH]  = "";
-   char        x_path      [LEN_PATH]  = "";
-   char       *p           = NULL;
-   char       *r           = NULL;
-   int         c           =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(verify header)------------------*/
-   yURG_msg ('>', "central directory setup/security...");
-   /*---(defense)-------------------------------*/
-   rc = yJOBS_central_dirs (my.run_as, NULL, x_orig, NULL, NULL);
-   --rce;  if (rc <  0) {
-      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_YEXEC   yLOG_info    ("x_orig"    , x_orig);
-   yURG_msg ('-', "for (%c), directory å%sæ selected", my.run_as, x_orig);
-   /*---(get first level)-----------------------*/
-   p = strtok_r (x_orig, "/", &r);
-   DEBUG_YEXEC   yLOG_point   ("p"         , p);
-   --rce;  if (p == NULL) {
-      yURG_err ('f', "can not parse directory name");
-      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check each level)----------------------*/
-   --rce;  while (p != NULL) {
-      sprintf (x_path, "%s/%s", x_path, p);
-      /*> if (c < 2)  rc = yJOBS_act_checkdir (x_path, 0755);                         <*/
-      /*> else        rc = yJOBS_act_checkdir (x_path, 0700);                         <*/
-      if (rc < 0) {
-         DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
-      ++c;
-      p = strtok_r (NULL, "/", &r);
-   }
-   /*---(complete)------------------------------*/
-   yURG_msg ('-', "success, central directory basic security measures confirmed");
-   /*---(verify header)------------------*/
-   yURG_msg (' ', "");
-   yURG_msg ('>', "check the central database...");
-   /*---(read database)------------------*/
-   yURG_msg ('-', "import the current database å%sæ", my.n_db);
-   rc = poly_action__read    ();
-   DEBUG_PROG   yLOG_value   ("read"       , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_note    ("database does not exist, potential security issue");
-      yURG_err ('w', "database does not exist, will create");
-   }
-   /*---(check projects)-----------------*/
-   yURG_msg ('-', "projects  : contents %7d vs header  %7d", my.COUNT_PROJS, g_audit.COUNT_PROJS);
-   --rce;  if (my.COUNT_PROJS != g_audit.COUNT_PROJS) {
-      yURG_err ('f', "project count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check files)--------------------*/
-   yURG_msg ('-', "files     : contents %7d vs header  %7d", my.COUNT_FILES, g_audit.COUNT_FILES);
-   --rce;  if (my.COUNT_FILES != g_audit.COUNT_FILES) {
-      yURG_err ('f', "file count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check functions)----------------*/
-   yURG_msg ('-', "functions : contents %7d vs header  %7d", my.COUNT_FUNCS, g_audit.COUNT_FUNCS);
-   --rce;  if (my.COUNT_FUNCS != g_audit.COUNT_FUNCS) {
-      yURG_err ('f', "function count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check ylibs)--------------------*/
-   yURG_msg ('-', "ylibs     : contents %7d vs header  %7d", my.COUNT_YLIBS, g_audit.COUNT_YLIBS);
-   --rce;  if (my.COUNT_YLIBS != g_audit.COUNT_YLIBS) {
-      yURG_err ('w', "ylib count does not match, likely due to external.txt change");
-   }
-   /*---(check lines)--------------------*/
-   yURG_msg ('-', "lines     : contents %7d vs header  %7d", my.COUNT_LINES, g_audit.COUNT_LINES);
-   --rce;  if (my.COUNT_LINES != g_audit.COUNT_LINES) {
-      yURG_err ('f', "source line count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check empty)--------------------*/
-   yURG_msg ('-', "empty     : contents %7d vs header  %7d", my.COUNT_EMPTY, g_audit.COUNT_EMPTY);
-   --rce;  if (my.COUNT_EMPTY != g_audit.COUNT_EMPTY) {
-      yURG_err ('f', "empty line count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check documentation)------------*/
-   yURG_msg ('-', "docs      : contents %7d vs header  %7d", my.COUNT_DOCS , g_audit.COUNT_DOCS );
-   --rce;  if (my.COUNT_DOCS  != g_audit.COUNT_DOCS ) {
-      yURG_err ('f', "documentation line count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check debug)--------------------*/
-   yURG_msg ('-', "debug     : contents %7d vs header  %7d", my.COUNT_DEBUG, g_audit.COUNT_DEBUG);
-   --rce;  if (my.COUNT_DEBUG != g_audit.COUNT_DEBUG) {
-      yURG_err ('f', "debug line count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check code)---------------------*/
-   yURG_msg ('-', "code      : contents %7d vs header  %7d", my.COUNT_CODE , g_audit.COUNT_CODE );
-   --rce;  if (my.COUNT_CODE  != g_audit.COUNT_CODE ) {
-      yURG_err ('f', "code line count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(check slocl)--------------------*/
-   yURG_msg ('-', "slocl     : contents %7d vs header  %7d", my.COUNT_SLOCL, g_audit.COUNT_SLOCL);
-   --rce;  if (my.COUNT_SLOCL != g_audit.COUNT_SLOCL) {
-      yURG_err ('f', "slocl line count does not match");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   yURG_msg ('-', "success, central database contents match header values");
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                                                 <* 
+ *> poly_action_audit       (void)                                                                       <* 
+ *> {                                                                                                    <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                          <* 
+ *>    char        rce         =  -10;                                                                   <* 
+ *>    char        rc          =    0;                                                                   <* 
+ *>    tPROJ      *x_proj      = NULL;                                                                   <* 
+ *>    char        x_orig      [LEN_PATH]  = "";                                                         <* 
+ *>    char        x_path      [LEN_PATH]  = "";                                                         <* 
+ *>    char       *p           = NULL;                                                                   <* 
+ *>    char       *r           = NULL;                                                                   <* 
+ *>    int         c           =    0;                                                                   <* 
+ *>    /+---(header)-------------------------+/                                                          <* 
+ *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                                         <* 
+ *>    /+---(verify header)------------------+/                                                          <* 
+ *>    yURG_msg ('>', "central directory setup/security...");                                            <* 
+ *>    /+---(defense)-------------------------------+/                                                   <* 
+ *>    /+> rc = yJOBS_central_dirs (my.run_as, NULL, x_orig, NULL, NULL);                 <+/            <* 
+ *>    --rce;  if (rc <  0) {                                                                            <* 
+ *>       DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);                                                <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    DEBUG_YEXEC   yLOG_info    ("x_orig"    , x_orig);                                                <* 
+ *>    yURG_msg ('-', "for (%c), directory å%sæ selected", my.run_as, x_orig);                           <* 
+ *>    /+---(get first level)-----------------------+/                                                   <* 
+ *>    p = strtok_r (x_orig, "/", &r);                                                                   <* 
+ *>    DEBUG_YEXEC   yLOG_point   ("p"         , p);                                                     <* 
+ *>    --rce;  if (p == NULL) {                                                                          <* 
+ *>       yURG_err ('f', "can not parse directory name");                                                <* 
+ *>       DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);                                                <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check each level)----------------------+/                                                   <* 
+ *>    --rce;  while (p != NULL) {                                                                       <* 
+ *>       sprintf (x_path, "%s/%s", x_path, p);                                                          <* 
+ *>       /+> if (c < 2)  rc = yJOBS_act_checkdir (x_path, 0755);                         <+/            <* 
+ *>       /+> else        rc = yJOBS_act_checkdir (x_path, 0700);                         <+/            <* 
+ *>       if (rc < 0) {                                                                                  <* 
+ *>          DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);                                             <* 
+ *>          return rce;                                                                                 <* 
+ *>       }                                                                                              <* 
+ *>       ++c;                                                                                           <* 
+ *>       p = strtok_r (NULL, "/", &r);                                                                  <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(complete)------------------------------+/                                                   <* 
+ *>    yURG_msg ('-', "success, central directory basic security measures confirmed");                   <* 
+ *>    /+---(verify header)------------------+/                                                          <* 
+ *>    yURG_msg (' ', "");                                                                               <* 
+ *>    yURG_msg ('>', "check the central database...");                                                  <* 
+ *>    /+---(read database)------------------+/                                                          <* 
+ *>    yURG_msg ('-', "import the current database å%sæ", my.n_db);                                      <* 
+ *>    rc = poly_action__read    ();                                                                     <* 
+ *>    DEBUG_PROG   yLOG_value   ("read"       , rc);                                                    <* 
+ *>    --rce;  if (rc < 0) {                                                                             <* 
+ *>       DEBUG_PROG   yLOG_note    ("database does not exist, potential security issue");               <* 
+ *>       yURG_err ('w', "database does not exist, will create");                                        <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check projects)-----------------+/                                                          <* 
+ *>    yURG_msg ('-', "projects  : contents %7d vs header  %7d", my.COUNT_PROJS, g_audit.COUNT_PROJS);   <* 
+ *>    --rce;  if (my.COUNT_PROJS != g_audit.COUNT_PROJS) {                                              <* 
+ *>       yURG_err ('f', "project count does not match");                                                <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check files)--------------------+/                                                          <* 
+ *>    yURG_msg ('-', "files     : contents %7d vs header  %7d", my.COUNT_FILES, g_audit.COUNT_FILES);   <* 
+ *>    --rce;  if (my.COUNT_FILES != g_audit.COUNT_FILES) {                                              <* 
+ *>       yURG_err ('f', "file count does not match");                                                   <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check functions)----------------+/                                                          <* 
+ *>    yURG_msg ('-', "functions : contents %7d vs header  %7d", my.COUNT_FUNCS, g_audit.COUNT_FUNCS);   <* 
+ *>    --rce;  if (my.COUNT_FUNCS != g_audit.COUNT_FUNCS) {                                              <* 
+ *>       yURG_err ('f', "function count does not match");                                               <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check ylibs)--------------------+/                                                          <* 
+ *>    yURG_msg ('-', "ylibs     : contents %7d vs header  %7d", my.COUNT_YLIBS, g_audit.COUNT_YLIBS);   <* 
+ *>    --rce;  if (my.COUNT_YLIBS != g_audit.COUNT_YLIBS) {                                              <* 
+ *>       yURG_err ('w', "ylib count does not match, likely due to external.txt change");                <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check lines)--------------------+/                                                          <* 
+ *>    yURG_msg ('-', "lines     : contents %7d vs header  %7d", my.COUNT_LINES, g_audit.COUNT_LINES);   <* 
+ *>    --rce;  if (my.COUNT_LINES != g_audit.COUNT_LINES) {                                              <* 
+ *>       yURG_err ('f', "source line count does not match");                                            <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check empty)--------------------+/                                                          <* 
+ *>    yURG_msg ('-', "empty     : contents %7d vs header  %7d", my.COUNT_EMPTY, g_audit.COUNT_EMPTY);   <* 
+ *>    --rce;  if (my.COUNT_EMPTY != g_audit.COUNT_EMPTY) {                                              <* 
+ *>       yURG_err ('f', "empty line count does not match");                                             <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check documentation)------------+/                                                          <* 
+ *>    yURG_msg ('-', "docs      : contents %7d vs header  %7d", my.COUNT_DOCS , g_audit.COUNT_DOCS );   <* 
+ *>    --rce;  if (my.COUNT_DOCS  != g_audit.COUNT_DOCS ) {                                              <* 
+ *>       yURG_err ('f', "documentation line count does not match");                                     <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check debug)--------------------+/                                                          <* 
+ *>    yURG_msg ('-', "debug     : contents %7d vs header  %7d", my.COUNT_DEBUG, g_audit.COUNT_DEBUG);   <* 
+ *>    --rce;  if (my.COUNT_DEBUG != g_audit.COUNT_DEBUG) {                                              <* 
+ *>       yURG_err ('f', "debug line count does not match");                                             <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check code)---------------------+/                                                          <* 
+ *>    yURG_msg ('-', "code      : contents %7d vs header  %7d", my.COUNT_CODE , g_audit.COUNT_CODE );   <* 
+ *>    --rce;  if (my.COUNT_CODE  != g_audit.COUNT_CODE ) {                                              <* 
+ *>       yURG_err ('f', "code line count does not match");                                              <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(check slocl)--------------------+/                                                          <* 
+ *>    yURG_msg ('-', "slocl     : contents %7d vs header  %7d", my.COUNT_SLOCL, g_audit.COUNT_SLOCL);   <* 
+ *>    --rce;  if (my.COUNT_SLOCL != g_audit.COUNT_SLOCL) {                                              <* 
+ *>       yURG_err ('f', "slocl line count does not match");                                             <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    yURG_msg ('-', "success, central database contents match header values");                         <* 
+ *>    /+---(complete)-----------------------+/                                                          <* 
+ *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                         <* 
+ *>    return 0;                                                                                         <* 
+ *> }                                                                                                    <*/
 
 char
 poly_action_search      (void)
@@ -481,161 +510,161 @@ poly_action_search      (void)
 }
 
 
-char
-poly_action_about       (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tPROJ      *x_proj      = NULL;
-   char        t           [LEN_LABEL] = "";
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(read database)------------------*/
-   rc = poly_db_read     ();
-   DEBUG_PROG   yLOG_value   ("read"       , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(find target)--------------------*/
-   poly_proj_by_name  (my.g_projname, &x_proj);
-   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
-   --rce;  if (x_proj == NULL) {
-      DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
-   DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);
-   /*---(display)----------+-----+-----+-*/
-   printf("%s\n", P_ONELINE);
-   printf("report of project-wide information (--about) for a single project\n");
-   printf("\n");
-   printf("focus     : %s\n", x_proj->focus);
-   printf("niche     : %s\n", x_proj->niche);
-   printf("subject   : %s\n", x_proj->subject);
-   printf("purpose   : %s\n", x_proj->purpose);
-   printf("\n");
-   printf("namesake  : %s\n", x_proj->namesake);
-   printf("heritage  : %s\n", x_proj->heritage);
-   printf("imagery   : %s\n", x_proj->imagery);
-   printf("reason    : %s\n", x_proj->reason);
-   printf("\n");
-   printf("oneline   : %s\n", x_proj->oneline);
-   printf("\n");
-   printf("basename  : %s\n", x_proj->progname);
-   printf("homedir   : %s\n", x_proj->homedir);
-   printf("fullpath  : %s\n", x_proj->fullpath);
-   printf("suffix    : %s\n", x_proj->suffix);
-   printf("content   : %s\n", x_proj->content);
-   printf("\n");
-   printf("system    : %s\n", x_proj->systems);
-   printf("language  : %s\n", x_proj->language);
-   printf("codesize  : %s\n", x_proj->codesize);
-   printf("\n");
-   printf("author    : %s\n", x_proj->author);
-   printf("created   : %s\n", x_proj->created);
-   printf("depends   : %s\n", x_proj->depends);
-   printf("\n");
-   printf("vermajor  : %s\n", x_proj->vermajor);
-   printf("verminor  : %s\n", x_proj->verminor);
-   printf("ver num   : %s\n", x_proj->vernum);
-   printf("ver txt   : %s\n", x_proj->vertxt);
-   printf("\n");
-   printf("priority  : %s\n", P_PRIORITY);
-   printf("principal : %s\n", P_PRINCIPAL);
-   printf("reminder  : %s\n", P_REMINDER);
-   printf("\n");
-   printf("statistics...\n");
-   strl4comma (x_proj->COUNT_FILES, t, 0, 'c', '-', LEN_LABEL);
-   printf("files     : %10.10s\n", t);
-   strl4comma (x_proj->COUNT_FUNCS, t, 0, 'c', '-', LEN_LABEL);
-   printf("funcs     : %10.10s    %d\n", t, x_proj->funcs);
-   strl4comma (x_proj->COUNT_LINES, t, 0, 'c', '-', LEN_LABEL);
-   printf("lines     : %10.10s    %4.2f\n", t, 1.00);
-   strl4comma (x_proj->COUNT_EMPTY, t, 0, 'c', '-', LEN_LABEL);
-   printf("empty     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_EMPTY / x_proj->COUNT_LINES);
-   strl4comma (x_proj->COUNT_DOCS , t, 0, 'c', '-', LEN_LABEL);
-   printf("docs      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DOCS  / x_proj->COUNT_LINES);
-   strl4comma (x_proj->COUNT_DEBUG, t, 0, 'c', '-', LEN_LABEL);
-   printf("debug     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DEBUG / x_proj->COUNT_LINES);
-   strl4comma (x_proj->COUNT_CODE , t, 0, 'c', '-', LEN_LABEL);
-   printf("code      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_CODE  / x_proj->COUNT_LINES);
-   strl4comma (x_proj->COUNT_SLOCL, t, 0, 'c', '-', LEN_LABEL);
-   printf("slocl     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_SLOCL / x_proj->COUNT_LINES);
-   printf("\n");
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                                                 <* 
+ *> poly_action_about       (void)                                                                       <* 
+ *> {                                                                                                    <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                          <* 
+ *>    char        rce         =  -10;                                                                   <* 
+ *>    char        rc          =    0;                                                                   <* 
+ *>    tPROJ      *x_proj      = NULL;                                                                   <* 
+ *>    char        t           [LEN_LABEL] = "";                                                         <* 
+ *>    /+---(header)-------------------------+/                                                          <* 
+ *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                                         <* 
+ *>    /+---(read database)------------------+/                                                          <* 
+ *>    rc = poly_db_read     ();                                                                         <* 
+ *>    DEBUG_PROG   yLOG_value   ("read"       , rc);                                                    <* 
+ *>    --rce;  if (rc < 0) {                                                                             <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+ *>       return rce;                                                                                    <* 
+ *>    }                                                                                                 <* 
+ *>    /+---(find target)--------------------+/                                                          <* 
+ *>    poly_proj_by_name  (my.g_projname, &x_proj);                                                      <* 
+ *>    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);                                                <* 
+ *>    --rce;  if (x_proj == NULL) {                                                                     <* 
+ *>       DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                      <* 
+ *>       return 0;                                                                                      <* 
+ *>    }                                                                                                 <* 
+ *>    DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);                                          <* 
+ *>    /+---(display)----------+-----+-----+-+/                                                          <* 
+ *>    printf("%s\n", P_ONELINE);                                                                        <* 
+ *>    printf("report of project-wide information (--about) for a single project\n");                    <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("focus     : %s\n", x_proj->focus);                                                        <* 
+ *>    printf("niche     : %s\n", x_proj->niche);                                                        <* 
+ *>    printf("subject   : %s\n", x_proj->subject);                                                      <* 
+ *>    printf("purpose   : %s\n", x_proj->purpose);                                                      <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("namesake  : %s\n", x_proj->namesake);                                                     <* 
+ *>    printf("heritage  : %s\n", x_proj->heritage);                                                     <* 
+ *>    printf("imagery   : %s\n", x_proj->imagery);                                                      <* 
+ *>    printf("reason    : %s\n", x_proj->reason);                                                       <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("oneline   : %s\n", x_proj->oneline);                                                      <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("basename  : %s\n", x_proj->progname);                                                     <* 
+ *>    printf("homedir   : %s\n", x_proj->homedir);                                                      <* 
+ *>    printf("fullpath  : %s\n", x_proj->fullpath);                                                     <* 
+ *>    printf("suffix    : %s\n", x_proj->suffix);                                                       <* 
+ *>    printf("content   : %s\n", x_proj->content);                                                      <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("system    : %s\n", x_proj->systems);                                                      <* 
+ *>    printf("language  : %s\n", x_proj->language);                                                     <* 
+ *>    printf("codesize  : %s\n", x_proj->codesize);                                                     <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("author    : %s\n", x_proj->author);                                                       <* 
+ *>    printf("created   : %s\n", x_proj->created);                                                      <* 
+ *>    printf("depends   : %s\n", x_proj->depends);                                                      <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("vermajor  : %s\n", x_proj->vermajor);                                                     <* 
+ *>    printf("verminor  : %s\n", x_proj->verminor);                                                     <* 
+ *>    printf("ver num   : %s\n", x_proj->vernum);                                                       <* 
+ *>    printf("ver txt   : %s\n", x_proj->vertxt);                                                       <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("priority  : %s\n", P_PRIORITY);                                                           <* 
+ *>    printf("principal : %s\n", P_PRINCIPAL);                                                          <* 
+ *>    printf("reminder  : %s\n", P_REMINDER);                                                           <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    printf("statistics...\n");                                                                        <* 
+ *>    strl4comma (x_proj->COUNT_FILES, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    printf("files     : %10.10s\n", t);                                                               <* 
+ *>    strl4comma (x_proj->COUNT_FUNCS, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    printf("funcs     : %10.10s    %d\n", t, x_proj->funcs);                                          <* 
+ *>    strl4comma (x_proj->COUNT_LINES, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    printf("lines     : %10.10s    %4.2f\n", t, 1.00);                                                <* 
+ *>    strl4comma (x_proj->COUNT_EMPTY, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    printf("empty     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_EMPTY / x_proj->COUNT_LINES);   <* 
+ *>    strl4comma (x_proj->COUNT_DOCS , t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    printf("docs      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DOCS  / x_proj->COUNT_LINES);   <* 
+ *>    strl4comma (x_proj->COUNT_DEBUG, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    printf("debug     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DEBUG / x_proj->COUNT_LINES);   <* 
+ *>    strl4comma (x_proj->COUNT_CODE , t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    printf("code      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_CODE  / x_proj->COUNT_LINES);   <* 
+ *>    strl4comma (x_proj->COUNT_SLOCL, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    printf("slocl     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_SLOCL / x_proj->COUNT_LINES);   <* 
+ *>    printf("\n");                                                                                     <* 
+ *>    /+---(complete)-----------------------+/                                                          <* 
+ *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                         <* 
+ *>    return 0;                                                                                         <* 
+ *> }                                                                                                    <*/
 
-char
-poly_action_remove      (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tPROJ      *x_proj      = NULL;
-   int         x_len       =    0;
-   /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(verify header)------------------*/
-   yURG_msg ('>', "clear/remove project details to database...");
-   /*---(setup project)------------------*/
-   DEBUG_PROG   yLOG_info    ("g_projname", my.g_projname);
-   x_len = strlen (my.g_projname);
-   DEBUG_PROG   yLOG_value   ("x_len"      , x_len);
-   --rce;  if (x_len <= 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(read database)------------------*/
-   yURG_msg ('-', "import the current database å%sæ", my.n_db);
-   rc = poly_db_read     ();
-   DEBUG_PROG   yLOG_value   ("db_read"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_note    ("database does not exist, potential security issue");
-      yURG_err ('w', "database does not exist, will create");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   } else {
-      yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
-   }
-   /*---(find target)--------------------*/
-   poly_proj_by_name  (my.g_projname, &x_proj);
-   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
-   --rce;  if (x_proj == NULL) {
-      yURG_err ('w', "project does not exist in the database, nothing to do");
-      DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-      return 1;
-   } else {
-      yURG_msg ('-', "found project in current data");
-   }
-   DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);
-   /*---(remove existing target)---------*/
-   yURG_msg ('-', "remove current project");
-   rc = poly_proj_remove (&x_proj);
-   DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
-   --rce;  if (rc < 0) {
-      yURG_err ('f', "could not remove project from database");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   } else {
-      yURG_msg ('-', "project successfully removed");
-   }
-   /*---(save)---------------------------*/
-   yURG_msg ('-', "write database back to disk");
-   rc = poly_db_write    ();
-   DEBUG_PROG   yLOG_value   ("db_write"   , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);
-   yURG_msg ('-', "success, project cleared from database");
-   /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                                                        <* 
+ *> poly_action_remove      (void)                                                                              <* 
+ *> {                                                                                                           <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                                 <* 
+ *>    char        rce         =  -10;                                                                          <* 
+ *>    char        rc          =    0;                                                                          <* 
+ *>    tPROJ      *x_proj      = NULL;                                                                          <* 
+ *>    int         x_len       =    0;                                                                          <* 
+ *>    /+---(header)-------------------------+/                                                                 <* 
+ *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                                                <* 
+ *>    /+---(verify header)------------------+/                                                                 <* 
+ *>    yURG_msg ('>', "clear/remove project details to database...");                                           <* 
+ *>    /+---(setup project)------------------+/                                                                 <* 
+ *>    DEBUG_PROG   yLOG_info    ("g_projname", my.g_projname);                                                 <* 
+ *>    x_len = strlen (my.g_projname);                                                                          <* 
+ *>    DEBUG_PROG   yLOG_value   ("x_len"      , x_len);                                                        <* 
+ *>    --rce;  if (x_len <= 0) {                                                                                <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                        <* 
+ *>       return rce;                                                                                           <* 
+ *>    }                                                                                                        <* 
+ *>    /+---(read database)------------------+/                                                                 <* 
+ *>    yURG_msg ('-', "import the current database å%sæ", my.n_db);                                             <* 
+ *>    rc = poly_db_read     ();                                                                                <* 
+ *>    DEBUG_PROG   yLOG_value   ("db_read"    , rc);                                                           <* 
+ *>    --rce;  if (rc < 0) {                                                                                    <* 
+ *>       DEBUG_PROG   yLOG_note    ("database does not exist, potential security issue");                      <* 
+ *>       yURG_err ('w', "database does not exist, will create");                                               <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                        <* 
+ *>       return rce;                                                                                           <* 
+ *>    } else {                                                                                                 <* 
+ *>       yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);   <* 
+ *>    }                                                                                                        <* 
+ *>    /+---(find target)--------------------+/                                                                 <* 
+ *>    poly_proj_by_name  (my.g_projname, &x_proj);                                                             <* 
+ *>    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);                                                       <* 
+ *>    --rce;  if (x_proj == NULL) {                                                                            <* 
+ *>       yURG_err ('w', "project does not exist in the database, nothing to do");                              <* 
+ *>       DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                             <* 
+ *>       return 1;                                                                                             <* 
+ *>    } else {                                                                                                 <* 
+ *>       yURG_msg ('-', "found project in current data");                                                      <* 
+ *>    }                                                                                                        <* 
+ *>    DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);                                                 <* 
+ *>    /+---(remove existing target)---------+/                                                                 <* 
+ *>    yURG_msg ('-', "remove current project");                                                                <* 
+ *>    rc = poly_proj_remove (&x_proj);                                                                         <* 
+ *>    DEBUG_PROG   yLOG_value   ("proj_del"   , rc);                                                           <* 
+ *>    --rce;  if (rc < 0) {                                                                                    <* 
+ *>       yURG_err ('f', "could not remove project from database");                                             <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                        <* 
+ *>       return rce;                                                                                           <* 
+ *>    } else {                                                                                                 <* 
+ *>       yURG_msg ('-', "project successfully removed");                                                       <* 
+ *>    }                                                                                                        <* 
+ *>    /+---(save)---------------------------+/                                                                 <* 
+ *>    yURG_msg ('-', "write database back to disk");                                                           <* 
+ *>    rc = poly_db_write    ();                                                                                <* 
+ *>    DEBUG_PROG   yLOG_value   ("db_write"   , rc);                                                           <* 
+ *>    --rce;  if (rc < 0) {                                                                                    <* 
+ *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                        <* 
+ *>       return rce;                                                                                           <* 
+ *>    }                                                                                                        <* 
+ *>    yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);      <* 
+ *>    yURG_msg ('-', "success, project cleared from database");                                                <* 
+ *>    /+---(complete)-----------------------+/                                                                 <* 
+ *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                                <* 
+ *>    return 0;                                                                                                <* 
+ *> }                                                                                                           <*/
 
 char
 poly_action_extern      (void)
