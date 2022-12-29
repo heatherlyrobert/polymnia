@@ -126,11 +126,15 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
    int         rc          =    0;           /* generic return code            */
+   char        s           [LEN_LABEL] = "";
    char        t           [LEN_LABEL] = "";
    static int  c           =    1;
    static int  d           =    1;
    static int  e           =    1;
    tFUNC      *x_curr      = NULL;
+   char        x_recd      [LEN_RECD] = "";
+   char        x_field     =    0;
+   int         x_pos       =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -178,7 +182,13 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       rc = 1;
    }
    else if (strncmp (a_recd, "SCRP ", 5) == 0) {
-      sprintf (t, "script_%02d", c++);
+      x_field = strldcnt (a_recd, '', LEN_RECD);
+      if (x_field == 7) {  /* new format with terse label */
+         x_pos = strldpos (a_recd, '', 3, LEN_RECD);
+         sprintf  (s, "%-14.14s", a_recd + x_pos + 2);
+         strltrim (s, ySTR_BOTH, LEN_LABEL);
+         sprintf  (t, "%02d_%s", c++, s);
+      } else sprintf (t, "script_%02d", c++);
       rc = poly_func_add (a_file, t, 's', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {

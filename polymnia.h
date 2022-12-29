@@ -38,8 +38,8 @@
 
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.0-, move further to yJOBS"
-#define     P_VERNUM    "1.0b"
-#define     P_VERTXT    "waited way too long to upload"
+#define     P_VERNUM    "1.0c"
+#define     P_VERTXT    "added unit test SCRP format with terse labels handling for tags"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
