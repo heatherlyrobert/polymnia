@@ -38,8 +38,8 @@
 
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.0-, move further to yJOBS"
-#define     P_VERNUM    "1.0c"
-#define     P_VERTXT    "added unit test SCRP format with terse labels handling for tags"
+#define     P_VERNUM    "1.0d"
+#define     P_VERTXT    "added unit test SHARED/GLOBAL format with terse labels handling for tags"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -224,6 +224,10 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_PROJS          'p'
 #define     POLY_GREEK          'g'
 #define     POLY_ONELINE        'o'
+/*---(file types)-----------*/
+#define     POLY_CODE           'c'
+#define     POLY_HEAD           'h'
+#define     POLY_UNIT           'u'
 
 /*
  *  incomming-------------------------------
@@ -556,9 +560,10 @@ struct cFILE {
 #define     STATS_TUNIT    stats [53]
 #define     STATS_SUNIT    stats [54]
 #define     STATS_NUNIT    stats [55]
+#define     STATS_STEST    stats [56]
 /*---(new)----------------------------*/
-#define     STATS_RCE      stats [56]
-#define     STATS_LOOP     stats [57]
+#define     STATS_RCE      stats [57]
+#define     STATS_LOOP     stats [58]
 
 
 
@@ -711,9 +716,10 @@ struct cWORLD {
 #define     WORK_SSAVE     work->temp  [53]
 #define     WORK_SUNIT     work->temp  [54]
 #define     WORK_NUNIT     work->temp  [55]
+#define     WORK_STEST     work->temp  [56]
 /*---(new)----------------------------*/
-#define     WORK_RCE       work->temp  [56]
-#define     WORK_LOOP      work->temp  [57]
+#define     WORK_RCE       work->temp  [57]
+#define     WORK_LOOP      work->temp  [58]
 
 
 

@@ -802,9 +802,9 @@ PROG__unit_loud      (void)
    char        x_argc      = 4;
    char       *x_args [4]  = { "polymnia_unit", "@@kitchen", "@@nosort", "@@mid" };
    PROG_urgents (x_argc, x_args);
-   /*> yURG_name  ("mid"          , YURG_ON);                                         <*/
-   yURG_name  ("kitchen"      , YURG_ON);
-   yURG_name  ("yexec"        , YURG_ON);
+   /*> yURG_by_name  ("mid"          , YURG_ON);                                         <*/
+   yURG_by_name  ("kitchen"      , YURG_ON);
+   yURG_by_name  ("yexec"        , YURG_ON);
    PROG_startup (x_argc, x_args);
    return 0;
 }

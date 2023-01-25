@@ -538,6 +538,7 @@ poly_file_review        (tPROJ *a_proj)
    char        x_name      [LEN_TITLE];      /* file name                      */
    int         x_len       =    0;
    char        x_point     =  '-';
+   char        x_point2    =  '-';
    char        x_type      =  '-';
    int         x_read      =    0;          /* count of entries reviewed      */
    int         x_good      =    0;          /* count of entries processed     */
@@ -612,13 +613,15 @@ poly_file_review        (tPROJ *a_proj)
       }
       /*---(unit tests)------------------*/
       else if (x_len >= 6) {
-         x_point = x_name [x_len - 5];
-         DEBUG_INPT   yLOG_char    ("x_point"   , x_point);
-         if (x_point != '.') {
+         x_point  = x_name [x_len - 5];
+         x_point2 = x_name [x_len - 6];
+         DEBUG_INPT   yLOG_complex ("x_point"   , "%c %c", x_point, x_point2);
+         if (x_point != '.' && x_point2 != '.') {
             DEBUG_INPT   yLOG_note    ("not the right length suffix, SKIP");
             continue;
          }
-         if (strcmp ("unit", x_name + x_len - 4) != 0) {
+         if (strcmp ("unit" , x_name + x_len - 4) != 0 &&
+             strcmp ("sunit", x_name + x_len - 5) != 0) {
             DEBUG_INPT   yLOG_note    ("not a unit suffix, SKIP");
             continue;
          }
@@ -628,7 +631,7 @@ poly_file_review        (tPROJ *a_proj)
             DEBUG_INPT   yLOG_note    ("called with --nounit");
             continue;
          }
-         x_type = 'u';
+         x_type = POLY_UNIT;
       }
       /*---(all else)--------------------*/
       else {

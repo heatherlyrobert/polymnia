@@ -38,9 +38,9 @@ static struct cPOS    {
    {  1,  3, 12, "Gvars"  , "number of global vars used"      , 12 },
    /*--  -123456-   -123456789012345678901234567890- */
    {  1,  4, 13, "choice" , "number of choices/decisions"     , 13 },
-   {  1,  4, 14, "loop"   , "number of loops"                 , 57 },
+   {  1,  4, 14, "loop"   , "number of loops"                 , 58 },
    {  1,  4, 15, "return" , "number of return/exit points"    , 14 },
-   {  1,  4, 16, "error"  , "return with errors"              , 56 },
+   {  1,  4, 16, "error"  , "return with errors"              , 57 },
    {  1,  4, 17, "indent" , "depth of indentation"            , 15 },
    {  1,  4, 18, "memory" , "memory management used"          , 16 },
    /*--  -123456-   -123456789012345678901234567890- */
@@ -99,7 +99,7 @@ static struct cPOS    {
    {  3,  4, 16, "units"  , "count of unit tests used"        , 53 },
    {  3,  4, 17, "scrps"  , "count of unit scripts used"      , 54 },
    {  3,  4, 18, "steps"  , "count of unit steps used"        , 55 },
-   {  3,  4, 19, "·"      , ""                                , -1 },
+   {  3,  4, 19, "string" , "count of string tests"           , 56 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*--  -123456-   -123456789012345678901234567890- */
@@ -722,6 +722,7 @@ poly_cats__group_3d     (tFUNC *a_func)
    poly_cats_exact   ("tunit"   , a_func->WORK_TUNIT , &a_func->STATS_TUNIT , '-');
    poly_cats_exact   ("sunit"   , a_func->WORK_SUNIT , &a_func->STATS_SUNIT , '-');
    poly_cats_exact   ("nunit"   , a_func->WORK_NUNIT , &a_func->STATS_NUNIT , '-');
+   poly_cats_exact   ("stest"   , a_func->WORK_STEST , &a_func->STATS_STEST , '-');
    return 0;
 }
 
@@ -758,7 +759,7 @@ poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out
          a_func->STATS_VMASK , a_func->STATS_MMASK ,
          a_func->STATS_FMASK , a_func->STATS_LSTATIC,
          a_func->STATS_TUNIT , a_func->STATS_SUNIT , a_func->STATS_NUNIT ,
-         '-');
+         a_func->STATS_STEST );
    return 0;
 }
 

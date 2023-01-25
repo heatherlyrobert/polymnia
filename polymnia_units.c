@@ -135,6 +135,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    char        x_recd      [LEN_RECD] = "";
    char        x_field     =    0;
    int         x_pos       =    0;
+   char        x_ref       =  '-';
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -157,7 +158,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    if (a_line <= 1)  c = d = e = 1;
    /*---(func-like)-------------------*/
    if      (strncmp (a_recd, "PREP ", 5) == 0) {
-      rc = poly_func_add (a_file, "prep", 's', a_line, &x_curr);
+      rc = poly_func_add (a_file, "___prep___", 's', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {
          *a_func = x_curr;
@@ -187,8 +188,8 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
          x_pos = strldpos (a_recd, '', 3, LEN_RECD);
          sprintf  (s, "%-14.14s", a_recd + x_pos + 2);
          strltrim (s, ySTR_BOTH, LEN_LABEL);
-         sprintf  (t, "%02d_%s", c++, s);
-      } else sprintf (t, "script_%02d", c++);
+         sprintf  (t, "%02d_%s", c, s);
+      } else sprintf (t, "script_%02d", c);
       rc = poly_func_add (a_file, t, 's', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {
@@ -198,10 +199,21 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
          (*a_func)->end      = a_line;
          (*a_func)->WORK_END = a_line;
       }
+      ++c;
       rc = 1;
    }
-   else if (strncmp (a_recd, "SHARED ", 7) == 0) {
-      sprintf (t, "shared_%c", 'A' - 1 + d++);
+   else if (strncmp (a_recd, "SHARED ", 7) == 0 ||
+            strncmp (a_recd, "GLOBAL ", 7) == 0) {
+      x_field = strldcnt (a_recd, '', LEN_RECD);
+      x_ref   = a_recd [10];
+      if (x_ref == 0 || strchr (YSTR_UPLOW, x_ref) == NULL)  x_ref = '?';
+      if (x_field == 7) {  /* new format with terse label */
+         x_pos = strldpos (a_recd, '', 3, LEN_RECD);
+         sprintf  (s, "%-14.14s", a_recd + x_pos + 2);
+         strltrim (s, ySTR_BOTH, LEN_LABEL);
+         /*> sprintf  (t, "··%c_%s", 'a' - 1 + d++, s);                               <*/
+         sprintf  (t, "(%c_%s)", x_ref, s);
+      } else sprintf (t, "(%c_shared)", x_ref);
       rc = poly_func_add (a_file, t, 'S', a_line, &x_curr);
       /* add purpose from description */
       /* change name to be single char lettes identifier in unit test */
@@ -212,6 +224,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
          (*a_func)->end      = a_line;
          (*a_func)->WORK_END = a_line;
       }
+      ++d;
       rc = 1;
    }
    else if (strncmp (a_recd, "WAVE "  , 5) == 0) {

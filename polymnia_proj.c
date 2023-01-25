@@ -198,7 +198,7 @@ poly_proj_init          (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
-   rc = ySORT_btree (B_PROJ, "progects");
+   rc = ySORT_btree (B_PROJ, "projects");
    DEBUG_PROG   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -912,6 +912,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    char        x_type      =  '-';
    int         x, y, x_age;
    char        x_unit      =  's';
+   char        x_aged      [LEN_SHORT] = "";
    /*---(prepare)------------------------*/
    strlcpy (s_print, "", LEN_RECD);
    x_type = a_use;
@@ -1102,30 +1103,31 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    if (strchr ("p"  , a_style) != NULL) {
       x_age = 0;
       if (a_proj != NULL)  x_age = my.runtime - a_proj->written;
-      x_unit = 's';
-      if (x_age >= 60) {
-         x_age /= 60; x_unit = 'm';
-         if (x_age >= 60) {
-            x_age /= 60; x_unit = 'h';
-            if (x_age >= 24) {
-               x_age /= 24; x_unit = 'd';
-               if (x_age >= 30) {
-                  x_age /= 30; x_unit = 'o';
-                  if (x_age >= 12) {
-                     x_age /= 12; x_unit = 'y';
-                     if (x_age > 99) { x_age  = 99; x_unit = '!'; }
-                  }
-               }
-            }
-         }
-      }
+      strlage (x_age, 'U', x_aged);
+      /*> x_unit = 's';                                                               <* 
+       *> if (x_age >= 60) {                                                          <* 
+       *>    x_age /= 60; x_unit = 'm';                                               <* 
+       *>    if (x_age >= 60) {                                                       <* 
+       *>       x_age /= 60; x_unit = 'h';                                            <* 
+       *>       if (x_age >= 24) {                                                    <* 
+       *>          x_age /= 24; x_unit = 'd';                                         <* 
+       *>          if (x_age >= 30) {                                                 <* 
+       *>             x_age /= 30; x_unit = 'o';                                      <* 
+       *>             if (x_age >= 12) {                                              <* 
+       *>                x_age /= 12; x_unit = 'y';                                   <* 
+       *>                if (x_age > 99) { x_age  = 99; x_unit = '!'; }               <* 
+       *>             }                                                               <* 
+       *>          }                                                                  <* 
+       *>       }                                                                     <* 
+       *>    }                                                                        <* 
+       *> }                                                                           <*/
       switch (x_type) {
       case 'h' : sprintf (t, "age  vers  g  ---codesize---  ");  break;
       case 'p' : sprintf (t, "Ï--··Ï---··Ï··Ï-------------··");  break;
       case 't' : sprintf (t, "age··vers··g··codesize········");  break;
                  /*> case 'd' : sprintf (t, "%2ld%c %-6.6s %-14.14s  ", c, x_unit, a_proj->vernum, a_proj->codesize);   <*/
-      case 'd' : sprintf (t, "%2d%c  %-4.4s  %c  %-14.14s  ",
-                       x_age, x_unit, a_proj->vernum, a_proj->git, a_proj->codesize);
+      case 'd' : sprintf (t, "%-3.3s  %-4.4s  %c  %-14.14s  ",
+                       x_aged, a_proj->vernum, a_proj->git, a_proj->codesize);
                  break;
       default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
