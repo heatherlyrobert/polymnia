@@ -998,7 +998,7 @@ poly_extern__unit       (char *a_question, int i)
    poly_extern_by_index (i, &u);
    /*---(simple)-------------------------*/
    if      (strcmp (a_question, "file"      )     == 0) {
-      rc = poly_shared_verify (my.n_extern);
+      rc = poly_shared_verify ('-', my.n_extern);
       if      (rc >  0)  x_exist = 'y';
       else if (rc <= 0)  x_exist = '-';
       snprintf (unit_answer, LEN_RECD, "EXTERN file      : %c  %-10p  %c  %2d[%s]",

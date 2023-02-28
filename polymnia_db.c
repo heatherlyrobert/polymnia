@@ -729,7 +729,7 @@ poly_db__unit           (char *a_question)
    snprintf (unit_answer, LEN_RECD, "DB unit          : question unknown");
    /*---(simple)-------------------------*/
    if      (strcmp (a_question, "file"      )     == 0) {
-      rc = poly_shared_verify (my.n_db);
+      rc = poly_shared_verify ('-', my.n_db);
       if      (rc >  0)  x_exist = 'y';
       else if (rc <= 0)  x_exist = '-';
       snprintf (unit_answer, LEN_RECD, "DB file          : %c  %-10p  %c  %2d[%s]",

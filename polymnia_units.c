@@ -185,11 +185,16 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    else if (strncmp (a_recd, "SCRP ", 5) == 0) {
       x_field = strldcnt (a_recd, '', LEN_RECD);
       if (x_field == 7) {  /* new format with terse label */
-         x_pos = strldpos (a_recd, '', 3, LEN_RECD);
+         x_pos = strldpos (a_recd, '', 2, LEN_RECD);
          sprintf  (s, "%-14.14s", a_recd + x_pos + 2);
-         strltrim (s, ySTR_BOTH, LEN_LABEL);
+         /*> strltrim (s, ySTR_BOTH, LEN_LABEL);                                      <*/
          sprintf  (t, "%02d_%s", c, s);
-      } else sprintf (t, "script_%02d", c);
+      } else sprintf (t, "script_%02d        ", c);
+      if (a_recd [ 8] == '[' && a_recd [11] == ']') {
+         t [13] = ' ';
+         t [14] = a_recd [ 9];
+         t [15] = a_recd [10];
+      }
       rc = poly_func_add (a_file, t, 's', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {
@@ -203,12 +208,12 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       rc = 1;
    }
    else if (strncmp (a_recd, "SHARED ", 7) == 0 ||
-            strncmp (a_recd, "GLOBAL ", 7) == 0) {
+         strncmp (a_recd, "GLOBAL ", 7) == 0) {
       x_field = strldcnt (a_recd, '', LEN_RECD);
       x_ref   = a_recd [10];
       if (x_ref == 0 || strchr (YSTR_UPLOW, x_ref) == NULL)  x_ref = '?';
       if (x_field == 7) {  /* new format with terse label */
-         x_pos = strldpos (a_recd, '', 3, LEN_RECD);
+         x_pos = strldpos (a_recd, '', 2, LEN_RECD);
          sprintf  (s, "%-14.14s", a_recd + x_pos + 2);
          strltrim (s, ySTR_BOTH, LEN_LABEL);
          /*> sprintf  (t, "··%c_%s", 'a' - 1 + d++, s);                               <*/

@@ -202,7 +202,7 @@ poly_shared__pointer    (char a_type, FILE ***a_file)
 }
 
 char
-poly_shared_verify      (uchar *a_name)
+poly_shared_verify      (char a_type, uchar *a_name)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -219,6 +219,10 @@ poly_shared_verify      (uchar *a_name)
       return rce;
    }
    /*---(check for regular file)---------*/
+   --rce;  if (a_type == 's' && S_ISLNK (st.st_mode)) {
+      DEBUG_FILE   yLOG_note    ("unit tests can be links");
+      return 1;
+   }
    --rce;  if (!S_ISREG (st.st_mode)) {
       DEBUG_FILE   yLOG_note    ("not a regular file, rejected");
       return rce;
@@ -331,7 +335,7 @@ poly_shared_open        (char a_type, char *a_focus)
       return rce;
    }
    /*---(pre-check)----------------------*/
-   rc = poly_shared_verify (x_source);
+   rc = poly_shared_verify (a_type, x_source);
    DEBUG_INPT   yLOG_value   ("verify"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);

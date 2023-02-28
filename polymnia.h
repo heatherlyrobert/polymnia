@@ -38,8 +38,8 @@
 
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.0-, move further to yJOBS"
-#define     P_VERNUM    "1.0d"
-#define     P_VERTXT    "added unit test SHARED/GLOBAL format with terse labels handling for tags"
+#define     P_VERNUM    "1.0e"
+#define     P_VERTXT    "small change for field numbering in strlpos"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -1148,7 +1148,7 @@ char        poly_shared__spacer     (char *a_out);
 /*> char        poly_shared_hook        (char *a_terse, char *a_name, void *a_here, void *a_parent, void *a_owner, void *a_head, void *a_tail, void *a_prev, void *a_tnext, int *a_count, int *a_counta, int *a_countb, int *a_countc);   <*/
 /*> char        poly_shared_unhook      (char *a_terse, char *a_name, void *a_here, void *a_owner, void *a_head, void *a_tail, void *a_prev, void *a_pnext, void *a_next, void *a_nprev, int *a_count, int *a_counta, int *a_countb, int *a_countc);   <*/
 /*---(other)----------------*/
-char        poly_shared_verify      (uchar *a_name);
+char        poly_shared_verify      (char a_type, uchar *a_name);
 char        poly_shared_open        (char a_type, char *a_focus);
 char        poly_shared_close       (char a_type);
 char        poly_shared_read        (char a_type, int *a_line, char *a_curr, char *a_prev);
