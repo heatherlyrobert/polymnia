@@ -4,6 +4,52 @@
 
 static char   s_print        [LEN_RECD] = "";
 
+/*
+ *
+ *  complexity orig  (20)  [fcC##g·L44·27-·E-2D1-]
+ *             long  (28)  [fcg·C66--21·L44·227--·1-E2D-]
+ *
+ * this will show in the tag window for the requested function
+ *
+ * 123456789-123456789-
+ *
+ * COMPLEXITY
+ * ´· ´···········scope
+ * file scope 
+ * char return
+ * global prototype
+ * ´· ´··········params
+ * 12 total
+ * 6  incomming-only
+ * 6  return-only
+ * ·  both directions
+ * ·  function pointer
+ * 2  number pointer
+ * 1  double pointer
+ * ´· ´···········lines
+ * L  100-105 lines
+ * 4  40% debugging
+ * 4  40% actual code
+ * ´· ´············vars
+ * 2  local
+ * 2  file   ( 7 refs)
+ * ·  global ( - refs)
+ * ´· ´···········logic
+ * 1  indent level
+ * ·  loops
+ * 15 choices
+ * 2  normal ends
+ * 14 error returns
+ * ·  memory alloc
+ * ´· ´·············end
+ */
+
+/*
+ * complexity    [fcC##g·L44·27-·E-2D1-]
+ * integration   [-----·--·-------·---·----]
+ * watch-points  [?#p-#·4-2--2·----·----]
+ * [fcC##g·L44·27-·E-2D1-]¬[-----·--·-------·---·----]¬[?#p-#·4-2--2·----·----]
+ */
 
 
 static struct cPOS    {
@@ -400,7 +446,8 @@ poly_cats__single       (tFUNC *a_func, char *a_out)
    return 0;
 }
 
-char
+/* [fc1--g·2-E·1--·2-12--]¬[-----·--·-------·---·----]¬[-----·2-2---·----·----]*/
+char         /*-> format group one section a --------------------------[ leaf  */
 poly_cats__group_1a     (tFUNC *a_func)
 {
    char        rce         =    0;

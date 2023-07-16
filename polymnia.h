@@ -37,9 +37,9 @@
 #define     P_CREATED   "2019-01"
 
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
-#define     P_VERMINOR  "1.0-, move further to yJOBS"
-#define     P_VERNUM    "1.0e"
-#define     P_VERTXT    "small change for field numbering in strlpos"
+#define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
+#define     P_VERNUM    "1.1a"
+#define     P_VERTXT    "PROJ updated to new headers and unit test updated/passed"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -428,6 +428,7 @@ struct cPROJ {
    char        briefly     [LEN_TITLE];
    char        imagery     [LEN_HUND];
    char        reason      [LEN_HUND];
+   /*---(oneline)-----------*/
    char        oneline     [LEN_HUND];
    /*---(location)----------*/
    char        homedir     [LEN_HUND];
@@ -440,7 +441,14 @@ struct cPROJ {
    char        language    [LEN_HUND];
    char        compiler    [LEN_LABEL];
    char        codesize    [LEN_DESC];
-   char        depends     [LEN_HUND];
+   /*---(depends)-----------*/
+   char        dep_cstd    [LEN_HUND];
+   char        dep_posix   [LEN_HUND];
+   char        dep_core    [LEN_HUND];
+   char        dep_vikey   [LEN_HUND];
+   char        dep_other   [LEN_HUND];
+   char        dep_graph   [LEN_HUND];
+   char        dep_solo    [LEN_HUND];
    /*---(author)------------*/
    char        author      [LEN_TITLE];
    char        created     [LEN_LABEL];

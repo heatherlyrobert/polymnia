@@ -799,8 +799,8 @@ PROG__unit_quiet   (void)
 char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 PROG__unit_loud      (void)
 {
-   char        x_argc      = 4;
-   char       *x_args [4]  = { "polymnia_unit", "@@kitchen", "@@nosort", "@@mid" };
+   char        x_argc      = 3;
+   char       *x_args [3]  = { "polymnia_unit", "@@kitchen", "@@nosort" };
    PROG_urgents (x_argc, x_args);
    /*> yURG_by_name  ("mid"          , YURG_ON);                                         <*/
    yURG_by_name  ("kitchen"      , YURG_ON);

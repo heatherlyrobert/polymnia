@@ -6,15 +6,15 @@
  *
  *  always group base and mas macros
  *
- * metis § mg4·· § build macro find into yURG to keep in sync                             § M225T6 §  · §
- * metis § mg4·· § inventory all debugging macros and functions used                      § M225TW §  · §
- * metis § mg4·· § create a line placeholder in source with debugging summary             § M225U1 §  · §
- * metis § mg4·· § create a line placeholder in source with code stats summary            § M225US §  · §
- * metis § mg4·· § accept new urgents in è to ÿ for reporting (project wide)              § M225Ud §  · §
+ * metis § !g4·· § build macro find into yURG to keep in sync                             § M225T6 §  · §
+ *   Metis § mg4·· § inventory all debugging macros and functions used                      § M225TW §  · §
+ *   Metis § mg4·· § create a line placeholder in source with debugging summary             § M225U1 §  · §
+ *   Metis § mg4·· § create a line placeholder in source with code stats summary            § M225US §  · §
+ *   Metis § mg4·· § accept new urgents in è to ÿ for reporting (project wide)              § M225Ud §  · §
  *
- * metis § mg4·· § identify all DEBUG_ macros on first line of comment, will cause errors § M323iV §  · §
- * metis § mg4·· § identify all DEBUG_ macros proceeded by anything but spaces ^.*DEBUG   § M323jG §  · §
- * metis § mg4·· § idenfify all DEBUG_ macros attempting to use curly braces              § M323jq §  · §
+ *   Metis § mg4·· § identify all DEBUG_ macros on first line of comment, will cause errors § M323iV §  · §
+ *   Metis § mg4·· § identify all DEBUG_ macros proceeded by anything but spaces ^.*DEBUG   § M323jG §  · §
+ *   Metis § mg4·· § idenfify all DEBUG_ macros attempting to use curly braces              § M323jq §  · §
  *
  */
 

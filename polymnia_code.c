@@ -119,7 +119,14 @@ poly_code__oneliners    (tFILE *a_file, char *a_recd)
    else if (strncmp (q, "P_LANGUAGE  ", 12) == 0)  poly_code__unquote (a_file->proj->language , r, LEN_HUND);
    else if (strncmp (q, "P_COMPILER  ", 12) == 0)  poly_code__unquote (a_file->proj->compiler , r, LEN_LABEL);
    else if (strncmp (q, "P_CODESIZE  ", 12) == 0)  poly_code__unquote (a_file->proj->codesize , r, LEN_DESC);
-   else if (strncmp (q, "P_DEPENDS   ", 12) == 0)  poly_code__unquote (a_file->proj->depends  , r, LEN_HUND);
+   /*---(depends)------------------*/
+   else if (strncmp (q, "P_DEPSTDC   ", 12) == 0)  poly_code__unquote (a_file->proj->dep_cstd , r, LEN_HUND);
+   else if (strncmp (q, "P_DEPPOSIX  ", 12) == 0)  poly_code__unquote (a_file->proj->dep_posix, r, LEN_HUND);
+   else if (strncmp (q, "P_DEPCORE   ", 12) == 0)  poly_code__unquote (a_file->proj->dep_core , r, LEN_HUND);
+   else if (strncmp (q, "P_DEPVIKEY  ", 12) == 0)  poly_code__unquote (a_file->proj->dep_vikey, r, LEN_HUND);
+   else if (strncmp (q, "P_DEPOTHER  ", 12) == 0)  poly_code__unquote (a_file->proj->dep_other, r, LEN_HUND);
+   else if (strncmp (q, "P_DEPGRAPH  ", 12) == 0)  poly_code__unquote (a_file->proj->dep_graph, r, LEN_HUND);
+   else if (strncmp (q, "P_DEPSOLO   ", 12) == 0)  poly_code__unquote (a_file->proj->dep_solo , r, LEN_HUND);
    /*---(created)------------------*/
    else if (strncmp (q, "P_AUTHOR    ", 12) == 0)  poly_code__unquote (a_file->proj->author   , r, LEN_TITLE);
    else if (strncmp (q, "P_CREATED   ", 12) == 0)  poly_code__unquote (a_file->proj->created  , r, LEN_LABEL);

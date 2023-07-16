@@ -72,41 +72,49 @@ poly_proj__wipe    (tPROJ *a_dst)
 /*
  *   _.n.fnsp.gphbir.o.dbfsc.slczd.ac,xnvt._
  */
-   strlcpy (a_dst->header, "-.-.----.------.-.-----.-----.--.----.-", LEN_DESC);
-   a_dst->written      =    0;
+   strlcpy (a_dst->header, "-.-.----.------.-.-----.----.-------.--.----", LEN_DESC);
+   a_dst->written       =    0;
    /*---(master)------------*/
-   a_dst->focus    [0] = '\0';
-   a_dst->niche    [0] = '\0';
-   a_dst->subject  [0] = '\0';
-   a_dst->purpose  [0] = '\0';
+   a_dst->focus     [0] = '\0';
+   a_dst->niche     [0] = '\0';
+   a_dst->subject   [0] = '\0';
+   a_dst->purpose   [0] = '\0';
    /*---(greek)-------------*/
-   a_dst->namesake [0] = '\0';
-   a_dst->pronounce[0] = '\0';
-   a_dst->heritage [0] = '\0';
-   a_dst->briefly  [0] = '\0';
-   a_dst->imagery  [0] = '\0';
-   a_dst->reason   [0] = '\0';
-   a_dst->oneline  [0] = '\0';
+   a_dst->namesake  [0] = '\0';
+   a_dst->pronounce [0] = '\0';
+   a_dst->heritage  [0] = '\0';
+   a_dst->briefly   [0] = '\0';
+   a_dst->imagery   [0] = '\0';
+   a_dst->reason    [0] = '\0';
+   /*---(oneline)-----------*/
+   a_dst->oneline   [0] = '\0';
    /*---(location)----------*/
-   a_dst->progname [0] = '\0';
-   a_dst->homedir  [0] = '\0';
-   a_dst->fullpath [0] = '\0';
-   a_dst->suffix   [0] = '\0';
-   a_dst->content  [0] = '\0';
+   a_dst->progname  [0] = '\0';
+   a_dst->homedir   [0] = '\0';
+   a_dst->fullpath  [0] = '\0';
+   a_dst->suffix    [0] = '\0';
+   a_dst->content   [0] = '\0';
    /*---(chars)-------------*/
-   a_dst->systems  [0] = '\0';
-   a_dst->language [0] = '\0';
-   a_dst->compiler [0] = '\0';
-   a_dst->codesize [0] = '\0';
-   a_dst->depends  [0] = '\0';
+   a_dst->systems   [0] = '\0';
+   a_dst->language  [0] = '\0';
+   a_dst->compiler  [0] = '\0';
+   a_dst->codesize  [0] = '\0';
+   /*---(depends)-----------*/
+   a_dst->dep_cstd  [0] = '\0';
+   a_dst->dep_posix [0] = '\0';
+   a_dst->dep_core  [0] = '\0';
+   a_dst->dep_vikey [0] = '\0';
+   a_dst->dep_other [0] = '\0';
+   a_dst->dep_graph [0] = '\0';
+   a_dst->dep_solo  [0] = '\0';
    /*---(when)--------------*/
-   a_dst->author   [0] = '\0';
-   a_dst->created  [0] = '\0';
+   a_dst->author    [0] = '\0';
+   a_dst->created   [0] = '\0';
    /*---(versioning)--------*/
-   a_dst->vermajor [0] = '\0';
-   a_dst->verminor [0] = '\0';
-   a_dst->vernum   [0] = '\0';
-   a_dst->vertxt   [0] = '\0';
+   a_dst->vermajor  [0] = '\0';
+   a_dst->verminor  [0] = '\0';
+   a_dst->vernum    [0] = '\0';
+   a_dst->vertxt    [0] = '\0';
    /*---(manuals)-----------*/
    strlcpy (a_dst->manual, "········", LEN_LABEL);
    a_dst->git       = '·';
@@ -127,7 +135,7 @@ char*
 poly_proj__memory       (tPROJ *a_proj)
 {
    /*---(overall)------------------------*/
-   strlcpy (s_print, "["  , LEN_RECD);
+   strlcpy (s_print, "å"  , LEN_RECD);
    poly_shared__check_str  (s_print, a_proj->name);
    poly_shared__check_str  (s_print, a_proj->header);
    poly_shared__spacer     (s_print);
@@ -139,9 +147,13 @@ poly_proj__memory       (tPROJ *a_proj)
    poly_shared__spacer     (s_print);
    /*---(greek)--------------------------*/
    poly_shared__check_str  (s_print, a_proj->namesake);
+   poly_shared__check_str  (s_print, a_proj->pronounce);
    poly_shared__check_str  (s_print, a_proj->heritage);
+   poly_shared__check_str  (s_print, a_proj->briefly);
    poly_shared__check_str  (s_print, a_proj->imagery);
    poly_shared__check_str  (s_print, a_proj->reason);
+   poly_shared__spacer     (s_print);
+   /*---(onelinne)-----------------------*/
    poly_shared__check_str  (s_print, a_proj->oneline);
    poly_shared__spacer     (s_print);
    /*---(location)-----------------------*/
@@ -154,8 +166,17 @@ poly_proj__memory       (tPROJ *a_proj)
    /*---(system)-------------------------*/
    poly_shared__check_str  (s_print, a_proj->systems);
    poly_shared__check_str  (s_print, a_proj->language);
+   poly_shared__check_str  (s_print, a_proj->compiler);
    poly_shared__check_str  (s_print, a_proj->codesize);
-   poly_shared__check_str  (s_print, a_proj->depends);
+   poly_shared__spacer     (s_print);
+   /*---(depends)------------------------*/
+   poly_shared__check_str  (s_print, a_proj->dep_cstd);
+   poly_shared__check_str  (s_print, a_proj->dep_posix);
+   poly_shared__check_str  (s_print, a_proj->dep_core);
+   poly_shared__check_str  (s_print, a_proj->dep_vikey);
+   poly_shared__check_str  (s_print, a_proj->dep_other);
+   poly_shared__check_str  (s_print, a_proj->dep_graph);
+   poly_shared__check_str  (s_print, a_proj->dep_solo);
    poly_shared__spacer     (s_print);
    /*---(author)-------------------------*/
    poly_shared__check_str  (s_print, a_proj->author);
@@ -177,7 +198,7 @@ poly_proj__memory       (tPROJ *a_proj)
    poly_shared__spacer     (s_print);
    /*---(btree)--------------------------*/
    poly_shared__check_ptr  (s_print, a_proj->btree);
-   strlcat (s_print, "]"  , LEN_RECD);
+   strlcat (s_print, "æ"  , LEN_RECD);
    /*---(complete)-----------------------*/
    return s_print;
 }
@@ -816,9 +837,9 @@ poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char
    --rce;  if (a_header == NULL)  return rce;
    --rce;  if (a_text   == NULL)  return rce;
    x_len = strlen (a_text);
-   if      (x_len == 3 && strcmp (a_text, "n/a" ) == 0)  a_header [n] = '-';
-   else if (x_len == 4 && strcmp (a_text, "none") == 0)  a_header [n] = '-';
-   else if (x_len     == 0)       a_header [n] = '0';
+   if      (x_len == 3 && strcmp (a_text, "n/a" ) == 0)  a_header [n] = '´';
+   else if (x_len == 4 && strcmp (a_text, "none") == 0)  a_header [n] = '´';
+   else if (x_len     == 0)       a_header [n] = '·';
    else if (x_len     <  a_min)   a_header [n] = '?';
    else if (x_len     <  a_low)   a_header [n] = '!';
    else if (x_len - 1 >= a_max)   a_header [n] = '#';
@@ -835,21 +856,21 @@ char
 poly_proj_header        (tPROJ *a_proj)
 {
    /*---(base)---------------------------*/
-   poly_proj__headerline (a_proj->header,  2, 'n', a_proj->name     ,  1,  4, 15, LEN_TITLE);
+   poly_proj__headerline (a_proj->header,  2, 'N', a_proj->name     ,  1,  4, 15, LEN_TITLE);
    /*---(master)-------------------------*/
    poly_proj__headerline (a_proj->header,  4, 'f', a_proj->focus    ,  5, 10, 30, LEN_DESC);
    poly_proj__headerline (a_proj->header,  5, 'n', a_proj->niche    ,  5, 10, 30, LEN_DESC);
    poly_proj__headerline (a_proj->header,  6, 's', a_proj->subject  , 10, 20, 30, LEN_DESC);
    poly_proj__headerline (a_proj->header,  7, 'p', a_proj->purpose  , 30, 50, 70, LEN_HUND);
    /*---(greek)-------------*/
-   poly_proj__headerline (a_proj->header,  9, 'g', a_proj->namesake , 10, 20, 40, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 10, 'p', a_proj->pronounce,  0,  5, 30, LEN_TITLE);
-   poly_proj__headerline (a_proj->header, 11, 'h', a_proj->heritage , 40, 40, 70, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 12, 'b', a_proj->briefly  ,  0, 20, 30, LEN_TITLE);
-   poly_proj__headerline (a_proj->header, 13, 'i', a_proj->imagery  , 40, 40, 70, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 14, 'r', a_proj->reason   , 40, 40, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header,  9, 'ê', a_proj->namesake , 10, 20, 40, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 10, '÷', a_proj->pronounce,  0,  5, 30, LEN_TITLE);
+   poly_proj__headerline (a_proj->header, 11, 'î', a_proj->heritage , 40, 40, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 12, 'é', a_proj->briefly  ,  0, 20, 30, LEN_TITLE);
+   poly_proj__headerline (a_proj->header, 13, 'ð', a_proj->imagery  , 40, 40, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 14, 'ø', a_proj->reason   , 40, 40, 70, LEN_HUND);
    /*---(oneline)-----------*/
-   poly_proj__headerline (a_proj->header, 16, 'o', a_proj->oneline  , 40, 50, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 16, 'ö', a_proj->oneline  , 40, 50, 70, LEN_HUND);
    /*---(location)----------*/
    poly_proj__headerline (a_proj->header, 18, 'd', a_proj->homedir  ,  1,  4, 70, LEN_HUND);
    poly_proj__headerline (a_proj->header, 19, 'b', a_proj->progname ,  1,  4, 20, LEN_TITLE);
@@ -861,18 +882,25 @@ poly_proj_header        (tPROJ *a_proj)
    poly_proj__headerline (a_proj->header, 25, 'l', a_proj->language , 40, 50, 70, LEN_HUND);
    poly_proj__headerline (a_proj->header, 26, 'c', a_proj->compiler ,  0,  3, 20, LEN_LABEL);
    poly_proj__headerline (a_proj->header, 27, 'z', a_proj->codesize , 10, 30, 60, LEN_DESC);
-   poly_proj__headerline (a_proj->header, 28, 'd', a_proj->depends  ,  0,  0, 70, LEN_HUND);
+   /*---(depends)-----------*/
+   poly_proj__headerline (a_proj->header, 29, 'D', a_proj->dep_cstd ,  0,  0, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 30, 'P', a_proj->dep_posix,  0,  0, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 31, 'C', a_proj->dep_core ,  0,  0, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 32, 'V', a_proj->dep_vikey,  0,  0, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 33, 'O', a_proj->dep_other,  0,  0, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 34, 'G', a_proj->dep_graph,  0,  0, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 35, 'S', a_proj->dep_solo ,  0,  0, 70, LEN_HUND);
    /*---(when)--------------*/
-   poly_proj__headerline (a_proj->header, 30, 'a', a_proj->author   ,  5, 10, 40, LEN_TITLE);
-   poly_proj__headerline (a_proj->header, 31, 'c', a_proj->created  ,  4,  7, 20, LEN_LABEL);
+   poly_proj__headerline (a_proj->header, 37, 'a', a_proj->author   ,  5, 10, 40, LEN_TITLE);
+   poly_proj__headerline (a_proj->header, 38, 'c', a_proj->created  ,  4,  7, 20, LEN_LABEL);
    /*---(versioning)--------*/
-   poly_proj__headerline (a_proj->header, 33, 'x', a_proj->vermajor ,  4, 15, 70, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 34, 'n', a_proj->verminor ,  4, 15, 70, LEN_HUND);
-   poly_proj__headerline (a_proj->header, 35, 'v', a_proj->vernum   ,  4,  4,  4, LEN_LABEL);
-   poly_proj__headerline (a_proj->header, 36, 't', a_proj->vertxt   , 10, 20, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 40, 'x', a_proj->vermajor ,  4, 15, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 41, 'n', a_proj->verminor ,  4, 15, 70, LEN_HUND);
+   poly_proj__headerline (a_proj->header, 42, 'v', a_proj->vernum   ,  4,  4,  4, LEN_LABEL);
+   poly_proj__headerline (a_proj->header, 43, 't', a_proj->vertxt   , 10, 20, 70, LEN_HUND);
    /*---(overall)-----------*/
    a_proj->header [0] = '-';
-   if      (strchr (a_proj->header, '0') != NULL)  a_proj->header [0] = '#';
+   if      (strchr (a_proj->header, '·') != NULL)  a_proj->header [0] = '#';
    else if (strchr (a_proj->header, '#') != NULL)  a_proj->header [0] = '!';
    /*---(complete)----------*/
    return 0;
@@ -999,10 +1027,10 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    /*---(header flags)-------------------*/
    if (strchr ("sLaA" , a_style) != NULL) {
       switch (x_type) {
-      case 'h' : sprintf (t, "---header-checklist----------------  ");    break;
-      case 'p' : sprintf (t, "Ï----------------------------------··");    break;
-      case 't' : sprintf (t, "header-checklist·····················");    break;
-      case 'd' : sprintf (t, "%-35.35s  ", a_proj->header);               break;
+      case 'h' : sprintf (t, "---header-checklist-------------------------  ");    break;
+      case 'p' : sprintf (t, "Ï-------------------------------------------··");    break;
+      case 't' : sprintf (t, "header-checklist······························");    break;
+      case 'd' : sprintf (t, "%-44.44s  ", a_proj->header);               break;
       default  :   strlcpy (t, "", LEN_RECD);                             break;
       }
       strlcat (s_print, t, LEN_RECD);
@@ -1062,12 +1090,12 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    /*---(chars)--------------------------*/
    if (strchr ("LAc", a_style) != NULL) {
       switch (x_type) {
-      case 'h' : sprintf (t, "---system------------------------------------------------------------- ---language----------------------------------------------------------- ---codesize----------------------------- ---dependencies-------------------------------------------------------  ");  break;
-      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------·Ï---------------------------------------------------------------------··");  break;
-      case 't' : sprintf (t, "system·································································language·······························································codesize·································dependencies····························································");  break;
-      case 'd' : sprintf (t, "%-70.70s %-70.70s %-40.40s %-70.70s  ",
+      case 'h' : sprintf (t, "---system------------------------------------------------------------- ---language----------------------------------------------------------- ---compiler----------------------------------------------------------- ---codesize-----------------------------  ");  break;
+      case 'p' : sprintf (t, "Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------------------------------------·Ï---------------------------------------··");  break;
+      case 't' : sprintf (t, "system·································································language·······························································compiler·······························································codesize··································");  break;
+      case 'd' : sprintf (t, "%-70.70s %-70.70s %-70.70s %-40.40s  ",
                        a_proj->systems , a_proj->language,
-                       a_proj->codesize, a_proj->depends );
+                       a_proj->compiler, a_proj->codesize);
                  break;
       default  :   strlcpy (t, "", LEN_RECD);                  break;
       }
@@ -1438,9 +1466,9 @@ poly_proj__unit     (char *a_question, int i)
       poly_proj_by_index (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->name);
-         snprintf (unit_answer, LEN_RECD, "PROJ head   (%2d) : %-22.22s   [%s]", i, t, u->header);
+         snprintf (unit_answer, LEN_RECD, "PROJ head   (%2d) : %-22.22s   å%sæ", i, t, u->header);
       } else {
-         snprintf (unit_answer, LEN_RECD, "PROJ head   (%2d) : %-22.22s   [%s]", i, t, "· ····· ····· ····· ··· ··· ···· ·");
+         snprintf (unit_answer, LEN_RECD, "PROJ head   (%2d) : %-22.22s   å%sæ", i, t, "· ····· ····· ····· ··· ··· ···· ·");
       }
    }
    /*---(complete)-----------------------*/

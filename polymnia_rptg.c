@@ -967,7 +967,16 @@ poly_rptg__htags_header (tPROJ *a_proj)
    printf ("##   language   l  [%s]\n", a_proj->language);
    printf ("##   compiler   c  [%s]\n", a_proj->compiler);
    printf ("##   code-size  z  [%s]\n", a_proj->codesize);
-   printf ("##   depends    d  [%s]\n", a_proj->depends);
+   printf ("##\n");
+   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
+   printf ("##\n");
+   printf ("##   dep_cstd   d  [%s]\n", a_proj->dep_cstd);
+   printf ("##   dep_posix  d  [%s]\n", a_proj->dep_posix);
+   printf ("##   dep_core   d  [%s]\n", a_proj->dep_core);
+   printf ("##   dep_vikey  d  [%s]\n", a_proj->dep_vikey);
+   printf ("##   dep_other  d  [%s]\n", a_proj->dep_other);
+   printf ("##   dep_graph  d  [%s]\n", a_proj->dep_graph);
+   printf ("##   dep_solo   d  [%s]\n", a_proj->dep_solo);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
