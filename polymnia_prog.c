@@ -160,7 +160,7 @@ PROG__args              (int a_argc, char *a_argv[])
    /*---(header)-------------------------*/
    DEBUG_PROG  yLOG_enter   (__FUNCTION__);
    /*> FILE_rename ("");                                                              <*/
-   rc = yJOBS_runas (a_argv [0], &(my.run_as), P_FOCUS, P_NICHE, P_SUBJECT, P_PURPOSE, P_NAMESAKE, P_HERITAGE, P_IMAGERY, P_REASON, P_ONELINE, P_HOMEDIR, P_BASENAME, P_FULLPATH, P_SUFFIX, P_CONTENT, P_SYSTEM, P_LANGUAGE, P_CODESIZE, P_DEPENDS, P_AUTHOR, P_CREATED, P_VERMAJOR, P_VERMINOR, P_VERNUM, P_VERTXT, P_ITCH, P_EXISTS, P_AVOID, P_SCRATCH, P_SUMMARY, P_ASSUME, P_GREEK, NULL);
+   rc = yJOBS_runas (a_argv [0], &(my.run_as), P_FOCUS, P_NICHE, P_SUBJECT, P_PURPOSE, P_NAMESAKE, P_HERITAGE, P_IMAGERY, P_REASON, P_ONELINE, P_HOMEDIR, P_BASENAME, P_FULLPATH, P_SUFFIX, P_CONTENT, P_SYSTEM, P_LANGUAGE, P_CODESIZE, "", P_AUTHOR, P_CREATED, P_VERMAJOR, P_VERMINOR, P_VERNUM, P_VERTXT, P_ITCH, P_EXISTS, P_AVOID, P_SCRATCH, P_SUMMARY, P_ASSUME, P_GREEK, NULL);
    DEBUG_PROG  yLOG_value   ("runas"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);

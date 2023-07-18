@@ -5,48 +5,58 @@
 
 
 /*===[[ ONE_LINERS ]]=========================================================*/
-/*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-"  */
-
+/*                      ´·········1·········2·········3·········4·········5·········6·········7*/
+/*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+/*········· ··········· ´·····························´········································*/
 #define     P_FOCUS     "DE (development environment)"
 #define     P_NICHE     "ca (code anaylsis)"
 #define     P_SUBJECT   "ansi-c analysis and research"
 #define     P_PURPOSE   "pervasive and detailed ansi-c code analysis, research, and navigation"
-
+/*········· ··········· ´·····························´········································*/
 #define     P_NAMESAKE  "polymnia-hymnos (many praises)"
 #define     P_PRONOUNCE "poh·lee·mih·nee·uh hihm·nohs"
 #define     P_HERITAGE  "greek muse of divine hymns, poetry, dancing, geometry, grammer"
 #define     P_BRIEFLY   "hymns, dancing, and geometry"
 #define     P_IMAGERY   "beautiful woman wearing a veil and looking up at the heavens"
 #define     P_REASON    "she is the muse of divine hymns (c is the divine language)"
-
+/*········· ··········· ´·····························´········································*/
 #define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
-
+/*········· ··········· ´·····························´········································*/
 #define     P_HOMEDIR   "/home/system/polymnia.muse_of_coding_structure"
 #define     P_BASENAME  "polymnia"
 #define     P_FULLPATH  "/usr/local/bin/polymnia"
 #define     P_SUFFIX    "htags"
 #define     P_CONTENT   "code navigation file"
-
+/*········· ··········· ´·····························´········································*/
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
 #define     P_COMPILER  "gcc 5.3.0"
 #define     P_CODESIZE  "moderate    (appoximately 2,000 to 10,000 slocl)"
-#define     P_DEPENDS   "ySTR,yJOBS,ySORT,yREGEX"
-
+/*········· ··········· ´·····························´········································*/
+#define     P_DEPSTDC   ""
+#define     P_DEPPOSIX  ""
+#define     P_DEPCORE   "ySTR"
+#define     P_DEPVIKEY  ""
+#define     P_DEPGRAPH  ""
+#define     P_DEPOTHER  "ySORT,yJOBS,jEXEC"
+#define     P_DEPSOLO   ""
+/*········· ··········· ´·····························´········································*/
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2019-01"
-
+/*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1a"
-#define     P_VERTXT    "PROJ updated to new headers and unit test updated/passed"
-
+#define     P_VERNUM    "1.1b"
+#define     P_VERTXT    "FILE/FUNC updated and unit test updated/passed"
+/*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
 #define     P_REMINDER  "there are many better options, but i *own* every byte of this one"
+/*········· ··········· ´·····························´········································*/
+#define     P_HEADERS   P_FOCUS, P_NICHE, P_SUBJECT, P_PURPOSE, P_NAMESAKE, P_PRONOUNCE, P_HERITAGE, P_BRIEFLY, P_IMAGERY, P_REASON, P_ONELINE, P_HOMEDIR, P_BASENAME, P_FULLPATH, P_SUFFIX, P_CONTENT, P_SYSTEM, P_LANGUAGE, P_COMPILER, P_CODESIZE, P_DEPSTRC, P_DEPPOSIX, P_DEPCORE, P_DEPVIKEY, P_DEPOTHER, P_DEPGRAPH, P_DEPSOLO, P_AUTHOR, P_CREATED, P_VERMAJOR, P_VERMINOR, P_VERNUM, P_VERTXT
+/*········· ··········· ´·····························´········································*/
+/*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
 
-/*-------   --12345678  "123456789-123456789-123456789-123456789-123456789-123456789-"  */
-/*===[[ END ONE_LINERS ]]=====================================================*/
 
 /*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
 #define     P_ITCH      "itch¦" \
@@ -1112,6 +1122,7 @@ char        poly_func_init          (void);
 char        poly_func_purge         (tFILE *a_file, char a_update);
 char        poly_func_wrap          (void);
 /*---(source)---------------*/
+char        poly_func__purpose_get  (cchar a_recd [LEN_RECD], int a_beg, char *r_purpose [LEN_DESC], char *r_ready);
 char        poly_func_purpose       (tFUNC *a_func, char *a_recd);
 char        poly_func_return        (tFUNC *a_func, char *a_recd, char *a_prev);
 char        poly_func_params        (tFUNC *a_func, char *a_recd);

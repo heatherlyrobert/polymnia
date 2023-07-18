@@ -863,82 +863,126 @@ poly_func__purpose_copy (tFUNC *a_func, char *a_recd, int a_beg)
    return 0;
 }
 
+char
+poly_func__purpose_get  (cchar a_recd [LEN_RECD], int a_beg, char *r_purpose [LEN_DESC], char *r_ready)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        t           [LEN_RECD]  = "";;
+   int         i           =    0;
+   int         j           =    0;
+   int         l           =    0;
+   /*---(default)------------------------*/
+   if (r_purpose  != NULL)  strcpy (r_purpose, "");
+   if (r_ready    != NULL)  *r_ready = 'E';
+   /*---(defense)------------------------*/
+   --rce;  if (a_recd == NULL)   return rce;
+   l = strlen (a_recd);
+   --rce;  if (l      == 0)      return rce;
+   --rce;  if (a_beg  <  0)      return rce;
+   --rce;  if (l      <  a_beg)  return rce;
+   strlcpy (t, a_recd + a_beg, LEN_RECD);
+   l = strlen (t);
+   --rce;  if (l      <  1)      return rce;
+   /*---(very end)-----------------------*/
+   for (i = 0; i < l; ++i)  {
+      if (strchr ("*=()[]еж", t [i]) != NULL) {
+         t [i] = '\0';
+         break;
+      }
+      if (t [i] == '-' && t [i + 1] == '-') {
+         t [i] = '\0';
+         break;
+      }
+   }
+   /*---(search)-------------------------*/
+   for (j = i; j > 0; --j)  {
+      if (strchr (" -=[]еж", t [j]) == NULL)   break;
+      t [j] = '\0';
+   }
+   /*---(save-back)----------------------*/
+   if (r_purpose  != NULL)  strlcpy (r_purpose, t, 41);
+   if (r_ready    != NULL)  *r_ready = 'y';
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
 char         /*-> extract the function purpose -------[ ------ [ge.850.137.A4]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 poly_func_purpose       (tFUNC *a_func, char *a_recd)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    char        t           [LEN_RECD];
    int         i           =    0;
+   int         b           =   -1;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (a_func != NULL)   strcpy (a_func->purpose, "");
+   if (a_func != NULL)   a_func->ready = 'E';
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_spoint  (a_func);
    --rce;  if (a_func == NULL) {
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_func->purpose, "", 41);
    DEBUG_DATA   yLOG_spoint  (a_recd);
    --rce;  if (a_recd == NULL) {
-      a_func->ready = 'e';
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(modern style)-------------------*/
    if (strncmp (a_recd, "/*-[ ", 5) == 0) {
-      DEBUG_INPT   yLOG_snote   ("current format");
-      poly_func__purpose_copy (a_func, a_recd, 5);
-      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      DEBUG_INPT   yLOG_snote   ("modern format");
+      b = 5;
    }
    /*---(current style)------------------*/
-   if (strncmp (a_recd, "/*-> ", 5) == 0) {
+   else if (strncmp (a_recd, "/*-> ", 5) == 0) {
       DEBUG_INPT   yLOG_snote   ("current format");
-      poly_func__purpose_copy (a_func, a_recd, 5);
-      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      b = 5;
    }
    /*---(previous style)-----------------*/
-   if (strncmp (a_recd, "/*--> ",  6) == 0) {
+   else if (strncmp (a_recd, "/*--> ",  6) == 0) {
       DEBUG_INPT   yLOG_snote   ("previous 1 format");
-      poly_func__purpose_copy (a_func, a_recd, 6);
-      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      b = 6;
    }
    /*---(previous style)-----------------*/
-   if (strncmp (a_recd, "/* ---- : ", 10) == 0) {
+   else if (strncmp (a_recd, "/* ---- : ", 10) == 0) {
       DEBUG_INPT   yLOG_snote   ("previous 2 format");
-      poly_func__purpose_copy (a_func, a_recd, 10);
-      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      b = 10;
    }
    /*---(previous style)-----------------*/
-   if (strncmp (a_recd, "/*----: ",  8) == 0) {
+   else if (strncmp (a_recd, "/*----: ",  8) == 0) {
       DEBUG_INPT   yLOG_snote   ("previous 3 format");
-      poly_func__purpose_copy (a_func, a_recd, 8);
-      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      b = 8;
    }
    /*---(previous style)-----------------*/
-   if (strncmp (a_recd, "/*===[[ ",  8) == 0) {
+   else if (strncmp (a_recd, "/*===[[ ",  8) == 0) {
       DEBUG_INPT   yLOG_snote   ("previous 3 format");
-      poly_func__purpose_copy (a_func, a_recd, 8);
-      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      b = 8;
    }
    /*---(terse format)-------------------*/
-   if (strncmp (a_recd, "/* ",  3) == 0) {
+   else if (strncmp (a_recd, "/* ",  3) == 0) {
       DEBUG_INPT   yLOG_snote   ("terse format");
-      poly_func__purpose_copy (a_func, a_recd, 3);
-      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      b = 3;
+   }
+   /*---(error)--------------------------*/
+   else {
+      DEBUG_INPT   yLOG_snote   ("not a recognized format");
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(call)---------------------------*/
+   rc = poly_func__purpose_get  (a_recd, b, &(a_func->purpose), &(a_func->ready));
+   DEBUG_INPT   yLOG_sint    (rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
    }
    /*---(complete)-----------------------*/
-   a_func->ready = 'e';
-   --rce;
-   DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-   return rce;
+   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+   return 0;
 }
 
 char
@@ -1469,10 +1513,10 @@ char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/
 poly_func__unit         (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
-   char        t           [LEN_RECD] = "[]";
-   char        r           [LEN_TERSE]= "  -";
-   char        s           [LEN_TERSE]= "  -";
-   char        q           [LEN_TERSE]= "  -";
+   char        t           [LEN_RECD]  = "[]";
+   char        r           [LEN_HUND]  = "  -";
+   char        s           [LEN_HUND]  = "  -";
+   char        q           [LEN_HUND]  = "  -";
    tFUNC      *u           = NULL;
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "FUNC unit        : function number unknown");

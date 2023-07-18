@@ -927,7 +927,7 @@ poly_rptg__htags_header (tPROJ *a_proj)
    printf ("##   version %s, %s\n", P_VERNUM, P_VERTXT);
    printf ("##   htags reporting file for use with vim-ide\n");
    printf ("##\n");
-   printf ("##   27 headers ·  [%s]\n", a_proj->header);
+   printf ("##   33 headers ·  [%s]\n", a_proj->header);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
