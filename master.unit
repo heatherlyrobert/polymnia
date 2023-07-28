@@ -96,7 +96,7 @@ GLOBAL   -A-  set up multi-project, multi-file dataset                         
      code     touch a file                         - - - - - - - - - - - - -   system ("touch /tmp/polymnia_test/foxtrot.c");                                                                                                                                                                             
 
    COND       review directory                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.005))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     call review                          poly_file_review            x_projA                                                                                               i_equal     0                                                                                                    
+     exec     call review                          poly_file_inventory         x_projA                                                                                               i_equal     6                                                                                                    
      get      ... review count                     poly_file__unit             "count"          , 0                                                                                  s_equal     FILE count       :   6                                                                               
 
    COND       create a project entry                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.003))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -121,7 +121,7 @@ GLOBAL   -A-  set up multi-project, multi-file dataset                         
      code     touch a file                         - - - - - - - - - - - - -   system ("touch /tmp/polymnia_test/tango.c");                                                                                                                                                                               
 
    COND       review directory                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.005))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     call review                          poly_file_review            x_projB                                                                                               i_equal     0                                                                                                    
+     exec     call review                          poly_file_inventory         x_projB                                                                                               i_equal     14                                                                                                   
      get      ... review count                     poly_file__unit             "count"          , 0                                                                                  s_equal     FILE count       :  20                                                                               
 
    COND       create a project entry                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.003))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -130,7 +130,7 @@ GLOBAL   -A-  set up multi-project, multi-file dataset                         
      code     clear all files                      - - - - - - - - - - - - -   system("rm -f /tmp/polymnia_test/* > /dev/null");                                                                                                                                                                          
 
    COND       review directory                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.005))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     call review                          poly_file_review            x_projC                                                                                               i_equal     0                                                                                                    
+     exec     call review                          poly_file_inventory         x_projC                                                                                               i_equal     0                                                                                                    
      get      ... review count                     poly_file__unit             "count"          , 0                                                                                  s_equal     FILE count       :  20                                                                               
 
    COND       create a project entry                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.003))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -147,7 +147,7 @@ GLOBAL   -A-  set up multi-project, multi-file dataset                         
      code     touch a file                         - - - - - - - - - - - - -   system ("touch /tmp/polymnia_test/zulu.c");                                                                                                                                                                                
 
    COND       review directory                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.005))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     call review                          poly_file_review            x_projD                                                                                               i_equal     0                                                                                                    
+     exec     call review                          poly_file_inventory         x_projD                                                                                               i_equal     6                                                                                                    
      get      ... review count                     poly_file__unit             "count"          , 0                                                                                  s_equal     FILE count       :  26                                                                               
 
 
@@ -314,5 +314,54 @@ GLOBAL   -P-  shut down testing                                              -
      code     move back to program directory       - - - - - - - - - - - - -   chdir  ("/tmp");                                                                                                                                                                                                        
      code     move back to program directory       - - - - - - - - - - - - -   chdir  ("/home/system/polymnia.muse_of_coding_structure");                                                                                                                                                              
      code     remove old version                   - - - - - - - - - - - - -   system ("rm -rf /tmp/polymnia_test             > /dev/null");                                                                                                                                                                         
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  t  ========(var)======= 
+#GLOBAL   -R-  shut down testing                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((BB.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+#
+#   COND       sample function                                                    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((BB.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+#     append   add lines                            - - - - - - - - - - - - -   char
+#     append   add lines                            - - - - - - - - - - - - -   poly_cats_exact    (char *a_label, int a_src, char *r_dst, char a_zero)
+#     append   add lines                            - - - - - - - - - - - - -   {
+#     append   add lines                            - - - - - - - - - - - - -      int         c           =    0;
+#     append   add lines                            - - - - - - - - - - - - -      char       *x_scale     = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+#     append   add lines                            - - - - - - - - - - - - -      int         x_max       = (strlen (x_scale));
+#     append   add lines                            - - - - - - - - - - - - -      DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+#     append   add lines                            - - - - - - - - - - - - -      if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
+#     append   add lines                            - - - - - - - - - - - - -      DEBUG_DATA   yLOG_sint    (a_src);
+#     append   add lines                            - - - - - - - - - - - - -      if      (a_src <     -1)  *r_dst = '¢';
+#     append   add lines                            - - - - - - - - - - - - -      else if (a_src ==    -1)  *r_dst = '·';
+#     append   add lines                            - - - - - - - - - - - - -      else if (a_src ==     0)  *r_dst = a_zero;
+#     append   add lines                            - - - - - - - - - - - - -      else if (a_src >= x_max)  *r_dst = '#';
+#     append   add lines                            - - - - - - - - - - - - -      else                      *r_dst = x_scale [a_src];
+#     append   add lines                            - - - - - - - - - - - - -      DEBUG_DATA   yLOG_schar   (*r_dst);
+#     append   add lines                            - - - - - - - - - - - - -      DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
+#     append   add lines                            - - - - - - - - - - - - -      return 0;
+#     append   add lines                            - - - - - - - - - - - - -   }
+
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+GLOBAL   -Y-  set up testing (home) directory                                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((aa.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       setup directory                                                    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((aa.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     create directory                     - - - - - - - - - - - - -   mkdir ("/tmp/poly.testing/", 0777);                                                                                                                                                                                        
+     code     change directory                     - - - - - - - - - - - - -   chdir ("/tmp/poly.testing/");                                                                                                                                                                                              
+     code     remove files                         - - - - - - - - - - - - -   system("rm -f /tmp/poly.testing/* > /dev/null");                                                                                                                                                                          
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+GLOBAL   -Z-  remove testing (home) directory                                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((bb.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       clean up directory                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((bb.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     change directory                     - - - - - - - - - - - - -   chdir ("/tmp");                                                                                                                                                                                                            
+     code     remove files                         - - - - - - - - - - - - -   system("rm -f /tmp/poly.testing/* > /dev/null");                                                                                                                                                                          
+     code     change directory                     - - - - - - - - - - - - -   chdir ("/home/system/polymnia*");                                                                                                                                                                                          
 
 

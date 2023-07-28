@@ -38,7 +38,7 @@
 #define     P_DEPCORE   "ySTR"
 #define     P_DEPVIKEY  ""
 #define     P_DEPGRAPH  ""
-#define     P_DEPOTHER  "ySORT,yJOBS,jEXEC"
+#define     P_DEPOTHER  "ySORT,yJOBS,yEXEC"
 #define     P_DEPSOLO   ""
 /*········· ··········· ´·····························´········································*/
 #define     P_AUTHOR    "heatherlyrobert"
@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1b"
-#define     P_VERTXT    "FILE/FUNC updated and unit test updated/passed"
+#define     P_VERNUM    "1.1c"
+#define     P_VERTXT    "really happy with this update, still improving, but stable."
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -345,9 +345,13 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     COUNT_FUNCS    counts [ 2]
 #define     COUNT_YLIBS    counts [ 3]
 #define     COUNT_LINES    counts [ 4]
+/*--- poly_debug__counts (), poly_units__classify () -----*/
 #define     COUNT_EMPTY    counts [ 5]
+/*--- poly_debug__counts (), poly_units__classify () -----*/
 #define     COUNT_DOCS     counts [ 6]
+/*--- poly_debug__counts (), poly_units__classify () -----*/
 #define     COUNT_DEBUG    counts [ 7]
+
 #define     COUNT_CODE     counts [ 8]
 #define     COUNT_SLOCL    counts [ 9]
 #define     COUNT_TEXT     counts [10]
@@ -506,18 +510,29 @@ struct cFILE {
 };
 
 
-#define     MAX_STATS      60
-#define     MAX_CATS       70
+#define     MAX_STATS     100
+#define     MAX_CATS      100
 
 /*---(overall)------------------------*/
 #define     STATS_SINGLE   stats [ 0]
 /*---(group one.a)--------------------*/
 #define     STATS_SCOPE    stats [ 1]
 #define     STATS_RTYPE    stats [ 2]
-#define     STATS_PARAMS   stats [ 3]
-#define     STATS_PTWO     stats [ 4]
-#define     STATS_PNUM     stats [ 5]
 #define     STATS_PROTO    stats [ 6]
+/*---(group one.a)--------------------*/
+#define     STATS_PAUDIT   stats [60]
+#define     STATS_PARAMS   stats [ 3]
+#define     STATS_PNUM     stats [ 5]
+#define     STATS_PTWO     stats [ 4]
+#define     STATS_PIN      stats [61]
+#define     STATS_POUT     stats [62]
+#define     STATS_PBOTH    stats [63]
+#define     STATS_PNUM     stats [64]
+#define     STATS_PMULTI   stats [65]
+#define     STATS_PFUNC    stats [66]
+
+
+
 /*---(group one.b)--------------------*/
 #define     STATS_TOTAL    stats [ 7]
 #define     STATS_DEBUG    stats [ 8]
@@ -545,6 +560,7 @@ struct cFILE {
 #define     STATS_GFUNCS   stats [26]
 #define     STATS_CSTD     stats [27]
 #define     STATS_YLIB     stats [28]
+#define     STATS_VIKEYS   stats [67]
 #define     STATS_OFUNCS   stats [29]
 #define     STATS_MYSTRY   stats [30]
 /*---(group two.c)--------------------*/
@@ -611,6 +627,7 @@ struct      cFUNC {
    char        type;                        /* 'f' normal, '_' separator      */
    char        name        [LEN_TITLE];     /* c function name                */
    char        hint        [LEN_SHORT];     /* two-char navigation hint       */
+   char        rlong       [LEN_LABEL];     /* actual return string           */
    char        purpose     [LEN_DESC];      /* short description of purpose   */
    int         line;                        /* function header                */
    int         beg;                         /* first code line                */
@@ -619,6 +636,7 @@ struct      cFUNC {
    /*---(new stats interface)------------*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    char        stats       [MAX_STATS];     /* statistics                     */
+   char        anatomy     [LEN_TERSE];     /* function type                  */
    /*---(parent)------------*/
    tFILE      *file;
    /*---(tags)--------------*/
@@ -661,7 +679,7 @@ struct cWORLD {
 
 
 
-#define     MAX_TEMPS      60
+#define     MAX_TEMPS      100
 
 /*---(location)-----------------------*/
 #define     WORK_BEG       work->beg
@@ -669,6 +687,12 @@ struct cWORLD {
 #define     WORK_LOCALS    work->locals
 /*---(group one.b)--------------------*/
 #define     WORK_PARAMS    work->temp  [ 0]
+#define     WORK_PIN       work->temp  [61]
+#define     WORK_POUT      work->temp  [62]
+#define     WORK_PBOTH     work->temp  [63]
+#define     WORK_PNUM      work->temp  [64]
+#define     WORK_PMULTI    work->temp  [65]
+#define     WORK_PFUNC     work->temp  [66]
 /*---(group one.c)--------------------*/
 #define     WORK_LVARS     work->temp  [ 1]
 #define     WORK_FVARS     work->temp  [ 2]
@@ -692,6 +716,7 @@ struct cWORLD {
 #define     WORK_GFUNCS    work->temp  [17]
 #define     WORK_CSTD      work->temp  [18]
 #define     WORK_YLIB      work->temp  [19]
+#define     WORK_VIKEYS    work->temp  [68]
 #define     WORK_OFUNCS    work->temp  [20]
 #define     WORK_MYSTRY    work->temp  [21]
 /*---(group two.c)--------------------*/
@@ -715,14 +740,17 @@ struct cWORLD {
 #define     WORK_DSHORT    work->temp  [37]
 #define     WORK_DENTER    work->temp  [38]
 #define     WORK_DEXIT     work->temp  [39]
+#define     WORK_DEXITR    work->temp  [67]
 #define     WORK_DFREE     work->temp  [40]
 /*---(group three.b)------------------*/
 #define     WORK_PUSE      work->temp  [41]
 #define     WORK_FUSE      work->temp  [42]
 #define     WORK_GUSE      work->temp  [43]
-#define     WORK_MUSE      work->temp  [44]
+#define     WORK_CUSE      work->temp  [44]
 #define     WORK_YUSE      work->temp  [45]
+#define     WORK_VUSE      work->temp  [69]
 #define     WORK_OUSE      work->temp  [46]
+#define     WORK_MUSE      work->temp  [70]
 /*---(group three.c)------------------*/
 #define     WORK_VMASK     work->temp  [47]
 #define     WORK_MMASK     work->temp  [48]
@@ -738,6 +766,7 @@ struct cWORLD {
 /*---(new)----------------------------*/
 #define     WORK_RCE       work->temp  [57]
 #define     WORK_LOOP      work->temp  [58]
+#define     WORK_DEXTRA    work->temp  [60]
 
 
 
@@ -776,6 +805,7 @@ struct      cBTREE {
 #define     B_ELIB      'l'
 #define     B_UNIT      'U'
 #define     B_ALL       "TftpewlU"
+#define     B_TEMP      'Z'
 
 struct      cELIB {
    /*---(info)--------------*/
@@ -841,44 +871,64 @@ char        poly_file__wipe         (tFILE *a_dst);
 char*       poly_file__unit_memory  (tFILE *a_file);
 /*---(hooking)--------------*/
 char        poly_file_hook          (tPROJ *a_proj, tFILE *a_file);
-char        poly_file_unhook        (tFILE *a_file);
+char        poly_file__unhook       (tFILE *a_file);
 /*---(existance)------------*/
 char        poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file);
 char        poly_file_remove        (tFILE **a_old);
 char        poly_file_purge         (tPROJ *a_proj, char a_update);
-char        poly_file_review        (tPROJ *a_proj);
+/*---(inventory)------------*/
+char        poly_file__filter       (char a_name [LEN_TITLE], char a_units, char *r_type, char r_mans [LEN_LABEL]);
+char        poly_file__sorting      (tPROJ *a_proj);
+char        poly_file_inventory     (tPROJ *a_proj);
+/*---(searching)------------*/
 char        poly_file_by_name       (uchar *a_name, tFILE **a_file);
 char        poly_file_by_index      (int n, tFILE **a_file);
 char        poly_file_by_proj_index (tPROJ *a_proj, int n, tFILE **a_file);
 char        poly_file_by_cursor     (char a_dir, tFILE **a_file);
+/*---(reporting)------------*/
 char        poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, int a, int b, char a_print);
 /*---(footprint)------------*/
 char        poly_file_footprint    (tFILE *a_file);
 /*---(unittest)-------------*/
 char*       poly_file__unit         (char *a_question, int n);
+/*---(done)-----------------*/
+
+
 
 char        poly_tags_inventory     (tFILE *a_file);
 char*       poly_tags__unit         (char *a_question, int n);
 
+
+
 char        poly_cats_counts_clear  (int  a_counts [MAX_COUNTS]);
 char        poly_cats_stats_clear   (char a_stats  [MAX_STATS]);
-char        poly_cats_flag          (char *a_label, int a_src, char *a_dst, char a_zero);
-char        poly_cats_exists        (char *a_label, int a_src, char *a_dst, char a_zero);
-char        poly_cats_exact         (char *a_label, int a_src, char *a_dst, char a_zero);
-char        poly_cats_scaled        (char *a_label, int a_src, char *a_dst, char a_zero);
+char        poly_cats_flag          (char *a_label, int a_src, char *r_dst, char a_zero);
+char        poly_cats_exists        (char *a_label, int a_src, char *r_dst, char a_zero);
+char        poly_cats_exact         (char *a_label, int a_src, char *r_dst, char a_zero);
+char        poly_cats_scaled        (char *a_label, int a_src, char *r_dst, char a_zero);
 char        poly_cats_logic         (tFUNC *a_tag, char a_type);
-char        poly_cats__group_1a     (tFUNC *a_func);
-char        poly_cats__group_1b     (tFUNC *a_func);
-char        poly_cats__group_1c     (tFUNC *a_func);
-char        poly_cats__group_1d     (tFUNC *a_func);
-char        poly_cats__complexity   (char a_style, tFUNC *a_func, char a_update, char *a_out);
-char        poly_cats__group_2a     (tFUNC *a_func);
-char        poly_cats__group_2b     (tFUNC *a_func);
-char        poly_cats__group_2c     (tFUNC *a_func);
-char        poly_cats__group_2d     (tFUNC *a_func);
-char        poly_cats__integration  (char a_style, tFUNC *a_func, char a_update, char *a_out);
-char        poly_cats__group_3a     (tFUNC *a_func);
-char        poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out);
+/*---(complexity)-----------*/
+char        poly_cats__group_1a     (tFUNC *a_func, char a_style, char a_scope, char a_rc, char a_proto, char r_out [LEN_LABEL]);
+char        poly_cats__group_1bcd   (tFUNC *a_func, char a_style, char a_paudit, int a_nparam, int a_pin, int a_pout, int a_pboth, int a_pnum, int a_pmulti, int a_pfunc, char r_out [LEN_LABEL]);
+char        poly_cats__group_1e     (tFUNC *a_func, char a_style, int a_lines, int a_debug, int a_slocl, char r_out [LEN_LABEL]);
+char        poly_cats__group_1f     (tFUNC *a_func, char a_style, int a_local, int a_file, int a_global, char r_out [LEN_LABEL]);
+char        poly_cats__group_1gh    (tFUNC *a_func, char a_style, int a_indent, int a_loop, int a_choice, int a_return, int a_error, int a_memory, char r_out [LEN_LABEL]);
+char        poly_cats__complexity   (tFUNC *a_func, char a_style, char a_update, char *r_out);
+/*---(integration)----------*/
+char        poly_cats__group_2ab    (tFUNC *a_func, char a_style, int a_local, int a_global, int a_extern, int a_recurse, char r_out [LEN_LABEL]);
+char        poly_cats__group_2cd    (tFUNC *a_func, char a_style, int a_funcs, int a_dfuncs, int a_lfuncs, int a_gfuncs, int a_cfuncs, int a_yfuncs, int a_vfuncs, int a_ofuncs, int a_mfuncs, char r_out [LEN_LABEL]);
+char        poly_cats__group_2e     (tFUNC *a_func, char a_style, int a_input, int a_tinput, int a_binput, int a_output, int a_toutput, int a_boutput, int a_procs, int a_opsys, int a_filesys, char r_out [LEN_LABEL]);
+char        poly_cats__group_2f     (tFUNC *a_func, char a_style, int a_ncurse, int a_opengl, int a_window, int a_myx, char r_out [LEN_LABEL]);
+char        poly_cats__integration  (tFUNC *a_func, char a_style, char a_update, char *r_out);
+/*---(watch-points)---------*/
+char        poly_cats__group_3a     (tFUNC *a_func, char a_style, int a_lines, int a_dcount, int a_dlong, int a_dshort, char a_macro, int a_dfree, int a_denter, int a_dexit, int a_dexitr, int a_return, int a_rce, int a_ffuncs, int a_gfuncs, int a_yfuncs, int a_dextra, char r_out [LEN_LABEL]);
+char        poly_cats__group_3b     (tFUNC *a_func, char a_style, int a_puse, int a_fuse, int a_guse, int a_cuse, int a_yuse, int a_vuse, int a_ouse, char r_out [LEN_LABEL]);
+char        poly_cats__group_3c     (tFUNC *a_func, char a_style, int a_vmask, int a_mmask, int a_fmask, int a_static, char r_out [LEN_LABEL]);
+char        poly_cats__group_3d     (tFUNC *a_func, char a_style, int a_tunit, int a_sunit, int a_nunit, int a_stest, char r_out [LEN_LABEL]);
+char        poly_cats__watchpoints  (tFUNC *a_func, char a_style, char a_update, char *r_out);
+/*---(other)----------------*/
+char        poly_cats__anatomy      (char a_rtype, char a_vars, char a_calls, char a_graph, char a_read, char a_write, char a_memory, char r_anatomy [LEN_TERSE]);
+char        poly_cats_anatomy       (tFUNC *a_func);
 char        poly_cats_function      (tFUNC *a_func);
 char*       poly_cats_header        (int n, char *a_title, int a_curr, int a_total);
 char*       poly_cats_database      (tFUNC *a_func);
@@ -886,7 +936,9 @@ char*       poly_cats_comment       (tFUNC *a_func);
 char*       poly_cats_full          (tFUNC *a_func, char *a_out);
 char        poly_cats_func          (tFUNC *a_func);
 char        poly_cats_by_index      (tFUNC *a_func, char n, char *a_grp, char *a_sub, char *a_name, char *a_desc, char *a_set);
+/*---(unittest)-------------*/
 char*       poly_cats__unit         (char *a_question, int n);
+/*---(done)-----------------*/
 
 
 
@@ -926,7 +978,11 @@ char        poly_extern_wrap        (void);
 /*---(existance)------------*/
 char        poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type);
 char        poly_extern_load        (void);
-char        poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, tFUNC **a_dst, tEXTERN **a_ext);
+char        poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, tFUNC **r_dst, tEXTERN **r_ext);
+char        poly_extern__scope      (cchar a_recurse, cchar a_local, cchar a_global, int *r_funcs, int *r_recurse, int *r_calls, int *r_lfunc, int *r_lcall, int *r_gfunc, int *r_gcall);
+char        poly_extern__debug      (cchar a_cat, cchar a_sub, int *r_ecount, int *r_dfuncs, int *r_dlong, int *r_dshort, int *r_denter, int *r_dexitr, int *r_dexit);
+char        poly_extern__cstd       (cchar a_cat, cchar a_sub, int *r_ecount, int *r_cstd, int *r_in, int *r_tin, int *r_bin, int *r_out, int *r_tout, int *r_bout, int *r_mem, int *r_proc, int *r_file, int *r_ops);
+char        poly_extern__outside    (cchar a_cat, cchar a_sub, int *r_ecount, int *r_ofunc, int *r_ncurse, int *r_opengl, int *r_window, int *r_myx, int *r_ylib, int *r_vikey);
 char        poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line);
 char        poly_extern_review      (void);
 char        poly_extern_list        (void);
@@ -935,6 +991,7 @@ int         poly_extern_count       (void);
 char        poly_extern_by_name     (uchar *a_name, tEXTERN **a_func);
 char        poly_extern_by_index    (int n, tEXTERN **a_ext);
 char        poly_extern_by_cursor   (char a_dir, tEXTERN **a_ext);
+char        poly_extern_dump        (void);
 /*---(unittest)-------------*/
 char*       poly_extern__unit       (char *a_question, int n);
 /*---(done)-----------------*/
@@ -1005,6 +1062,7 @@ char        poly_proj_wrap          (void);
 char        poly_proj_git           (tPROJ *a_proj);
 char        poly_proj_footprint     (tPROJ *a_proj);
 /*---(reporting)------------*/
+char        poly_proj_oneliners     (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
 char        poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
 char        poly_proj_header        (tPROJ *a_proj);
 char        poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
@@ -1071,17 +1129,37 @@ char*       poly_ylib__unit         (char *a_question, char *a_name);
 
 
 
-/*---(support)--------------*/
-char        poly_debug__macro       (char *a_macro);
-/*---(checking)-------------*/
-char        poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type);
-char        poly_debug_line         (tFILE *a_file, tFUNC *a_func, char *a_recd);
+/*---(line)-----------------*/
+char        poly_line_all           (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+char        poly_line_empty         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+char        poly_line_comment       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+char        poly_line_debug         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dextra, char *r_abbr);
+char        poly_line_unguard       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dfree);
+char        poly_line_code          (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+char        poly_line_slocl         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+/*---(include)--------------*/
+char        poly_line_exit          (cchar a_recd [LEN_RECD], char a_inside, int *r_return, int *r_rce);
+char        poly_line_choice        (cchar a_recd [LEN_RECD], char a_inside, int *r_choice);
+char        poly_line_loop          (cchar a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, int *r_loop);
+char        poly_line_indent        (cchar a_recd [LEN_RECD], char a_inside, int *r_indent);
+/*---(function)-------------*/
+char        poly_line__purpose      (cchar a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_DESC], char *r_ready);
+char        poly_line_purpose       (cchar a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready);
+char        poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL]);
+char        poly_line__params_cut   (char a_recd [LEN_RECD], char r_params [LEN_RECD], char *r_audit, int *r_count);
+char        poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_both, int *r_pnum, int *r_pmulti, int *r_pfunc);
+char        poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, int *r_in, int *r_out, int *r_both, int *r_pnum, int *r_pmulti, int *r_pfunc);
+/*---(old-stuff)------------*/
+/*> char        poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type);   <*/
+/*> char        poly_debug_line         (tFILE *a_file, tFUNC *a_func, char *a_recd);   <*/
 /*---(stats)----------------*/
-char        poly_debug_cflow        (tFUNC *a_func, char a_type, char a_more);
-char        poly_debug_function     (tFUNC *a_func);
+/*> char        poly_debug_cflow        (tFUNC *a_func, char a_type, char a_more);    <*/
+/*> char        poly_debug_function     (tFUNC *a_func);                              <*/
 /*---(unittest)-------------*/
 char        poly_debug__fake        (tFUNC *a_func, int a_return, int a_intern, int a_ylib);
 char*       poly_debug__unit        (char *a_question, int i);
+
+
 
 /*---(support)--------------*/
 char        poly_func__wipe         (tFUNC *a_func);
@@ -1121,11 +1199,6 @@ char        poly_func_by_regex      (uchar *a_regex, tFUNC **a_func);
 char        poly_func_init          (void);
 char        poly_func_purge         (tFILE *a_file, char a_update);
 char        poly_func_wrap          (void);
-/*---(source)---------------*/
-char        poly_func__purpose_get  (cchar a_recd [LEN_RECD], int a_beg, char *r_purpose [LEN_DESC], char *r_ready);
-char        poly_func_purpose       (tFUNC *a_func, char *a_recd);
-char        poly_func_return        (tFUNC *a_func, char *a_recd, char *a_prev);
-char        poly_func_params        (tFUNC *a_func, char *a_recd);
 /*---(reporting)------------*/
 char*       poly_func__prefix       (tFUNC *a_func, char a_spec, int a, int b, int c);
 char*       poly_func__core         (tFUNC *a_func, char a_spec, int c);
@@ -1137,7 +1210,7 @@ char*       poly_func__unit         (char *a_question, int i);
 
 
 char        poly_code__unquote      (char *a_dst, char *a_src, int a_max);
-char        poly_code__oneliners    (tFILE *a_file, char *a_recd);
+/*> char        poly_code__oneliners    (tFILE *a_file, char *a_recd);                <*/
 char        poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd);
 char        poly_code__indent       (tFUNC *a_func, char *a_recd);
 char        poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev);
@@ -1171,7 +1244,7 @@ char        poly_shared_verify      (char a_type, uchar *a_name);
 char        poly_shared_open        (char a_type, char *a_focus);
 char        poly_shared_close       (char a_type);
 char        poly_shared_read        (char a_type, int *a_line, char *a_curr, char *a_prev);
-char        poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, char *a_file);
+char        poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char *r_type, int *r_line, char r_file [LEN_TITLE]);
 char        poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, char *a_file);
 char        poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name);
 char*       poly_shared__unit       (char *a_question);

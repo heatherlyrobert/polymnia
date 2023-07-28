@@ -260,12 +260,13 @@ poly_vars__extern_tally (tFUNC *a_func, tEXTERN *a_ext)
    /*---(assign category)----------------*/
    if (a_ext != NULL) {
       switch (a_ext->cat) {
-      case 'Y' : ++(a_func->WORK_YUSE);         break;
-      case 'y' : ++(a_func->WORK_YUSE);         break;
-      case 'C' : ++(a_func->WORK_MUSE);         break;
-      case 'N' : ++(a_func->WORK_MUSE);         break;
-      case 'O' : ++(a_func->WORK_MUSE);         break;
-      case 'X' : ++(a_func->WORK_MUSE);         break;
+      case 'C' :            ++(a_func->WORK_CUSE);         break;
+      case 'Y' : case 'y' : ++(a_func->WORK_YUSE);         break;
+      case 'V' :            ++(a_func->WORK_VUSE);         break;
+      case 'X' :            ++(a_func->WORK_OUSE);         break;
+      case 'N' :            ++(a_func->WORK_OUSE);         break;
+      case 'O' :            ++(a_func->WORK_OUSE);         break;
+      default  :            ++(a_func->WORK_OUSE);         break;
       }
    }
    /*---(complete)-----------------------*/

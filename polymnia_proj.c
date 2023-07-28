@@ -69,9 +69,6 @@ poly_proj__wipe    (tPROJ *a_dst)
    if (a_dst == NULL)  return -1;
    /*---(overall)-----------*/
    a_dst->name     [0] = '\0';
-/*
- *   _.n.fnsp.gphbir.o.dbfsc.slczd.ac,xnvt._
- */
    strlcpy (a_dst->header, "-.-.----.------.-.-----.----.-------.--.----", LEN_DESC);
    a_dst->written       =    0;
    /*---(master)------------*/
@@ -572,6 +569,10 @@ poly_proj__get_home     (char *a_home)
       yURG_msg ('-', "sub-directory of å/tmp/polymnia_test/æ is allowed");
       DEBUG_DATA   yLOG_snote   ("unittest");
       ;;
+   } else if (x_len >  8 && strncmp ("/tmp/"                 , x_home,  5) == 0) {
+      yURG_msg ('-', "sub-directory of å/tmp/æ is allowed");
+      DEBUG_DATA   yLOG_snote   ("unittest");
+      ;;
    } else {
       yURG_err ('f', "not one of polymnia's allowed directory prefixes");
       DEBUG_DATA   yLOG_snote   ("not allowed");
@@ -828,6 +829,98 @@ static void  o___SYSTEM__________o () { return; }
 /*===----                       reporting support                      ----===*/
 /*====================------------------------------------====================*/
 static void  o___REPORTING_______o () { return; }
+
+char
+poly_proj_oneliners     (tPROJ *a_proj, cchar a_recd [LEN_RECD])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char       *q           = NULL;
+   char       *r           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_proj"    , a_proj);
+   --rce;  if (a_proj == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
+   --rce;  if (a_recd == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
+   /*---(filter)-------------------------*/
+   if (strncmp (a_recd, "#define ",  8) != 0) {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(prepare)------------------------*/
+   q = strstr (a_recd, " P_");
+   DEBUG_INPT   yLOG_point   ("q"         , q);
+   if (q == NULL) {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   ++q;
+   DEBUG_INPT   yLOG_info    ("q"         , q);
+   r = strchr (a_recd, '"');
+   DEBUG_INPT   yLOG_point   ("r"         , r);
+   if (r == NULL) {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_INPT   yLOG_info    ("r"         , r);
+   /*---(master)-------------------*/
+   if      (strncmp (q, "P_FOCUS     ", 12) == 0)  poly_code__unquote (a_proj->focus    , r, LEN_DESC);
+   else if (strncmp (q, "P_NICHE     ", 12) == 0)  poly_code__unquote (a_proj->niche    , r, LEN_DESC);
+   else if (strncmp (q, "P_SUBJECT   ", 12) == 0)  poly_code__unquote (a_proj->subject  , r, LEN_DESC);
+   else if (strncmp (q, "P_PURPOSE   ", 12) == 0)  poly_code__unquote (a_proj->purpose  , r, LEN_HUND);
+   /*---(greek)--------------------*/
+   else if (strncmp (q, "P_NAMESAKE  ", 12) == 0)  poly_code__unquote (a_proj->namesake , r, LEN_HUND);
+   else if (strncmp (q, "P_PRONOUNCE ", 12) == 0)  poly_code__unquote (a_proj->pronounce, r, LEN_TITLE);
+   else if (strncmp (q, "P_HERITAGE  ", 12) == 0)  poly_code__unquote (a_proj->heritage , r, LEN_HUND);
+   else if (strncmp (q, "P_BRIEFLY   ", 12) == 0)  poly_code__unquote (a_proj->briefly  , r, LEN_TITLE);
+   else if (strncmp (q, "P_IMAGERY   ", 12) == 0)  poly_code__unquote (a_proj->imagery  , r, LEN_HUND);
+   else if (strncmp (q, "P_REASON    ", 12) == 0)  poly_code__unquote (a_proj->reason   , r, LEN_HUND);
+   /*---(oneline)------------------*/
+   else if (strncmp (q, "P_ONELINE   ", 12) == 0)  sprintf (a_proj->oneline, "%s %s", a_proj->namesake, a_proj->subject);
+   /*---(location)-----------------*/
+   else if (strncmp (q, "P_BASENAME  ", 12) == 0)  poly_code__unquote (a_proj->progname , r, LEN_TITLE);
+   else if (strncmp (q, "P_FULLPATH  ", 12) == 0)  poly_code__unquote (a_proj->fullpath , r, LEN_HUND);
+   else if (strncmp (q, "P_SUFFIX    ", 12) == 0)  poly_code__unquote (a_proj->suffix   , r, LEN_LABEL);
+   else if (strncmp (q, "P_CONTENT   ", 12) == 0)  poly_code__unquote (a_proj->content  , r, LEN_TITLE);
+   /*---(chars)--------------------*/
+   else if (strncmp (q, "P_SYSTEM    ", 12) == 0)  poly_code__unquote (a_proj->systems  , r, LEN_HUND);
+   else if (strncmp (q, "P_LANGUAGE  ", 12) == 0)  poly_code__unquote (a_proj->language , r, LEN_HUND);
+   else if (strncmp (q, "P_COMPILER  ", 12) == 0)  poly_code__unquote (a_proj->compiler , r, LEN_LABEL);
+   else if (strncmp (q, "P_CODESIZE  ", 12) == 0)  poly_code__unquote (a_proj->codesize , r, LEN_DESC);
+   /*---(depends)------------------*/
+   else if (strncmp (q, "P_DEPSTDC   ", 12) == 0)  poly_code__unquote (a_proj->dep_cstd , r, LEN_HUND);
+   else if (strncmp (q, "P_DEPPOSIX  ", 12) == 0)  poly_code__unquote (a_proj->dep_posix, r, LEN_HUND);
+   else if (strncmp (q, "P_DEPCORE   ", 12) == 0)  poly_code__unquote (a_proj->dep_core , r, LEN_HUND);
+   else if (strncmp (q, "P_DEPVIKEY  ", 12) == 0)  poly_code__unquote (a_proj->dep_vikey, r, LEN_HUND);
+   else if (strncmp (q, "P_DEPOTHER  ", 12) == 0)  poly_code__unquote (a_proj->dep_other, r, LEN_HUND);
+   else if (strncmp (q, "P_DEPGRAPH  ", 12) == 0)  poly_code__unquote (a_proj->dep_graph, r, LEN_HUND);
+   else if (strncmp (q, "P_DEPSOLO   ", 12) == 0)  poly_code__unquote (a_proj->dep_solo , r, LEN_HUND);
+   /*---(created)------------------*/
+   else if (strncmp (q, "P_AUTHOR    ", 12) == 0)  poly_code__unquote (a_proj->author   , r, LEN_TITLE);
+   else if (strncmp (q, "P_CREATED   ", 12) == 0)  poly_code__unquote (a_proj->created  , r, LEN_LABEL);
+   /*---(version)------------------*/
+   else if (strncmp (q, "P_VERMAJOR  ", 12) == 0)  poly_code__unquote (a_proj->vermajor , r, LEN_HUND);
+   else if (strncmp (q, "P_VERMINOR  ", 12) == 0)  poly_code__unquote (a_proj->verminor , r, LEN_HUND);
+   else if (strncmp (q, "P_VERNUM    ", 12) == 0)  poly_code__unquote (a_proj->vernum   , r, LEN_LABEL);
+   else if (strncmp (q, "P_VERTXT    ", 12) == 0)  poly_code__unquote (a_proj->vertxt   , r, LEN_HUND);
+   /*---(not found)----------------------*/
+   else {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exitr   (__FUNCTION__, 1);
+   return 1;
+}
 
 char
 poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max)

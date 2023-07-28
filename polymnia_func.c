@@ -190,6 +190,7 @@ poly_func__wipe         (tFUNC *a_func)
    /*---(clear counts/stats)-------------*/
    poly_cats_counts_clear (a_func->counts);
    poly_cats_stats_clear  (a_func->stats);
+   a_func->anatomy [0] = '\0';
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -526,6 +527,7 @@ poly_func_enter         (tFUNC *a_func, int a_line)
    /*---(defense)------------------------*/
    --rce;  if (a_func       == NULL)             return rce;
    --rce;  if (a_func->work == NULL)             return rce;
+   DEBUG_DATA   yLOG_note    (a_func->name);
    /*---(self)---------------------------*/
    --rce;  if (a_func->WORK_BEG >  0)            return rce;
    --rce;  if (a_func->WORK_END >  0)            return rce;
@@ -544,6 +546,7 @@ poly_func_enter         (tFUNC *a_func, int a_line)
    a_func->beg       = a_line;
    poly_vars_reset (a_func);
    /*---(complete)-----------------------*/
+   /*> DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                      <*/
    return 0;
 }
 
@@ -590,10 +593,10 @@ poly_func_inside        (tFUNC *a_func)
    DEBUG_DATA   yLOG_point   ("work"      , a_func->work);
    --rce;  if (a_func->work == NULL)   return rce;
    DEBUG_DATA   yLOG_complex ("beg/end"   , "%3d, %3d", a_func->WORK_BEG, a_func->WORK_END);
-   --rce;  if (a_func->WORK_BEG <  0)  return rce;
-   --rce;  if (a_func->WORK_END >  0)  return rce;
+   --rce;  if (a_func->WORK_BEG <  0)  return 0;
+   --rce;  if (a_func->WORK_END >  0)  return 0;
    /*---(complete)-----------------------*/
-   return 0;
+   return 1;
 }
 
 
@@ -615,12 +618,24 @@ poly_func_by_line       (tFILE *a_file, int a_line, tFUNC **a_func)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    tFUNC      *x_func      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   --rce;  if (a_func          == NULL)   return rce;
-   --rce;  if (a_file          == NULL)   return rce;
+   --rce;  if (a_func  == NULL) {
+      DEBUG_PROG   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   --rce;  if (a_file  == NULL) {
+      DEBUG_PROG   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG   yLOG_sint    (a_line);
    /*---(locate)-------------------------*/
    x_func = a_file->head;
    while (x_func != NULL) {
+      DEBUG_PROG   yLOG_snote   (x_func->name);
+      DEBUG_PROG   yLOG_sint    (x_func->WORK_BEG);
+      DEBUG_PROG   yLOG_sint    (x_func->WORK_END);
       /*---(filter enter)----------------*/
       if (x_func->WORK_BEG < 0)          { x_func = x_func->next; continue; }
       if (x_func->WORK_BEG > a_line)     { x_func = x_func->next; continue; }
@@ -629,12 +644,17 @@ poly_func_by_line       (tFILE *a_file, int a_line, tFUNC **a_func)
          if (x_func->WORK_END < a_line)  { x_func = x_func->next; continue; }
       }
       /*---(return positive)-------------*/
+      DEBUG_PROG   yLOG_snote   ("match");
       *a_func = x_func;
+      DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
       return 0;
    }
    *a_func = NULL;
    /*---(complete)-----------------------*/
-   --rce;  return rce;
+   --rce;
+   DEBUG_PROG   yLOG_snote   ("FAILED");
+   DEBUG_PROG   yLOG_sexitr  (__FUNCTION__, rce);
+   return rce;
 }
 
 char
@@ -825,337 +845,6 @@ poly_func_wrap          (void)
 
 
 /*====================------------------------------------====================*/
-/*===----                     reading from source                      ----===*/
-/*====================------------------------------------====================*/
-static void  o___SOURCE__________o () { return; }
-
-char
-poly_func__purpose_copy (tFUNC *a_func, char *a_recd, int a_beg)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char       t            [LEN_RECD];
-   int        i            =    0;
-   int        j            =    0;
-   int        x_len        =    0;
-   /*---(prepare)------------------------*/
-   strlcpy (t, a_recd + a_beg, LEN_RECD);
-   x_len = strlen (t);
-   /*---(very end)-----------------------*/
-   for (i = 0; i < x_len; ++i)  {
-      if (strchr ("*=()[]", t [i]) != NULL) {
-         t [i] = '\0';
-         break;
-      }
-      if (t [i] == '-' && t [i + 1] == '-') {
-         t [i] = '\0';
-         break;
-      }
-   }
-   /*---(search)-------------------------*/
-   for (j = i; j > 0; --j)  {
-      if (strchr (" -=][", t [j]) == NULL)   break;
-      t [j] = '\0';
-   }
-   /*---(save)---------------------------*/
-   strlcpy (a_func->purpose, t, 41);
-   a_func->ready = 'y';
-   /*---(complete)-----------------------*/
-   return 0;
-}
-
-char
-poly_func__purpose_get  (cchar a_recd [LEN_RECD], int a_beg, char *r_purpose [LEN_DESC], char *r_ready)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        t           [LEN_RECD]  = "";;
-   int         i           =    0;
-   int         j           =    0;
-   int         l           =    0;
-   /*---(default)------------------------*/
-   if (r_purpose  != NULL)  strcpy (r_purpose, "");
-   if (r_ready    != NULL)  *r_ready = 'E';
-   /*---(defense)------------------------*/
-   --rce;  if (a_recd == NULL)   return rce;
-   l = strlen (a_recd);
-   --rce;  if (l      == 0)      return rce;
-   --rce;  if (a_beg  <  0)      return rce;
-   --rce;  if (l      <  a_beg)  return rce;
-   strlcpy (t, a_recd + a_beg, LEN_RECD);
-   l = strlen (t);
-   --rce;  if (l      <  1)      return rce;
-   /*---(very end)-----------------------*/
-   for (i = 0; i < l; ++i)  {
-      if (strchr ("*=()[]åæ", t [i]) != NULL) {
-         t [i] = '\0';
-         break;
-      }
-      if (t [i] == '-' && t [i + 1] == '-') {
-         t [i] = '\0';
-         break;
-      }
-   }
-   /*---(search)-------------------------*/
-   for (j = i; j > 0; --j)  {
-      if (strchr (" -=[]åæ", t [j]) == NULL)   break;
-      t [j] = '\0';
-   }
-   /*---(save-back)----------------------*/
-   if (r_purpose  != NULL)  strlcpy (r_purpose, t, 41);
-   if (r_ready    != NULL)  *r_ready = 'y';
-   /*---(complete)-----------------------*/
-   return 0;
-}
-
-char         /*-> extract the function purpose -------[ ------ [ge.850.137.A4]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_func_purpose       (tFUNC *a_func, char *a_recd)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   char        t           [LEN_RECD];
-   int         i           =    0;
-   int         b           =   -1;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   /*---(default)------------------------*/
-   if (a_func != NULL)   strcpy (a_func->purpose, "");
-   if (a_func != NULL)   a_func->ready = 'E';
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_spoint  (a_recd);
-   --rce;  if (a_recd == NULL) {
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(modern style)-------------------*/
-   if (strncmp (a_recd, "/*-[ ", 5) == 0) {
-      DEBUG_INPT   yLOG_snote   ("modern format");
-      b = 5;
-   }
-   /*---(current style)------------------*/
-   else if (strncmp (a_recd, "/*-> ", 5) == 0) {
-      DEBUG_INPT   yLOG_snote   ("current format");
-      b = 5;
-   }
-   /*---(previous style)-----------------*/
-   else if (strncmp (a_recd, "/*--> ",  6) == 0) {
-      DEBUG_INPT   yLOG_snote   ("previous 1 format");
-      b = 6;
-   }
-   /*---(previous style)-----------------*/
-   else if (strncmp (a_recd, "/* ---- : ", 10) == 0) {
-      DEBUG_INPT   yLOG_snote   ("previous 2 format");
-      b = 10;
-   }
-   /*---(previous style)-----------------*/
-   else if (strncmp (a_recd, "/*----: ",  8) == 0) {
-      DEBUG_INPT   yLOG_snote   ("previous 3 format");
-      b = 8;
-   }
-   /*---(previous style)-----------------*/
-   else if (strncmp (a_recd, "/*===[[ ",  8) == 0) {
-      DEBUG_INPT   yLOG_snote   ("previous 3 format");
-      b = 8;
-   }
-   /*---(terse format)-------------------*/
-   else if (strncmp (a_recd, "/* ",  3) == 0) {
-      DEBUG_INPT   yLOG_snote   ("terse format");
-      b = 3;
-   }
-   /*---(error)--------------------------*/
-   else {
-      DEBUG_INPT   yLOG_snote   ("not a recognized format");
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(call)---------------------------*/
-   rc = poly_func__purpose_get  (a_recd, b, &(a_func->purpose), &(a_func->ready));
-   DEBUG_INPT   yLOG_sint    (rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_func_return        (tFUNC *a_func, char *a_recd, char *a_prev)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        x_return    [LEN_RECD];
-   int         x_len       =    0;
-   char       *p           = NULL;
-   char       *r           = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   a_func->STATS_SINGLE = '-';
-   a_func->STATS_SCOPE  = '-';
-   a_func->STATS_RTYPE  = '-';
-   DEBUG_DATA   yLOG_spoint  (a_recd);
-   --rce;  if (a_recd == NULL) {
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_spoint  (a_prev);
-   /*---(find name)----------------------*/
-   p = strstr (a_recd, a_func->name);
-   DEBUG_DATA   yLOG_spoint  (p);
-   /*---(figure spacing)-----------------*/
-   x_len = p - a_recd;
-   DEBUG_DATA   yLOG_sint    (x_len);
-   /*---(set single)---------------------*/
-   if (x_len == 0)   a_func->STATS_SINGLE = '-';
-   else              a_func->STATS_SINGLE = 'y';
-   DEBUG_DATA   yLOG_schar   (a_func->STATS_SINGLE);
-   /*---(oneline return type)------------*/
-   --rce;  if (a_func->STATS_SINGLE == 'y') {
-      strlcpy (x_return, a_recd, x_len);
-   }
-   /*---(multiline return type)----------*/
-   else {
-      if (a_prev == NULL) {
-         DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-         return rce;
-      }
-      r = strstr (a_prev, "/*");
-      if (r == NULL)  x_len = strlen (a_prev);
-      else            x_len = r - a_prev;
-      strlcpy (x_return, a_prev, x_len + 1);
-   }
-   strltrim (x_return, ySTR_SINGLE, LEN_RECD);
-   DEBUG_DATA   yLOG_snote   (x_return);
-   /*---(remove static)------------------*/
-   r = strstr (x_return, "static");
-   if (r == x_return) {
-      strlcpy  (x_return, x_return  + 7, LEN_RECD);
-      strltrim (x_return, ySTR_SINGLE, LEN_RECD);
-      a_func->STATS_SCOPE = 's';
-   }
-   /*---(classify scope)-----------------*/
-   else if (strstr (a_func->name, "__unit") != NULL)  a_func->STATS_SCOPE = 'u';
-   else if (strstr (a_func->name, "__test") != NULL)  a_func->STATS_SCOPE = 'u';
-   else if (strstr (a_func->name, "__"    ) != NULL)  a_func->STATS_SCOPE = 'f';
-   else                                               a_func->STATS_SCOPE = 'g';
-   DEBUG_DATA   yLOG_schar   (a_func->STATS_SCOPE);
-   /*---(classify return type)-----------*/
-   if      (strcmp (x_return   , "char*"  ) == 0   )  a_func->STATS_RTYPE = 's';
-   else if (strcmp (x_return   , "char *" ) == 0   )  a_func->STATS_RTYPE = 's';
-   else if (strcmp (x_return   , "char"   ) == 0   )  a_func->STATS_RTYPE = 'c';
-   else if (strcmp (x_return   , "void"   ) == 0   )  a_func->STATS_RTYPE = 'v';
-   else if (strstr (x_return   , "*"      ) != NULL)  a_func->STATS_RTYPE = 'p';
-   else if (strcmp (x_return   , "short"  ) == 0   )  a_func->STATS_RTYPE = 'n';
-   else if (strcmp (x_return   , "int"    ) == 0   )  a_func->STATS_RTYPE = 'n';
-   else if (strcmp (x_return   , "long"   ) == 0   )  a_func->STATS_RTYPE = 'n';
-   else if (strcmp (x_return   , "float"  ) == 0   )  a_func->STATS_RTYPE = 'n';
-   else if (strcmp (x_return   , "double" ) == 0   )  a_func->STATS_RTYPE = 'n';
-   else                                               a_func->STATS_RTYPE = 'o';
-   DEBUG_DATA   yLOG_schar   (a_func->STATS_RTYPE);
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_func_params        (tFUNC *a_func, char *a_recd)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   char        t           [LEN_RECD]  = "";
-   char       *p           = NULL;
-   char       *r           = NULL;
-   char       *b           = NULL;
-   char       *e           = NULL;
-   int        x_len        =    0;
-   char       x_return     [LEN_RECD];
-   char       x_params     [LEN_RECD];
-   char       x_body       [LEN_RECD];
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   a_func->WORK_PARAMS  = 0;
-   a_func->STATS_PARAMS = '-';
-   a_func->STATS_PTWO   = '-';
-   a_func->STATS_PNUM   = '-';
-   DEBUG_DATA   yLOG_spoint  (a_recd);
-   --rce;  if (a_recd == NULL) {
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   strlcpy (t, a_recd, LEN_RECD);
-   /*---(isolate parms)------------------*/
-   b = strchr (a_recd, '(');
-   if (b != NULL) {
-      DEBUG_DATA   yLOG_note    ("found open paren");
-      e = strchr (a_recd, '{');
-      if (e == NULL)  x_len = LEN_RECD;
-      else            x_len = e - b;
-      strlcpy  (x_params, b, x_len);
-      strltrim (x_params, ySTR_EVERY , x_len);
-   }
-   /*---(get count)----------------------*/
-   if (b != NULL) {
-      a_func->WORK_PARAMS = -3;
-      if      (strcmp (x_params, "()")       == 0)  a_func->WORK_PARAMS = -2;
-      else if (strcmp (x_params, "( )")      == 0)  a_func->WORK_PARAMS = -2;
-      else if (strcmp (x_params, "(void)")   == 0)  a_func->WORK_PARAMS =  0;
-      else if (strcmp (x_params, "( void)")  == 0)  a_func->WORK_PARAMS =  0;
-      else if (strcmp (x_params, "(void )")  == 0)  a_func->WORK_PARAMS =  0;
-      else if (strcmp (x_params, "( void )") == 0)  a_func->WORK_PARAMS =  0;
-      else    a_func->WORK_PARAMS = strldcnt (x_params, ',', x_len) + 1;
-   }
-   /*---(find pointers)------------------*/
-   if (b != NULL) {
-      if      (strstr (x_params, "**"       ) != NULL)  a_func->STATS_PTWO = '#';
-      else if (strstr (x_params, "[]"       ) != NULL)  a_func->STATS_PTWO = '#';
-      else if (strstr (x_params, "[ ]"      ) != NULL)  a_func->STATS_PTWO = '#';
-      if      (strstr (x_params, "float*"   ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "float *"  ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "double*"  ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "double *" ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "short*"   ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "short *"  ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "int*"     ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "int *"    ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "long*"    ) != NULL)  a_func->STATS_PNUM = '#';
-      else if (strstr (x_params, "long *"   ) != NULL)  a_func->STATS_PNUM = '#';
-   }
-   /*---(no parameters)------------------*/
-   --rce;  if (b == NULL) {
-      a_func->WORK_PARAMS  = -2;
-      a_func->STATS_PARAMS = '?';
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(create statistic)---------------*/
-   poly_cats_exact   ("nparam"  , a_func->WORK_PARAMS  , &a_func->STATS_PARAMS, '0');
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-
-
-/*====================------------------------------------====================*/
 /*===----                       reporting support                      ----===*/
 /*====================------------------------------------====================*/
 static void  o___REPORTING_______o () { return; }
@@ -1240,7 +929,11 @@ poly_func__prefix       (tFUNC *a_func, char a_spec, int a, int b, int c)
    if (strchr ("t"  , a_spec) != NULL) {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%-2.2s  ", a_func->hint);
+         if (a_func->STATS_SINGLE == 'y') {
+            if (strncmp (a_func->name, "o___", 4) == 0)   sprintf (t, "%-2.2s ·", a_func->hint);
+            else                                          sprintf (t, "%-2.2s á", a_func->hint);
+         }
+         else  sprintf (t, "%-2.2s  ", a_func->hint);
          break;
       case 'h' :
          sprintf (t, "func");
@@ -1322,8 +1015,8 @@ poly_func__core         (tFUNC *a_func, char a_spec, int c)
 }
 
 /*---(details)------------------------*/
-static char  *s_database  = "-  [--------------complexity--------------] [------------------integration----------------] [---------------watch-points-------------]";
-static char  *s_comment   = "[-----complexity------] [-------integration-------] [------watchpoints-----]";
+static char  *s_database  = "-  å---------------------complexity---------------------æ å------------------integration-------------------æ å---------------watch-points----------------æ";
+static char  *s_comment   = "å----------complexity----------æ å--------integration--------æ å-----watch-points------æ";
 static char  *s_file      = "line § ---file-name----------------------------";
 static char  *s_purpose   = "---purpose------------------------------";
 
@@ -1376,10 +1069,10 @@ poly_func__suffix       (tFUNC *a_func, char a_spec)
    if (strchr ("pt"  , a_spec) != NULL) {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%-40.40s § "   , a_func->purpose);
+         sprintf (t, "%-40.40s § %-10.10s § %-20.20s §"   , a_func->purpose, a_func->anatomy, a_func->rlong);
          break;
       case 'h' :
-         sprintf (t, "%-s § "   , s_purpose);
+         sprintf (t, "%-s § %-s § %-s §"   , s_purpose, "-anatomy--", "--full-return-type--");
          break;
       }
       strlcat (s_print, t, LEN_RECD);
@@ -1406,8 +1099,8 @@ poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char 
     *> char  *x_count     = "fnc";                                                                                                                                      <* 
     *> char  *x_name      = "---name------------------";                                                                                                                <* 
     *> char  *x_stats     = "files § funcs § ylibs § --lines § --empty § ---docs § --debug § ---code § --slocl";                                                        <* 
-    *> char  *x_database  = "-  [------------complexity------------] [------------------integration----------------] [-----------------watch-points---------------]";   <* 
-    *> char  *x_comment   = "[----complexity-----] [-------integration-------] [------watchpoints-------]";                                                             <*/
+    *> char  *x_database  = "-  [------------complexity------------] [------------------integration------------------] [-----------------watch-points---------------]";   <* 
+    *> char  *x_comment   = "[----complexity-----] [-------integration--------] [------watchpoints-------]";                                                             <*/
    switch (a_style) {
    case POLY_RPTG_HTAGS :
       poly_func__prefix  (a_func, 't', a, b, c);

@@ -7,7 +7,8 @@ static char   s_print        [LEN_RECD] = "";
 /*
  *
  *  complexity orig  (20)  [fcC##g·L44·27-·E-2D1-]
- *             long  (28)  [fcg·C66--21·L44·227--·1-E2D-]
+ *             long  (30)  [fcg´·C´66·´·21´L44´22·´1·E2D´·]
+ *              six subsections : scope, params, pparam, lines, vars, logic, mem
  *
  * this will show in the tag window for the requested function
  *
@@ -19,10 +20,13 @@ static char   s_print        [LEN_RECD] = "";
  * char return
  * global prototype
  * ´· ´··········params
+ * ·  audit
  * 12 total
+ * ´· ´··········dparam
  * 6  incomming-only
  * 6  return-only
  * ·  both directions
+ * ´· ´··········pparam
  * ·  function pointer
  * 2  number pointer
  * 1  double pointer
@@ -33,13 +37,14 @@ static char   s_print        [LEN_RECD] = "";
  * ´· ´············vars
  * 2  local
  * 2  file   ( 7 refs)
- * ·  global ( - refs)
+ * ·  global ( · refs)
  * ´· ´···········logic
  * 1  indent level
  * ·  loops
  * 15 choices
  * 2  normal ends
  * 14 error returns
+ * ´· ´·············mem
  * ·  memory alloc
  * ´· ´·············end
  */
@@ -70,82 +75,94 @@ static struct cPOS    {
    /*--  -123456-   -123456789012345678901234567890- */
    {  1,  1,  1, "scope"  , "function scope"                  ,  1 },
    {  1,  1,  2, "rtype"  , "return type"                     ,  2 },
-   {  1,  1,  3, "nparam" , "number of parameters"            ,  3 },
-   {  1,  1,  4, "pnum"   , "params use number pointers"      ,  4 },
-   {  1,  1,  5, "ptwo"   , "params use double pointers"      ,  5 },
-   {  1,  1,  6, "proto"  , "prototype location"              ,  6 },
+   {  1,  1,  3, "proto"  , "prototype location"              ,  6 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  2,  7, "total"  , "total actual lines (div 5)"      ,  7 },
-   {  1,  2,  8, "debug"  , "debugging lines (% total)"       ,  8 },
-   {  1,  2,  9, "slocl"  , "lines of code logical (% total)" ,  9 },
+   {  1,  2,  4, "paudit" , "audit of params"                 ,  3 },
+   {  1,  2,  5, "params" , "number of parameters"            ,  3 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  3, 10, "Lvars"  , "number of local vars used"       , 10 },
-   {  1,  3, 11, "Fvars"  , "number of file vars used"        , 11 },
-   {  1,  3, 12, "Gvars"  , "number of global vars used"      , 12 },
+   {  1,  3,  6, "pin"    , "incomming parameters"            ,  3 },
+   {  1,  3,  7, "pout"   , "outgoing parameters"             ,  3 },
+   {  1,  3,  8, "pboth"  , "both in/out parameters"          ,  3 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  4, 13, "choice" , "number of choices/decisions"     , 13 },
-   {  1,  4, 14, "loop"   , "number of loops"                 , 58 },
-   {  1,  4, 15, "return" , "number of return/exit points"    , 14 },
-   {  1,  4, 16, "error"  , "return with errors"              , 57 },
-   {  1,  4, 17, "indent" , "depth of indentation"            , 15 },
-   {  1,  4, 18, "memory" , "memory management used"          , 16 },
+   {  1,  4,  9, "pnum"   , "params use number pointers"      ,  4 },
+   {  1,  4, 10, "pmulti" , "params use multiple pointers"    ,  5 },
+   {  1,  4, 11, "pfunc"  , "function pointers"               ,  5 },
+   /*--  -123456-   -123456789012345678901234567890- */
+   {  1,  5, 12, "total"  , "total actual lines (div 5)"      ,  7 },
+   {  1,  5, 13, "%debug" , "debugging lines (% total)"       ,  8 },
+   {  1,  5, 14, "%code"  , "lines of code logical (% total)" ,  9 },
+   /*--  -123456-   -123456789012345678901234567890- */
+   {  1,  6, 15, "Lvars"  , "number of local vars used"       , 10 },
+   {  1,  6, 16, "Fvars"  , "number of file/static vars used" , 11 },
+   {  1,  6, 17, "Gvars"  , "number of global vars used"      , 12 },
+   /*--  -123456-   -123456789012345678901234567890- */
+   {  1,  7, 18, "indent" , "depth of indentation"            , 15 },
+   {  1,  7, 19, "loop"   , "number of loops"                 , 58 },
+   {  1,  7, 20, "choice" , "number of choices/decisions"     , 13 },
+   {  1,  7, 21, "return" , "number of return/exit points"    , 14 },
+   {  1,  7, 22, "w´error", "return with errors"              , 57 },
+   /*--  -123456-   -123456789012345678901234567890- */
+   {  1,  8, 23, "memory" , "memory management used"          , 16 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP TWO -- INTEGRATION ]]===========================*/
    {  2,  0,  0, "-----"  , "integration"                     , -1 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  1,  1, "called" , "called by anything else"         , 17 },
-   {  2,  1,  2, "Fcaller", "called by local functions"       , 18 },
-   {  2,  1,  3, "Gcaller", "called by global functions"      , 19 },
-   {  3,  1,  4, "Xcaller", "called by external programs"     , 20 },
-   {  2,  1,  5, "recurse", "function is recursive"           , 21 },
+   {  2,  1,  1, "call´by", "called by anything else"         , 17 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  2,  6, "funcs"  , "calls to any/all functions"      , 22 },
-   {  2,  2,  7, "Dfuncs" , "calls to debugging functions"    , 23 },
+   {  2,  2,  2, "Fcaller", "called by in-file functions"     , 18 },
+   {  2,  2,  3, "Gcaller", "called by global functions"      , 19 },
+   {  3,  2,  4, "Xcaller", "called by external programs"     , 20 },
+   {  2,  2,  5, "recurse", "function is recursive"           , 21 },
    /*--  -123456-   -123456789012345678901234567890- */
+   {  2,  3,  6, "call´to", "calls to any/all functions"      , 22 },
+   {  2,  3,  7, "Dfuncs" , "calls to debugging functions"    , 23 },
    {  2,  3,  8, "Rfuncs" , "calls to real/non-debug"         , 24 },
-   {  2,  3,  9, "Ffuncs" , "calls to local functions"        , 25 },
-   {  2,  3, 10, "Gfuncs" , "calls to global functions"       , 26 },
-   {  2,  3, 11, "cstd"   , "calls to c-std libraries"        , 27 },
-   {  2,  3, 12, "ylib"   , "calls to my custom libraries"    , 28 },
-   {  2,  3, 13, "Ofuncs" , "calls to other libraries"        , 29 },
-   {  2,  3, 14, "mystry" , "calls to unknown functions"      , 30 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  4, 15, "input"  , "stdin and file input"            , 31 },
-   {  2,  4, 16, "output" , "stdout and file output"          , 32 },
-   {  2,  4, 17, "system" , "unix process or system calls"    , 33 },
+   {  2,  4,  9, "Ffuncs" , "calls to in-file functions"      , 25 },
+   {  2,  4, 10, "Gfuncs" , "calls to global functions"       , 26 },
+   {  2,  4, 11, "cstd"   , "calls to c-std libraries"        , 27 },
+   {  2,  4, 12, "ylib"   , "calls to my custom libraries"    , 28 },
+   {  2,  4, 13, "vikeys" , "calls to vi-keys libraries"      , 28 },
+   {  2,  4, 14, "Ofuncs" , "calls to other libraries"        , 29 },
+   {  2,  4, 15, "mystry" , "calls to unknown functions"      , 30 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  5, 18, "ncurses", "ncurses function calls"          , 34 },
-   {  2,  5, 19, "opengl" , "opengl function calls"           , 35 },
-   {  2,  5, 20, "windows", "x11 and like functions calls"    , 36 },
-   {  2,  5, 21, "ygraph" , "my x11/opengl support libs"      , 37 },
+   {  2,  5, 16, "input"  , "stdin and file input"            , 31 },
+   {  2,  5, 17, "output" , "stdout and file output"          , 32 },
+   {  2,  5, 18, "system" , "unix process or system calls"    , 33 },
+   /*--  -123456-   -123456789012345678901234567890- */
+   {  2,  6, 19, "ncurses", "ncurses function calls"          , 34 },
+   {  2,  6, 20, "opengl" , "opengl function calls"           , 35 },
+   {  2,  6, 21, "windows", "x11 and like functions calls"    , 36 },
+   {  2,  6, 22, "ygraph" , "my x11/opengl support libs"      , 37 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP THREE -- WATCH POINTS ]]========================*/
    {  3,  0,  0, "-----"  , "watch-points"                    , -1 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  1,  1, "Dstyle" , "debugging style"                 , 38 },
-   {  3,  1,  2, "Dmacro" , "debugging macros used"           , 39 },
-   {  3,  1,  3, "Dmatch" , "debugging enter/exit match"      , 40 },
-   {  2,  1,  4, "Dfuncs" , "calls to debugging functions"    , 23 },
+   {  2,  1,  1, "Dactive", "debugging is used"               , 23 },
+   {  3,  1,  2, "Dstyle" , "debugging style"                 , 38 },
+   {  3,  1,  3, "Dmacro" , "debugging macros used"           , 39 },
+   {  3,  1,  4, "Dmatch" , "debugging enter/exit match"      , 40 },
    {  3,  1,  5, "Dwarn"  , "debugging trouble marker"        , 42 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  2,  6, "P#use"  , "potential #define macros"        , 43 },
-   {  3,  2,  7, "F#use"  , "file #define macro use"          , 44 },
-   {  3,  2,  8, "G#use"  , "global #define macro use"        , 45 },
-   {  3,  2,  9, "M#use"  , "cstd/major #define macro use"    , 46 },
-   {  3,  2, 10, "Y#use"  , "ylib #define macro use"          , 47 },
-   {  3,  2, 11, "O#use"  , "unknown/other macros"            , 48 },
+   {  3,  2,  6, "macros" , "potential #define macros"        , 43 },
+   {  3,  3,  7, "file"   , "in-file #define macro use"       , 44 },
+   {  3,  3,  8, "global" , "global #define macro use"        , 45 },
+   {  3,  3,  9, "cstd"   , "cstd #define macro use"          , 46 },
+   {  3,  3, 10, "ylib"   , "ylib #define macro use"          , 47 },
+   {  3,  3, 11, "vikeys" , "vikeys #define macro use"        , 47 },
+   {  3,  3, 12, "other"  , "unknown/other macros"            , 48 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  3, 12, "Vmask"  , "vars masking other vars"         , 49 },
-   {  3,  3, 13, "Mmask"  , "macros masking other macros"     , 50 },
-   {  3,  3, 14, "Fmask"  , "funcs masking other funcs"       , 51 },
-   {  3,  3, 15, "Lstatic", "local static variables"          , 52 },
+   {  3,  4, 13, "Vmask"  , "vars masking other vars"         , 49 },
+   {  3,  4, 14, "Mmask"  , "macros masking other macros"     , 50 },
+   {  3,  4, 15, "Fmask"  , "funcs masking other funcs"       , 51 },
+   {  3,  4, 16, "Lstatic", "local static variables"          , 52 },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  4, 16, "units"  , "count of unit tests used"        , 53 },
-   {  3,  4, 17, "scrps"  , "count of unit scripts used"      , 54 },
-   {  3,  4, 18, "steps"  , "count of unit steps used"        , 55 },
-   {  3,  4, 19, "string" , "count of string tests"           , 56 },
+   {  3,  5, 17, "units"  , "count of unit tests used"        , 53 },
+   {  3,  5, 18, "scrps"  , "count of unit scripts used"      , 54 },
+   {  3,  5, 19, "steps"  , "count of unit steps used"        , 55 },
+   {  3,  5, 20, "string" , "count of string tests"           , 56 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*--  -123456-   -123456789012345678901234567890- */
@@ -304,7 +321,7 @@ char
 poly_cats_stats_clear   (char a_stats [MAX_STATS])
 {
    int         i           =    0;
-   for (i = 0; i < MAX_STATS; ++i)  a_stats [i] = '-';
+   for (i = 0; i < MAX_STATS; ++i)  a_stats [i] = '·';
    return 0;
 }
 
@@ -317,71 +334,70 @@ poly_cats_stats_clear   (char a_stats [MAX_STATS])
 static void  o___MARKERS_________o () { return; }
 
 char
-poly_cats_flag     (char *a_label, int a_src, char *a_dst, char a_flag)
+poly_cats_exists   (char *a_label, int a_src, char *r_dst, char a_zero)
 {
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
    DEBUG_DATA   yLOG_sint    (a_src);
-   if      (a_src <     -1)  *a_dst = '*';
-   else if (a_src ==    -1)  *a_dst = '-';
-   else if (a_src ==     0)  *a_dst = '-';
-   else                      *a_dst = a_flag;
-   DEBUG_DATA   yLOG_schar   (*a_dst);
+   if      (a_src <     -1)  *r_dst = '¢';
+   else if (a_src ==    -1)  *r_dst = a_zero;
+   else if (a_src ==     0)  *r_dst = a_zero;
+   else                      *r_dst = '#';
+   DEBUG_DATA   yLOG_schar   (*r_dst);
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char
-poly_cats_exists   (char *a_label, int a_src, char *a_dst, char a_zero)
+poly_cats_flag     (char *a_label, int a_src, char *r_dst, char a_flag)
 {
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
    DEBUG_DATA   yLOG_sint    (a_src);
-   if      (a_src <     -1)  *a_dst = '*';
-   else if (a_src ==    -1)  *a_dst = '-';
-   else if (a_src ==     0)  *a_dst = a_zero;
-   else                      *a_dst = '#';
-   DEBUG_DATA   yLOG_schar   (*a_dst);
+   if      (a_src <     -1)  *r_dst = '¢';
+   else if (a_src ==    -1)  *r_dst = '·';
+   else if (a_src ==     0)  *r_dst = '·';
+   else                      *r_dst = a_flag;
+   DEBUG_DATA   yLOG_schar   (*r_dst);
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char
-poly_cats_exact    (char *a_label, int a_src, char *a_dst, char a_zero)
+poly_cats_exact    (char *a_label, int a_src, char *r_dst, char a_zero)
 {
    int         c           =    0;
    char       *x_scale     = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-   /*> char       *x_scale     = "0123456789abcdefghijklmnopqrstuvwxyz";              <*/
    int         x_max       = (strlen (x_scale));
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
    DEBUG_DATA   yLOG_sint    (a_src);
-   if      (a_src <     -1)  *a_dst = '*';
-   else if (a_src ==    -1)  *a_dst = '-';
-   else if (a_src ==     0)  *a_dst = a_zero;
-   else if (a_src >= x_max)  *a_dst = '#';
-   else                      *a_dst = x_scale [a_src];
-   DEBUG_DATA   yLOG_schar   (*a_dst);
+   if      (a_src <     -1)  *r_dst = '¢';
+   else if (a_src ==    -1)  *r_dst = '·';
+   else if (a_src ==     0)  *r_dst = a_zero;
+   else if (a_src >= x_max)  *r_dst = '#';
+   else                      *r_dst = x_scale [a_src];
+   DEBUG_DATA   yLOG_schar   (*r_dst);
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char
-poly_cats_scaled   (char *a_label, int a_src, char *a_dst, char a_zero)
+poly_cats_scaled   (char *a_label, int a_src, char *r_dst, char a_zero)
 {
    int         c           =    0;
    char       *x_scale     = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
    int         x_max       = (strlen (x_scale) - 1) * 5;
-   char        x_save      = *a_dst;
+   char        x_save      = *r_dst;
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    if (a_label != NULL)  DEBUG_DATA   yLOG_snote   (a_label);
    DEBUG_DATA   yLOG_sint    (a_src);
-   if      (a_src <     -1)  *a_dst = '*';
-   else if (a_src ==    -1)  *a_dst = '-';
-   else if (a_src ==     0)  *a_dst = a_zero;
-   else if (a_src >= x_max)  *a_dst = '#';
-   else                      *a_dst = x_scale [a_src /  5];
-   DEBUG_DATA   yLOG_schar   (*a_dst);
+   if      (a_src <     -1)  *r_dst = '¢';
+   else if (a_src ==    -1)  *r_dst = '·';
+   else if (a_src ==     0)  *r_dst = a_zero;
+   else if (a_src >= x_max)  *r_dst = '#';
+   else                      *r_dst = x_scale [a_src /  5];
+   DEBUG_DATA   yLOG_schar   (*r_dst);
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
@@ -446,377 +462,673 @@ poly_cats__single       (tFUNC *a_func, char *a_out)
    return 0;
 }
 
-/* [fc1--g·2-E·1--·2-12--]¬[-----·--·-------·---·----]¬[-----·2-2---·----·----]*/
-char         /*-> format group one section a --------------------------[ leaf  */
-poly_cats__group_1a     (tFUNC *a_func)
+
+
+/*====================------------------------------------====================*/
+/*===----                     complexity line                          ----===*/
+/*====================------------------------------------====================*/
+static void  o___COMPLEXITY______o () { return; }
+
+char
+poly_cats__group_1a     (tFUNC *a_func, char a_style, char a_scope, char a_rc, char a_proto, char r_out [LEN_LABEL])
+{
+   char       *x_norm      = "%c%c%c";
+   char       *x_long      = " %c %c %c";
+   char       *p           = x_norm;
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l')  {
+      p = x_long;
+      if (a_scope  == '·')  a_scope  = '´';
+   }
+   sprintf (r_out, p, a_scope, a_rc, a_proto);
+   return 1;
+}
+
+char         /*-> display string for parameters ---------------[ ´········· ]-*/ /*-åfcg´·BáA1·á···´8·9´C··´1·62·á·æ¬å1á1···´8·8á7·1····´···´····æ¬å·····´······´····´112·æ-*/
+poly_cats__group_1bcd   (tFUNC *a_func, char a_style, char a_paudit, int a_nparam, int a_pin, int a_pout, int a_pboth, int a_pnum, int a_pmulti, int a_pfunc, char r_out [LEN_LABEL])
 {
    char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   poly_cats_exact   ("nparam"  , a_func->WORK_PARAMS, &a_func->STATS_PARAMS, '0');
-   return 0;
+   char       *x_norm      = "%c%cá%c%c%cá%c%c%c";
+   char       *x_long      = " %c %c  %c %c %c  %c %c %c";
+   char       *p           = x_norm;
+   char        x_au, x_co, x_in, x_ou, x_bo, x_pn, x_pm, x_pf;
+   /*---(format individuals)-------------*/
+   x_au = a_paudit;
+   poly_cats_exact  ("params"  , a_nparam, &x_co, '·');
+   poly_cats_exact  ("pin"     , a_pin   , &x_in, '·');
+   poly_cats_exact  ("pout"    , a_pout  , &x_ou, '·');
+   poly_cats_exact  ("pboth"   , a_pboth , &x_bo, '·');
+   poly_cats_exact  ("pnum"    , a_pnum  , &x_pn, '·');
+   poly_cats_exact  ("pmulti"  , a_pmulti, &x_pm, '·');
+   poly_cats_exact  ("pfunc"   , a_pfunc , &x_pf, '·');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_PARAMS  = x_co;
+      a_func->STATS_PIN     = x_in;
+      a_func->STATS_POUT    = x_ou;
+      a_func->STATS_PBOTH   = x_bo;
+      a_func->STATS_PNUM    = x_pn;
+      a_func->STATS_PMULTI  = x_pm;
+      a_func->STATS_PFUNC   = x_pf;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_au     != '>')  x_au     = '´';
+      if (x_in     == '·')  x_in     = 'á';
+      if (x_pn     == '·')  x_pn     = 'á';
+   }
+   sprintf (r_out, p, x_au, x_co, x_in, x_ou, x_bo, x_pn, x_pm, x_pf);
+   /*---(complete)-----------------------*/
+   return 1;
 }
 
 char
-poly_cats__group_1b     (tFUNC *a_func)
+poly_cats__group_1e     (tFUNC *a_func, char a_style, int a_lines, int a_debug, int a_slocl, char r_out [LEN_LABEL])
 {
    char        rce         =    0;
+   char       *x_norm      = "%c%c%c";
+   char       *x_long      = " %c %c %c";
+   char       *p           = x_norm;
    float       a           =  0.0;
    int         b           =    0;
    float       c           =  0.0;
    int         d           =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   poly_cats_scaled  ("lines"   , a_func->COUNT_LINES, &a_func->STATS_TOTAL , '-');
-   /*> poly_cats_scaled  ("debug"   , a_func->COUNT_DEBUG, &a_func->STATS_DEBUG , '-');   <*/
-   if (a_func->COUNT_LINES > 0) {
-      a = ((float) a_func->COUNT_DEBUG / a_func->COUNT_LINES);
+   char        x_li, x_de, x_sl;
+   /*---(format individuals)-------------*/
+   poly_cats_scaled  ("lines"   , a_lines, &x_li, '·');
+   if (a_lines > 0) {
+      a = ((float) a_debug / a_lines);
       b = round (a * 10);
    }
-   poly_cats_exact   ("debug"   , b                  , &a_func->STATS_DEBUG , '-');
-   /*> poly_cats_scaled  ("slocl"   , a_func->COUNT_SLOCL, &a_func->STATS_SLOCL , '-');   <*/
-   if (a_func->COUNT_LINES > 0) {
-      c = ((float) a_func->COUNT_SLOCL / a_func->COUNT_LINES);
+   poly_cats_exact   ("debug"   , b      , &x_de, '·');
+   if (a_lines > 0) {
+      c = ((float) a_slocl / a_lines);
       d = round (c * 10);
    }
-   poly_cats_exact   ("slocl"   , d                  , &a_func->STATS_SLOCL , '-');
-   /*> printf ("%-15.15s %3d   %3d %4.2f %2d %c   %3d %4.2f %2d %c\n",                <* 
-    *>       a_func->name, a_func->COUNT_LINES,                                       <* 
-    *>       a_func->COUNT_DEBUG, a, b, a_func->STATS_DEBUG,                          <* 
-    *>       a_func->COUNT_SLOCL, c, d, a_func->STATS_SLOCL);                         <*/
-   return 0;
+   poly_cats_exact   ("slocl"   , d      , &x_sl, '·');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_TOTAL   = x_li;
+      a_func->STATS_DEBUG   = x_de;
+      a_func->STATS_SLOCL   = x_sl;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_li     == '·')  x_li     = '´';
+   }
+   sprintf (r_out, p, x_li, x_de, x_sl);
+   /*---(complete)-----------------------*/
+   return 1;
 }
 
 char
-poly_cats__group_1c     (tFUNC *a_func)
+poly_cats__group_1f     (tFUNC *a_func, char a_style, int a_local, int a_file, int a_global, char r_out [LEN_LABEL])
 {
    char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   poly_cats_exact   ("locals"  , a_func->WORK_LVARS , &a_func->STATS_LVARS , '-');
-   poly_cats_exact   ("file"    , a_func->WORK_FVARS , &a_func->STATS_FVARS , '-');
-   poly_cats_exact   ("globals" , a_func->WORK_GVARS , &a_func->STATS_GVARS , '-');
-   return 0;
+   char       *x_norm      = "%c%c%c";
+   char       *x_long      = " %c %c %c";
+   char       *p           = x_norm;
+   char        x_lo, x_fi, x_gl;
+   /*---(format individuals)-------------*/
+   poly_cats_exact   ("local"   , a_local , &x_lo, '·');
+   poly_cats_exact   ("file"    , a_file  , &x_fi, '·');
+   poly_cats_exact   ("global"  , a_global, &x_gl, '·');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_LVARS   = x_lo;
+      a_func->STATS_FVARS   = x_fi;
+      a_func->STATS_GVARS   = x_gl;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_lo     == '·')  x_lo     = '´';
+   }
+   sprintf (r_out, p, x_lo, x_fi, x_gl);
+   /*---(complete)-----------------------*/
+   return 1;
 }
 
 char
-poly_cats__group_1d     (tFUNC *a_func)
+poly_cats__group_1gh    (tFUNC *a_func, char a_style, int a_indent, int a_loop, int a_choice, int a_return, int a_error, int a_memory, char r_out [LEN_LABEL])
 {
    char        rce         =    0;
+   char       *x_norm      = "%c%c%c%c%cá%c";
+   char       *x_long      = " %c %c %c %c %c  %c";
+   char       *p           = x_norm;
    char        n           =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   poly_cats_exact   ("choices" , a_func->WORK_CHOICE, &a_func->STATS_CHOICE, '-');
-   poly_cats_exact   ("loops"   , a_func->WORK_LOOP  , &a_func->STATS_LOOP  , '-');
-   n = a_func->WORK_RETURN - a_func->WORK_RCE;
-   poly_cats_exact   ("returns" , n                  , &a_func->STATS_RETURN, '-');
-   poly_cats_exact   ("rce"     , a_func->WORK_RCE   , &a_func->STATS_RCE   , '-');
-   poly_cats_flag    ("memories", a_func->WORK_MEMORY, &a_func->STATS_MEMORY, '#');
-   DEBUG_INPT   yLOG_value   ("indent"    , a_func->WORK_INDENT);
-   n = (a_func->WORK_INDENT / 3) - 1;
-   poly_cats_exact   ("indent"  , n                  , &a_func->STATS_INDENT, '-');
-   return 0;
+   char        x_in, x_ch, x_lo, x_re, x_er, x_me;
+   /*---(format individuals)-------------*/
+   n = (a_indent / 3) - 1;
+   poly_cats_exact   ("indent"  , n       , &x_in, '·');
+   poly_cats_exact   ("loops"   , a_loop  , &x_lo, '·');
+   poly_cats_exact   ("choices" , a_choice, &x_ch, '·');
+   poly_cats_exact   ("returns" , a_return, &x_re, '·');
+   poly_cats_exact   ("rce"     , a_error , &x_er, '·');
+   poly_cats_flag    ("memory"  , a_memory, &x_me, '#');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_INDENT  = x_in;
+      a_func->STATS_LOOP    = x_lo;
+      a_func->STATS_CHOICE  = x_ch;
+      a_func->STATS_RETURN  = x_re;
+      a_func->STATS_RCE     = x_er;
+      a_func->STATS_MEMORY  = x_me;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_in     == '·')  x_in     = '´';
+      if (x_me     == '·')  x_me     = 'á';
+   }
+   sprintf (r_out, p, x_in, x_lo, x_ch, x_re, x_er, x_me);
+   /*---(complete)-----------------------*/
+   return 1;
 }
 
 char
-poly_cats__complexity   (char a_style, tFUNC *a_func, char a_update, char *a_out)
+poly_cats__complexity   (tFUNC *a_func, char a_style, char a_update, char *r_out)
 {
-   char        rce         =    0;
-   char       *x_norm      = "[%c%c%c%c%c%c.%c%c%c.%c%c%c.%c%c%c%c%c%c]";
-   char       *x_long      = " %c %c %c %c %c %c  %c %c %c  %c %c %c  %c %c %c %c %c %c ";
+   char        rce         =  -10;
+   char       *x_norm      = "å%s´%s´%s´%s´%sæ";
+   char       *x_long      = "%s %s %s %s %s ";
    char       *p           = x_norm;
+   char        a           [LEN_LABEL] = "";
+   char        bcd         [LEN_LABEL] = "";
+   char        e           [LEN_LABEL] = "";
+   char        f           [LEN_LABEL] = "";
+   char        gh          [LEN_LABEL] = "";
+   tFUNC      *x_func      = NULL;
    if (a_style == 'l')  p = x_long;
-   --rce;  if (a_func == NULL) {
-      if (a_out != NULL)
-         sprintf (a_out, p,
-               '-', '-', '-', '-', '-', '-',
-               '-', '-', '-',
-               '-', '-', '-',
-               '-', '-', '-', '-', '-', '-');
-      return rce;
-   }
-   if (a_func->work != NULL && a_update == 'y') {
-      poly_cats__group_1a (a_func);
-      poly_cats__group_1b (a_func);
-      poly_cats__group_1c (a_func);
-      poly_cats__group_1d (a_func);
-   }
-   --rce;  if (a_out  == NULL)  return rce;
-   sprintf (a_out, p,
-         a_func->STATS_SCOPE , a_func->STATS_RTYPE ,
-         a_func->STATS_PARAMS, a_func->STATS_PNUM  ,
-         a_func->STATS_PTWO  , a_func->STATS_PROTO ,
-         a_func->STATS_TOTAL , a_func->STATS_DEBUG , a_func->STATS_SLOCL ,
-         a_func->STATS_LVARS , a_func->STATS_FVARS , a_func->STATS_GVARS ,
-         a_func->STATS_CHOICE, a_func->STATS_LOOP  ,
-         a_func->STATS_RETURN, a_func->STATS_RCE   ,
-         a_func->STATS_INDENT, a_func->STATS_MEMORY);
-   return 0;
-}
-
-char
-poly_cats__group_2a     (tFUNC *a_func)
-{
-   char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   a_func->WORK_ACALLS = a_func->WORK_LCALLS + a_func->WORK_GCALLS + a_func->WORK_ECALLS + a_func->WORK_RECURS;
-   poly_cats_exact   ("called"  , a_func->WORK_ACALLS, &a_func->STATS_ACALLS, '-');
-   poly_cats_exact   ("lcalls"  , a_func->WORK_LCALLS, &a_func->STATS_LCALLS, '-');
-   poly_cats_exact   ("gcalls"  , a_func->WORK_GCALLS, &a_func->STATS_GCALLS, '-');
-   poly_cats_exact   ("ecalls"  , a_func->WORK_ECALLS, &a_func->STATS_ECALLS, '-');
-   if (a_func->STATS_SINGLE == 'y')  a_func->WORK_RECURS = 0;
-   poly_cats_flag    ("recurse" , a_func->WORK_RECURS, &a_func->STATS_RECURS, '#');
-   return 0;
-}
-
-char
-poly_cats__group_2b     (tFUNC *a_func)
-{
-   char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   poly_cats_exact   ("funcs"   , a_func->WORK_FUNCS , &a_func->STATS_FUNCS , '-');
-   poly_cats_exact   ("dfuncs"  , a_func->WORK_DFUNCS, &a_func->STATS_DFUNCS, '-');
-   a_func->WORK_RFUNCS = a_func->WORK_FUNCS - a_func->WORK_DFUNCS;
-   poly_cats_exact   ("rfuncs"  , a_func->WORK_RFUNCS, &a_func->STATS_RFUNCS, '-');
-   poly_cats_exact   ("lfuncs"  , a_func->WORK_LFUNCS, &a_func->STATS_LFUNCS, '-');
-   poly_cats_exact   ("gfuncs"  , a_func->WORK_GFUNCS, &a_func->STATS_GFUNCS, '-');
-   poly_cats_exact   ("cstd"    , a_func->WORK_CSTD  , &a_func->STATS_CSTD  , '-');
-   poly_cats_exact   ("ylib"    , a_func->WORK_YLIB  , &a_func->STATS_YLIB  , '-');
-   poly_cats_exact   ("ofuncs"  , a_func->WORK_OFUNCS, &a_func->STATS_OFUNCS, '-');
-   poly_cats_exact   ("mystry"  , a_func->WORK_MYSTRY, &a_func->STATS_MYSTRY, '-');
-   return 0;
-}
-
-char
-poly_cats__group_2c     (tFUNC *a_func)
-{
-   char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   if (a_func->WORK_INPUT  > 0)   a_func->STATS_READ  = 'i';
-   if (a_func->WORK_TREAD  > 0)   a_func->STATS_READ  = 'r';
-   if (a_func->WORK_BREAD  > 0)   a_func->STATS_READ  = 'R';
-   if (a_func->WORK_OUTPUT > 0)   a_func->STATS_WRITE = 'o';
-   if (a_func->WORK_TWRITE > 0)   a_func->STATS_WRITE = 'w';
-   if (a_func->WORK_BWRITE > 0)   a_func->STATS_WRITE = 'W';
-   if (a_func->WORK_PROCS > 0 && a_func->WORK_OPSYS   > 0)  a_func->STATS_SYSTEM = 'B';
-   else if (a_func->WORK_PROCS   > 0)  a_func->STATS_SYSTEM = 'p';
-   else if (a_func->WORK_OPSYS   > 0)  a_func->STATS_SYSTEM = 's';
-   else if (a_func->WORK_FILESYS > 0)  a_func->STATS_SYSTEM = 'f';
-   return 0;
-}
-
-char
-poly_cats__group_2d     (tFUNC *a_func)
-{
-   char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   poly_cats_exact   ("ncurses" , a_func->WORK_NCURSE, &a_func->STATS_NCURSE, '-');
-   poly_cats_exact   ("opengl"  , a_func->WORK_OPENGL, &a_func->STATS_OPENGL, '-');
-   poly_cats_exact   ("window"  , a_func->WORK_WINDOW, &a_func->STATS_WINDOW, '-');
-   poly_cats_exact   ("myx"     , a_func->WORK_MYX   , &a_func->STATS_MYX   , '-');
-   return 0;
-}
-
-char
-poly_cats__integration  (char a_style, tFUNC *a_func, char a_update, char *a_out)
-{
-   char        rce         =    0;
-   char       *x_norm      = "[%c%c%c%c%c.%c%c.%c%c%c%c%c%c%c.%c%c%c.%c%c%c%c]";
-   char       *x_long      = " %c %c %c %c %c  %c %c  %c %c %c %c %c %c %c  %c %c %c  %c %c %c %c ";
-   char       *p           = x_norm;
-   if (a_style == 'l')  p = x_long;
-   --rce;  if (a_func == NULL) {
-      if (a_out != NULL) {
-         sprintf (a_out, p,
-               '-', '-', '-', '-', '-',
-               '-', '-',
-               '-', '-', '-', '-', '-', '-', '-',
-               '-', '-', '-',
-               '-', '-', '-', '-');
+   if (a_func == NULL) {
+      if (r_out != NULL) {
+         if (a_style == 'l')  strcpy (r_out, " ´ · ·  ´ ·  á · ·  á · ·  ´ · ·  ´ · ·  ´ · · · ·  á ");
+         else                 strcpy (r_out, "å···´··á···á···´···´···´·····á·æ");
       }
-      return rce;
-   }
-   if (a_func->work != NULL && a_update == 'y') {
-      poly_cats__group_2a (a_func);
-      poly_cats__group_2b (a_func);
-      poly_cats__group_2c (a_func);
-      poly_cats__group_2d (a_func);
-   }
-   --rce;  if (a_out  == NULL)  return rce;
-   sprintf (a_out, p,
-         a_func->STATS_ACALLS,
-         a_func->STATS_LCALLS, a_func->STATS_GCALLS,
-         a_func->STATS_ECALLS, a_func->STATS_RECURS,
-         a_func->STATS_FUNCS , a_func->STATS_DFUNCS,
-         a_func->STATS_RFUNCS, a_func->STATS_LFUNCS, a_func->STATS_GFUNCS,
-         a_func->STATS_CSTD  , a_func->STATS_YLIB  ,
-         a_func->STATS_OFUNCS, a_func->STATS_MYSTRY,
-         a_func->STATS_READ  , a_func->STATS_WRITE , a_func->STATS_SYSTEM,
-         a_func->STATS_NCURSE, a_func->STATS_OPENGL,
-         a_func->STATS_WINDOW, a_func->STATS_MYX   );
-   return 0;
-}
-
-char
-poly_cats__group_3a     (tFUNC *a_func)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;           /* return code for errors         */
-   /*---(defense)------------------------*/
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   /*---(defaults)-----------------------*/
-   a_func->STATS_DSTYLE = '-';
-   a_func->STATS_DMATCH = '-';
-   /*---(quick out)----------------------*/
-   if      (a_func->COUNT_DEBUG == 0)          return 0;
-   /*---(style)--------------------------*/
-   if      (a_func->WORK_DLONG   > 0 && a_func->WORK_DSHORT  > 0)   a_func->STATS_DSTYLE = 'b';
-   else if (a_func->WORK_DLONG   > 0)                               a_func->STATS_DSTYLE = 'l';
-   else if (a_func->WORK_DSHORT  > 0)                               a_func->STATS_DSTYLE = 's';
-   else                                                             a_func->STATS_DSTYLE = '?';
-   /*---(untyped lines)------------------*/
-   if (a_func->WORK_DLONG + a_func->WORK_DSHORT < a_func->WORK_DCOUNT) {
-      switch (a_func->STATS_DSTYLE) {
-      case 'b' :  a_func->STATS_DSTYLE = 'B';  break;
-      case 'l' :  a_func->STATS_DSTYLE = 'L';  break;
-      case 's' :  a_func->STATS_DSTYLE = 'S';  break;
-      default  :  a_func->STATS_DSTYLE = '?';  break;
-      }
-   }
-   if (a_func->STATS_DWARN != '#' && strchr ("ls", a_func->STATS_DSTYLE) == NULL)  a_func->STATS_DWARN = '#';
-   /*---(unguarded logging)--------------*/
-   if (a_func->WORK_DFREE > 0)  a_func->STATS_DMACRO = '#';
-   if (a_func->STATS_DWARN != '#' && a_func->STATS_DMACRO == '#')  a_func->STATS_DWARN = '#';
-   /*---(check none)---------------------*/
-   if (a_func->WORK_DENTER == 0 && a_func->WORK_DEXIT == 0) {
-      a_func->STATS_DMATCH = 'p'; 
       return 0;
    }
-   /*---(quick out)----------------------*/
-   if (strchr ("-?", a_func->STATS_DSTYLE) != NULL)   return 0;
-   /*---(match)--------------------------*/
-   a_func->STATS_DMATCH = '-';
-   /*---(find enter troubles)------------*/
-   if      (a_func->WORK_DENTER <= 0) 
-      a_func->STATS_DMATCH = 'E';
-   else if (a_func->WORK_DENTER == 1 && strchr ("ls", a_func->STATS_DSTYLE) == NULL) 
-      a_func->STATS_DMATCH = 'e';
-   else if (a_func->WORK_DENTER == 2 && a_func->STATS_DSTYLE != 'b') 
-      a_func->STATS_DMATCH = 'e';
-   else if (a_func->WORK_DENTER >  2)
-      a_func->STATS_DMATCH = 'E';
-   if (a_func->STATS_DWARN != '#' && a_func->STATS_DMATCH != '-')  a_func->STATS_DWARN = '#';
-   if (a_func->STATS_DMATCH != '-')   return 0;
-   /*---(find exit troubles)-------------*/
-   if      (a_func->WORK_DEXIT  <= 0)
-      a_func->STATS_DMATCH = 'X';
-   else if (a_func->WORK_RETURN != a_func->WORK_DEXIT)
-      a_func->STATS_DMATCH = 'x';
-   if (a_func->STATS_DWARN != '#' && a_func->STATS_DMATCH != '-')  a_func->STATS_DWARN = '#';
-   if (a_func->STATS_DMATCH != '-')   return 0;
-   /*---(find short troubles)------------*/
-   if (a_func->STATS_DSTYLE == 's' && a_func->WORK_GFUNCS > 0)
-      a_func->STATS_DMATCH = '?';
-   if (a_func->STATS_DSTYLE == 's' && a_func->WORK_YLIB   > 0)
-      a_func->STATS_DMATCH = '!';
-   if (a_func->STATS_DWARN != '#' && a_func->STATS_DMATCH != '-')  a_func->STATS_DWARN = '#';
-   if (a_func->STATS_DMATCH != '-')   return 0;
-   /*---(final judgement)----------------*/
-   a_func->STATS_DMATCH = 'y';
-   /*---(complete)-----------------------*/
-   return 0;
+   if (a_func != NULL && a_func->work != NULL && a_update == 'y')   x_func = a_func;
+   poly_cats__group_1a   (x_func, a_style, a_func->STATS_SCOPE , a_func->STATS_RTYPE, a_func->STATS_PROTO, a);
+   poly_cats__group_1bcd (x_func, a_style, a_func->STATS_PAUDIT, a_func->WORK_PARAMS, a_func->WORK_PIN   , a_func->WORK_POUT  , a_func->WORK_PBOTH, a_func->WORK_PNUM  , a_func->WORK_PMULTI, a_func->WORK_PFUNC, bcd);
+   poly_cats__group_1e   (x_func, a_style, a_func->COUNT_LINES , a_func->COUNT_DEBUG, a_func->COUNT_CODE , e);
+   poly_cats__group_1f   (x_func, a_style, a_func->WORK_LVARS  , a_func->WORK_FVARS , a_func->WORK_GVARS , f);
+   poly_cats__group_1gh  (x_func, a_style, a_func->WORK_INDENT , a_func->WORK_LOOP  , a_func->WORK_CHOICE, a_func->WORK_RETURN, a_func->WORK_RCE  , a_func->WORK_MEMORY, gh);
+   --rce;  if (r_out  == NULL)  return rce;
+   sprintf (r_out, p, a, bcd, e, f, gh);
+   return 1;
 }
 
-char
-poly_cats__group_3b     (tFUNC *a_func)
-{
-   char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   poly_cats_exact   ("F#use"   , a_func->WORK_PUSE  , &a_func->STATS_PUSE  , '-');
-   poly_cats_exact   ("F#use"   , a_func->WORK_FUSE  , &a_func->STATS_FUSE  , '-');
-   poly_cats_exact   ("G#use"   , a_func->WORK_GUSE  , &a_func->STATS_GUSE  , '-');
-   poly_cats_exact   ("M#use"   , a_func->WORK_MUSE  , &a_func->STATS_MUSE  , '-');
-   poly_cats_exact   ("Y#use"   , a_func->WORK_YUSE  , &a_func->STATS_YUSE  , '-');
-   poly_cats_exact   ("O#use"   , a_func->WORK_OUSE  , &a_func->STATS_OUSE  , '-');
-   return 0;
-}
+
+
+/*====================------------------------------------====================*/
+/*===----                     intergration line                        ----===*/
+/*====================------------------------------------====================*/
+static void  o___INTEGRATION_____o () { return; }
 
 char
-poly_cats__group_3c     (tFUNC *a_func)
+poly_cats__group_2ab    (tFUNC *a_func, char a_style, int a_local, int a_global, int a_extern, int a_recurse, char r_out [LEN_LABEL])
 {
    char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   if (a_func->WORK_VMASK   > 0)  a_func->STATS_VMASK   = '#';
-   if (a_func->WORK_MMASK   > 0)  a_func->STATS_MMASK   = '#';
-   if (a_func->WORK_FMASK   > 0)  a_func->STATS_FMASK   = '#';
-   if (a_func->WORK_LSTATIC > 0)  a_func->STATS_LSTATIC = '#';
-   return 0;
-}
-
-char
-poly_cats__group_3d     (tFUNC *a_func)
-{
-   char        rce         =    0;
-   --rce;  if (a_func       == NULL)  return rce;
-   --rce;  if (a_func->work == NULL)  return rce;
-   poly_cats_exact   ("tunit"   , a_func->WORK_TUNIT , &a_func->STATS_TUNIT , '-');
-   poly_cats_exact   ("sunit"   , a_func->WORK_SUNIT , &a_func->STATS_SUNIT , '-');
-   poly_cats_exact   ("nunit"   , a_func->WORK_NUNIT , &a_func->STATS_NUNIT , '-');
-   poly_cats_exact   ("stest"   , a_func->WORK_STEST , &a_func->STATS_STEST , '-');
-   return 0;
-}
-
-char
-poly_cats__watchpoints  (char a_style, tFUNC *a_func, char a_update, char *a_out)
-{
-   char        rce         =    0;
-   char       *x_norm      = "[%c%c%c%c%c.%c%c%c%c%c%c.%c%c%c%c.%c%c%c%c]";
-   char       *x_long      = " %c %c %c %c %c  %c %c %c %c %c %c  %c %c %c %c  %c %c %c %c ";
+   char       *x_norm      = "%cá%c%c%c%c";
+   char       *x_long      = " %c  %c %c %c %c";
    char       *p           = x_norm;
-   if (a_style == 'l')  p = x_long;
-   --rce;  if (a_func == NULL) {
-      if (a_out != NULL) {
-         sprintf (a_out, p,
-               '-', '-', '-', '-', '-',
-               '-', '-', '-', '-', '-', '-',
-               '-', '-', '-', '-',
-               '-', '-', '-', '-');
-      }
-      return rce;
+   char        x_total     =    0;
+   char        x_al, x_lo, x_gl, x_ex, x_re;
+   /*---(format individuals)-------------*/
+   x_total = a_local + a_global + a_extern + a_recurse;
+   poly_cats_exact   ("called"  , x_total  , &x_al, '·');
+   poly_cats_exact   ("lcalls"  , a_local  , &x_lo, '·');
+   poly_cats_exact   ("gcalls"  , a_global , &x_gl, '·');
+   poly_cats_exact   ("ecalls"  , a_extern , &x_ex, '·');
+   poly_cats_flag    ("recurse" , a_recurse, &x_re, '#');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_ACALLS  = x_al;
+      a_func->STATS_LCALLS  = x_lo;
+      a_func->STATS_GCALLS  = x_gl;
+      a_func->STATS_ECALLS  = x_ex;
+      a_func->STATS_RECURS  = x_re;
    }
-   if (a_func->work != NULL && a_update == 'y') {
-      poly_cats__group_3a (a_func);
-      poly_cats__group_3b (a_func);
-      poly_cats__group_3c (a_func);
-      poly_cats__group_3d (a_func);
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_al     == '·')  x_al     = '´';
+      if (x_lo     == '·')  x_lo     = 'á';
    }
-   --rce;  if (a_out  == NULL)  return rce;
-   sprintf (a_out, p,
-         a_func->STATS_DSTYLE, a_func->STATS_DMACRO,
-         a_func->STATS_DMATCH, a_func->STATS_DFUNCS, a_func->STATS_DWARN ,
-         a_func->STATS_PUSE  , a_func->STATS_FUSE  , a_func->STATS_GUSE  ,
-         a_func->STATS_MUSE  , a_func->STATS_YUSE  , a_func->STATS_OUSE  ,
-         a_func->STATS_VMASK , a_func->STATS_MMASK ,
-         a_func->STATS_FMASK , a_func->STATS_LSTATIC,
-         a_func->STATS_TUNIT , a_func->STATS_SUNIT , a_func->STATS_NUNIT ,
-         a_func->STATS_STEST );
-   return 0;
+   sprintf (r_out, p, x_al, x_lo, x_gl, x_ex, x_re);
+   /*---(complete)-----------------------*/
+   return 1;
 }
 
 char
-poly_cats_function      (tFUNC *a_func)
+poly_cats__group_2cd    (tFUNC *a_func, char a_style, int a_funcs, int a_dfuncs, int a_lfuncs, int a_gfuncs, int a_cfuncs, int a_yfuncs, int a_vfuncs, int a_ofuncs, int a_mfuncs, char r_out [LEN_LABEL])
 {
-   poly_cats__complexity  ('-', a_func, 'y', NULL);
-   poly_cats__integration ('-', a_func, 'y', NULL);
-   poly_cats__watchpoints ('-', a_func, 'y', NULL);
-   return 0;
+   char        rce         =    0;
+   char       *x_norm      = "%c%c%cá%c%c%c%c%c%c%c";
+   char       *x_long      = " %c %c %c  %c %c %c %c %c %c %c";
+   char       *p           = x_norm;
+   char        x_real      =    0;
+   char        x_fu, x_df, x_rf, x_lo, x_gl, x_cf, x_yl, x_vi, x_ot, x_my;
+   /*---(format individuals)-------------*/
+   poly_cats_exact   ("funcs"   , a_funcs  , &x_fu, '·');
+   poly_cats_exact   ("dfuncs"  , a_dfuncs , &x_df, '·');
+   x_real = a_funcs - a_dfuncs;
+   poly_cats_exact   ("rfuncs"  , x_real   , &x_rf, '·');
+   poly_cats_exact   ("lfuncs"  , a_lfuncs , &x_lo, '·');
+   poly_cats_exact   ("gfuncs"  , a_gfuncs , &x_gl, '·');
+   poly_cats_exact   ("cfuncs"  , a_cfuncs , &x_cf, '·');
+   poly_cats_exact   ("yfuncs"  , a_yfuncs , &x_yl, '·');
+   poly_cats_exact   ("vfuncs"  , a_vfuncs , &x_vi, '·');
+   poly_cats_exact   ("ofuncs"  , a_ofuncs , &x_ot, '·');
+   poly_cats_exact   ("mfuncs"  , a_mfuncs , &x_my, '·');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_FUNCS   = x_fu;
+      a_func->STATS_DFUNCS  = x_df;
+      a_func->STATS_RFUNCS  = x_rf;
+      a_func->STATS_LFUNCS  = x_lo;
+      a_func->STATS_GFUNCS  = x_gl;
+      a_func->STATS_CSTD    = x_cf;
+      a_func->STATS_YLIB    = x_yl;
+      a_func->STATS_VIKEYS  = x_vi;
+      a_func->STATS_OFUNCS  = x_ot;
+      a_func->STATS_MYSTRY  = x_my;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_fu     == '·')  x_fu     = '´';
+      if (x_lo     == '·')  x_lo     = 'á';
+   }
+   sprintf (r_out, p, x_fu, x_df, x_rf, x_lo, x_gl, x_cf, x_yl, x_vi, x_ot, x_my);
+   /*---(complete)-----------------------*/
+   return 1;
+}
+
+char
+poly_cats__group_2e     (tFUNC *a_func, char a_style, int a_input, int a_tinput, int a_binput, int a_output, int a_toutput, int a_boutput, int a_procs, int a_opsys, int a_filesys, char r_out [LEN_LABEL])
+{
+   char        rce         =    0;
+   char       *x_norm      = "%c%c%c";
+   char       *x_long      = " %c %c %c";
+   char       *p           = x_norm;
+   char        x_in, x_ou, x_sy;
+   /*---(format for input)---------------*/
+   x_in = '·';
+   if (a_input   > 0)   x_in  = 'i';
+   if (a_tinput  > 0) { if (x_in == '·')  x_in  = 'r';  else x_in = '*'; }
+   if (a_binput  > 0) { if (x_in == '·')  x_in  = 'R';  else x_in = '*'; }
+   /*---(format for output)--------------*/
+   x_ou = '·';
+   if (a_output  > 0)   x_ou  = 'o';
+   if (a_toutput > 0) { if (x_ou == '·')  x_ou  = 'w';  else x_ou = '*'; }
+   if (a_boutput > 0) { if (x_ou == '·')  x_ou  = 'W';  else x_ou = '*'; }
+   /*---(format for system)--------------*/
+   x_sy = '·';
+   if (a_procs   > 0)   x_sy  = 'p';
+   if (a_opsys   > 0) { if (x_sy == '·')  x_sy  = 's';  else x_sy = '*'; }
+   if (a_filesys > 0) { if (x_sy == '·')  x_sy  = 'f';  else x_sy = '*'; }
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_READ    = x_in;
+      a_func->STATS_WRITE   = x_ou;
+      a_func->STATS_SYSTEM  = x_sy;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_in     == '·')  x_in     = '´';
+   }
+   sprintf (r_out, p, x_in, x_ou, x_sy);
+   /*---(complete)-----------------------*/
+   return 1;
+}
+
+char
+poly_cats__group_2f     (tFUNC *a_func, char a_style, int a_ncurse, int a_opengl, int a_window, int a_myx, char r_out [LEN_LABEL])
+{
+   char        rce         =    0;
+   char       *x_norm      = "%c%c%c%c";
+   char       *x_long      = " %c %c %c %c";
+   char       *p           = x_norm;
+   char        x_nc, x_op, x_wi, x_my;
+   /*---(format individuals)-------------*/
+   poly_cats_exact   ("ncurses" , a_ncurse , &x_nc, '·');
+   poly_cats_exact   ("opengl"  , a_opengl , &x_op, '·');
+   poly_cats_exact   ("window"  , a_window , &x_wi, '·');
+   poly_cats_exact   ("myx"     , a_myx    , &x_my, '·');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_NCURSE  = x_nc;
+      a_func->STATS_OPENGL  = x_op;
+      a_func->STATS_WINDOW  = x_wi;
+      a_func->STATS_MYX     = x_my;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_nc     == '·')  x_nc     = '´';
+   }
+   sprintf (r_out, p, x_nc, x_op, x_wi, x_my);
+   /*---(complete)-----------------------*/
+   return 1;
+}
+
+char
+poly_cats__integration  (tFUNC *a_func, char a_style, char a_update, char *r_out)
+{
+   char        rce         =    0;
+   char       *x_norm      = "å%s´%s´%s´%sæ";
+   char       *x_long      = "%s %s %s %s ";
+   char       *p           = x_norm;
+   char        ab          [LEN_LABEL] = "";
+   char        cd          [LEN_LABEL] = "";
+   char        e           [LEN_LABEL] = "";
+   char        f           [LEN_LABEL] = "";
+   tFUNC      *x_func      = NULL;
+   if (a_style == 'l')  p = x_long;
+   if (a_func == NULL) {
+      if (r_out != NULL) {
+         if (a_style == 'l')  strcpy (r_out, " ´  á · · ·  ´ · ·  á · · · · · ·  ´ · ·  ´ · · · ");
+         else                 strcpy (r_out, "å·á····´···á·······´···´····æ");
+      }
+      return 0;
+   }
+   if (a_func != NULL && a_func->work != NULL && a_update == 'y')   x_func = a_func;
+   poly_cats__group_2ab  (x_func, a_style, a_func->WORK_LCALLS , a_func->WORK_GCALLS, a_func->WORK_ECALLS, a_func->WORK_RECURS , ab);
+   poly_cats__group_2cd  (x_func, a_style, a_func->WORK_FUNCS  , a_func->WORK_DFUNCS, a_func->WORK_LFUNCS, a_func->WORK_GFUNCS , a_func->WORK_CSTD  , a_func->WORK_YLIB, a_func->WORK_VIKEYS, a_func->WORK_OFUNCS, a_func->WORK_MYSTRY, cd);
+   poly_cats__group_2e   (x_func, a_style, a_func->WORK_INPUT  , a_func->WORK_TREAD , a_func->WORK_BREAD , a_func->WORK_OUTPUT , a_func->WORK_TWRITE, a_func->WORK_BWRITE, a_func->WORK_PROCS, a_func->WORK_OPSYS, a_func->WORK_FILESYS, e);
+   poly_cats__group_2f   (x_func, a_style, a_func->WORK_NCURSE , a_func->WORK_OPENGL, a_func->WORK_WINDOW, a_func->WORK_MYX    , f);
+   --rce;  if (r_out  == NULL)  return rce;
+   sprintf (r_out, p, ab, cd, e, f);
+   return 1;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                     watch-point line                         ----===*/
+/*====================------------------------------------====================*/
+static void  o___WATCH___________o () { return; }
+
+char
+poly_cats__group_3a     (tFUNC *a_func, char a_style, int a_lines, int a_dcount, int a_dlong, int a_dshort, char a_macro, int a_dfree, int a_denter, int a_dexit, int a_dexitr, int a_return, int a_rce, int a_lfuncs, int a_gfuncs, int a_yfuncs, int a_dextra, char r_out [LEN_LABEL])
+{
+   char        rce         =    0;
+   char       *x_norm      = "%c%c%c%c%c";
+   char       *x_long      = " %c %c %c %c %c";
+   char       *p           = x_norm;
+   char        x_total     =    0;
+   char        x_usage, x_style, x_macro, x_match, x_dwarn;
+   /*---(prepare)------------------------*/
+   x_usage = x_style = x_macro = x_match = x_dwarn = '·';
+   /*---(usage)--------------------------*/
+   x_usage = '·';
+   if (a_lines  > 0)   x_usage = '>';
+   if (a_dcount > 0)   x_usage = '>';
+   /*---(base style)---------------------*/
+   if (a_dcount > 0 && x_match == '·') {
+      if      (a_dlong  > 0 && a_dshort > 0)    { x_style = 'b';  x_dwarn = '#'; }
+      else if (a_dlong  > 0)                      x_style = 'l';
+      else if (a_dshort > 0)                      x_style = 's';
+      else                                      { x_style = '?';  x_dwarn = '#'; }
+      /*> if      (a_dlong + a_dshort != a_dcount)    x_style = toupper (x_style);    <*/
+   }
+   /*---(macro used)---------------------*/
+   if (a_dcount > 0 && x_match == '·') {
+      x_macro = a_macro;
+      if (a_dfree > 0)                          { x_macro = '#';  x_dwarn = '#'; }
+   }
+   /*---(enters)-------------------------*/
+   if (a_dcount > 0 && x_match == '·') {
+      if      (a_denter  <= 0)                                    { x_match = 'E';  x_dwarn = '#'; }
+      else if (a_denter  == 1 && strchr ("ls", x_style) == NULL)  { x_match = 'e';  x_dwarn = '#'; }
+      else if (a_denter  == 2 && strchr ("b" , x_style) == NULL)  { x_match = 'e';  x_dwarn = '#'; }
+      else if (a_denter  >  2)                                    { x_match = 'E';  x_dwarn = '#'; }
+   }
+   /*---(exits)--------------------------*/
+   if (a_dcount > 0 && x_match == '·') {
+      if      (a_dexit   <= 0)                                    { x_match = 'X';  x_dwarn = '#'; }
+      else if (a_dexit + a_dexitr != a_return + a_rce)            { x_match = 'x';  x_dwarn = '#'; }
+      else if (a_dexit   != a_return)                             { x_match = 'n';  x_dwarn = 'r'; }
+      else if (a_dexitr  != a_rce)                                { x_match = 'r';  x_dwarn = 'r'; }
+   }
+   /*---(extern)-------------------------*/
+   if (a_dcount > 0 && x_match == '·') {
+      if      (x_style == 's' && a_lfuncs  > 0)                   { x_dwarn = 'l'; }
+      if      (x_style == 's' && a_gfuncs  > 0 && x_dwarn == '·') { x_dwarn = 'g'; }
+      if      (x_style == 's' && a_yfuncs  > 0 && x_dwarn == '·') { x_dwarn = '>'; }
+   }
+   /*---(extra)--------------------------*/
+   if (a_dcount > 0 && x_match == '·') {
+      if      (a_dextra >  0)                                     { x_dwarn = '+'; }
+   }
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_DSTYLE  = x_style;
+      a_func->STATS_DMACRO  = x_macro;
+      a_func->STATS_DMATCH  = x_match;
+      a_func->STATS_DWARN   = x_dwarn;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_usage  != '>')  x_usage  = '´';
+   }
+   sprintf (r_out, p, x_usage, x_style, x_macro, x_match, x_dwarn);
+   /*---(complete)-----------------------*/
+   return 1;
+}
+
+/*> char                                                                                                                      <* 
+ *> poly_cats__group_3a     (tFUNC *a_func)                                                                                   <* 
+ *> {                                                                                                                         <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                                               <* 
+ *>    char        rce         =  -10;           /+ return code for errors         +/                                         <* 
+ *>    /+---(defense)------------------------+/                                                                               <* 
+ *>    --rce;  if (a_func       == NULL)  return rce;                                                                         <* 
+ *>    --rce;  if (a_func->work == NULL)  return rce;                                                                         <* 
+ *>    /+---(defaults)-----------------------+/                                                                               <* 
+ *>    a_func->STATS_DSTYLE = '-';                                                                                            <* 
+ *>    a_func->STATS_DMATCH = '-';                                                                                            <* 
+ *>    /+---(quick out)----------------------+/                                                                               <* 
+ *>    if      (a_func->COUNT_DEBUG == 0)          return 0;                                                                  <* 
+ *>    /+---(style)--------------------------+/                                                                               <* 
+ *>    /+> if      (a_func->WORK_DLONG   > 0 && a_func->WORK_DSHORT  > 0)   a_func->STATS_DSTYLE = 'b';   <*                  <* 
+ *>     *> else if (a_func->WORK_DLONG   > 0)                               a_func->STATS_DSTYLE = 'l';   <*                  <* 
+ *>     *> else if (a_func->WORK_DSHORT  > 0)                               a_func->STATS_DSTYLE = 's';   <*                  <* 
+ *>     *> else                                                             a_func->STATS_DSTYLE = '?';   <+/                 <* 
+ *>    /+---(untyped lines)------------------+/                                                                               <* 
+ *>    /+> if (a_func->WORK_DLONG + a_func->WORK_DSHORT < a_func->WORK_DCOUNT) {          <*                                  <* 
+ *>     *>    switch (a_func->STATS_DSTYLE) {                                             <*                                  <* 
+ *>     *>    case 'b' :  a_func->STATS_DSTYLE = 'B';  break;                             <*                                  <* 
+ *>     *>    case 'l' :  a_func->STATS_DSTYLE = 'L';  break;                             <*                                  <* 
+ *>     *>    case 's' :  a_func->STATS_DSTYLE = 'S';  break;                             <*                                  <* 
+ *>     *>    default  :  a_func->STATS_DSTYLE = '?';  break;                             <*                                  <* 
+ *>     *>    }                                                                           <*                                  <* 
+ *>     *> }                                                                              <+/                                 <* 
+ *>    /+> if (a_func->STATS_DWARN != '#' && strchr ("ls", a_func->STATS_DSTYLE) == NULL)  a_func->STATS_DWARN = '#';   <+/   <* 
+ *>    /+---(unguarded logging)--------------+/                                                                               <* 
+ *>    /+> if (a_func->WORK_DFREE > 0)  a_func->STATS_DMACRO = '#';                                     <*                    <* 
+ *>     *> if (a_func->STATS_DWARN != '#' && a_func->STATS_DMACRO == '#')  a_func->STATS_DWARN = '#';   <+/                   <* 
+ *>    /+---(check none)---------------------+/                                                                               <* 
+ *>    if (a_func->WORK_DENTER == 0 && a_func->WORK_DEXIT == 0) {                                                             <* 
+ *>       a_func->STATS_DMATCH = 'p';                                                                                         <* 
+ *>       return 0;                                                                                                           <* 
+ *>    }                                                                                                                      <* 
+ *>    /+---(quick out)----------------------+/                                                                               <* 
+ *>    if (strchr ("-?", a_func->STATS_DSTYLE) != NULL)   return 0;                                                           <* 
+ *>    /+---(match)--------------------------+/                                                                               <* 
+ *>    /+> a_func->STATS_DMATCH = '-';                                                    <+/                                 <* 
+ *>    /+---(find enter troubles)------------+/                                                                               <* 
+ *>    /+> if      (a_func->WORK_DENTER <= 0)                                                           <*                    <* 
+ *>     *>    a_func->STATS_DMATCH = 'E';                                                               <*                    <* 
+ *>     *> else if (a_func->WORK_DENTER == 1 && strchr ("ls", a_func->STATS_DSTYLE) == NULL)            <*                    <* 
+ *>     *>    a_func->STATS_DMATCH = 'e';                                                               <*                    <* 
+ *>     *> else if (a_func->WORK_DENTER == 2 && a_func->STATS_DSTYLE != 'b')                            <*                    <* 
+ *>     *>    a_func->STATS_DMATCH = 'e';                                                               <*                    <* 
+ *>     *> else if (a_func->WORK_DENTER >  2)                                                           <*                    <* 
+ *>     *>    a_func->STATS_DMATCH = 'E';                                                               <*                    <* 
+ *>     *> if (a_func->STATS_DWARN != '#' && a_func->STATS_DMATCH != '-')  a_func->STATS_DWARN = '#';   <*                    <* 
+ *>     *> if (a_func->STATS_DMATCH != '-')   return 0;                                                 <+/                   <* 
+ *>    /+---(find exit troubles)-------------+/                                                                               <* 
+ *>    /+> if      (a_func->WORK_DEXIT  <= 0)                                                           <*                    <* 
+ *>     *>    a_func->STATS_DMATCH = 'X';                                                               <*                    <* 
+ *>     *> else if (a_func->WORK_RETURN != a_func->WORK_DEXIT)                                          <*                    <* 
+ *>     *>    a_func->STATS_DMATCH = 'x';                                                               <*                    <* 
+ *>     *> if (a_func->STATS_DWARN != '#' && a_func->STATS_DMATCH != '-')  a_func->STATS_DWARN = '#';   <*                    <* 
+ *>     *> if (a_func->STATS_DMATCH != '-')   return 0;                                                 <+/                   <* 
+ *>    /+---(find short troubles)------------+/                                                                               <* 
+ *>    /+> if (a_func->STATS_DSTYLE == 's' && a_func->WORK_GFUNCS > 0)                                  <*                    <* 
+ *>     *>    a_func->STATS_DMATCH = '?';                                                               <*                    <* 
+ *>     *> if (a_func->STATS_DSTYLE == 's' && a_func->WORK_YLIB   > 0)                                  <*                    <* 
+ *>     *>    a_func->STATS_DMATCH = '!';                                                               <*                    <* 
+ *>     *> if (a_func->STATS_DWARN != '#' && a_func->STATS_DMATCH != '-')  a_func->STATS_DWARN = '#';   <*                    <* 
+ *>     *> if (a_func->STATS_DMATCH != '-')   return 0;                                                 <+/                   <* 
+ *>    /+---(final judgement)----------------+/                                                                               <* 
+ *>    a_func->STATS_DMATCH = 'y';                                                                                            <* 
+ *>    /+---(complete)-----------------------+/                                                                               <* 
+ *>    return 0;                                                                                                              <* 
+ *> }                                                                                                                         <*/
+
+char
+poly_cats__group_3b     (tFUNC *a_func, char a_style, int a_puse, int a_fuse, int a_guse, int a_cuse, int a_yuse, int a_vuse, int a_ouse, char r_out [LEN_LABEL])
+{
+   char        rce         =    0;
+   char       *x_norm      = "%c%c%c%c%c%c%c";
+   char       *x_long      = " %c  %c %c %c %c %c %c";
+   char       *p           = x_norm;
+   char        x_pu, x_fu, x_gu, x_cs, x_yu, x_vi, x_ou;
+   /*---(format individuals)-------------*/
+   poly_cats_exact   ("F#use"   , a_puse , &x_pu , '·');
+   poly_cats_exact   ("F#use"   , a_fuse , &x_fu , '·');
+   poly_cats_exact   ("G#use"   , a_guse , &x_gu , '·');
+   poly_cats_exact   ("C#use"   , a_cuse , &x_cs , '·');
+   poly_cats_exact   ("Y#use"   , a_yuse , &x_yu , '·');
+   poly_cats_exact   ("V#use"   , a_vuse , &x_vi , '·');
+   poly_cats_exact   ("O#use"   , a_ouse , &x_ou , '·');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_PUSE    = x_pu;
+      a_func->STATS_FUSE    = x_fu;
+      a_func->STATS_GUSE    = x_gu;
+      a_func->STATS_MUSE    = x_cs;
+      a_func->STATS_YUSE    = x_yu;
+      a_func->STATS_OUSE    = x_ou;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_pu     == '·')  x_pu     = '´';
+      if (x_fu     == '·')  x_fu     = 'á';
+   }
+   sprintf (r_out, p, x_pu, x_fu, x_gu, x_cs, x_yu, x_vi, x_ou);
+   /*---(complete)-----------------------*/
+   return 1;
+}
+
+char
+poly_cats__group_3c     (tFUNC *a_func, char a_style, int a_vmask, int a_mmask, int a_fmask, int a_static, char r_out [LEN_LABEL])
+{
+   char        rce         =    0;
+   char       *x_norm      = "%c%c%c%c";
+   char       *x_long      = " %c %c %c %c";
+   char       *p           = x_norm;
+   char        x_vm, x_mm, x_fm, x_st;
+   /*---(format individuals)-------------*/
+   poly_cats_exact   ("vmask"   , a_vmask , &x_vm , '·');
+   poly_cats_exact   ("mmask"   , a_mmask , &x_mm , '·');
+   poly_cats_exact   ("fmask"   , a_fmask , &x_fm , '·');
+   poly_cats_exact   ("static"  , a_static, &x_st , '·');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_VMASK   = x_vm;
+      a_func->STATS_MMASK   = x_mm;
+      a_func->STATS_FMASK   = x_fm;
+      a_func->STATS_LSTATIC = x_st;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_vm     == '·')  x_vm     = '´';
+   }
+   sprintf (r_out, p, x_vm, x_mm, x_fm, x_st);
+   /*---(complete)-----------------------*/
+   return 1;
+}
+
+char
+poly_cats__group_3d     (tFUNC *a_func, char a_style, int a_tunit, int a_sunit, int a_nunit, int a_stest, char r_out [LEN_LABEL])
+{
+   char        rce         =    0;
+   char       *x_norm      = "%c%c%c%c";
+   char       *x_long      = " %c %c %c %c";
+   char       *p           = x_norm;
+   char        x_tu, x_su, x_nu, x_st;
+   /*---(format individuals)-------------*/
+   poly_cats_exact   ("tunit"   , a_tunit , &x_tu , '·');
+   poly_cats_exact   ("sunit"   , a_sunit , &x_su , '·');
+   poly_cats_exact   ("nunit"   , a_nunit , &x_nu , '·');
+   poly_cats_exact   ("stest"   , a_stest , &x_st , '·');
+   /*---(update, if requested)-----------*/
+   if (a_func  != NULL) {
+      a_func->STATS_TUNIT   = x_tu;
+      a_func->STATS_SUNIT   = x_su;
+      a_func->STATS_NUNIT   = x_nu;
+      a_func->STATS_STEST   = x_st;
+   }
+   /*---(output)-------------------------*/
+   if (r_out   == NULL)  return 0;
+   if (a_style == 'l') {
+      p = x_long;
+      if (x_tu     == '·')  x_tu     = '´';
+   }
+   sprintf (r_out, p, x_tu, x_su, x_nu, x_st);
+   /*---(complete)-----------------------*/
+   return 1;
+}
+
+char
+poly_cats__watchpoints  (tFUNC *a_func, char a_style, char a_update, char *r_out)
+{
+   char        rce         =    0;
+   char       *x_norm      = "å%s´%s´%s´%sæ";
+   char       *x_long      = "%s %s %s %s ";
+   char       *p           = x_norm;
+   char        a           [LEN_LABEL] = "";
+   char        b           [LEN_LABEL] = "";
+   char        c           [LEN_LABEL] = "";
+   char        d           [LEN_LABEL] = "";
+   tFUNC      *x_func      = NULL;
+   if (a_style == 'l')  p = x_long;
+   if (a_func == NULL) {
+      if (r_out != NULL) {
+         if (a_style == 'l')  strcpy (r_out, " ´ · · · ·  ´  á · · · · ·  ´ · · ·  ´ · · · ");
+         else                 strcpy (r_out, "å·····´á······´····´····æ");
+      }
+      return 0;
+   }
+   if (a_func != NULL && a_func->work != NULL && a_update == 'y')   x_func = a_func;
+   poly_cats__group_3a   (x_func, a_style, a_func->COUNT_DEBUG , a_func->WORK_DCOUNT , a_func->WORK_DLONG  , a_func->WORK_DSHORT , a_func->STATS_DMACRO , a_func->WORK_DFREE  , a_func->WORK_DENTER , a_func->WORK_DEXIT  , a_func->WORK_DEXITR , a_func->WORK_RETURN , a_func->WORK_RCE    , a_func->WORK_LFUNCS , a_func->WORK_GFUNCS , a_func->WORK_YLIB   , a_func->WORK_DEXTRA , a);
+   poly_cats__group_3b   (x_func, a_style, a_func->WORK_PUSE   , a_func->WORK_FUSE   , a_func->WORK_GUSE   , a_func->WORK_CUSE   , a_func->WORK_YUSE    , a_func->WORK_VUSE    , a_func->WORK_OUSE   , b);
+   poly_cats__group_3c   (x_func, a_style, a_func->WORK_VMASK  , a_func->WORK_MMASK  , a_func->WORK_FMASK  , a_func->WORK_LSTATIC, c);
+   poly_cats__group_3d   (x_func, a_style, a_func->WORK_TUNIT  , a_func->WORK_SUNIT  , a_func->WORK_NUNIT  , a_func->WORK_STEST  , d);
+   --rce;  if (r_out  == NULL)  return rce;
+   sprintf (r_out, p, a, b, c, d);
+   return 1;
 }
 
 
@@ -826,7 +1138,53 @@ poly_cats_function      (tFUNC *a_func)
 /*====================------------------------------------====================*/
 static void  o___REPORTING_______o () { return; }
 
-char*        /*-> create category headers for reporting ---[gs2---·7-5·5--·B13-]¬[18--·B---56--·---·----]¬[---·------]-*/
+char         /*-> classify function by statistics -------------[ leaf       ]-*/ /*-åfc#´·8á71·á···´4·A´1··´2·A1·á·æ¬å1á1···´8·8á······´···´····æ¬å·····´······´····´····æ-*/
+poly_cats__anatomy      (char a_rtype, char a_vars, char a_calls, char a_graph, char a_read, char a_write, char a_memory, char r_anatomy [LEN_TERSE])
+{
+   char        x_anatomy   [LEN_TERSE] = "";
+   if (a_rtype == 'c' &&  a_vars + a_calls == 0)  {
+      if (a_graph == 0 && a_read  == 0 && a_write == 0) {
+         if (a_memory == 0)  strlcpy (x_anatomy, "leaf"     , LEN_TERSE);
+         else                strlcpy (x_anatomy, "seed"     , LEN_TERSE);
+      }
+      else if (a_graph >  0 && a_read  == 0 && a_write == 0)  strlcpy (x_anatomy, "flower" , LEN_TERSE);
+      else if (a_graph == 0 && a_read  >  0 && a_write == 0)  strlcpy (x_anatomy, "root"   , LEN_TERSE);
+      else if (a_graph == 0 && a_read  == 0 && a_write >  0)  strlcpy (x_anatomy, "tendril", LEN_TERSE);
+      else                                                    strlcpy (x_anatomy, "crazy"  , LEN_TERSE);
+   } else {
+      strlcpy (x_anatomy, "´"        , LEN_TERSE);
+   }
+   if (r_anatomy != NULL)  strlcpy (r_anatomy, x_anatomy, LEN_TERSE);
+   return 0;
+}
+
+char
+poly_cats_anatomy       (tFUNC *a_func)
+{
+   char        rce         =  -10;
+   char        x_vars, x_calls, x_graph, x_read, x_write, x_memory;
+   --rce;  if (a_func == NULL)  return rce;
+   x_vars   = a_func->WORK_FVARS  + a_func->WORK_GVARS;
+   x_calls  = a_func->WORK_LFUNCS + a_func->WORK_GFUNCS;
+   x_graph  = a_func->WORK_NCURSE + a_func->WORK_OPENGL + a_func->WORK_WINDOW + a_func->WORK_MYX;
+   x_read   = a_func->WORK_INPUT  + a_func->WORK_TREAD  + a_func->WORK_BREAD;
+   x_write  = a_func->WORK_OUTPUT + a_func->WORK_TWRITE + a_func->WORK_BWRITE;
+   x_memory = a_func->WORK_MEMORY;
+   poly_cats__anatomy  (a_func->STATS_RTYPE, x_vars, x_calls, x_graph, x_read, x_write, x_memory, a_func->anatomy);
+   return 0;
+}
+
+char
+poly_cats_function      (tFUNC *a_func)
+{
+   poly_cats__complexity    (a_func, '-', 'y', NULL);
+   poly_cats__integration   (a_func, '-', 'y', NULL);
+   poly_cats__watchpoints   (a_func, '-', 'y', NULL);
+   poly_cats_anatomy        (a_func);
+   return 0;
+}
+
+char*        /*-> create category headers for reporting -------[ ´          ]-*/ /*-ågs#´·4á3··á···´8·8´5··´21B2·á·æ¬å8á17··´E·Eá······´···´····æ¬å·····´······´····´117·æ-*/
 poly_cats_header        (int n, char *a_title, int a_curr, int a_total)
 {
    int         i           =    0;
@@ -881,9 +1239,10 @@ poly_cats_database      (tFUNC *a_func)
    x_func = a_func;
    poly_cats__single      (a_func, r);
    if (x_func != NULL && a_func->type == '_')   x_func = NULL;
-   poly_cats__complexity  ('l', x_func, 'y', a);
-   poly_cats__integration ('l', x_func, 'y', b);
-   poly_cats__watchpoints ('l', x_func, 'y', c);
+   poly_cats__complexity    (x_func, 'l', 'y', a);
+   poly_cats__integration   (x_func, 'l', 'y', b);
+   poly_cats__watchpoints   (x_func, 'l', 'y', c);
+   poly_cats_anatomy        (a_func);
    sprintf  (s_print, "%s  %s %s %s", r, a, b, c);
    if (a_func->type == '_')  strldchg (s_print, '-', ' ', LEN_RECD);
    else                      strldchg (s_print, '-', '·', LEN_RECD);
@@ -902,9 +1261,10 @@ poly_cats_comment       (tFUNC *a_func)
    x_func = a_func;
    poly_cats__single      (a_func, r);
    if (x_func != NULL && a_func->type == '_')   x_func = NULL;
-   poly_cats__complexity  ('-', x_func, 'y', a);
-   poly_cats__integration ('-', x_func, 'y', b);
-   poly_cats__watchpoints ('-', x_func, 'y', c);
+   poly_cats__complexity    (x_func, '-', 'y', a);
+   poly_cats__integration   (x_func, '-', 'y', b);
+   poly_cats__watchpoints   (x_func, '-', 'y', c);
+   poly_cats_anatomy        (a_func);
    sprintf (s_print, "%s¬%s¬%s", a, b, c);
    if (a_func->type == '_') {
       strldchg (s_print, '[', ' ', LEN_RECD);
@@ -930,16 +1290,17 @@ poly_cats_full          (tFUNC *a_func, char *a_out)
    x_func = a_func;
    poly_cats__single      (a_func, r);
    if (x_func != NULL && a_func->type == '_')   x_func = NULL;
-   poly_cats__complexity  ('l', x_func, 'y', a);
-   poly_cats__integration ('l', x_func, 'y', b);
-   poly_cats__watchpoints ('l', x_func, 'y', c);
+   poly_cats__complexity    (x_func, 'l', 'y', a);
+   poly_cats__integration   (x_func, 'l', 'y', b);
+   poly_cats__watchpoints   (x_func, 'l', 'y', c);
    sprintf (a_out, "%s  %s %s %s ", r, a, b, c);
    /*> strldchg (a_out, '-', '·', LEN_RECD);                                          <*/
    if (a_func->type == '_')  strldchg (a_out, '-', ' ', LEN_RECD);
    else                      strldchg (a_out, '-', '·', LEN_RECD);
-   poly_cats__complexity  ('-', x_func, 'y', a);
-   poly_cats__integration ('-', x_func, 'y', b);
-   poly_cats__watchpoints ('-', x_func, 'y', c);
+   poly_cats__complexity    (x_func, '-', 'y', a);
+   poly_cats__integration   (x_func, '-', 'y', b);
+   poly_cats__watchpoints   (x_func, '-', 'y', c);
+   poly_cats_anatomy        (a_func);
    sprintf (t    , " %s¬%s¬%s ", a, b, c);
    if (a_func->type == '_') {
       strldchg (t, '[', ' ', LEN_RECD);
@@ -1056,27 +1417,29 @@ poly_cats__unit      (char *a_question, int i)
    if        (strcmp (a_question, "complex"   )     == 0) {
       if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
       poly_cats__single      (u, r);
-      poly_cats__complexity  ('l', u, 'y', a);
+      poly_cats__complexity    (u, 'l', 'y', a);
       sprintf (unit_answer, "CATS complex(%2d) : %-17.17s %s [%s]", i, t, r, a);
    }
    else if   (strcmp (a_question, "integ"     )     == 0) {
       if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
       poly_cats__single      (u, r);
-      poly_cats__integration ('l', u, 'y', b);
+      poly_cats__integration (u, 'l', 'y', b);
       sprintf (unit_answer, "CATS integ  (%2d) : %-17.17s %s [%s]", i, t, r, b);
    }
    else if   (strcmp (a_question, "watch"     )     == 0) {
       if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
       poly_cats__single      (u, r);
-      poly_cats__watchpoints ('l', u, 'y', c);
+      poly_cats__watchpoints (u, 'l', 'y', c);
+      poly_cats_anatomy      (u);
       sprintf (unit_answer, "CATS watch  (%2d) : %-17.17s %s [%s]", i, t, r, c);
    }
    else if   (strcmp (a_question, "full"      )     == 0) {
       if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
       poly_cats__single      (u, r);
-      poly_cats__complexity  ('-', u, 'y', a);
-      poly_cats__integration ('-', u, 'y', b);
-      poly_cats__watchpoints ('-', u, 'y', c);
+      poly_cats__complexity    (u, '-', 'y', a);
+      poly_cats__integration   (u, '-', 'y', b);
+      poly_cats__watchpoints   (u, '-', 'y', c);
+      poly_cats_anatomy      (u);
       sprintf (unit_answer, "CATS full   (%2d) : %-17.17s %s %s %s %s", i, t, r, a, b, c);
    }
    else if   (strcmp (a_question, "header"    )     == 0) {

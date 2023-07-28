@@ -82,48 +82,36 @@ static void  o___HOOKING_________o () { return; }
 char
 poly_file_hook          (tPROJ *a_proj, tFILE *a_file)
 {
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    /*---(header)-------------------------*/
-   /*> DEBUG_DATA   yLOG_senter  (__FUNCTION__);                                      <*/
-   DEBUG_DATA   yLOG_enter  (__FUNCTION__);
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   /*> DEBUG_DATA   yLOG_spoint  (a_proj);                                            <*/
-   DEBUG_DATA   yLOG_point  ("a_proj", a_proj);
+   DEBUG_DATA   yLOG_point   ("a_proj"    , a_proj);
    --rce;  if (a_proj == NULL) {
-      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> DEBUG_DATA   yLOG_spoint  (a_file);                                            <*/
-   DEBUG_DATA   yLOG_point  ("a_file", a_file);
+   DEBUG_DATA   yLOG_point   ("a_file"    , a_file);
    --rce;  if (a_file == NULL) {
-      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> DEBUG_DATA   yLOG_spoint  (a_file->proj);                                      <*/
-   DEBUG_DATA   yLOG_point  ("->proj", a_file->proj);
+   DEBUG_DATA   yLOG_point   ("->proj"    , a_file->proj);
    --rce;  if (a_file->proj != NULL) {
-      /*> DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> DEBUG_DATA   yLOG_snote   (a_file->name);                                      <*/
-   DEBUG_DATA   yLOG_note   (a_file->name);
+   DEBUG_DATA   yLOG_note    (a_file->name);
    /*---(into linked list)---------------*/
-   /*> DEBUG_DATA   yLOG_sint    (a_file->proj->count);                               <* 
-    *> DEBUG_DATA   yLOG_spoint  (a_proj->head);                                      <* 
-    *> DEBUG_DATA   yLOG_spoint  (a_proj->tail);                                      <*/
-   DEBUG_DATA   yLOG_value   ("count", a_proj->count);
-   DEBUG_DATA   yLOG_point  ("head" , a_proj->head);
-   DEBUG_DATA   yLOG_point  ("tail", a_proj->tail);
+   DEBUG_DATA   yLOG_value   ("count"     , a_proj->count);
+   DEBUG_DATA   yLOG_point   ("->head"    , a_proj->head);
+   DEBUG_DATA   yLOG_point   ("->tail"    , a_proj->tail);
    if (a_proj->head == NULL) {
-      /*> DEBUG_DATA   yLOG_snote   ("first");                                        <*/
-      DEBUG_DATA   yLOG_note   ("first");
+      DEBUG_DATA   yLOG_note    ("first");
       a_proj->head = a_proj->tail = a_file;
    } else {
-      /*> DEBUG_DATA   yLOG_snote   ("append");                                       <*/
-      DEBUG_DATA   yLOG_note   ("append");
+      DEBUG_DATA   yLOG_note    ("append");
       a_file->prev        = a_proj->tail;
       a_proj->tail->next  = a_file;
       a_proj->tail        = a_file;
@@ -134,16 +122,14 @@ poly_file_hook          (tPROJ *a_proj, tFILE *a_file)
    ++a_proj->count;
    ++a_proj->COUNT_FILES;
    ++my.COUNT_FILES;
-   /*> DEBUG_DATA   yLOG_sint    (a_proj->count);                                     <*/
-   DEBUG_DATA   yLOG_value   ("count", a_proj->count);
+   DEBUG_DATA   yLOG_value   ("count"     , a_proj->count);
    /*---(complete)------------------------------*/
-   /*> DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                      <*/
-   DEBUG_DATA   yLOG_exit   (__FUNCTION__);
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-poly_file_unhook        (tFILE *a_file)
+poly_file__unhook       (tFILE *a_file)
 {
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
@@ -236,21 +222,40 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    strlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->type   = a_type;
    /*---(standard names to front)--------*/
-   if (strncmp (a_name, a_proj->name, strlen (a_proj->name)) == 0) x_prefix = 'Y';
+   if (strncmp (a_name, a_proj->name, strlen (a_proj->name)) == 0) {
+      DEBUG_DATA   yLOG_note    ("matches project prefix");
+      x_prefix = 'Y';
+   }
    /*---(headers to front)---------------*/
-   if (x_new->type == 'h')  x_type = 'H';
+   if (x_new->type == 'h') {
+      DEBUG_DATA   yLOG_note    ("header type");
+      x_type = 'H';
+   }
    /*---(units come last)----------------*/
-   if (strstr (x_new->name, ".unit")       != NULL)   x_prefix = 'Z';
+   if (strstr (x_new->name, ".unit")       != NULL) {
+      DEBUG_DATA   yLOG_note    ("unit test file");
+      x_prefix = 'Z';
+   }
    /*---(master to top of units)---------*/
-   if (strcmp (x_new->name, "master.unit") == 0)      x_type   = 'H';
-   /*---(link to project)----------------*/
+   if (strcmp (x_new->name, "master.unit") == 0) {
+      DEBUG_DATA   yLOG_note    ("master unit test file");
+      x_type   = 'H';
+   }
+   /*---(into temp btree)----------------*/
    sprintf (x_new->sort, "%c%c%s", x_prefix, x_type, x_new->name);
+   DEBUG_DATA   yLOG_info    ("sort"      , x_new->sort);
    rc = poly_file_hook (a_proj, x_new);
    DEBUG_DATA   yLOG_value   ("addfile"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*> rc = ySORT_hook (B_TEMP , x_new, x_new->sort, &x_new->btree);                  <* 
+    *> DEBUG_DATA   yLOG_value   ("temp"      , rc);                                  <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(into btree)---------------------*/
    rc = ySORT_hook (B_FILES, x_new, x_new->name, &x_new->btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
@@ -311,18 +316,24 @@ poly_file_remove        (tFILE **a_file)
    my.COUNT_CODE             -= x_file->COUNT_CODE ;
    my.COUNT_SLOCL            -= x_file->COUNT_SLOCL;
    /*---(purge assigned tags)------------*/
-   rc = poly_func_purge (x_file, '-');
-   DEBUG_DATA   yLOG_value   ("purge"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   DEBUG_DATA   yLOG_point   ("->proj"    , x_file->proj);
+   if (x_file->proj != NULL) {
+      rc = poly_func_purge (x_file, '-');
+      DEBUG_DATA   yLOG_value   ("purge"     , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(out of linked list)-------------*/
-   rc = poly_file_unhook (x_file);
-   DEBUG_DATA   yLOG_value   ("unhook"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   DEBUG_DATA   yLOG_point   ("->proj"    , x_file->proj);
+   if (x_file->proj != NULL) {
+      rc = poly_file__unhook (x_file);
+      DEBUG_DATA   yLOG_value   ("unhook"    , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(unhook from btree)--------------*/
    rc = ySORT_unhook (&x_file->btree);
@@ -358,6 +369,12 @@ poly_file_init          (void)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
    rc = ySORT_btree (B_FILES, "files");
+   DEBUG_PROG   yLOG_value   ("btree"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = ySORT_btree (B_TEMP , "temp" );
    DEBUG_PROG   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -527,8 +544,167 @@ poly_file__dgnome       (tPROJ *x_proj)
    return 0;
 }
 
+char
+poly_file__filter       (char a_name [LEN_TITLE], char a_units, char *r_type, char r_mans [LEN_LABEL])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         x_len       =    0;
+   char        x_point     =  '-';
+   char        x_point2    =  '-';
+   char        x_type      =  '-';
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (r_type  != NULL)  *r_type = '-';
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_name"     , a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   DEBUG_INPT   yLOG_info    ("a_name"     , a_name);
+   /*---(cut too short)---------------*/
+   x_len = strlen (a_name);
+   DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
+   if (x_len <  3)  {
+      DEBUG_INPT   yLOG_note    ("name too short, SKIP");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(cut too long)----------------*/
+   if (x_len > 50) {
+      DEBUG_INPT   yLOG_note    ("crazy long name, SKIP");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(hidden)-------------------------*/
+   if (a_name [0] == '.')  {
+      DEBUG_INPT   yLOG_note    ("hidden, SKIP");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(one character suffixes)------*/
+   x_point = a_name [x_len - 2];
+   DEBUG_INPT   yLOG_char    ("x_point"   , x_point);
+   if (x_point == '.') {
+      x_type = a_name [x_len - 1];
+      DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
+      if (strchr ("12345678", x_type) != NULL) {
+         DEBUG_INPT   yLOG_note    ("manual/documentation file");
+         if (r_mans != NULL)  r_mans [x_type - '1'] = x_type;
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      if (strchr ("ch", x_type) == NULL) {
+         DEBUG_INPT   yLOG_note    ("not a c or h file, SKIP");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      if (x_len > 7 && strcmp ("_unit.c", a_name + x_len - 7) == 0) {
+         DEBUG_INPT   yLOG_note    ("cut the unit testing code files, SKIP");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      if (strcmp ("master.h", a_name) == 0) {
+         DEBUG_INPT   yLOG_note    ("never look at testing header");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+   }
+   /*---(unit tests)------------------*/
+   else if (x_len >= 6) {
+      x_point  = a_name [x_len - 5];
+      x_point2 = a_name [x_len - 6];
+      DEBUG_INPT   yLOG_complex ("x_point"   , "%c %c", x_point, x_point2);
+      if (x_point != '.' && x_point2 != '.') {
+         DEBUG_INPT   yLOG_note    ("not the right length suffix, SKIP");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      if (strcmp ("unit" , a_name + x_len - 4) != 0 &&
+            strcmp ("sunit", a_name + x_len - 5) != 0) {
+         DEBUG_INPT   yLOG_note    ("not a unit suffix, SKIP");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      /*---(quick calloff)------------------*/
+      DEBUG_INPT   yLOG_char    ("g_unit"    , a_units);
+      if (a_units != 'y') {
+         DEBUG_INPT   yLOG_note    ("called with --nounit");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      x_type = POLY_UNIT;
+   }
+   /*---(all else)--------------------*/
+   else {
+      DEBUG_INPT   yLOG_note    ("bad suffix, SKIP");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(save-back)-----------------------------*/
+   if (r_type  != NULL)  *r_type = x_type;
+   /*---(complete)------------------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+char
+poly_file__sorting      (tPROJ *a_proj)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;          /* return code for errors         */
+   char        rc          =    0;          /* generic return code            */
+   tFILE      *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(update sorts)-------------------*/
+   rc = ySORT_prepare   (B_FILES);
+   DEBUG_SORT   yLOG_value   ("btree"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*> rc = ySORT_prepare   (B_TEMP );                                                <* 
+    *> DEBUG_SORT   yLOG_value   ("temp"       , rc);                                 <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
+   /*---(check count)--------------------*/
+   /*> DEBUG_INPT   yLOG_value   ("count"     , ySORT_count (B_TEMP ));               <*/
+   /*> --rce;  if (ySORT_count (B_TEMP ) <= 0) {                                      <* 
+    *>    DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return  rce;                                                                <* 
+    *> }                                                                              <*/
+   rc = poly_file__dgnome (a_proj);
+   DEBUG_INPT   yLOG_value   ("dgnome"    , rc);
+   /*---(add to project)------------------------*/
+   /*> x_curr = ySORT_by_cursor (B_TEMP , YDLST_HEAD, &x_curr);                       <* 
+    *> while (x_curr != NULL) {                                                       <* 
+    *>    rc = poly_file_hook (a_proj, x_curr);                                       <* 
+    *>    DEBUG_DATA   yLOG_value   ("hook"      , rc);                               <* 
+    *>    --rce;  if (rc < 0) {                                                       <* 
+    *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                           <* 
+    *>       return rce;                                                              <* 
+    *>    }                                                                           <* 
+    *>    x_curr = ySORT_by_cursor (B_TEMP , YDLST_NEXT, &x_curr);                    <* 
+    *> }                                                                              <*/
+   /*---(prepare temp)-------------------*/
+   rc = ySORT_purge     (B_TEMP );
+   DEBUG_SORT   yLOG_value   ("temp"       , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)------------------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 char         /*--> make a list of input files --------------------------------*/
-poly_file_review        (tPROJ *a_proj)
+poly_file_inventory     (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         rc          =    0;          /* generic return code            */
@@ -552,6 +728,13 @@ poly_file_review        (tPROJ *a_proj)
       return  rce;
    }
    DEBUG_INPT   yLOG_info    ("a_proj"     , a_proj->name);
+   /*---(prepare temp)-------------------*/
+   rc = ySORT_purge     (B_TEMP );
+   DEBUG_SORT   yLOG_value   ("temp"       , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(open dir)-----------------------*/
    x_dir = opendir(".");
    DEBUG_INPT   yLOG_point   ("x_dir"      , x_dir);
@@ -571,80 +754,16 @@ poly_file_review        (tPROJ *a_proj)
       /*---(filter by name)--------------*/
       strlcpy (x_name, x_file->d_name, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
-      x_len = strlen (x_name);
-      DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-      if (x_name [0] == '.')  {
-         DEBUG_INPT   yLOG_note    ("hidden, SKIP");
-         continue;
-      }
-      /*---(cut too short)---------------*/
-      if (x_len <  3)  {
-         DEBUG_INPT   yLOG_note    ("name too short, SKIP");
-         continue;
-      }
-      /*---(cut too long)----------------*/
-      if (x_len > 50) {
-         DEBUG_INPT   yLOG_note    ("crazy long name, SKIP");
-         continue;
-      }
-      /*---(one character suffixes)------*/
-      x_point = x_name [x_len - 2];
-      DEBUG_INPT   yLOG_char    ("x_point"   , x_point);
-      if (x_point == '.') {
-         x_type = x_name [x_len - 1];
-         DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
-         if (strchr ("12345678", x_type) != NULL) {
-            DEBUG_INPT   yLOG_note    ("manual/documentation file");
-            a_proj->manual [x_type - '1'] = x_type;
-            continue;
-         }
-         if (strchr ("ch", x_type) == NULL) {
-            DEBUG_INPT   yLOG_note    ("not a c or h file, SKIP");
-            continue;
-         }
-         if (x_len > 7 && strcmp ("_unit.c", x_name + x_len - 7) == 0) {
-            DEBUG_INPT   yLOG_note    ("cut the unit testing code files, SKIP");
-            continue;
-         }
-         if (strcmp ("master.h", x_name) == 0) {
-            DEBUG_INPT   yLOG_note    ("never look at testing header");
-            continue;
-         }
-      }
-      /*---(unit tests)------------------*/
-      else if (x_len >= 6) {
-         x_point  = x_name [x_len - 5];
-         x_point2 = x_name [x_len - 6];
-         DEBUG_INPT   yLOG_complex ("x_point"   , "%c %c", x_point, x_point2);
-         if (x_point != '.' && x_point2 != '.') {
-            DEBUG_INPT   yLOG_note    ("not the right length suffix, SKIP");
-            continue;
-         }
-         if (strcmp ("unit" , x_name + x_len - 4) != 0 &&
-             strcmp ("sunit", x_name + x_len - 5) != 0) {
-            DEBUG_INPT   yLOG_note    ("not a unit suffix, SKIP");
-            continue;
-         }
-         /*---(quick calloff)------------------*/
-         DEBUG_INPT   yLOG_char    ("g_unit"    , my.g_unit);
-         if (my.g_unit != 'y') {
-            DEBUG_INPT   yLOG_note    ("called with --nounit");
-            continue;
-         }
-         x_type = POLY_UNIT;
-      }
-      /*---(all else)--------------------*/
-      else {
-         DEBUG_INPT   yLOG_note    ("bad suffix, SKIP");
-         continue;
-      }
+      rc = poly_file__filter (x_name, my.g_unit, &x_type, a_proj->manual);
+      DEBUG_INPT   yLOG_value   ("filter"    , rc);
+      if (rc <= 0)   continue;
       /*---(save)------------------------*/
       x_curr = NULL;
       poly_file_add (a_proj, x_name, x_type, &x_curr);
       ++x_good;
       DEBUG_INPT   yLOG_note    ("added to inventory");
       /*---(check globals)---------------*/
-      if (x_type == 'h')  poly_vars_inventory (x_curr);
+      /*> if (x_type == 'h')  poly_vars_inventory (x_curr);                           <*/
       /*---(done)------------------------*/
    }
    DEBUG_INPT   yLOG_value   ("x_read"    , x_read);
@@ -653,21 +772,9 @@ poly_file_review        (tPROJ *a_proj)
    DEBUG_INPT   yLOG_note    ("closing directory");
    rc = closedir (x_dir);
    DEBUG_INPT   yLOG_value   ("close_rc"  , rc);
-   /*---(check count)--------------------*/
-   DEBUG_INPT   yLOG_value   ("count"     , ySORT_count (B_FILES));
-   --rce;  if (ySORT_count (B_FILES) <= 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return  rce;
-   }
    /*---(prepare for use)----------------*/
-   rc = poly_file__dgnome  (a_proj);
-   DEBUG_SORT   yLOG_value   ("files sort" , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   rc = ySORT_prepare   (B_FILES);
-   DEBUG_SORT   yLOG_value   ("btree"      , rc);
+   rc = poly_file__sorting   (a_proj);
+   DEBUG_SORT   yLOG_value   ("sorting"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -675,7 +782,7 @@ poly_file_review        (tPROJ *a_proj)
    /*> poly_extern_list ();                                                           <*/
    /*---(complete)------------------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
+   return x_good;
 }
 
 

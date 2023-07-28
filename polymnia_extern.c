@@ -81,7 +81,7 @@ static char  *s_filesys = " remove rename tmpfile tmpnam dup dup2 getwd lockf re
 static char  *s_systems = " getenv system gedgroups gethostid getlogin getlogin_r getopt getpgid pipe pread pwrite ";
 static char  *s_process = " execl execle execlp execv execve execvp fork vfork nice pause wait waitpid waitid kill clone signal sigaction wait4 getpgid getpgrp getegid geteuid getgid getpid getppid getsid getuid setegid seteuid setgid setpgid setpgrp setregid setreuid setsid ";
 
-char         /*-[ categorize external functions -------------[ leaf  [fc3---·916·19-·K-1-]¬[11---·R-·R--R---·---·----]¬[?#p-#·N-1--M·----]¬*/
+char         /*-> categorize external functions ---------------[ ´········· ]-*/ /*-åfc·´·3á3··á···´F·8´1A·´1·#1·á·æ¬å1á1···´#·#á··#····´···´····æ¬å·····´2···2··´····´····æ-*/
 poly_extern__mark        (tEXTERN *a_curr, char *a_lib, char *a_name)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -90,31 +90,53 @@ poly_extern__mark        (tEXTERN *a_curr, char *a_lib, char *a_name)
    a_curr->cat    = '-';
    a_curr->sub    = '-';
    /*---(ncurses)------------------------*/
-   if      (strcmp  (a_lib, "curses.h"   ) == 0)   a_curr->cat = 'N';
-   else if (strcmp  (a_lib, "ncurses.h"  ) == 0)   a_curr->cat = 'N';
+   if      (strcmp  (a_lib, "curses.h"     ) == 0)   a_curr->cat = 'N';
+   else if (strcmp  (a_lib, "ncurses.h"    ) == 0)   a_curr->cat = 'N';
    /*---(opengl)-------------------------*/
-   else if (strcmp  (a_lib, "gl.h"       ) == 0)   a_curr->cat = 'O';
-   else if (strcmp  (a_lib, "glx.h"      ) == 0)   a_curr->cat = 'O';
-   else if (strcmp  (a_lib, "glu.h"      ) == 0)   a_curr->cat = 'O';
+   else if (strcmp  (a_lib, "gl.h"         ) == 0)   a_curr->cat = 'O';
+   else if (strcmp  (a_lib, "glx.h"        ) == 0)   a_curr->cat = 'O';
+   else if (strcmp  (a_lib, "glu.h"        ) == 0)   a_curr->cat = 'O';
    /*---(xwindows)-----------------------*/
-   else if (strcmp  (a_lib, "X.h"        ) == 0)   a_curr->cat = 'X';
-   else if (strcmp  (a_lib, "Xlib.h"     ) == 0)   a_curr->cat = 'X';
-   else if (strcmp  (a_lib, "Xutil.h"    ) == 0)   a_curr->cat = 'X';
-   else if (strcmp  (a_lib, "Xatom.h"    ) == 0)   a_curr->cat = 'X';
-   else if (strcmp  (a_lib, "keysym.h"   ) == 0)   a_curr->cat = 'X';
-   /*---(custom libraries)---------------*/
-   else if (strcmp  (a_lib, "yFONT.h"    ) == 0)   a_curr->cat = 'y';
-   else if (strcmp  (a_lib, "yGLTEX.h"   ) == 0)   a_curr->cat = 'y';
-   else if (strcmp  (a_lib, "yCOLOR.h"   ) == 0)   a_curr->cat = 'y';
-   else if (strcmp  (a_lib, "yX11.h"     ) == 0)   a_curr->cat = 'y';
-   else if (strcmp  (a_lib, "yVIKEYS.h"  ) == 0)   a_curr->cat = 'y';
-   else if (strcmp  (a_lib, "yLOG.h"     ) == 0) {
+   else if (strcmp  (a_lib, "X.h"          ) == 0)   a_curr->cat = 'X';
+   else if (strcmp  (a_lib, "Xlib.h"       ) == 0)   a_curr->cat = 'X';
+   else if (strcmp  (a_lib, "Xutil.h"      ) == 0)   a_curr->cat = 'X';
+   else if (strcmp  (a_lib, "Xatom.h"      ) == 0)   a_curr->cat = 'X';
+   else if (strcmp  (a_lib, "keysym.h"     ) == 0)   a_curr->cat = 'X';
+   /*---(core libraries)-----------------*/
+   else if (strcmp  (a_lib, "ySTR.h"       ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "ySTR_solo.h"  ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "yVAR.h"       ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "yLOG.h"       ) == 0) {
       if (strncmp (a_name, "yLOG_s"  ,  6) == 0)   a_curr->cat = 'd';
       else                                         a_curr->cat = 'D';
       if      (strstr (a_name, "enter") != NULL)   a_curr->sub = 'e';
+      else if (strstr (a_name, "exitr") != NULL)   a_curr->sub = 'r';
       else if (strstr (a_name, "exit" ) != NULL)   a_curr->sub = 'x';
    }
-   else if (strcmp  (a_lib, "yURG.h"     ) == 0)   a_curr->cat = 'D';
+   else if (strcmp  (a_lib, "yURG.h"       ) == 0)   a_curr->cat = 'D';
+   else if (strcmp  (a_lib, "yDLST.h"      ) == 0)   a_curr->cat = 'y';
+   else if (strcmp  (a_lib, "yDLST_solo.h" ) == 0)   a_curr->cat = 'y';
+   /*---(vi-keys core)-------------------*/
+   else if (strcmp  (a_lib, "yMODE.h"      ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "yKEYS.h"      ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "yFILE.h"      ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "yVIEW.h"      ) == 0)   a_curr->cat = 'V';
+   /*---(vi-keys core)-------------------*/
+   else if (strcmp  (a_lib, "yMAP.h"       ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "yCMD.h"       ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "yMACRO.h"     ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "ySCR.h"       ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "yMARK.h"      ) == 0)   a_curr->cat = 'V';
+   /*---(vi-keys overall)----------------*/
+   else if (strcmp  (a_lib, "yVIHUB.h"     ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "yVIOPENGL.h"  ) == 0)   a_curr->cat = 'V';
+   else if (strcmp  (a_lib, "yVICURSES.h"  ) == 0)   a_curr->cat = 'V';
+   /*---(custom libraries)---------------*/
+   else if (strcmp  (a_lib, "yFONT.h"      ) == 0)   a_curr->cat = 'Y';
+   else if (strcmp  (a_lib, "yGLTEX.h"     ) == 0)   a_curr->cat = 'Y';
+   else if (strcmp  (a_lib, "yCOLOR.h"     ) == 0)   a_curr->cat = 'Y';
+   else if (strcmp  (a_lib, "yCOLOR_solo.h") == 0)   a_curr->cat = 'Y';
+   else if (strcmp  (a_lib, "yX11.h"       ) == 0)   a_curr->cat = 'Y';
    else if (a_lib [0] == 'y' && strchr (YSTR_UPPER, a_lib [1]) != NULL)  a_curr->cat = 'Y';
    /*---(standard)-----------------------*/
    else {
@@ -208,12 +230,12 @@ poly_extern__memory     (tEXTERN *a_ext)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char poly_extern__new   (tEXTERN **a_new) { return poly_shared_new  ("ext" , sizeof (tEXTERN), a_new, NULL, '-', poly_extern__wipe); }
-char poly_extern_force  (tEXTERN **a_new) { return poly_shared_new  ("ext" , sizeof (tEXTERN), a_new, NULL, 'y', poly_extern__wipe); }
-char poly_extern__free  (tEXTERN **a_old) { return poly_shared_free ("ext" , a_old, NULL); }
+char poly_extern__new   (tEXTERN **r_new) { return poly_shared_new  ("ext" , sizeof (tEXTERN), r_new, NULL, '-', poly_extern__wipe); }
+char poly_extern_force  (tEXTERN **r_new) { return poly_shared_new  ("ext" , sizeof (tEXTERN), r_new, NULL, 'y', poly_extern__wipe); }
+char poly_extern__free  (tEXTERN **r_old) { return poly_shared_free ("ext" , r_old, NULL); }
 
-char poly_extern__lnew  (tEXTERN **a_new) { return poly_shared_new  ("elib", sizeof (tELIB), a_new, NULL, '-', poly_elib__wipe); }
-char poly_extern__lfree (tEXTERN **a_old) { return poly_shared_free ("elib", a_old, NULL); }
+char poly_extern__lnew  (tEXTERN **r_new) { return poly_shared_new  ("elib", sizeof (tELIB), r_new, NULL, '-', poly_elib__wipe); }
+char poly_extern__lfree (tEXTERN **r_old) { return poly_shared_free ("elib", r_old, NULL); }
 
 
 
@@ -494,7 +516,8 @@ poly_extern_load        (void)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> poly_extern_list ();                                                           <*/
+   /*---(debugging)----------------------*/
+   poly_extern_dump ();
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -634,6 +657,42 @@ char poly_extern_by_index    (int n, tEXTERN **a_ext)         { return ySORT_by_
 char poly_extern_by_cursor   (char a_dir, tEXTERN **a_ext)    { return ySORT_by_cursor (B_EXTERN, a_dir, a_ext); }
 char poly_extern_list        (void)                           { return ySORT_list      (B_EXTERN); }
 
+/*> struct      cELIB {                                                                <* 
+ *>    /+---(info)--------------+/                                                     <* 
+ *>    char        name        [LEN_LABEL];                                            <* 
+ *>    int         wuse;                                                               <* 
+ *>    /+---(extern)------------+/                                                     <* 
+ *>    int         count;                                                              <* 
+ *>    tEXTERN    *head;                                                               <* 
+ *>    tEXTERN    *tail;                                                               <* 
+ *>    /+---(btree)-------------+/                                                     <* 
+ *>    tBTREE     *btree;                                                              <* 
+ *>    /+---(done)--------------+/                                                     <* 
+ *> };                                                                                 <* 
+ *>                                                                                    <* 
+ *>                                                                                    <* 
+ *> /+----------+-----------+-----------+-----------+-----------+-----------+-----+/   <* 
+ *> struct      cEXTERN {                                                              <* 
+ *>    /+---(information)-------+/                                                     <* 
+ *>    tELIB      *elib;                                                               <* 
+ *>    char        name        [LEN_TITLE];                                            <* 
+ *>    int         line;                                                               <* 
+ *>    char        type;                                                               <* 
+ *>    char        cat;                                                                <* 
+ *>    char        sub;                                                                <* 
+ *>    int         count;                                                              <*/
+
+char
+poly_extern_dump         (void)
+{
+   tEXTERN    *x_ext       = NULL;
+   poly_extern_by_cursor (YDLST_HEAD, &x_ext);
+   while (x_ext != NULL) {
+      printf ("%-20.20s  %-30.30s  %4d  %c  %c  %c\n", x_ext->elib->name, x_ext->name, x_ext->line, x_ext->type, x_ext->cat, x_ext->sub);
+      poly_extern_by_cursor (YDLST_NEXT, &x_ext);
+   }
+   return 0;
+}
 
 
 /*====================------------------------------------====================*/
@@ -642,7 +701,7 @@ char poly_extern_list        (void)                           { return ySORT_lis
 static void  o___MASS____________o () { return; }
 
 char
-poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, tFUNC **a_dst, tEXTERN **a_ext)
+poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, tFUNC **r_dst, tEXTERN **r_ext)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -668,24 +727,24 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, 
    }
    DEBUG_INPT   yLOG_info    ("a_file"    , a_file);
    DEBUG_INPT   yLOG_value   ("a_line"    , a_line);
-   DEBUG_INPT   yLOG_point   ("a_src"     , a_src);
-   --rce;  if (a_src == NULL) {
+   DEBUG_INPT   yLOG_point   ("r_src"     , r_src);
+   --rce;  if (r_src == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   *a_src = NULL;
-   DEBUG_INPT   yLOG_point   ("a_dst"     , a_dst);
-   --rce;  if (a_dst == NULL) {
+   *r_src = NULL;
+   DEBUG_INPT   yLOG_point   ("r_dst"     , r_dst);
+   --rce;  if (r_dst == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   *a_dst = NULL;
-   DEBUG_INPT   yLOG_point   ("a_ext"     , a_ext);
-   --rce;  if (a_ext == NULL) {
+   *r_dst = NULL;
+   DEBUG_INPT   yLOG_point   ("r_ext"     , r_ext);
+   --rce;  if (r_ext == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   *a_ext = NULL;
+   *r_ext = NULL;
    /*---(idenfify file)---------------*/
    poly_file_by_name (a_file, &x_file);
    DEBUG_INPT   yLOG_point   ("x_file"    , x_file);
@@ -695,41 +754,41 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, 
    }
    DEBUG_INPT   yLOG_info    ("file name" , x_file->name);
    /*---(get source tag)--------------*/
-   rc = poly_func_by_line (x_file, a_line, a_src);
-   DEBUG_INPT   yLOG_point   ("*a_scr"    , *a_src);
-   --rce;  if (*a_src == NULL) {
+   rc = poly_func_by_line (x_file, a_line, r_src);
+   DEBUG_INPT   yLOG_point   ("*a_scr"    , *r_src);
+   --rce;  if (*r_src == NULL) {
       DEBUG_INPT   yLOG_note    ("function not found");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_info    ("->name"    , (*a_src)->name);
-   DEBUG_INPT   yLOG_info    ("->file"    , (*a_src)->file->name);
-   DEBUG_INPT   yLOG_info    ("->proj"    , (*a_src)->file->proj->name);
-   x_len = strlen ((*a_src)->file->proj->name);
-   if ((*a_src)->file->proj->name [0] == 'y') {
-      if (strchr (YSTR_UPPER, (*a_src)->file->proj->name [1]) != NULL) {
+   DEBUG_INPT   yLOG_info    ("->name"    , (*r_src)->name);
+   DEBUG_INPT   yLOG_info    ("->file"    , (*r_src)->file->name);
+   DEBUG_INPT   yLOG_info    ("->proj"    , (*r_src)->file->proj->name);
+   x_len = strlen ((*r_src)->file->proj->name);
+   if ((*r_src)->file->proj->name [0] == 'y') {
+      if (strchr (YSTR_UPPER, (*r_src)->file->proj->name [1]) != NULL) {
          DEBUG_INPT   yLOG_note    ("found a heatherly library reference");
-         strlcpy (x_proj, (*a_src)->file->proj->name, LEN_TITLE);
+         strlcpy (x_proj, (*r_src)->file->proj->name, LEN_TITLE);
       }
    }
    /*---(get destination tag)---------*/
-   poly_func_by_name (a_func, a_dst);
-   DEBUG_INPT   yLOG_point   ("*a_dst"    , *a_dst);
-   if (*a_dst != NULL) {
-      DEBUG_INPT   yLOG_info    ("->name"    , (*a_dst)->name);
-      DEBUG_INPT   yLOG_info    ("->file"    , (*a_dst)->file->name);
-      DEBUG_INPT   yLOG_info    ("->proj"    , (*a_dst)->file->proj->name);
+   poly_func_by_name (a_func, r_dst);
+   DEBUG_INPT   yLOG_point   ("*r_dst"    , *r_dst);
+   if (*r_dst != NULL) {
+      DEBUG_INPT   yLOG_info    ("->name"    , (*r_dst)->name);
+      DEBUG_INPT   yLOG_info    ("->file"    , (*r_dst)->file->name);
+      DEBUG_INPT   yLOG_info    ("->proj"    , (*r_dst)->file->proj->name);
    }
    /*---(get external tag)------------*/
-   poly_extern_by_name (a_func, a_ext);
-   DEBUG_INPT   yLOG_point   ("*a_ext"    , *a_ext);
-   if (*a_ext != NULL)  {
-      DEBUG_INPT   yLOG_info    ("->name"    , (*a_ext)->elib->name);
-      if      (strncmp (x_proj, (*a_ext)->elib->name, x_len) == 0)  *a_ext = NULL;
-      else if (strcmp  (x_proj, "ySTR") == 0 && strncmp ((*a_ext)->name, "strl", 4) == 0)  *a_ext = NULL;
+   poly_extern_by_name (a_func, r_ext);
+   DEBUG_INPT   yLOG_point   ("*r_ext"    , *r_ext);
+   if (*r_ext != NULL)  {
+      DEBUG_INPT   yLOG_info    ("->name"    , (*r_ext)->elib->name);
+      if      (strncmp (x_proj, (*r_ext)->elib->name, x_len) == 0)  *r_ext = NULL;
+      else if (strcmp  (x_proj, "ySTR") == 0 && strncmp ((*r_ext)->name, "strl", 4) == 0)  *r_ext = NULL;
    }
    /*---(mystry)----------------------*/
-   --rce;  if (*a_dst == NULL && *a_ext == NULL) {
+   --rce;  if (*r_dst == NULL && *r_ext == NULL) {
       /*> if (x_mystry %  5 == 0)  fprintf (s_mystry, "¦");                                                                                           <* 
        *> if (x_mystry % 25 == 0)  fprintf (s_mystry, "##---calling-file-------   line   ---calling-function------   ---mystery-function------¦¦");   <* 
        *> fprintf (s_mystry, "%-25.25s  %4d   %-25.25s   %-25.25s¦",                                                                                  <* 
@@ -746,6 +805,231 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **a_src, 
 }
 
 char
+poly_extern__testing    (void)
+{
+   poly_extern__testing ();
+}
+
+char
+poly_extern__scope      (cchar a_recurse, cchar a_local, cchar a_global, int *r_funcs, int *r_recurse, int *r_calls, int *r_lfunc, int *r_lcall, int *r_gfunc, int *r_gcall)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_senter  (__FUNCTION__);
+   /*---(always)-------------------------*/
+   if (r_funcs   != NULL)  ++(*r_funcs);
+   /*---(recursive)----------------------*/
+   DEBUG_INPT   yLOG_schar   (a_recurse);
+   if (a_recurse == 1) {
+      DEBUG_INPT   yLOG_snote   ("recursive");
+      if (r_funcs   != NULL)  --(*r_funcs);
+      if (r_recurse != NULL)  ++(*r_recurse);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 1;
+   }
+   /*---(file/local)---------------------*/
+   DEBUG_INPT   yLOG_schar   (a_local);
+   if (a_local   == 1) {
+      DEBUG_INPT   yLOG_snote   ("local");
+      if (r_lfunc   != NULL)  ++(*r_lfunc);
+      if (r_calls   != NULL)  ++(*r_calls);
+      if (r_lcall   != NULL)  ++(*r_lcall);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 1;
+   }
+   /*---(global)-------------------------*/
+   DEBUG_INPT   yLOG_schar   (a_global);
+   if (a_global  == 1) {
+      DEBUG_INPT   yLOG_snote   ("global");
+      if (r_gfunc   != NULL)  ++(*r_gfunc);
+      if (r_calls   != NULL)  ++(*r_calls);
+      if (r_gcall   != NULL)  ++(*r_gcall);
+      DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+      return 1;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_snote   ("external");
+   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+poly_extern__debug      (cchar a_cat, cchar a_sub, int *r_ecount, int *r_dfuncs, int *r_dlong, int *r_dshort, int *r_denter, int *r_dexitr, int *r_dexit)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_schar   (a_cat);
+   --rce;  if (a_cat == 0 || strchr ("Dd", a_cat) == NULL) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_schar   (a_sub);
+   /*---(all)----------------------------*/
+   if (r_ecount != NULL)  ++(*r_ecount);
+   if (r_dfuncs != NULL)  ++(*r_dfuncs);
+   /*---(format)-------------------------*/
+   switch (a_cat) {
+   case 'D' :
+      DEBUG_INPT   yLOG_snote   ("long");
+      if (r_dlong  != NULL)  ++(*r_dlong );
+      break;
+   case 'd' :
+      DEBUG_INPT   yLOG_snote   ("short");
+      if (r_dshort != NULL)  ++(*r_dshort);
+      break;
+   }
+   /*---(function)-----------------------*/
+   switch (a_sub) {
+   case 'e' :
+      DEBUG_INPT   yLOG_snote   ("enter");
+      if (r_denter != NULL)  ++(*r_denter);
+      break;
+   case 'r' :
+      DEBUG_INPT   yLOG_snote   ("exitr");
+      if (r_dexitr != NULL)  ++(*r_dexitr);
+      break;
+   case 'x' :
+      DEBUG_INPT   yLOG_snote   ("exit");
+      if (r_dexit  != NULL)  ++(*r_dexit );
+      break;
+   default  :
+      DEBUG_INPT   yLOG_snote   ("non-recordable");
+      break;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+   return 1;
+}
+
+char
+poly_extern__cstd       (cchar a_cat, cchar a_sub, int *r_ecount, int *r_cstd, int *r_in, int *r_tin, int *r_bin, int *r_out, int *r_tout, int *r_bout, int *r_mem, int *r_proc, int *r_file, int *r_ops)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_schar   (a_cat);
+   --rce;  if (a_cat != 'C') {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_schar   (a_sub);
+   /*---(all)----------------------------*/
+   if (r_ecount != NULL)  ++(*r_ecount);
+   if (r_cstd   != NULL)  ++(*r_cstd  );
+   DEBUG_INPT   yLOG_snote   ("added to cstd");
+   /*---(function)-----------------------*/
+   switch (a_sub) {
+   case 'i' :
+      DEBUG_INPT   yLOG_snote   ("stdin");
+      if (r_in     != NULL)  ++(*r_in    );
+      break;
+   case 'r' :
+      DEBUG_INPT   yLOG_snote   ("text read");
+      if (r_tin    != NULL)  ++(*r_tin   );
+      break;
+   case 'R' :
+      DEBUG_INPT   yLOG_snote   ("binary read");
+      if (r_bin    != NULL)  ++(*r_bin   );
+      break;
+   case 'o' :
+      DEBUG_INPT   yLOG_snote   ("stdout");
+      if (r_out    != NULL)  ++(*r_out   );
+      break;
+   case 'w' :
+      DEBUG_INPT   yLOG_snote   ("text write");
+      if (r_tout   != NULL)  ++(*r_tout  );
+      break;
+   case 'W' :
+      DEBUG_INPT   yLOG_snote   ("binary write");
+      if (r_bout   != NULL)  ++(*r_bout  );
+      break;
+   case 'm' :
+      DEBUG_INPT   yLOG_snote   ("direct memory");
+      if (r_mem    != NULL)  ++(*r_mem   );
+      break;
+   case 'p' :
+      DEBUG_INPT   yLOG_snote   ("proc call");
+      if (r_proc   != NULL)  ++(*r_proc  );
+      break;
+   case 'f' :
+      DEBUG_INPT   yLOG_snote   ("filesys call");
+      if (r_file   != NULL)  ++(*r_file  );
+      break;
+   case 's' :
+      DEBUG_INPT   yLOG_snote   ("opsys call");
+      if (r_ops    != NULL)  ++(*r_ops   );
+      break;
+   default  :
+      DEBUG_INPT   yLOG_snote   ("sub is non-recordable");
+      break;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+   return 1;
+}
+
+char
+poly_extern__outside    (cchar a_cat, cchar a_sub, int *r_ecount, int *r_ofunc, int *r_ncurse, int *r_opengl, int *r_window, int *r_myx, int *r_ylib, int *r_vikey)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_schar   (a_cat);
+   DEBUG_INPT   yLOG_schar   (a_sub);
+   /*---(all)----------------------------*/
+   if (r_ecount != NULL)  ++(*r_ecount);
+   /*---(function)-----------------------*/
+   switch (a_cat) {
+   case 'N' :
+      DEBUG_INPT   yLOG_snote   ("curses");
+      if (r_ofunc  != NULL)  ++(*r_ofunc );
+      if (r_ncurse != NULL)  ++(*r_ncurse);
+      break;
+   case 'O' :
+      DEBUG_INPT   yLOG_snote   ("opengl");
+      if (r_ofunc  != NULL)  ++(*r_ofunc );
+      if (r_opengl != NULL)  ++(*r_opengl);
+      break;
+   case 'X' :
+      DEBUG_INPT   yLOG_snote   ("windows");
+      if (r_ofunc  != NULL)  ++(*r_ofunc );
+      if (r_window != NULL)  ++(*r_window);
+      break;
+   case 'y' :
+      DEBUG_INPT   yLOG_snote   ("core ylibs");
+      if (r_ylib   != NULL)  ++(*r_ylib  );
+      break;
+   case 'Y' :
+      DEBUG_INPT   yLOG_snote   ("graph ylibs");
+      if (r_myx    != NULL)  ++(*r_myx   );
+      if (r_ylib   != NULL)  ++(*r_ylib  );
+      break;
+   case 'V' :
+      DEBUG_INPT   yLOG_snote   ("vi-keys");
+      if (r_vikey  != NULL)  ++(*r_vikey );
+      break;
+   case '-' :
+      DEBUG_INPT   yLOG_snote   ("misc");
+      if (r_ofunc  != NULL)  ++(*r_ofunc );
+      break;
+   default  :
+      DEBUG_INPT   yLOG_snote   ("non-recordable");
+      break;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
+   return 1;
+}
+
+char
 poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -758,6 +1042,9 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    tFILE      *x_file      = NULL;
    char        x_cat       =  '-';
    char        x_sub       =  '-';
+   char        x_recurse   =    0;
+   char        x_local     =    0;
+   char        x_global    =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -775,6 +1062,7 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
       return rce;
    }
    if (a_ext != NULL) {
+      DEBUG_INPT   yLOG_info    ("EXT"       , a_ext->name);
       x_cat = a_ext->cat;
       DEBUG_INPT   yLOG_char    ("x_cat"     , x_cat);
       x_sub = a_ext->sub;
@@ -786,96 +1074,23 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
     *>    a_ext = NULL;                                                                         <* 
     *>    DEBUG_INPT   yLOG_note    ("nulled out a_ext");                                       <* 
     *> }                                                                                        <*/
-   /*---(general)------------------------*/
+
+   /*---(intra-project)------------------*/
+   if (a_dst != NULL) {
+      x_recurse = (a_src == a_dst);
+      x_local   = (a_src->file == a_dst->file);
+      x_global  = (a_src->file->proj == a_dst->file->proj);
+      rc = poly_extern__scope  (x_recurse, x_local, x_global, &(a_src->WORK_FUNCS), &(a_src->WORK_RECURS), &(a_dst->WORK_ACALLS), &(a_src->WORK_LFUNCS), &(a_dst->WORK_LCALLS), &(a_src->WORK_GFUNCS), &(a_dst->WORK_GCALLS));
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
+   /*---(external)-----------------------*/
+   rc = 0;
    ++a_src->WORK_FUNCS;
-   /*---(recursive)----------------------*/
-   if (a_src == a_dst) {
-      DEBUG_INPT   yLOG_note    ("found a recursive reference");
-      ++a_src->WORK_RECURS;
-      --a_src->WORK_FUNCS;
-   }
-   /*---(internal)-----------------------*/
-   else if (a_dst != NULL && a_ext == NULL) {
-      DEBUG_INPT   yLOG_note    ("found a local/global internal call");
-      DEBUG_INPT   yLOG_point   ("a_src"     , a_src);
-      DEBUG_INPT   yLOG_point   ("->file"    , a_src->file);
-      DEBUG_INPT   yLOG_point   ("->work"    , a_src->work);
-      DEBUG_INPT   yLOG_point   ("a_dst"     , a_dst);
-      DEBUG_INPT   yLOG_point   ("->file"    , a_dst->file);
-      DEBUG_INPT   yLOG_point   ("->work"    , a_dst->work);
-      if      (a_src->file == a_dst->file) {
-         ++a_src->WORK_LFUNCS;
-         ++a_dst->WORK_LCALLS;
-      }
-      else if (a_src->file->proj == a_dst->file->proj) {
-         ++a_src->WORK_GFUNCS;
-         ++a_dst->WORK_GCALLS;
-      }
-   }
-   /*---(debugging)----------------------*/
-   else if (strchr ("Dd", x_cat) != NULL) {
-      DEBUG_INPT   yLOG_note    ("found debugging code");
-      ++a_src->WORK_DFUNCS;
-      ++a_ext->count;
-      switch (x_cat) {
-      case 'd' :
-         ++a_src->WORK_DSHORT;
-         switch (x_sub) {
-         case 'e' :   ++a_src->WORK_DENTER;      break;
-         case 'x' :   ++a_src->WORK_DEXIT;       break;
-         }
-         break;
-      case 'D' :
-         ++a_src->WORK_DLONG;
-         switch (x_sub) {
-         case 'e' :   ++a_src->WORK_DENTER;      break;
-         case 'x' :   ++a_src->WORK_DEXIT;       break;
-         }
-         break;
-      }
-   }
-   /*---(standard library)---------------*/
-   /*> else if (strchr ("owWirRmpfsTC", a_ext->sub) != NULL) {                        <*/
-   else if (x_cat == 'C') {
-      DEBUG_INPT   yLOG_note    ("found a standard c library reference");
-      ++a_src->WORK_CSTD;
-      ++a_ext->count;
-      switch (x_sub) {
-      case 'o' : ++a_src->WORK_OUTPUT;           break;
-      case 'w' : ++a_src->WORK_TWRITE;           break;
-      case 'W' : ++a_src->WORK_BWRITE;           break;
-      case 'i' : ++a_src->WORK_INPUT;            break;
-      case 'r' : ++a_src->WORK_TREAD;            break;
-      case 'R' : ++a_src->WORK_BREAD;            break;
-      case 'm' : ++a_src->WORK_MEMORY;           break;
-      case 'p' : ++a_src->WORK_PROCS;            break;
-      case 'f' : ++a_src->WORK_FILESYS;          break;
-      case 's' : ++a_src->WORK_OPSYS;            break;
-      }
-   }
-   /*---(other libraries)----------------*/
-   else {
-      DEBUG_INPT   yLOG_note    ("found outside library reference");
-      ++a_ext->count;
-      switch (x_cat) {
-      case 'N' : ++a_src->WORK_NCURSE;
-                 ++a_src->WORK_OFUNCS;
-                 break;
-      case 'O' : ++a_src->WORK_OPENGL;
-                 ++a_src->WORK_OFUNCS;
-                 break;
-      case 'X' : ++a_src->WORK_WINDOW;
-                 ++a_src->WORK_OFUNCS;
-                 break;
-      case 'y' : ++a_src->WORK_MYX;
-      case 'Y' : ++a_src->WORK_YLIB;
-                 DEBUG_INPT   yLOG_note    ("found yLIB library reference");
-                 poly_ylib_add (a_src, a_ext, a_line, NULL);
-                 break;
-      case '-' : ++a_src->WORK_OFUNCS;
-                 break;
-      }
-   }
+   if (rc != 1)  rc = poly_extern__debug   (x_cat, x_sub, &(a_ext->count), &(a_src->WORK_DFUNCS), &(a_src->WORK_DLONG ), &(a_src->WORK_DSHORT), &(a_src->WORK_DENTER), &(a_src->WORK_DEXITR), &(a_src->WORK_DEXIT));
+   if (rc != 1)  rc = poly_extern__cstd    (x_cat, x_sub, &(a_ext->count), &(a_src->WORK_CSTD  ), &(a_src->WORK_INPUT ), &(a_src->WORK_TREAD ), &(a_src->WORK_BREAD ), &(a_src->WORK_OUTPUT), &(a_src->WORK_TWRITE), &(a_src->WORK_BWRITE), &(a_src->WORK_MEMORY), &(a_src->WORK_PROCS ), &(a_src->WORK_FILESYS), &(a_src->WORK_OPSYS));
+   if (rc != 1)  rc = poly_extern__outside (x_cat, x_sub, &(a_ext->count), &(a_src->WORK_OFUNCS), &(a_src->WORK_NCURSE), &(a_src->WORK_OPENGL), &(a_src->WORK_WINDOW), &(a_src->WORK_MYX   ), &(a_src->WORK_YLIB  ), &(a_src->WORK_VIKEYS));
+   if (x_sub == 'Y')  poly_ylib_add (a_src, a_ext, a_line, NULL);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;

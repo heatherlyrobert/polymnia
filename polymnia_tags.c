@@ -153,7 +153,7 @@ poly_tags_inventory     (tFILE *a_file)
       }
       /*---(handle locals)------------------*/
       if (x_type == 'l') {
-         DEBUG_INPT   yLOG_note    ("found a local");
+         DEBUG_INPT   yLOG_note    ("found a file/static variable");
          if (a_file->tail == NULL) {
             DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
@@ -174,6 +174,7 @@ poly_tags_inventory     (tFILE *a_file)
          if (strncmp ("o___", x_name, 4) == 0)   x_type = '_';
          DEBUG_INPT   yLOG_char    ("type"      , x_type);
          rc = poly_func_add (a_file, x_name, x_type, x_line, NULL);
+         ++c;
       }
       /*---(done)------------------------*/
    }
@@ -185,10 +186,11 @@ poly_tags_inventory     (tFILE *a_file)
       return  rce;
    }
    /*---(summary)------------------------*/
+   DEBUG_INPT   yLOG_value   ("c"         , c);
    DEBUG_INPT   yLOG_value   ("count"     , poly_func_count ());
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
+   return c;
 }
 
 

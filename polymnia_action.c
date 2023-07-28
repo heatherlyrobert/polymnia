@@ -83,7 +83,7 @@ poly_action__gather     (tPROJ *a_proj)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(produce global files)-----------*/
-   rc  = poly_file_review (a_proj);
+   rc  = poly_file_inventory (a_proj);
    DEBUG_PROG   yLOG_value   ("review"     , rc);
    --rce;  if (rc < 0) {
       yURG_msg ('f', "could not review directory");
@@ -109,12 +109,11 @@ poly_action__gather     (tPROJ *a_proj)
    x_file = a_proj->head;
    DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    while (x_file != NULL) {
+      DEBUG_PROG   yLOG_info    ("NAME"      , x_file->name);
       if (strchr ("ch", x_file->type) != NULL) {
-         if (x_file->type == 'c') {
-            rc = poly_vars_inventory (x_file);
-            DEBUG_PROG   yLOG_value   ("vars"      , rc);
-         }
-         rc = poly_tags_inventory (x_file);
+         rc = poly_vars_inventory (x_file);               /*   gobal/file variable and macro definitions  */
+         DEBUG_PROG   yLOG_value   ("vars"      , rc);
+         rc = poly_tags_inventory (x_file);               /*   prototypes, functions/locals      */
          DEBUG_PROG   yLOG_value   ("inventory" , rc);
          rc = poly_code_review    (x_file);
          DEBUG_PROG   yLOG_value   ("review"    , rc);
@@ -141,7 +140,7 @@ poly_action__gather     (tPROJ *a_proj)
    }
    /*---(function calls)-----------------*/
    DEBUG_PROG   yLOG_note    ("review function calls");
-   /*> rc = poly_extern_review ();                                                    <*/
+   rc = poly_extern_review ();
    /*---(summarize)----------------------*/
    rc = PROG_summarize (a_proj);
    strl4main (a_proj->COUNT_LINES, s , 0, 'c', '-', LEN_TERSE);
@@ -419,65 +418,65 @@ static void  o___DRIVERS_________o () { return; }
  *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
  *>       return rce;                                                                                    <* 
  *>    }                                                                                                 <* 
- *>    /+---(check functions)----------------+/                                                          <* 
- *>    yURG_msg ('-', "functions : contents %7d vs header  %7d", my.COUNT_FUNCS, g_audit.COUNT_FUNCS);   <* 
- *>    --rce;  if (my.COUNT_FUNCS != g_audit.COUNT_FUNCS) {                                              <* 
- *>       yURG_err ('f', "function count does not match");                                               <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
- *>       return rce;                                                                                    <* 
- *>    }                                                                                                 <* 
- *>    /+---(check ylibs)--------------------+/                                                          <* 
- *>    yURG_msg ('-', "ylibs     : contents %7d vs header  %7d", my.COUNT_YLIBS, g_audit.COUNT_YLIBS);   <* 
- *>    --rce;  if (my.COUNT_YLIBS != g_audit.COUNT_YLIBS) {                                              <* 
- *>       yURG_err ('w', "ylib count does not match, likely due to external.txt change");                <* 
- *>    }                                                                                                 <* 
- *>    /+---(check lines)--------------------+/                                                          <* 
- *>    yURG_msg ('-', "lines     : contents %7d vs header  %7d", my.COUNT_LINES, g_audit.COUNT_LINES);   <* 
- *>    --rce;  if (my.COUNT_LINES != g_audit.COUNT_LINES) {                                              <* 
- *>       yURG_err ('f', "source line count does not match");                                            <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
- *>       return rce;                                                                                    <* 
- *>    }                                                                                                 <* 
- *>    /+---(check empty)--------------------+/                                                          <* 
- *>    yURG_msg ('-', "empty     : contents %7d vs header  %7d", my.COUNT_EMPTY, g_audit.COUNT_EMPTY);   <* 
- *>    --rce;  if (my.COUNT_EMPTY != g_audit.COUNT_EMPTY) {                                              <* 
- *>       yURG_err ('f', "empty line count does not match");                                             <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
- *>       return rce;                                                                                    <* 
- *>    }                                                                                                 <* 
- *>    /+---(check documentation)------------+/                                                          <* 
- *>    yURG_msg ('-', "docs      : contents %7d vs header  %7d", my.COUNT_DOCS , g_audit.COUNT_DOCS );   <* 
- *>    --rce;  if (my.COUNT_DOCS  != g_audit.COUNT_DOCS ) {                                              <* 
- *>       yURG_err ('f', "documentation line count does not match");                                     <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
- *>       return rce;                                                                                    <* 
- *>    }                                                                                                 <* 
- *>    /+---(check debug)--------------------+/                                                          <* 
- *>    yURG_msg ('-', "debug     : contents %7d vs header  %7d", my.COUNT_DEBUG, g_audit.COUNT_DEBUG);   <* 
- *>    --rce;  if (my.COUNT_DEBUG != g_audit.COUNT_DEBUG) {                                              <* 
- *>       yURG_err ('f', "debug line count does not match");                                             <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
- *>       return rce;                                                                                    <* 
- *>    }                                                                                                 <* 
- *>    /+---(check code)---------------------+/                                                          <* 
- *>    yURG_msg ('-', "code      : contents %7d vs header  %7d", my.COUNT_CODE , g_audit.COUNT_CODE );   <* 
- *>    --rce;  if (my.COUNT_CODE  != g_audit.COUNT_CODE ) {                                              <* 
- *>       yURG_err ('f', "code line count does not match");                                              <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
- *>       return rce;                                                                                    <* 
- *>    }                                                                                                 <* 
- *>    /+---(check slocl)--------------------+/                                                          <* 
- *>    yURG_msg ('-', "slocl     : contents %7d vs header  %7d", my.COUNT_SLOCL, g_audit.COUNT_SLOCL);   <* 
- *>    --rce;  if (my.COUNT_SLOCL != g_audit.COUNT_SLOCL) {                                              <* 
- *>       yURG_err ('f', "slocl line count does not match");                                             <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
- *>       return rce;                                                                                    <* 
- *>    }                                                                                                 <* 
- *>    yURG_msg ('-', "success, central database contents match header values");                         <* 
- *>    /+---(complete)-----------------------+/                                                          <* 
- *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                         <* 
- *>    return 0;                                                                                         <* 
- *> }                                                                                                    <*/
+*>    /+---(check functions)----------------+/                                                          <* 
+*>    yURG_msg ('-', "functions : contents %7d vs header  %7d", my.COUNT_FUNCS, g_audit.COUNT_FUNCS);   <* 
+*>    --rce;  if (my.COUNT_FUNCS != g_audit.COUNT_FUNCS) {                                              <* 
+   *>       yURG_err ('f', "function count does not match");                                               <* 
+      *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+      *>       return rce;                                                                                    <* 
+      *>    }                                                                                                 <* 
+      *>    /+---(check ylibs)--------------------+/                                                          <* 
+      *>    yURG_msg ('-', "ylibs     : contents %7d vs header  %7d", my.COUNT_YLIBS, g_audit.COUNT_YLIBS);   <* 
+      *>    --rce;  if (my.COUNT_YLIBS != g_audit.COUNT_YLIBS) {                                              <* 
+         *>       yURG_err ('w', "ylib count does not match, likely due to external.txt change");                <* 
+            *>    }                                                                                                 <* 
+            *>    /+---(check lines)--------------------+/                                                          <* 
+            *>    yURG_msg ('-', "lines     : contents %7d vs header  %7d", my.COUNT_LINES, g_audit.COUNT_LINES);   <* 
+            *>    --rce;  if (my.COUNT_LINES != g_audit.COUNT_LINES) {                                              <* 
+               *>       yURG_err ('f', "source line count does not match");                                            <* 
+                  *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+                  *>       return rce;                                                                                    <* 
+                  *>    }                                                                                                 <* 
+                  *>    /+---(check empty)--------------------+/                                                          <* 
+                  *>    yURG_msg ('-', "empty     : contents %7d vs header  %7d", my.COUNT_EMPTY, g_audit.COUNT_EMPTY);   <* 
+                  *>    --rce;  if (my.COUNT_EMPTY != g_audit.COUNT_EMPTY) {                                              <* 
+                     *>       yURG_err ('f', "empty line count does not match");                                             <* 
+                        *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+                        *>       return rce;                                                                                    <* 
+                        *>    }                                                                                                 <* 
+                        *>    /+---(check documentation)------------+/                                                          <* 
+                        *>    yURG_msg ('-', "docs      : contents %7d vs header  %7d", my.COUNT_DOCS , g_audit.COUNT_DOCS );   <* 
+                        *>    --rce;  if (my.COUNT_DOCS  != g_audit.COUNT_DOCS ) {                                              <* 
+                           *>       yURG_err ('f', "documentation line count does not match");                                     <* 
+                              *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+                              *>       return rce;                                                                                    <* 
+                              *>    }                                                                                                 <* 
+                              *>    /+---(check debug)--------------------+/                                                          <* 
+                              *>    yURG_msg ('-', "debug     : contents %7d vs header  %7d", my.COUNT_DEBUG, g_audit.COUNT_DEBUG);   <* 
+                              *>    --rce;  if (my.COUNT_DEBUG != g_audit.COUNT_DEBUG) {                                              <* 
+                                 *>       yURG_err ('f', "debug line count does not match");                                             <* 
+                                    *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+                                    *>       return rce;                                                                                    <* 
+                                    *>    }                                                                                                 <* 
+                                    *>    /+---(check code)---------------------+/                                                          <* 
+                                    *>    yURG_msg ('-', "code      : contents %7d vs header  %7d", my.COUNT_CODE , g_audit.COUNT_CODE );   <* 
+                                    *>    --rce;  if (my.COUNT_CODE  != g_audit.COUNT_CODE ) {                                              <* 
+                                       *>       yURG_err ('f', "code line count does not match");                                              <* 
+                                          *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+                                          *>       return rce;                                                                                    <* 
+                                          *>    }                                                                                                 <* 
+                                          *>    /+---(check slocl)--------------------+/                                                          <* 
+                                          *>    yURG_msg ('-', "slocl     : contents %7d vs header  %7d", my.COUNT_SLOCL, g_audit.COUNT_SLOCL);   <* 
+                                          *>    --rce;  if (my.COUNT_SLOCL != g_audit.COUNT_SLOCL) {                                              <* 
+                                             *>       yURG_err ('f', "slocl line count does not match");                                             <* 
+                                                *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                                                 <* 
+                                                *>       return rce;                                                                                    <* 
+                                                *>    }                                                                                                 <* 
+                                                *>    yURG_msg ('-', "success, central database contents match header values");                         <* 
+                                                *>    /+---(complete)-----------------------+/                                                          <* 
+                                                *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                         <* 
+                                                *>    return 0;                                                                                         <* 
+                                                *> }                                                                                                    <*/
 
 char
 poly_action_search      (void)
@@ -581,21 +580,21 @@ poly_action_search      (void)
  *>    printf("funcs     : %10.10s    %d\n", t, x_proj->funcs);                                          <* 
  *>    strl4comma (x_proj->COUNT_LINES, t, 0, 'c', '-', LEN_LABEL);                                      <* 
  *>    printf("lines     : %10.10s    %4.2f\n", t, 1.00);                                                <* 
- *>    strl4comma (x_proj->COUNT_EMPTY, t, 0, 'c', '-', LEN_LABEL);                                      <* 
- *>    printf("empty     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_EMPTY / x_proj->COUNT_LINES);   <* 
- *>    strl4comma (x_proj->COUNT_DOCS , t, 0, 'c', '-', LEN_LABEL);                                      <* 
- *>    printf("docs      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DOCS  / x_proj->COUNT_LINES);   <* 
- *>    strl4comma (x_proj->COUNT_DEBUG, t, 0, 'c', '-', LEN_LABEL);                                      <* 
- *>    printf("debug     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DEBUG / x_proj->COUNT_LINES);   <* 
- *>    strl4comma (x_proj->COUNT_CODE , t, 0, 'c', '-', LEN_LABEL);                                      <* 
- *>    printf("code      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_CODE  / x_proj->COUNT_LINES);   <* 
- *>    strl4comma (x_proj->COUNT_SLOCL, t, 0, 'c', '-', LEN_LABEL);                                      <* 
- *>    printf("slocl     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_SLOCL / x_proj->COUNT_LINES);   <* 
- *>    printf("\n");                                                                                     <* 
- *>    /+---(complete)-----------------------+/                                                          <* 
- *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                         <* 
- *>    return 0;                                                                                         <* 
- *> }                                                                                                    <*/
+*>    strl4comma (x_proj->COUNT_EMPTY, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    printf("empty     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_EMPTY / x_proj->COUNT_LINES);   <* 
+*>    strl4comma (x_proj->COUNT_DOCS , t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    printf("docs      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DOCS  / x_proj->COUNT_LINES);   <* 
+*>    strl4comma (x_proj->COUNT_DEBUG, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    printf("debug     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DEBUG / x_proj->COUNT_LINES);   <* 
+*>    strl4comma (x_proj->COUNT_CODE , t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    printf("code      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_CODE  / x_proj->COUNT_LINES);   <* 
+*>    strl4comma (x_proj->COUNT_SLOCL, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    printf("slocl     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_SLOCL / x_proj->COUNT_LINES);   <* 
+*>    printf("\n");                                                                                     <* 
+*>    /+---(complete)-----------------------+/                                                          <* 
+*>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                         <* 
+*>    return 0;                                                                                         <* 
+*> }                                                                                                    <*/
 
 /*> char                                                                                                        <* 
  *> poly_action_remove      (void)                                                                              <* 

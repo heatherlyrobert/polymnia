@@ -135,14 +135,14 @@ poly_proto_hook         (tFILE *a_file, tFUNC *a_func, char *a_name)
       if (strcmp (s_protos [i].name, a_name) != 0)  continue;
       if (strchr ("gp", s_protos [i].scope) != NULL) {
          s_protos [i].func   = a_func;
-         if (a_func->STATS_PROTO == '-')  a_func->STATS_PROTO = s_protos [i].scope;
-         else                             a_func->STATS_PROTO = '#';
+         if (strchr ("-·", a_func->STATS_PROTO) != NULL)  a_func->STATS_PROTO = s_protos [i].scope;
+         else                                             a_func->STATS_PROTO = '#';
          ++c;
       }
       if (s_protos [i].file  == a_file) {
          s_protos [i].func   = a_func;
-         if (a_func->STATS_PROTO == '-')  a_func->STATS_PROTO = s_protos [i].scope;
-         else                             a_func->STATS_PROTO = '#';
+         if (strchr ("-·", a_func->STATS_PROTO) != NULL)  a_func->STATS_PROTO = s_protos [i].scope;
+         else                                             a_func->STATS_PROTO = '#';
          ++c;
       }
    }

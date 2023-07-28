@@ -593,7 +593,7 @@ poly_shared_read        (char a_type, int *a_line, char *a_curr, char *a_prev)
 }
 
 char
-poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, char *a_file)
+poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char *r_type, int *r_line, char r_file [LEN_TITLE])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -611,22 +611,22 @@ poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_point   ("a_name"    , a_name);
-   --rce;  if (a_name == NULL) {
+   DEBUG_INPT   yLOG_point   ("r_name"    , r_name);
+   --rce;  if (r_name == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_name, "", LEN_TITLE);
-   DEBUG_INPT   yLOG_point   ("a_type"    , a_type);
-   --rce;  if (a_type == NULL) {
+   strlcpy (r_name, "", LEN_TITLE);
+   DEBUG_INPT   yLOG_point   ("r_type"    , r_type);
+   --rce;  if (r_type == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   *a_type = '-';
-   DEBUG_INPT   yLOG_point   ("a_line"    , a_line);
-   if (a_line != NULL)   *a_line = -1;
-   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
-   if (a_file != NULL)   strlcpy (a_file, "", LEN_TITLE);
+   *r_type = '-';
+   DEBUG_INPT   yLOG_point   ("r_line"    , r_line);
+   if (r_line != NULL)   *r_line = -1;
+   DEBUG_INPT   yLOG_point   ("r_file"    , r_file);
+   if (r_file != NULL)   strlcpy (r_file, "", LEN_TITLE);
    /*---(prepare)---------------------*/
    strlcpy (x_recd, a_curr, LEN_RECD);
    /*---(get function)-------------------*/
@@ -636,33 +636,33 @@ poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_name, p, LEN_TITLE);
-   DEBUG_INPT   yLOG_info    ("a_name"    , a_name);
+   strlcpy (r_name, p, LEN_TITLE);
+   DEBUG_INPT   yLOG_info    ("r_name"    , r_name);
    /*---(get type)-----------------------*/
    p = strtok_r (NULL  , q, &s);
    --rce;  if (p == NULL) {
-      strlcpy (a_name, "", LEN_TITLE);
+      strlcpy (r_name, "", LEN_TITLE);
       DEBUG_INPT   yLOG_note    ("can not find type field, SKIP");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   *a_type = p [0];
+   *r_type = p [0];
    /*---(line)---------------------------*/
    p = strtok_r (NULL  , q, &s);
    --rce;  if (p == NULL) {
-      strlcpy (a_name, "", LEN_TITLE);
-      *a_type = '-';
+      strlcpy (r_name, "", LEN_TITLE);
+      *r_type = '-';
       DEBUG_INPT   yLOG_note    ("can not find line field, SKIP");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   if (a_line != NULL) {
-      *a_line = atoi (p);
-      DEBUG_INPT   yLOG_value   ("*a_line"   , *a_line);
-      --rce;  if (*a_line <= 0) {
-         strlcpy (a_name, "", LEN_TITLE);
-         *a_type = '-';
-         *a_line = -1;
+   if (r_line != NULL) {
+      *r_line = atoi (p);
+      DEBUG_INPT   yLOG_value   ("*r_line"   , *r_line);
+      --rce;  if (*r_line <= 0) {
+         strlcpy (r_name, "", LEN_TITLE);
+         *r_type = '-';
+         *r_line = -1;
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
@@ -670,9 +670,9 @@ poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, 
    /*---(get file)-----------------------*/
    p = strtok_r (NULL  , q, &s);
    --rce;  if (p == NULL) {
-      strlcpy (a_name, "", LEN_TITLE);
-      *a_type = '-';
-      *a_line = -1;
+      strlcpy (r_name, "", LEN_TITLE);
+      *r_type = '-';
+      *r_line = -1;
       DEBUG_INPT   yLOG_note    ("can not find file field, SKIP");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -684,9 +684,9 @@ poly_shared_parse_tags  (char *a_curr, char *a_name, char *a_type, int *a_line, 
    } else {
       ++r;
    }
-   if (a_file != NULL) {
-      strlcpy (a_file, r, LEN_TITLE);
-      DEBUG_INPT   yLOG_info    ("a_file"    , a_file);
+   if (r_file != NULL) {
+      strlcpy (r_file, r, LEN_TITLE);
+      DEBUG_INPT   yLOG_info    ("r_file"    , r_file);
    }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
