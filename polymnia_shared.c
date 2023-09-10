@@ -112,39 +112,39 @@ char poly_shared__unit_wiper  (void *a_void) { return 1; }
 char
 poly_shared__check_char (char *a_out, char a_char)
 {
-   if      (a_char == '\0')       strlcat (a_out, "_", LEN_HUND);
-   else if (a_char == '-')        strlcat (a_out, "_", LEN_HUND);
-   else if (a_char == '?')        strlcat (a_out, "_", LEN_HUND);
-   else                           strlcat (a_out, "X", LEN_HUND);
+   if      (a_char == '£')       ystrlcat (a_out, "_", LEN_HUND);
+   else if (a_char == '-')        ystrlcat (a_out, "_", LEN_HUND);
+   else if (a_char == '?')        ystrlcat (a_out, "_", LEN_HUND);
+   else                           ystrlcat (a_out, "X", LEN_HUND);
 }
 
 char
 poly_shared__check_str  (char *a_out, char *a_str)
 {
-   if      (a_str == NULL)        strlcat (a_out, "_", LEN_HUND);
-   else if (strlen (a_str) == 0)  strlcat (a_out, "_", LEN_HUND);
-   else                           strlcat (a_out, "X", LEN_HUND);
+   if      (a_str == NULL)        ystrlcat (a_out, "_", LEN_HUND);
+   else if (strlen (a_str) == 0)  ystrlcat (a_out, "_", LEN_HUND);
+   else                           ystrlcat (a_out, "X", LEN_HUND);
 }
 
 char
 poly_shared__check_ptr  (char *a_out, void *a_ptr)
 {
-   if      (a_ptr == NULL)        strlcat (a_out, "_", LEN_HUND);
-   else                           strlcat (a_out, "X", LEN_HUND);
+   if      (a_ptr == NULL)        ystrlcat (a_out, "_", LEN_HUND);
+   else                           ystrlcat (a_out, "X", LEN_HUND);
 }
 
 char
 poly_shared__check_num  (char *a_out, int a_num)
 {
-   if      (a_num == 0)           strlcat (a_out, "_", LEN_HUND);
-   else if (a_num == -1)          strlcat (a_out, "_", LEN_HUND);
-   else                           strlcat (a_out, "X", LEN_HUND);
+   if      (a_num == 0)           ystrlcat (a_out, "_", LEN_HUND);
+   else if (a_num == -1)          ystrlcat (a_out, "_", LEN_HUND);
+   else                           ystrlcat (a_out, "X", LEN_HUND);
 }
 
 char
 poly_shared__spacer     (char *a_out)
 {
-   strlcat (a_out, ".", LEN_HUND);
+   ystrlcat (a_out, ".", LEN_HUND);
 }
 
 
@@ -277,48 +277,48 @@ poly_shared_open        (char a_type, char *a_focus)
    /*---(assign name)--------------------*/
    --rce;  switch (a_type) {
    case 'f' :  /* cflow */
-      strlcpy (x_use   , F_CFLOW    , LEN_RECD);
-      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      ystrlcpy (x_use   , F_CFLOW    , LEN_RECD);
+      ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 't' :  /* ctags */
-      strlcpy (x_source, a_focus    , LEN_RECD);
-      strlcpy (x_use   , F_CTAGS    , LEN_RECD);
-      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      ystrlcpy (x_source, a_focus    , LEN_RECD);
+      ystrlcpy (x_use   , F_CTAGS    , LEN_RECD);
+      ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'm' :  /* mystery calls */
-      strlcpy (x_use   , F_MYSTRY   , LEN_RECD);
-      strlcpy (x_mode  , "wt"       , LEN_TERSE);
+      ystrlcpy (x_use   , F_MYSTRY   , LEN_RECD);
+      ystrlcpy (x_mode  , "wt"       , LEN_TERSE);
       break;
    case 'c' :  /* c source files */
-      strlcpy (x_source, a_focus    , LEN_RECD);
-      strlcpy (x_use   , a_focus    , LEN_RECD);
-      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      ystrlcpy (x_source, a_focus    , LEN_RECD);
+      ystrlcpy (x_use   , a_focus    , LEN_RECD);
+      ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'v' :  /* variables */
-      strlcpy (x_source, a_focus    , LEN_RECD);
-      strlcpy (x_use   , F_VARS     , LEN_RECD);
-      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      ystrlcpy (x_source, a_focus    , LEN_RECD);
+      ystrlcpy (x_use   , F_VARS     , LEN_RECD);
+      ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'e' :  /* external */
-      strlcpy (x_use   , my.n_extern, LEN_RECD);
-      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      ystrlcpy (x_use   , my.n_extern, LEN_RECD);
+      ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'u' :  /* units    */
-      strlcpy (x_use   , F_UNITS    , LEN_RECD);
-      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      ystrlcpy (x_use   , F_UNITS    , LEN_RECD);
+      ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 's' :  /* unit test scripts   */
-      strlcpy (x_source, a_focus    , LEN_RECD);
-      strlcpy (x_use   , a_focus    , LEN_RECD);
-      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      ystrlcpy (x_source, a_focus    , LEN_RECD);
+      ystrlcpy (x_use   , a_focus    , LEN_RECD);
+      ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'w' :  /* world projects inventory  */
-      strlcpy (x_use   , my.n_world , LEN_RECD);
-      strlcpy (x_mode  , "rt"       , LEN_TERSE);
+      ystrlcpy (x_use   , my.n_world , LEN_RECD);
+      ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'W' :  /* world projects inventory  */
-      strlcpy (x_use   , my.n_world , LEN_RECD);
-      strlcpy (x_mode  , "wt"       , LEN_TERSE);
+      ystrlcpy (x_use   , my.n_world , LEN_RECD);
+      ystrlcpy (x_mode  , "wt"       , LEN_TERSE);
       break;
    default  :
       DEBUG_INPT   yLOG_note    ("type unknown");
@@ -378,16 +378,16 @@ poly_shared_open        (char a_type, char *a_focus)
    /*---(save name)----------------------*/
    switch (a_type) {
    case 't' :  /* ctags */
-      strlcpy (s_ctags, a_focus , LEN_RECD);
+      ystrlcpy (s_ctags, a_focus , LEN_RECD);
       break;
    case 'c' :  /* c source files */
-      strlcpy (s_code , a_focus , LEN_RECD);
+      ystrlcpy (s_code , a_focus , LEN_RECD);
       break;
    case 'v' :  /* varables */
-      strlcpy (s_vars , a_focus , LEN_RECD);
+      ystrlcpy (s_vars , a_focus , LEN_RECD);
       break;
    case 's' :  /* unit test scripts */
-      strlcpy (s_scrp , a_focus , LEN_RECD);
+      ystrlcpy (s_scrp , a_focus , LEN_RECD);
       break;
    }
    DEBUG_INPT   yLOG_point   ("x_file"          , x_file);
@@ -428,27 +428,27 @@ poly_shared_close       (char a_type)
    /*---(assign name)--------------------*/
    --rce;  switch (a_type) {
    case 'f' :  /* cflow */
-      strlcpy (x_used , F_CFLOW , LEN_RECD);
+      ystrlcpy (x_used , F_CFLOW , LEN_RECD);
       break;
    case 't' :  /* ctags */
-      strlcpy (x_used , s_ctags , LEN_RECD);
+      ystrlcpy (x_used , s_ctags , LEN_RECD);
       break;
    case 'm' :  /* mystery calls */
-      strlcpy (x_used , F_MYSTRY, LEN_RECD);
+      ystrlcpy (x_used , F_MYSTRY, LEN_RECD);
       break;
    case 'c' :  /* c source files */
-      strlcpy (x_used , s_code  , LEN_RECD);
+      ystrlcpy (x_used , s_code  , LEN_RECD);
       break;
    case 'v' :  /* global/file variables */
-      strlcpy (x_used , F_VARS  , LEN_RECD);
+      ystrlcpy (x_used , F_VARS  , LEN_RECD);
       break;
    case 'e' :  /* external */
       break;
    case 'u' :  /* external */
-      strlcpy (x_used  , F_UNITS, LEN_RECD);
+      ystrlcpy (x_used  , F_UNITS, LEN_RECD);
       break;
    case 's' :  /* unit test scripts */
-      strlcpy (x_used , s_scrp  , LEN_RECD);
+      ystrlcpy (x_used , s_scrp  , LEN_RECD);
       break;
    case 'w' :  /* world project inventory */
    case 'W' :
@@ -479,11 +479,11 @@ poly_shared_close       (char a_type)
       break;
    case  't' :
       sprintf (x_cmd  , DEL_ANY   , F_CTAGS);
-      strlcpy (x_used , F_CTAGS   , LEN_RECD);
+      ystrlcpy (x_used , F_CTAGS   , LEN_RECD);
       break;
    case  'v' :
       sprintf (x_cmd  , DEL_ANY   , F_VARS);
-      strlcpy (x_used , F_VARS    , LEN_RECD);
+      ystrlcpy (x_used , F_VARS    , LEN_RECD);
       break;
    case  'u' :
       sprintf (x_cmd  , DEL_ANY   , F_UNITS);
@@ -513,16 +513,16 @@ poly_shared_close       (char a_type)
    *x_file = NULL;
    switch (a_type) {
    case 't' :  /* ctags */
-      strlcpy (s_ctags, ""      , LEN_RECD);
+      ystrlcpy (s_ctags, ""      , LEN_RECD);
       break;
    case 'c' :  /* c source files */
-      strlcpy (s_code , ""      , LEN_RECD);
+      ystrlcpy (s_code , ""      , LEN_RECD);
       break;
    case 'v' :  /* variables */
-      strlcpy (s_vars , ""      , LEN_RECD);
+      ystrlcpy (s_vars , ""      , LEN_RECD);
       break;
    case 's' :  /* unit test scripts */
-      strlcpy (s_scrp , ""      , LEN_RECD);
+      ystrlcpy (s_scrp , ""      , LEN_RECD);
       break;
    }
    /*---(complete)-----------------------*/
@@ -567,7 +567,7 @@ poly_shared_read        (char a_type, int *a_line, char *a_curr, char *a_prev)
    }
    /*---(rotate)-------------------------*/
    if (a_prev != NULL) {
-      strlcpy (a_prev, a_curr, LEN_RECD);
+      ystrlcpy (a_prev, a_curr, LEN_RECD);
       DEBUG_INPT   yLOG_info    ("a_prev"    , a_prev);
    }
    /*---(read)------------------------*/
@@ -616,7 +616,7 @@ poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (r_name, "", LEN_TITLE);
+   ystrlcpy (r_name, "", LEN_TITLE);
    DEBUG_INPT   yLOG_point   ("r_type"    , r_type);
    --rce;  if (r_type == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -626,9 +626,9 @@ poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char 
    DEBUG_INPT   yLOG_point   ("r_line"    , r_line);
    if (r_line != NULL)   *r_line = -1;
    DEBUG_INPT   yLOG_point   ("r_file"    , r_file);
-   if (r_file != NULL)   strlcpy (r_file, "", LEN_TITLE);
+   if (r_file != NULL)   ystrlcpy (r_file, "", LEN_TITLE);
    /*---(prepare)---------------------*/
-   strlcpy (x_recd, a_curr, LEN_RECD);
+   ystrlcpy (x_recd, a_curr, LEN_RECD);
    /*---(get function)-------------------*/
    p = strtok_r (x_recd, q, &s);
    --rce;  if (p == NULL) {
@@ -636,12 +636,12 @@ poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (r_name, p, LEN_TITLE);
+   ystrlcpy (r_name, p, LEN_TITLE);
    DEBUG_INPT   yLOG_info    ("r_name"    , r_name);
    /*---(get type)-----------------------*/
    p = strtok_r (NULL  , q, &s);
    --rce;  if (p == NULL) {
-      strlcpy (r_name, "", LEN_TITLE);
+      ystrlcpy (r_name, "", LEN_TITLE);
       DEBUG_INPT   yLOG_note    ("can not find type field, SKIP");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -650,7 +650,7 @@ poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char 
    /*---(line)---------------------------*/
    p = strtok_r (NULL  , q, &s);
    --rce;  if (p == NULL) {
-      strlcpy (r_name, "", LEN_TITLE);
+      ystrlcpy (r_name, "", LEN_TITLE);
       *r_type = '-';
       DEBUG_INPT   yLOG_note    ("can not find line field, SKIP");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -660,7 +660,7 @@ poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char 
       *r_line = atoi (p);
       DEBUG_INPT   yLOG_value   ("*r_line"   , *r_line);
       --rce;  if (*r_line <= 0) {
-         strlcpy (r_name, "", LEN_TITLE);
+         ystrlcpy (r_name, "", LEN_TITLE);
          *r_type = '-';
          *r_line = -1;
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -670,7 +670,7 @@ poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char 
    /*---(get file)-----------------------*/
    p = strtok_r (NULL  , q, &s);
    --rce;  if (p == NULL) {
-      strlcpy (r_name, "", LEN_TITLE);
+      ystrlcpy (r_name, "", LEN_TITLE);
       *r_type = '-';
       *r_line = -1;
       DEBUG_INPT   yLOG_note    ("can not find file field, SKIP");
@@ -685,7 +685,7 @@ poly_shared_parse_tags  (cchar a_curr [LEN_RECD], char r_name [LEN_TITLE], char 
       ++r;
    }
    if (r_file != NULL) {
-      strlcpy (r_file, r, LEN_TITLE);
+      ystrlcpy (r_file, r, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("r_file"    , r_file);
    }
    /*---(complete)-----------------------*/
@@ -717,7 +717,7 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_name, "", LEN_TITLE);
+   ystrlcpy (a_name, "", LEN_TITLE);
    DEBUG_INPT   yLOG_point   ("a_defn"    , a_defn);
    --rce;  if (a_defn == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -727,9 +727,9 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
    DEBUG_INPT   yLOG_point   ("a_line"    , a_line);
    if (a_line != NULL)   *a_line = -1;
    DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
-   if (a_file != NULL)   strlcpy (a_file, "", LEN_TITLE);
+   if (a_file != NULL)   ystrlcpy (a_file, "", LEN_TITLE);
    /*---(prepare)---------------------*/
-   strlcpy (x_recd, a_curr, LEN_RECD);
+   ystrlcpy (x_recd, a_curr, LEN_RECD);
    /*---(get function)-------------------*/
    p = strtok_r (x_recd, q, &s);
    --rce;  if (p == NULL) {
@@ -737,13 +737,13 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_name, p, LEN_TITLE);
+   ystrlcpy (a_name, p, LEN_TITLE);
    DEBUG_INPT   yLOG_info    ("a_name"    , a_name);
    /*---(get if definition)-----------*/
    p = strtok_r (NULL  , q, &s);
    DEBUG_INPT   yLOG_point   ("p"         , p);
    --rce;  if (p == NULL) {
-      strlcpy (a_name, "", LEN_TITLE);
+      ystrlcpy (a_name, "", LEN_TITLE);
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -753,7 +753,7 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
       p = strtok_r (NULL  , q, &s);
       DEBUG_INPT   yLOG_point   ("p"         , p);
       if (p == NULL) {
-         strlcpy (a_name, "", LEN_TITLE);
+         ystrlcpy (a_name, "", LEN_TITLE);
          *a_defn = '-';
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -768,16 +768,16 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
       } else {
          ++r;
       }
-      strlcpy (a_file, r, LEN_TITLE);
+      ystrlcpy (a_file, r, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("a_file"    , a_file);
    }
    /*---(line)---------------------------*/
    p = strtok_r (NULL  , q, &s);
    DEBUG_INPT   yLOG_point   ("p"         , p);
    --rce;  if (p == NULL) {
-      strlcpy (a_name, "", LEN_TITLE);
+      ystrlcpy (a_name, "", LEN_TITLE);
       *a_defn = '-';
-      strlcpy (a_file, "", LEN_TITLE);
+      ystrlcpy (a_file, "", LEN_TITLE);
       DEBUG_INPT   yLOG_note    ("can not find line field, SKIP");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -786,9 +786,9 @@ poly_shared_parse_flow  (char *a_curr, char *a_name, char *a_defn, int *a_line, 
       *a_line = atoi (p);
       DEBUG_INPT   yLOG_value   ("*a_line"   , *a_line);
       if (*a_line <= 0) {
-         strlcpy (a_name, "", LEN_TITLE);
+         ystrlcpy (a_name, "", LEN_TITLE);
          *a_defn = '-';
-         strlcpy (a_file, "", LEN_TITLE);
+         ystrlcpy (a_file, "", LEN_TITLE);
          *a_line = -1;
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -824,15 +824,15 @@ poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_verb, "", LEN_LABEL);
+   ystrlcpy (a_verb, "", LEN_LABEL);
    DEBUG_INPT   yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_name, "", LEN_TITLE);
+   ystrlcpy (a_name, "", LEN_TITLE);
    /*---(prepare)---------------------*/
-   strlcpy (x_recd, a_curr, LEN_RECD);
+   ystrlcpy (x_recd, a_curr, LEN_RECD);
    /*---(get verb)-----------------------*/
    p = strtok_r (x_recd, q, &r);
    --rce;  if (p == NULL) {
@@ -840,27 +840,27 @@ poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy  (a_verb, p, LEN_LABEL);
-   strltrim (a_verb, ySTR_BOTH, LEN_LABEL);
+   ystrlcpy  (a_verb, p, LEN_LABEL);
+   ystrltrim (a_verb, ySTR_BOTH, LEN_LABEL);
    DEBUG_INPT   yLOG_info    ("a_verb"    , a_verb);
    /*---(check cutoff)-------------------*/
    --rce; if (strncmp (a_verb, "SCRP", 4) == 0) {
-      strlcpy  (a_verb, "SCRP", LEN_LABEL);
+      ystrlcpy  (a_verb, "SCRP", LEN_LABEL);
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    else if (strncmp (a_verb, "PREP", 4) == 0) {
-      strlcpy  (a_verb, "PREP", LEN_LABEL);
+      ystrlcpy  (a_verb, "PREP", LEN_LABEL);
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    else if (strncmp (a_verb, "exec", 4) == 0) {
-      strlcpy  (a_verb, "exec", LEN_LABEL);
+      ystrlcpy  (a_verb, "exec", LEN_LABEL);
    }
    else if (strncmp (a_verb, "get" , 3) == 0) {
-      strlcpy  (a_verb, "get" , LEN_LABEL);
+      ystrlcpy  (a_verb, "get" , LEN_LABEL);
    } else {
-      strlcpy (a_verb, "", LEN_LABEL);
+      ystrlcpy (a_verb, "", LEN_LABEL);
       DEBUG_INPT   yLOG_note    ("verb not understood");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -871,8 +871,8 @@ poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy  (t, p, LEN_HUND);
-   strltrim (t, ySTR_BOTH, LEN_HUND);
+   ystrlcpy  (t, p, LEN_HUND);
+   ystrltrim (t, ySTR_BOTH, LEN_HUND);
    x_len = strlen (t);
    --rce;  if (x_len == 3 && t [0] == 'v') {
       p = strtok_r (NULL  , q, &r);
@@ -888,8 +888,8 @@ poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy  (a_name, p, LEN_TITLE);
-   strltrim (a_name, ySTR_BOTH, LEN_TITLE);
+   ystrlcpy  (a_name, p, LEN_TITLE);
+   ystrltrim (a_name, ySTR_BOTH, LEN_TITLE);
    DEBUG_INPT   yLOG_info    ("a_name"    , a_name);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
@@ -954,7 +954,7 @@ poly_shared__unit_recd  (char *a_name, int n, char *a_recd)
    while (1) {
       fgets (t, LEN_RECD, f);
       if (feof (f))  break;
-      if (c == n)  strlcpy (a_recd, t, LEN_RECD);
+      if (c == n)  ystrlcpy (a_recd, t, LEN_RECD);
       ++c;
    }
    x_len = strlen (a_recd);

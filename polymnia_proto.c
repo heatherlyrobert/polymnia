@@ -109,7 +109,7 @@ poly_proto_push         (tFILE *a_file, int a_line, char *a_name)
    s_protos [s_nproto].file = a_file;
    s_protos [s_nproto].line = a_line;
    s_protos [s_nproto].len  = x_len;
-   strlcpy (s_protos [s_nproto].name, a_name, LEN_TITLE);
+   ystrlcpy (s_protos [s_nproto].name, a_name, LEN_TITLE);
    /*---(update counters)----------------*/
    ++s_nproto;
    /*---(complete)-----------------------*/
@@ -159,7 +159,7 @@ poly_proto_list     (void)
       for (i = 0; i < s_nproto; ++i) {
          if (i % 25 == 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  ---function---------\n");
          if (i %  5 == 0)  printf ("\n");
-         if ((s_protos [i].func)->name == NULL)  strlcpy (t, "", LEN_TITLE);
+         if ((s_protos [i].func)->name == NULL)  ystrlcpy (t, "", LEN_TITLE);
          else sprintf (t, "%-20.20s", (s_protos [i].func)->name);
          printf ("%4d  %-20.20s  %4d  %-20.20s  %c  %-20.20s\n", i,
                s_protos [i].file->name, s_protos [i].line,

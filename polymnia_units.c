@@ -183,11 +183,11 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       rc = 1;
    }
    else if (strncmp (a_recd, "SCRP ", 5) == 0) {
-      x_field = strldcnt (a_recd, '', LEN_RECD);
+      x_field = ystrldcnt (a_recd, '', LEN_RECD);
       if (x_field == 7) {  /* new format with terse label */
-         x_pos = strldpos (a_recd, '', 2, LEN_RECD);
+         x_pos = ystrldpos (a_recd, '', 2, LEN_RECD);
          sprintf  (s, "%-14.14s", a_recd + x_pos + 2);
-         /*> strltrim (s, ySTR_BOTH, LEN_LABEL);                                      <*/
+         /*> ystrltrim (s, ySTR_BOTH, LEN_LABEL);                                      <*/
          sprintf  (t, "%02d_%s", c, s);
       } else sprintf (t, "script_%02d        ", c);
       if (a_recd [ 8] == '[' && a_recd [11] == ']') {
@@ -209,13 +209,13 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    }
    else if (strncmp (a_recd, "SHARED ", 7) == 0 ||
          strncmp (a_recd, "GLOBAL ", 7) == 0) {
-      x_field = strldcnt (a_recd, '', LEN_RECD);
+      x_field = ystrldcnt (a_recd, '', LEN_RECD);
       x_ref   = a_recd [10];
       if (x_ref == 0 || strchr (YSTR_UPLOW, x_ref) == NULL)  x_ref = '?';
       if (x_field == 7) {  /* new format with terse label */
-         x_pos = strldpos (a_recd, '', 2, LEN_RECD);
+         x_pos = ystrldpos (a_recd, '', 2, LEN_RECD);
          sprintf  (s, "%-14.14s", a_recd + x_pos + 2);
-         strltrim (s, ySTR_BOTH, LEN_LABEL);
+         ystrltrim (s, ySTR_BOTH, LEN_LABEL);
          /*> sprintf  (t, "··%c_%s", 'a' - 1 + d++, s);                               <*/
          sprintf  (t, "(%c_%s)", x_ref, s);
       } else sprintf (t, "(%c_shared)", x_ref);
@@ -398,7 +398,7 @@ poly_units_inventory    (tFILE *a_file)
          DEBUG_INPT   yLOG_note    ("reading of line failed or eof");
          break;
       }
-      strltrim (x_recd, ySTR_BOTH, LEN_RECD);
+      ystrltrim (x_recd, ySTR_BOTH, LEN_RECD);
       /*---(function-like)---------------*/
       rc = poly_units__scripts  (a_file, x_line, x_recd, &x_curr);
       rc = poly_units__classify (a_file, x_curr, x_line, x_recd);

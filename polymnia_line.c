@@ -88,8 +88,8 @@ poly_line_empty         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
    }
    DEBUG_DATA   yLOG_snote   (a_recd);
    /*---(prepare)------------------------*/
-   strlcpy  (x_recd, a_recd   , LEN_RECD);
-   strltrim (x_recd, ySTR_BOTH, LEN_RECD);
+   ystrlcpy  (x_recd, a_recd   , LEN_RECD);
+   ystrltrim (x_recd, ySTR_BOTH, LEN_RECD);
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(filter)-------------------------*/
    l = strlen (x_recd);
@@ -131,8 +131,8 @@ poly_line_comment       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
    }
    DEBUG_DATA   yLOG_snote   (a_recd);
    /*---(prepare)------------------------*/
-   strlcpy  (x_recd, a_recd   , LEN_RECD);
-   strltrim (x_recd, ySTR_BOTH, LEN_RECD);
+   ystrlcpy  (x_recd, a_recd   , LEN_RECD);
+   ystrltrim (x_recd, ySTR_BOTH, LEN_RECD);
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(filter)-------------------------*/
    l = strlen (x_recd);
@@ -188,9 +188,9 @@ poly_line_debug         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
    }
    DEBUG_DATA   yLOG_snote   (a_recd);
    /*---(prepare)------------------------*/
-   strlcpy     (x_recd, a_recd   , LEN_RECD);
-   strltrim    (x_recd, ySTR_BOTH, LEN_RECD);
-   strlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
+   ystrlcpy     (x_recd, a_recd   , LEN_RECD);
+   ystrltrim    (x_recd, ySTR_BOTH, LEN_RECD);
+   ystrlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(filter)-------------------------*/
    l = strlen (x_recd);
@@ -277,8 +277,8 @@ poly_line_unguard       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
    }
    DEBUG_DATA   yLOG_snote   (a_recd);
    /*---(prepare)------------------------*/
-   strlcpy  (x_recd, a_recd   , LEN_RECD);
-   strltrim (x_recd, ySTR_BOTH, LEN_RECD);
+   ystrlcpy  (x_recd, a_recd   , LEN_RECD);
+   ystrltrim (x_recd, ySTR_BOTH, LEN_RECD);
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(filter)-------------------------*/
    l = strlen (x_recd);
@@ -346,12 +346,12 @@ poly_line_slocl         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
    }
    DEBUG_DATA   yLOG_snote   (a_recd);
    /*---(prepare)------------------------*/
-   strlcpy     (x_recd, a_recd   , LEN_RECD);
-   strltrim    (x_recd, ySTR_BOTH, LEN_RECD);
-   strlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
+   ystrlcpy     (x_recd, a_recd   , LEN_RECD);
+   ystrltrim    (x_recd, ySTR_BOTH, LEN_RECD);
+   ystrlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(filter)-------------------------*/
-   c = strldcnt (x_recd, ';', LEN_RECD);
+   c = ystrldcnt (x_recd, ';', LEN_RECD);
    DEBUG_DATA   yLOG_sint    (c);
    if (c < 0)  c = 0;
    /*---(update)-------------------------*/
@@ -398,9 +398,9 @@ poly_line_exit          (cchar a_recd [LEN_RECD], char a_inside, int *r_return, 
       return 0;
    }
    /*---(prepare)------------------------*/
-   strlcpy     (x_recd, a_recd     , LEN_RECD);
-   strltrim    (x_recd, ySTR_SINGLE, LEN_RECD);
-   strlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
+   ystrlcpy     (x_recd, a_recd     , LEN_RECD);
+   ystrltrim    (x_recd, ySTR_SINGLE, LEN_RECD);
+   ystrlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(identify)-----------------------*/
    if      (strncmp (x_recd, "return rce"  , 10) == 0    && r_rce    != NULL)  { ++(*r_rce   );  x_good = 'y'; }
@@ -452,9 +452,9 @@ poly_line_choice        (cchar a_recd [LEN_RECD], char a_inside, int *r_choice)
       return 0;
    }
    /*---(prepare)------------------------*/
-   strlcpy     (x_recd, a_recd     , LEN_RECD);
-   strltrim    (x_recd, ySTR_SINGLE, LEN_RECD);
-   strlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
+   ystrlcpy     (x_recd, a_recd     , LEN_RECD);
+   ystrltrim    (x_recd, ySTR_SINGLE, LEN_RECD);
+   ystrlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(identify)-----------------------*/
    if (r_choice != NULL)  {
@@ -511,9 +511,9 @@ poly_line_loop          (cchar a_recd [LEN_RECD], char a_inside, int *r_sfull, i
       return 0;
    }
    /*---(prepare)------------------------*/
-   strlcpy     (x_recd, a_recd     , LEN_RECD);
-   strltrim    (x_recd, ySTR_SINGLE, LEN_RECD);
-   strlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
+   ystrlcpy     (x_recd, a_recd     , LEN_RECD);
+   ystrltrim    (x_recd, ySTR_SINGLE, LEN_RECD);
+   ystrlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(identify)-----------------------*/
    if (r_loop != NULL)  {
@@ -618,7 +618,7 @@ static void  o___FUNCTION________o () { return; }
  *>    int        j            =    0;                                                <* 
  *>    int        x_len        =    0;                                                <* 
  *>    /+---(prepare)------------------------+/                                       <* 
- *>    strlcpy (t, a_recd + a_beg, LEN_RECD);                                         <* 
+ *>    ystrlcpy (t, a_recd + a_beg, LEN_RECD);                                         <* 
  *>    x_len = strlen (t);                                                            <* 
  *>    /+---(very end)-----------------------+/                                       <* 
  *>    for (i = 0; i < x_len; ++i)  {                                                 <* 
@@ -637,7 +637,7 @@ static void  o___FUNCTION________o () { return; }
  *>       t [j] = '\0';                                                               <* 
  *>    }                                                                              <* 
  *>    /+---(save)---------------------------+/                                       <* 
- *>    strlcpy (a_func->purpose, t, 41);                                              <* 
+ *>    ystrlcpy (a_func->purpose, t, 41);                                              <* 
  *>    a_func->ready = 'y';                                                           <* 
  *>    /+---(complete)-----------------------+/                                       <* 
  *>    return 0;                                                                      <* 
@@ -661,7 +661,7 @@ poly_line__purpose      (cchar a_recd [LEN_RECD], int a_beg, char r_purpose [LEN
    --rce;  if (l      == 0)      return rce;
    --rce;  if (a_beg  <  0)      return rce;
    --rce;  if (l      <  a_beg)  return rce;
-   strlcpy (t, a_recd + a_beg, LEN_RECD);
+   ystrlcpy (t, a_recd + a_beg, LEN_RECD);
    l = strlen (t);
    --rce;  if (l      <  1)      return rce;
    /*---(very end)-----------------------*/
@@ -681,7 +681,7 @@ poly_line__purpose      (cchar a_recd [LEN_RECD], int a_beg, char r_purpose [LEN
       t [j] = '\0';
    }
    /*---(save-back)----------------------*/
-   if (r_purpose  != NULL)  strlcpy (r_purpose, t, 41);
+   if (r_purpose  != NULL)  ystrlcpy (r_purpose, t, 41);
    if (r_ready    != NULL)  *r_ready = 'y';
    /*---(complete)-----------------------*/
    return 0;
@@ -778,7 +778,7 @@ poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char 
    if (r_single != NULL)  *r_single = '·';
    if (r_scope  != NULL)  *r_scope  = '·';
    if (r_rtype  != NULL)  *r_rtype  = '·';
-   if (r_rlong  != NULL)  strlcpy (r_rlong, "", LEN_LABEL);
+   if (r_rlong  != NULL)  ystrlcpy (r_rlong, "", LEN_LABEL);
    /*---(defense)------------------------*/
    DEBUG_INPT   yLOG_spoint  (a_prev);
    --rce;  if (a_prev == NULL) {
@@ -808,7 +808,7 @@ poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char 
    DEBUG_INPT   yLOG_schar   (x_single);
    /*---(oneline return type)------------*/
    --rce;  if (x_single == 'y') {
-      strlcpy (x_return, a_recd, x_len);
+      ystrlcpy (x_return, a_recd, x_len);
    }
    /*---(multiline return type)----------*/
    else {
@@ -819,16 +819,16 @@ poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char 
       r = strstr (a_prev, "/*");
       if (r == NULL)  x_len = strlen (a_prev);
       else            x_len = r - a_prev;
-      strlcpy (x_return, a_prev, x_len + 1);
+      ystrlcpy (x_return, a_prev, x_len + 1);
    }
-   strltrim (x_return, ySTR_SINGLE, LEN_RECD);
+   ystrltrim (x_return, ySTR_SINGLE, LEN_RECD);
    DEBUG_INPT   yLOG_snote   (x_return);
    /*---(classify scope)-----------------*/
    x_len = strlen (a_name);
    r = strstr (x_return, "static");
    if (r == x_return) {
-      strlcpy  (x_return, x_return  + 7, LEN_RECD);
-      strltrim (x_return, ySTR_SINGLE, LEN_RECD);
+      ystrlcpy  (x_return, x_return  + 7, LEN_RECD);
+      ystrltrim (x_return, ySTR_SINGLE, LEN_RECD);
       x_scope = 's';
    }
    else if (strncmp (a_name + x_len - 6, "__unit" , 6) == 0   )  x_scope = 'u';
@@ -857,7 +857,7 @@ poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char 
    if (r_single != NULL)  *r_single = x_single;
    if (r_scope  != NULL)  *r_scope  = x_scope;
    if (r_rtype  != NULL)  *r_rtype  = x_rtype;
-   if (r_rlong  != NULL && x_len < LEN_LABEL)  strlcpy (r_rlong, x_return, LEN_LABEL);
+   if (r_rlong  != NULL && x_len < LEN_LABEL)  ystrlcpy (r_rlong, x_return, LEN_LABEL);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
    return 1;
@@ -910,18 +910,18 @@ poly_line__params_cut   (char a_recd [LEN_RECD], char r_params [LEN_RECD], char 
    if (x_end == NULL)  x_len = LEN_RECD;
    else                x_len = x_end - x_beg;
    DEBUG_DATA   yLOG_sint    (x_len);
-   strlcpy  (x_params, x_beg, x_len);
-   strltrim (x_params, ySTR_SINGLE, x_len);
+   ystrlcpy  (x_params, x_beg, x_len);
+   ystrltrim (x_params, ySTR_SINGLE, x_len);
    x_len = strlen (x_params);
    /*---(check symmetry)-----------------*/
    if (r_audit  != NULL)   *r_audit =  '(';
-   x_open  = strldcnt (x_params, '(', LEN_RECD);
+   x_open  = ystrldcnt (x_params, '(', LEN_RECD);
    DEBUG_DATA   yLOG_sint    (x_open);
    --rce;  if (x_open  < 1) {
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   x_close = strldcnt (x_params, ')', LEN_RECD);
+   x_close = ystrldcnt (x_params, ')', LEN_RECD);
    DEBUG_DATA   yLOG_sint    (x_close);
    --rce;  if (x_close < 1) {
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
@@ -969,15 +969,16 @@ poly_line__params_cut   (char a_recd [LEN_RECD], char r_params [LEN_RECD], char 
    else if (strcmp (x_params, "(void )")  == 0)  x_count = -1;
    else if (strcmp (x_params, "( void )") == 0)  x_count = -1;
    else                                          x_count =  0;
+   DEBUG_INPT   yLOG_sint    (x_count);
    /*---(final touches)------------------*/
-   strltrim (x_final, ySTR_BOTH, LEN_RECD);
+   ystrltrim (x_final, ySTR_BOTH, LEN_RECD);
    x_len = strlen (x_final);
    if (x_count == 0) {
-      x_count = strldcnt (x_final, ',', x_len) + 1;
+      x_count = ystrldcnt (x_final, ',', x_len) + 1;
       if (x_count <  0)   x_count = 0;
    }
    /*---(save-back)----------------------*/
-   if (r_params != NULL)   strlcpy (r_params, x_final, LEN_RECD);
+   if (r_params != NULL)   ystrlcpy (r_params, x_final, LEN_RECD);
    if (r_audit  != NULL)   *r_audit =  '·';
    if (r_count  != NULL)   *r_count = x_count;
    /*---(complete)-----------------------*/
@@ -987,7 +988,7 @@ poly_line__params_cut   (char a_recd [LEN_RECD], char r_params [LEN_RECD], char 
 }
 
 char
-poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_both, int *r_pnum, int *r_pmulti, int *r_pfunc)
+poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_both, int *r_chg, int *r_pnum, int *r_pmulti, int *r_pfunc, int *r_pstruct)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -1000,6 +1001,7 @@ poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_
    char        x_label     [LEN_LABEL] = "";
    char        x_num       =    0;
    char        x_point     =    0;
+   char        x_struct    =    0;
    char        x_func      =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_senter  (__FUNCTION__);
@@ -1009,8 +1011,8 @@ poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy  (x_param, a_param    , LEN_RECD);
-   strltrim (x_param, ySTR_SINGLE, LEN_RECD);
+   ystrlcpy  (x_param, a_param    , LEN_RECD);
+   ystrltrim (x_param, ySTR_SINGLE, LEN_RECD);
    /*---(suffix)-------------------------*/
    x_end = strchr (x_param, '[');
    if (x_end != NULL)  x_type = '[';
@@ -1022,7 +1024,7 @@ poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_
    DEBUG_DATA   yLOG_spoint  (x_end);
    if (x_end != NULL)  {
       x_end [0] = '\0';
-      strltrim (x_param, ySTR_BOTH, LEN_RECD);
+      ystrltrim (x_param, ySTR_BOTH, LEN_RECD);
    }
    DEBUG_DATA   yLOG_snote   (x_param);
    x_len = strlen (x_param);
@@ -1030,7 +1032,7 @@ poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_
    /*---(label)--------------------------*/
    for (i = x_len - 1; i > 0; --i) {
       if (strchr ("* ", x_param [i]) != NULL) {
-         strlcpy (x_label, x_param + i + 1, LEN_LABEL);
+         ystrlcpy (x_label, x_param + i + 1, LEN_LABEL);
          x_param [i + 1] = '\0';
          break;
       }
@@ -1052,6 +1054,7 @@ poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_
    if      (strncmp (x_label, "a_"    , 2) == 0 && r_in   != NULL)     ++(*r_in);
    else if (strncmp (x_label, "r_"    , 2) == 0 && r_out  != NULL)     ++(*r_out);
    else if (strncmp (x_label, "b_"    , 2) == 0 && r_both != NULL)     ++(*r_both);
+   else if (strncmp (x_label, "c_"    , 2) == 0 && r_chg  != NULL)     ++(*r_chg);
    /*---(point)--------------------------*/
    if      (strstr  (x_param, "***"      ) != NULL)  x_point = 3;
    else if (strstr  (x_param, "**"       ) != NULL)  x_point = 2;
@@ -1063,17 +1066,21 @@ poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_
    else if (strstr (x_param, "short"   ) != NULL)    ++x_num;
    else if (strstr (x_param, "int"     ) != NULL)    ++x_num;
    else if (strstr (x_param, "long"    ) != NULL)    ++x_num;
+   else if (strstr (x_param, "char"    ) != NULL)    ;
+   else if (strstr (x_param, "void"    ) != NULL)    ;
+   else                                              ++x_struct;
    /*---(combos)-------------------------*/
-   if      (x_type == '(' && x_point  > 0 && r_pfunc  != NULL)   ++(*r_pfunc);
-   else if (x_point > 1   &&                 r_pmulti != NULL)   ++(*r_pmulti);
-   else if (x_num   > 0   && x_point == 1 && r_pnum   != NULL)   ++(*r_pnum);
+   if      (x_type   == '(' && x_point  > 0 && r_pfunc   != NULL)   ++(*r_pfunc);
+   else if (x_num    >  0   && x_point == 1 && r_pnum    != NULL)   ++(*r_pnum);
+   else if (x_point  >  1   &&                 r_pmulti  != NULL)   ++(*r_pmulti);
+   if      (x_struct >  0   &&                 r_pstruct != NULL)   ++(*r_pstruct);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
-char
-poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, int *r_in, int *r_out, int *r_both, int *r_pnum, int *r_pmulti, int *r_pfunc)
+char         /*-> evaluate function parameter list ------------[ ´········· ]-*/ /*-ågcg´·Bá1A··á9··á·´D17´H··´11M22á·æ¬å1á·1··´C84á2·2····´···´····æ¬å>l!··´2···2··´····´114·æ-*/
+poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, int *r_in, int *r_out, int *r_both, int *r_chg, int *r_pnum, int *r_pmulti, int *r_pfunc, int *r_pstruct)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -1083,7 +1090,7 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
    char       *r           = NULL;
    char       x_params     [LEN_RECD];
    char       x_one        [LEN_RECD];
-   int        x_co, x_in, x_ou, x_bo, x_pn, x_pm, x_pf;
+   int        x_co, x_in, x_ou, x_bo, x_ch, x_pn, x_pm, x_pf, x_ps;
    int        c            =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -1093,10 +1100,11 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
    if (r_in     != NULL)  *r_in     =   0;
    if (r_out    != NULL)  *r_out    =   0;
    if (r_both   != NULL)  *r_both   =   0;
+   if (r_chg    != NULL)  *r_chg    =   0;
    if (r_pnum   != NULL)  *r_pnum   =   0;
    if (r_pmulti != NULL)  *r_pmulti =   0;
    if (r_pfunc  != NULL)  *r_pfunc  =   0;
-   x_co = x_in = x_ou = x_bo = x_pn = x_pm = x_pf = 0;
+   x_co = x_in = x_ou = x_bo = x_ch = x_pn = x_pm = x_pf = x_ps = 0;
    /*---(prepare)------------------------*/
    rc = poly_line__params_cut   (a_recd, x_params, r_audit, &x_co);
    DEBUG_DATA   yLOG_value   ("cut"       , rc);
@@ -1105,6 +1113,8 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
       return rce;
    }
    if (rc == 1) {
+      if (x_co == -1)  x_co = 0;
+      if (r_count   != NULL)  *r_count   = x_co;
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
@@ -1112,7 +1122,7 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
    /*---(parse)--------------------------*/
    p = strtok_r (x_params, q, &r);
    while (p != NULL) {
-      rc = poly_line__params_one (p, &x_in, &x_ou, &x_bo, &x_pn, &x_pm, &x_pf);
+      rc = poly_line__params_one (p, &x_in, &x_ou, &x_bo, &x_ch, &x_pn, &x_pm, &x_pf, &x_ps);
       if (rc < 0)  break;
       ++c;
       p  = strtok_r (NULL, q, &r);
@@ -1124,13 +1134,15 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
       return rce;
    }
    /*---(save-back)----------------------*/
-   if (r_count  != NULL)  *r_count  = x_co;
-   if (r_in     != NULL)  *r_in     = x_in;
-   if (r_out    != NULL)  *r_out    = x_ou;
-   if (r_both   != NULL)  *r_both   = x_bo;
-   if (r_pnum   != NULL)  *r_pnum   = x_pn;
-   if (r_pmulti != NULL)  *r_pmulti = x_pm;
-   if (r_pfunc  != NULL)  *r_pfunc  = x_pf;
+   if (r_count   != NULL)  *r_count   = x_co;
+   if (r_in      != NULL)  *r_in      = x_in;
+   if (r_out     != NULL)  *r_out     = x_ou;
+   if (r_both    != NULL)  *r_both    = x_bo;
+   if (r_chg     != NULL)  *r_chg     = x_ch;
+   if (r_pnum    != NULL)  *r_pnum    = x_pn;
+   if (r_pmulti  != NULL)  *r_pmulti  = x_pm;
+   if (r_pfunc   != NULL)  *r_pfunc   = x_pf;
+   if (r_pstruct != NULL)  *r_pstruct = x_ps;
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1143,14 +1155,14 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
 
-char
-poly_debug__fake        (tFUNC *a_func, int a_return, int a_intern, int a_ylib)
+char         /*-> force data onto function --------------------[ leaf······ ]-*/ /*-åucg´·4á3··1á···á1´2·A´1··´··111á·æ¬å·á····´···á·······´···´····æ¬å·····´3·3····´····´····æ-*/
+poly_debug__fake        (int a_return, int a_intern, int a_ylib, tFUNC *c_func)
 {
    char        rce         =  -10;
-   --rce;  if (a_func == NULL)  return rce;
-   a_func->WORK_RETURN  = a_return;
-   a_func->WORK_GFUNCS  = a_intern;
-   a_func->WORK_YLIB    = a_ylib;
+   --rce;  if (c_func == NULL)  return rce;
+   c_func->WORK_RETURN  = a_return;
+   c_func->WORK_GFUNCS  = a_intern;
+   c_func->WORK_YLIB    = a_ylib;
    return 0;
 }
 
@@ -1170,29 +1182,29 @@ poly_debug__unit        (char *a_question, int i)
          sprintf  (t, "[%.20s]", u->name);
          if (u->WORK_DCOUNT > 0)  sprintf (s, " %3dc", u->WORK_DCOUNT);
          else                     sprintf (s, "   ·c");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_DFREE  > 0)  sprintf (s, " %3df", u->WORK_DFREE );
          else                     sprintf (s, "   ·f");
-         strlcat (r, s, LEN_RECD);
-         strlcat (r, "   ", LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
+         ystrlcat (r, "   ", LEN_RECD);
          if (u->WORK_DLONG  > 0)  sprintf (s, " %3dn", u->WORK_DLONG );
          else                     sprintf (s, "   ·n");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_DSHORT > 0)  sprintf (s, " %3ds", u->WORK_DSHORT);
          else                     sprintf (s, "   ·s");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_DENTER > 0)  sprintf (s, " %3de", u->WORK_DENTER);
          else                     sprintf (s, "   ·e");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_DEXITR > 0)  sprintf (s, " %3dr", u->WORK_DEXITR);
          else                     sprintf (s, "   ·r");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_DEXIT  > 0)  sprintf (s, " %3dx", u->WORK_DEXIT );
          else                     sprintf (s, "   ·x");
-         strlcat (r, s, LEN_RECD);
-         strlcat (r, "     ", LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
+         ystrlcat (r, "     ", LEN_RECD);
          sprintf (s, " %c", u->STATS_DMACRO);
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          snprintf (unit_answer, LEN_RECD, "DEBUG work  (%2d) : %-22.22s  %s", i, t, r);
       }  else
          snprintf (unit_answer, LEN_RECD, "DEBUG work  (%2d) : %-22.22s    -c   -f      -n   -s   -e   -r   -x      -", i, t);

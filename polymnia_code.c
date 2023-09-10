@@ -42,7 +42,7 @@ poly_code__unquote      (char *a_dst, char *a_src, int a_max)
       ++x_beg;
       --x_len;
    }
-   strlcpy (a_dst, x_beg, a_max);
+   ystrlcpy (a_dst, x_beg, a_max);
    /*---(set ending)---------------------*/
    x_end = a_dst + x_len - 1;
    if (x_end [0] == '"') {
@@ -151,49 +151,49 @@ poly_code__unquote      (char *a_dst, char *a_src, int a_max)
 /*====================------------------------------------====================*/
 static void  o___SOURCES_________o () { return; }
 
-char
-poly_code__indent       (tFUNC *a_func, char *a_recd)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   int         i           =    0;
-   int         x_len       =    0;
-   char        x_inside    =   -1;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_func"    , a_func);
-   --rce;  if (a_func == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("->name"    , a_func->name);
-   DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
-   --rce;  if (a_recd == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
-   /*---(check inside)-------------------*/
-   x_inside = poly_func_inside (a_func);
-   if (x_inside != 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(calculate indent)---------------*/
-   x_len = strlen (a_recd);
-   DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
-   for (i = 0; i < x_len; ++i) {
-      if (a_recd [i] == ' ')   continue;
-      if (i > a_func->WORK_INDENT) a_func->WORK_INDENT = i;
-      break;
-   }
-   DEBUG_INPT   yLOG_value   ("indent"    , a_func->WORK_INDENT);
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                              <* 
+ *> poly_code__indent       (tFUNC *a_func, char *a_recd)                             <* 
+ *> {                                                                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    char        rce         =  -10;                                                <* 
+ *>    char        rc          =    0;                                                <* 
+ *>    int         i           =    0;                                                <* 
+ *>    int         x_len       =    0;                                                <* 
+ *>    char        x_inside    =   -1;                                                <* 
+ *>    /+---(header)-------------------------+/                                       <* 
+ *>    DEBUG_INPT   yLOG_enter   (__FUNCTION__);                                      <* 
+ *>    /+---(defense)------------------------+/                                       <* 
+ *>    DEBUG_INPT   yLOG_point   ("a_func"    , a_func);                              <* 
+ *>    --rce;  if (a_func == NULL) {                                                  <* 
+ *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    DEBUG_INPT   yLOG_info    ("->name"    , a_func->name);                        <* 
+ *>    DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);                              <* 
+ *>    --rce;  if (a_recd == NULL) {                                                  <* 
+ *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);                              <* 
+ *>    /+---(check inside)-------------------+/                                       <* 
+ *>    x_inside = poly_func_inside (a_func);                                          <* 
+ *>    if (x_inside != 0) {                                                           <* 
+ *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(calculate indent)---------------+/                                       <* 
+ *>    x_len = strlen (a_recd);                                                       <* 
+ *>    DEBUG_INPT   yLOG_value   ("x_len"     , x_len);                               <* 
+ *>    for (i = 0; i < x_len; ++i) {                                                  <* 
+ *>       if (a_recd [i] == ' ')   continue;                                          <* 
+ *>       if (i > a_func->WORK_INDENT) a_func->WORK_INDENT = i;                       <* 
+ *>       break;                                                                      <* 
+ *>    }                                                                              <* 
+ *>    DEBUG_INPT   yLOG_value   ("indent"    , a_func->WORK_INDENT);                 <* 
+ *>    /+---(complete)-----------------------+/                                       <* 
+ *>    DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                      <* 
+ *>    return 0;                                                                      <* 
+ *> }                                                                                 <*/
 
 char
 poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
@@ -230,7 +230,7 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
    if (x_inside == 0) ++a_func->COUNT_CODE;
    /*---(slocl counts)-------------------*/
    if (a_recd [0] != '#') {
-      c = strldcnt (a_recd, ';', LEN_RECD);
+      c = ystrldcnt (a_recd, ';', LEN_RECD);
       DEBUG_DATA   yLOG_value   ("c"         , c);
       if (c < 0)  c = 0;
       DEBUG_DATA   yLOG_note   ("slocl");
@@ -244,71 +244,71 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
    return 0;
 }
 
-char
-poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        x_inside    =   -1;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
-   --rce;  if (a_file == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_point   ("a_func"    , a_func);
-   DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
-   --rce;  if (a_recd == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);
-   /*---(register a code line)-----------*/
-   poly_code__counts (a_file, a_func, a_recd);
-   DEBUG_INPT   yLOG_note    ("after counts");
-   /*---(check inside)-------------------*/
-   x_inside = poly_func_inside (a_func);
-   DEBUG_INPT   yLOG_value   ("x_inside"  , x_inside);
-   if (x_inside != 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(function level)-----------------*/
-   if (a_func != NULL) {
-      /*---(returns)---------------------*/
-      if      (strstr (a_recd, " return rce") != NULL)   poly_cats_logic (a_func, 'R');
-      else if (strstr (a_recd, " return -"  ) != NULL)   poly_cats_logic (a_func, 'R');
-      else if (strstr (a_recd, " return "   ) != NULL)   poly_cats_logic (a_func, 'r');
-      else if (strstr (a_recd, " return;"   ) != NULL)   poly_cats_logic (a_func, 'r');
-      /*---(choices)---------------------*/
-      if      (strstr (a_recd, " if "       ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, " if("       ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, " else "     ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, "}else "     ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, " else{"     ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, "}else{"     ) != NULL)   poly_cats_logic (a_func, 'c');
-      if      (strstr (a_recd, " case "     ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, " default "  ) != NULL)   poly_cats_logic (a_func, 'c');
-      else if (strstr (a_recd, " default:"  ) != NULL)   poly_cats_logic (a_func, 'c');
-      /*---(loops)-----------------------*/
-      if      (strstr (a_recd, " while "    ) != NULL)   poly_cats_logic (a_func, 'l');
-      else if (strstr (a_recd, " while("    ) != NULL)   poly_cats_logic (a_func, 'l');
-      if      (strstr (a_recd, " do "       ) != NULL)   poly_cats_logic (a_func, 'l');
-      if      (strstr (a_recd, "}do "       ) != NULL)   poly_cats_logic (a_func, 'l');
-      else if (strstr (a_recd, " do("       ) != NULL)   poly_cats_logic (a_func, 'l');
-      else if (strstr (a_recd, "}do("       ) != NULL)   poly_cats_logic (a_func, 'l');
-      if      (strstr (a_recd, " for "      ) != NULL)   poly_cats_logic (a_func, 'L');
-      else if (strstr (a_recd, " for("      ) != NULL)   poly_cats_logic (a_func, 'L');
-      /*---(lcoal static)----------------*/
-      if      (strstr (a_recd, " static "   ) != NULL)   ++a_func->WORK_LSTATIC;
-      /*---(done)------------------------*/
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                                      <* 
+ *> poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)                      <* 
+ *> {                                                                                         <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                               <* 
+ *>    char        rce         =  -10;                                                        <* 
+ *>    char        x_inside    =   -1;                                                        <* 
+ *>    /+---(header)-------------------------+/                                               <* 
+ *>    DEBUG_INPT   yLOG_enter   (__FUNCTION__);                                              <* 
+ *>    /+---(defense)------------------------+/                                               <* 
+ *>    DEBUG_INPT   yLOG_point   ("a_file"    , a_file);                                      <* 
+ *>    --rce;  if (a_file == NULL) {                                                          <* 
+ *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                      <* 
+ *>       return rce;                                                                         <* 
+ *>    }                                                                                      <* 
+ *>    DEBUG_INPT   yLOG_point   ("a_func"    , a_func);                                      <* 
+ *>    DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);                                      <* 
+ *>    --rce;  if (a_recd == NULL) {                                                          <* 
+ *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                      <* 
+ *>       return rce;                                                                         <* 
+ *>    }                                                                                      <* 
+ *>    DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);                                      <* 
+ *>    /+---(register a code line)-----------+/                                               <* 
+ *>    poly_code__counts (a_file, a_func, a_recd);                                            <* 
+ *>    DEBUG_INPT   yLOG_note    ("after counts");                                            <* 
+ *>    /+---(check inside)-------------------+/                                               <* 
+ *>    x_inside = poly_func_inside (a_func);                                                  <* 
+ *>    DEBUG_INPT   yLOG_value   ("x_inside"  , x_inside);                                    <* 
+ *>    if (x_inside != 0) {                                                                   <* 
+ *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                      <* 
+ *>       return rce;                                                                         <* 
+ *>    }                                                                                      <* 
+ *>    /+---(function level)-----------------+/                                               <* 
+ *>    if (a_func != NULL) {                                                                  <* 
+ *>       /+---(returns)---------------------+/                                               <* 
+ *>       if      (strstr (a_recd, " return rce") != NULL)   poly_cats_logic (a_func, 'R');   <* 
+ *>       else if (strstr (a_recd, " return -"  ) != NULL)   poly_cats_logic (a_func, 'R');   <* 
+ *>       else if (strstr (a_recd, " return "   ) != NULL)   poly_cats_logic (a_func, 'r');   <* 
+ *>       else if (strstr (a_recd, " return;"   ) != NULL)   poly_cats_logic (a_func, 'r');   <* 
+ *>       /+---(choices)---------------------+/                                               <* 
+ *>       if      (strstr (a_recd, " if "       ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       else if (strstr (a_recd, " if("       ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       else if (strstr (a_recd, " else "     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       else if (strstr (a_recd, "}else "     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       else if (strstr (a_recd, " else{"     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       else if (strstr (a_recd, "}else{"     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       if      (strstr (a_recd, " case "     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       else if (strstr (a_recd, " default "  ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       else if (strstr (a_recd, " default:"  ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
+ *>       /+---(loops)-----------------------+/                                               <* 
+ *>       if      (strstr (a_recd, " while "    ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
+ *>       else if (strstr (a_recd, " while("    ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
+ *>       if      (strstr (a_recd, " do "       ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
+ *>       if      (strstr (a_recd, "}do "       ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
+ *>       else if (strstr (a_recd, " do("       ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
+ *>       else if (strstr (a_recd, "}do("       ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
+ *>       if      (strstr (a_recd, " for "      ) != NULL)   poly_cats_logic (a_func, 'L');   <* 
+ *>       else if (strstr (a_recd, " for("      ) != NULL)   poly_cats_logic (a_func, 'L');   <* 
+ *>       /+---(lcoal static)----------------+/                                               <* 
+ *>       if      (strstr (a_recd, " static "   ) != NULL)   ++a_func->WORK_LSTATIC;          <* 
+ *>       /+---(done)------------------------+/                                               <* 
+ *>    }                                                                                      <* 
+ *>    /+---(complete)-----------------------+/                                               <* 
+ *>    DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                              <* 
+ *>    return 0;                                                                              <* 
+ *> }                                                                                         <*/
 
 
 
@@ -360,7 +360,7 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
       rc = poly_line_purpose ("/* */", a_func->purpose, &(a_func->ready));
    }
    /*---(parameters)---------------------*/
-   rc = poly_line_params (a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC));
+   rc = poly_line_params (a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -459,8 +459,8 @@ poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr
       DEBUG_INPT   yLOG_value   ("line"      , (*a_func)->line);
       if (a_line == (*a_func)->line) {
          DEBUG_INPT   yLOG_note    ("FUNCTION HEADER FOUND");
-         strlcpy   (x_full, a_curr   , LEN_RECD);
-         strltrim  (x_full, ySTR_BOTH, LEN_RECD);
+         ystrlcpy   (x_full, a_curr   , LEN_RECD);
+         ystrltrim  (x_full, ySTR_BOTH, LEN_RECD);
          DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
          poly_code_function (*a_func, x_full, a_prev);
       }
@@ -502,11 +502,11 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    }
    DEBUG_INPT   yLOG_info    ("a_curr"    , a_curr);
    /*---(prepare)---------------------*/
-   strlcpy   (x_full, a_curr   , LEN_RECD);
-   strltrim  (x_full, ySTR_BOTH, LEN_RECD);
+   ystrlcpy   (x_full, a_curr   , LEN_RECD);
+   ystrltrim  (x_full, ySTR_BOTH, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
-   strlcpy   (x_recd, a_curr   , LEN_RECD);
-   strlunall (x_recd, LEN_RECD);
+   ystrlcpy   (x_recd, a_curr   , LEN_RECD);
+   ystrlunall (x_recd, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
    /*---(display)---------------------*/
    if (a_func == NULL) {
@@ -695,19 +695,19 @@ poly_code__unit         (char *a_question, int i)
          sprintf  (t, "[%.20s]", u->name);
          if (u->WORK_CHOICE > 0)  sprintf (s, " %3dc", u->WORK_CHOICE);
          else                     sprintf (s, "   ·c");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_LOOP   > 0)  sprintf (s, " %3dl", u->WORK_LOOP);
          else                     sprintf (s, "   ·l");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_RETURN > 0)  sprintf (s, " %3dr", u->WORK_RETURN);
          else                     sprintf (s, "   ·r");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_RCE    > 0)  sprintf (s, " %3de", u->WORK_RCE);
          else                     sprintf (s, "   ·e");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          if (u->WORK_INDENT > 0)  sprintf (s, " %3di", u->WORK_INDENT);
          else                     sprintf (s, "   ·i");
-         strlcat (r, s, LEN_RECD);
+         ystrlcat (r, s, LEN_RECD);
          snprintf (unit_answer, LEN_RECD, "CODE work   (%2d) : %-22.22s  %s", i, t, r);
       }  else
          snprintf (unit_answer, LEN_RECD, "CODE work   (%2d) : %-22.22s    -c   -l   -r   -e   -i", i, t);

@@ -33,7 +33,7 @@ poly_extern_cli         (char *a_name, char a_loud)
       return rce;
    }
    DEBUG_ARGS  yLOG_info    ("a_name"    , a_name);
-   strlcpy (x_recd, a_name, LEN_RECD);
+   ystrlcpy (x_recd, a_name, LEN_RECD);
    /*---(check length)-------------------*/
    l = strlen (x_recd);
    DEBUG_ARGS  yLOG_value   ("l"         , l);
@@ -52,11 +52,11 @@ poly_extern_cli         (char *a_name, char a_loud)
    }
    /*---(check extension)----------------*/
    if (l >= 5 && strcmp (x_recd + l - 4, ".txt") != 0) {
-      strlcat (x_recd, ".txt", LEN_RECD);
+      ystrlcat (x_recd, ".txt", LEN_RECD);
       DEBUG_ARGS  yLOG_info    ("fixed"     , x_recd);
    }
    /*---(copy)---------------------------*/
-   strlcpy (my.n_extern, x_recd, LEN_RECD);
+   ystrlcpy (my.n_extern, x_recd, LEN_RECD);
    DEBUG_ARGS  yLOG_info    ("external"  , my.n_extern);
    /*---(complete)-----------------------*/
    DEBUG_FILE   yLOG_exit    (__FUNCTION__);
@@ -137,7 +137,7 @@ poly_extern__mark        (tEXTERN *a_curr, char *a_lib, char *a_name)
    else if (strcmp  (a_lib, "yCOLOR.h"     ) == 0)   a_curr->cat = 'Y';
    else if (strcmp  (a_lib, "yCOLOR_solo.h") == 0)   a_curr->cat = 'Y';
    else if (strcmp  (a_lib, "yX11.h"       ) == 0)   a_curr->cat = 'Y';
-   else if (a_lib [0] == 'y' && strchr (YSTR_UPPER, a_lib [1]) != NULL)  a_curr->cat = 'Y';
+   else if (a_lib [0] == 'y' && strchr (YSTR_UPPER, a_lib [1]) != NULL)  a_curr->cat = 'y';
    /*---(standard)-----------------------*/
    else {
       sprintf (t, " %s ", a_name);
@@ -204,7 +204,7 @@ char*
 poly_extern__memory     (tEXTERN *a_ext)
 {
    /*---(master)-------------------------*/
-   strlcpy (s_print, "["  , LEN_RECD);
+   ystrlcpy (s_print, "["  , LEN_RECD);
    poly_shared__check_ptr  (s_print, a_ext->elib);
    poly_shared__check_str  (s_print, a_ext->name);
    poly_shared__check_num  (s_print, a_ext->line);
@@ -218,7 +218,7 @@ poly_extern__memory     (tEXTERN *a_ext)
    poly_shared__check_num  (s_print, a_ext->y_count);
    poly_shared__spacer     (s_print);
    poly_shared__check_ptr  (s_print, a_ext->btree);
-   strlcat (s_print, "]" , LEN_RECD);
+   ystrlcat (s_print, "]" , LEN_RECD);
    /*---(complete)-----------------------*/
    return s_print;
 }
@@ -388,7 +388,7 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
          return rce;
       }
       poly_elib__wipe (x_lib);
-      strlcpy (x_lib->name, a_lib , LEN_LABEL);
+      ystrlcpy (x_lib->name, a_lib , LEN_LABEL);
       rc = ySORT_hook (B_ELIB, x_lib, x_lib->name, &x_lib->btree);
       ySORT_prepare (B_ELIB);
    }
@@ -404,7 +404,7 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
    poly_extern__wipe (x_new);
    /*> x_new->elib     = x_lib;                                                       <*/
    poly_extern_hook (x_lib, x_new);
-   strlcpy (x_new->name, a_name, LEN_TITLE);
+   ystrlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->line     = a_line;
    x_new->type     = a_type;
    poly_extern__mark (x_new, a_lib, a_name);
@@ -517,7 +517,7 @@ poly_extern_load        (void)
       return rce;
    }
    /*---(debugging)----------------------*/
-   poly_extern_dump ();
+   /*> poly_extern_dump ();                                                           <*/
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -551,7 +551,7 @@ poly_extern_init        (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (my.n_extern, F_EXTERN, LEN_RECD);
+   ystrlcpy (my.n_extern, F_EXTERN, LEN_RECD);
    DEBUG_INPT   yLOG_info    ("n_extern"  , my.n_extern);
    my.f_extern = NULL;
    DEBUG_INPT   yLOG_point   ("f_extern"  , my.f_extern);
@@ -768,7 +768,7 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, 
    if ((*r_src)->file->proj->name [0] == 'y') {
       if (strchr (YSTR_UPPER, (*r_src)->file->proj->name [1]) != NULL) {
          DEBUG_INPT   yLOG_note    ("found a heatherly library reference");
-         strlcpy (x_proj, (*r_src)->file->proj->name, LEN_TITLE);
+         ystrlcpy (x_proj, (*r_src)->file->proj->name, LEN_TITLE);
       }
    }
    /*---(get destination tag)---------*/
@@ -1189,10 +1189,10 @@ poly_extern__unit_work  (char a_spc, char a_suf, char a_val, char *a_out)
    char        s           [LEN_LABEL] = "";
    if (a_spc == 'y')  sprintf (s, "   ");
    else               sprintf (s, " ");
-   strlcat (a_out, s, LEN_RECD);
+   ystrlcat (a_out, s, LEN_RECD);
    if (a_val >  0)    sprintf (s, "%1d%c", a_val, a_suf);
    else               sprintf (s, "·%c"  ,        a_suf);
-   strlcat (a_out, s, LEN_RECD);
+   ystrlcat (a_out, s, LEN_RECD);
    return 0;
 }
 

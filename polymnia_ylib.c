@@ -35,7 +35,7 @@ char*
 poly_ylib__memory       (tYLIB *a_ylib)
 {
    /*---(master)-------------------------*/
-   strlcpy (s_print, "["  , LEN_RECD);
+   ystrlcpy (s_print, "["  , LEN_RECD);
    poly_shared__check_str  (s_print, a_ylib->name);
    poly_shared__check_num  (s_print, a_ylib->line);
    poly_shared__spacer     (s_print);
@@ -46,7 +46,7 @@ poly_ylib__memory       (tYLIB *a_ylib)
    poly_shared__check_ptr  (s_print, a_ylib->ylib);
    poly_shared__check_ptr  (s_print, a_ylib->e_prev);
    poly_shared__check_ptr  (s_print, a_ylib->e_next);
-   strlcat (s_print, "]" , LEN_RECD);
+   ystrlcat (s_print, "]" , LEN_RECD);
    /*---(complete)-----------------------*/
    return s_print;
 }
@@ -333,7 +333,7 @@ poly_ylib_add           (tFUNC *a_func, tEXTERN *a_extern, int a_line, tYLIB **a
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   strlcpy (x_new->name, a_extern->name, LEN_TITLE);
+   ystrlcpy (x_new->name, a_extern->name, LEN_TITLE);
    x_new->line   = a_line;
    /*---(into function list)-------------*/
    DEBUG_DATA   yLOG_note    ("hook");

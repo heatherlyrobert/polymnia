@@ -69,9 +69,9 @@ poly_rptg_lookup        (char *a_option)
    DEBUG_OUTP   yLOG_info    ("run_file"  , my.run_file);
    /*---(defaults)-----------------------*/
    s_opt = POLY_NADA;
-   strlcpy (s_name   , ""    , LEN_LABEL);
-   strlcpy (s_desc   , ""    , LEN_HUND);
-   strlcpy (s_options, "····", LEN_TERSE);
+   ystrlcpy (s_name   , ""    , LEN_LABEL);
+   ystrlcpy (s_desc   , ""    , LEN_HUND);
+   ystrlcpy (s_options, "····", LEN_TERSE);
    /*---(walk)---------------------------*/
    while (s_reports [i].scope >= 0) {
       /*> printf ("trying %2d, %s (%s)\n", i, s_reports [i].name, s_reports [i].desc);   <*/
@@ -82,9 +82,9 @@ poly_rptg_lookup        (char *a_option)
       else if (a_option [0] == POLY_DUMP   && strcmp (a_option + 1, s_reports [i].name) == 0)   s_opt = POLY_DUMP;
       /*---(handle)----------------------*/
       if  (s_opt != POLY_NADA) {
-         strlcpy (s_name   , s_reports [i].name    , LEN_LABEL);
-         strlcpy (s_desc   , s_reports [i].desc    , LEN_HUND);
-         strlcpy (s_options, s_reports [i].options , LEN_TERSE);
+         ystrlcpy (s_name   , s_reports [i].name    , LEN_LABEL);
+         ystrlcpy (s_desc   , s_reports [i].desc    , LEN_HUND);
+         ystrlcpy (s_options, s_reports [i].options , LEN_TERSE);
          my.g_mode  = POLY_RPTG;
          my.g_scope = s_reports [i].scope;
          my.g_rptg  = s_reports [i].options [0];
@@ -178,53 +178,53 @@ poly_rptg__total   (char a_level)
    char        x_text      [LEN_TERSE] = "";
    char        x_data      [LEN_TERSE] = "";
    char        x_bss       [LEN_TERSE] = "";
-   if      (a_level == 'p')  strlcpy (t, "", LEN_HUND);
-   else if (a_level == 'f')  strlcpy (t, "                    ", LEN_HUND);
+   if      (a_level == 'p')  ystrlcpy (t, "", LEN_HUND);
+   else if (a_level == 'f')  ystrlcpy (t, "                    ", LEN_HUND);
    /*> s_projs  = ySORT_count (B_PROJ );                                         <* 
     *> s_files  = ySORT_count (B_FILES);                                         <* 
     *> s_funcs  = poly_func_count  ();                                                <*/
-   strl4main (s_projs, x_projs, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_files, x_files, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_funcs, x_funcs, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_ylibs, x_ylibs, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_lines, x_lines, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_empty, x_empty, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_docs , x_docs , 0, 'c', '-', LEN_TERSE);
-   strl4main (s_debug, x_debug, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_code , x_code , 0, 'c', '-', LEN_TERSE);
-   strl4main (s_slocl, x_slocl, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_projs, x_projs, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_files, x_files, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_funcs, x_funcs, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_ylibs, x_ylibs, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_lines, x_lines, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_empty, x_empty, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_docs , x_docs , 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_debug, x_debug, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_code , x_code , 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_slocl, x_slocl, 0, 'c', '-', LEN_TERSE);
    if (a_level == 'f') {
-      strl4main (s_text , x_text , 0, 'c', '-', LEN_TERSE);
-      strl4main (s_data , x_data , 0, 'c', '-', LEN_TERSE);
-      strl4main (s_bss  , x_bss  , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (s_text , x_text , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (s_data , x_data , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (s_bss  , x_bss  , 0, 'c', '-', LEN_TERSE);
    }
    printf ("\n");
    printf ("#     %s totals %3s  %6.6s %6.6s %6.6s %8.8s %8.8s %8.8s %8.8s %8.8s %8.8s  %9.9s %9.9s %9.9s  \n",
          t, x_projs, x_files, x_funcs, x_ylibs, x_lines, x_empty, x_docs , x_debug, x_code , x_slocl, x_text, x_data, x_bss);
    if      (a_level == 'p')  a = s_projs;
    else if (a_level == 'f')  a = s_files;
-   strl4main (s_funcs / a, x_funcs, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_ylibs / a, x_ylibs, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_lines / a, x_lines, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_empty / a, x_empty, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_docs  / a, x_docs , 0, 'c', '-', LEN_TERSE);
-   strl4main (s_debug / a, x_debug, 0, 'c', '-', LEN_TERSE);
-   strl4main (s_code  / a, x_code , 0, 'c', '-', LEN_TERSE);
-   strl4main (s_slocl / a, x_slocl, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_funcs / a, x_funcs, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_ylibs / a, x_ylibs, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_lines / a, x_lines, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_empty / a, x_empty, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_docs  / a, x_docs , 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_debug / a, x_debug, 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_code  / a, x_code , 0, 'c', '-', LEN_TERSE);
+   ystrl4main (s_slocl / a, x_slocl, 0, 'c', '-', LEN_TERSE);
    if (a_level == 'f') {
       a = s_memory;
       b = s_text + s_data + s_bss;
-      strl4main (s_text  / a, x_text , 0, 'c', '-', LEN_TERSE);
-      strl4main (s_data  / a, x_data , 0, 'c', '-', LEN_TERSE);
-      strl4main (s_bss   / a, x_bss  , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (s_text  / a, x_text , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (s_data  / a, x_data , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (s_bss   / a, x_bss  , 0, 'c', '-', LEN_TERSE);
    }
    printf ("#    %s           averages  %6.6s %6.6s %8.8s %8.8s %8.8s %8.8s %8.8s %8.8s  %9.9s %9.9s %9.9s  \n",
          t, x_funcs, x_ylibs, x_lines, x_empty, x_docs , x_debug, x_code , x_slocl, x_text, x_data, x_bss);
    if (a_level == 'f') {
       a = s_text + s_data + s_bss;
-      strl4main (s_text  / (float) a, x_text , 2, 'c', '-', LEN_TERSE);
-      strl4main (s_data  / (float) a, x_data , 2, 'c', '-', LEN_TERSE);
-      strl4main (s_bss   / (float) a, x_bss  , 2, 'c', '-', LEN_TERSE);
+      ystrl4main (s_text  / (float) a, x_text , 2, 'c', '-', LEN_TERSE);
+      ystrl4main (s_data  / (float) a, x_data , 2, 'c', '-', LEN_TERSE);
+      ystrl4main (s_bss   / (float) a, x_bss  , 2, 'c', '-', LEN_TERSE);
    }
    printf ("#    %s                                percentages %8.2f %8.2f %8.2f %8.2f %8.2f  %9.9s %9.9s %9.9s\n",
          t, (float) s_empty / s_lines, (float) s_debug / s_lines,
@@ -239,23 +239,23 @@ char
 poly_rptg__debug        (tFUNC *a_tag)
 {
    if (strchr ("Bb", a_tag->STATS_DSTYLE) != NULL) {
-      strlcpy (s_prefix, "style"     , LEN_LABEL);
+      ystrlcpy (s_prefix, "style"     , LEN_LABEL);
       return 1;
    }
    if (a_tag->STATS_DSTYLE == '#') {
-      strlcpy (s_prefix, "boom"      , LEN_LABEL);
+      ystrlcpy (s_prefix, "boom"      , LEN_LABEL);
       return 1;
    }
    if (a_tag->STATS_DMACRO == '#' && strchr ("LSf", a_tag->STATS_DSTYLE) == NULL) {
-      strlcpy (s_prefix, "macro"     , LEN_LABEL);
+      ystrlcpy (s_prefix, "macro"     , LEN_LABEL);
       return 1;
    }
    if (strchr ("!#EX", a_tag->STATS_DMATCH) != NULL) {
-      strlcpy (s_prefix, "match"     , LEN_LABEL);
+      ystrlcpy (s_prefix, "match"     , LEN_LABEL);
       return 1;
    }
    if (a_tag->STATS_DSTYLE == '-' && strchr ("ABCDEFGHIJKLMNOPQRSTUVWXYZ#", a_tag->STATS_TOTAL) != NULL) {
-      strlcpy (s_prefix, "size"      , LEN_LABEL);
+      ystrlcpy (s_prefix, "size"      , LEN_LABEL);
       return 1;
    }
    return 0;
@@ -265,15 +265,15 @@ char
 poly_rptg__params       (tFUNC *a_tag)
 {
    if (strchr ("56789ABCDEFGHIJKLMNOPQRSTUVWXYZ#", a_tag->STATS_PARAMS) != NULL) {
-      strlcpy (s_prefix, "count"     , LEN_LABEL);
+      ystrlcpy (s_prefix, "count"     , LEN_LABEL);
       return 1;
    }
    if (strchr ("#" , a_tag->STATS_PTWO) != NULL) {
-      strlcpy (s_prefix, "**"        , LEN_LABEL);
+      ystrlcpy (s_prefix, "**"        , LEN_LABEL);
       return 1;
    }
    if (strchr ("#" , a_tag->STATS_PNUM) != NULL) {
-      strlcpy (s_prefix, "num*"      , LEN_LABEL);
+      ystrlcpy (s_prefix, "num*"      , LEN_LABEL);
       return 1;
    }
    return 0;
@@ -283,11 +283,11 @@ char
 poly_rptg__data         (tFUNC *a_tag)
 {
    if (strchr ("rR", a_tag->STATS_READ ) != NULL) {
-      strlcpy (s_prefix, "read"      , LEN_LABEL);
+      ystrlcpy (s_prefix, "read"      , LEN_LABEL);
       return 1;
    }
    if (strchr ("wW", a_tag->STATS_WRITE) != NULL) {
-      strlcpy (s_prefix, "write"     , LEN_LABEL);
+      ystrlcpy (s_prefix, "write"     , LEN_LABEL);
       return 1;
    }
    return 0;
@@ -297,19 +297,19 @@ char
 poly_rptg__linux        (tFUNC *a_tag)
 {
    if (strchr ("p"   , a_tag->STATS_SYSTEM) != NULL) {
-      strlcpy (s_prefix, "process"   , LEN_LABEL);
+      ystrlcpy (s_prefix, "process"   , LEN_LABEL);
       return 1;
    }
    if (strchr ("s"   , a_tag->STATS_SYSTEM) != NULL) {
-      strlcpy (s_prefix, "system"    , LEN_LABEL);
+      ystrlcpy (s_prefix, "system"    , LEN_LABEL);
       return 1;
    }
    if (strchr ("f"   , a_tag->STATS_SYSTEM) != NULL) {
-      strlcpy (s_prefix, "filesys"   , LEN_LABEL);
+      ystrlcpy (s_prefix, "filesys"   , LEN_LABEL);
       return 1;
    }
    if (strchr ("B"   , a_tag->STATS_SYSTEM) != NULL) {
-      strlcpy (s_prefix, "all"       , LEN_LABEL);
+      ystrlcpy (s_prefix, "all"       , LEN_LABEL);
       return 1;
    }
    return 0;
@@ -498,7 +498,7 @@ poly_rptg_ylibs         (void)
                   ++n; ++c;
                   ++x_ylib->ylib->wuse;
                   ++x_ylib->ylib->elib->wuse;
-                  strl4main (x_ylib->ylib->y_count, x_count, 0, 'c', '-', LEN_TERSE);
+                  ystrl4main (x_ylib->ylib->y_count, x_count, 0, 'c', '-', LEN_TERSE);
                   printf ("%-4d %-12.12s %4d   %-20.20s %4d   %-25.25s %4d %4d %4d %4d   %4d %4d %-20.20s   %-12.12s %4d %c %c %c %6s\n",
                         n, my.g_proj->name, my.g_proj->COUNT_YLIBS,
                         x_file->name, x_file->COUNT_YLIBS,
@@ -522,8 +522,8 @@ poly_rptg_ylibs         (void)
    rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &x_ext);
    while (x_ext != NULL) {
       if (x_ext->wuse > 0) {
-         strl4main (x_ext->y_count, x_count, 0, 'c', '-', LEN_TERSE);
-         strl4main (x_ext->wuse   , x_uses , 0, 'c', '-', LEN_TERSE);
+         ystrl4main (x_ext->y_count, x_count, 0, 'c', '-', LEN_TERSE);
+         ystrl4main (x_ext->wuse   , x_uses , 0, 'c', '-', LEN_TERSE);
          printf ("#  %4d %-20.20s %-12.12s %4.4s %6.6s\n", ++c, x_ext->name, x_ext->elib->name, x_uses, x_count);
       }
       rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &x_ext);
@@ -578,8 +578,8 @@ poly_rptg_exts          (void)
                printf ("\n");
                printf ("%-20.20s (%d)\n", x_elib->name, x_elib->count);
             }
-            strl4main (x_ext->count  , x_count, 0, 'c', '-', LEN_TERSE);
-            strl4main (x_ext->y_count, x_ylibs, 0, 'c', '-', LEN_TERSE);
+            ystrl4main (x_ext->count  , x_count, 0, 'c', '-', LEN_TERSE);
+            ystrl4main (x_ext->y_count, x_ylibs, 0, 'c', '-', LEN_TERSE);
             printf ("%5d %4d %-20.20s %6.6s %6.6s %4.4d %c %c %c\n", ++n, ++c, x_ext->name, x_count, x_ylibs, x_ext->line, x_ext->type, x_ext->cat, x_ext->sub);
             /*> }                                                                     <*/
          }
@@ -1055,14 +1055,14 @@ poly_rptg_htags         (tPROJ *a_proj)
       }
       printf ("\n");
       printf ("footprint\n");
-      strl4main (x_file->COUNT_TEXT       , s , 0, 'c', '-', LEN_TERSE);
-      strl4main (x_file->proj->COUNT_TEXT , t , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->COUNT_TEXT       , s , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->proj->COUNT_TEXT , t , 0, 'c', '-', LEN_TERSE);
       printf ("txt %7.7s %8.8s\n", s, t);
-      strl4main (x_file->COUNT_DATA       , s , 0, 'c', '-', LEN_TERSE);
-      strl4main (x_file->proj->COUNT_DATA , t , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->COUNT_DATA       , s , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->proj->COUNT_DATA , t , 0, 'c', '-', LEN_TERSE);
       printf ("dat %7.7s %8.8s\n", s, t);
-      strl4main (x_file->COUNT_BSS        , s , 0, 'c', '-', LEN_TERSE);
-      strl4main (x_file->proj->COUNT_BSS  , t , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->COUNT_BSS        , s , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->proj->COUNT_BSS  , t , 0, 'c', '-', LEN_TERSE);
       printf ("bss %7.7s %8.8s\n", s, t);
       /*> printf ("text %6d %7d\n", x_file->COUNT_TEXT, x_file->proj->COUNT_TEXT);    <* 
        *> printf ("data %6d %7d\n", x_file->COUNT_DATA, x_file->proj->COUNT_DATA);    <* 
@@ -1163,14 +1163,14 @@ poly_rptg_dispatch      (void)
    if (my.g_projno >= 0) {
       DEBUG_OUTP   yLOG_note    ("handle a specific project");
       rc     = poly_proj_by_index (my.g_projno, &(my.g_proj));
-      strlcpy (my.g_projname, my.g_proj->name, LEN_LABEL);
+      ystrlcpy (my.g_projname, my.g_proj->name, LEN_LABEL);
       /*> printf ("project %2d, %p, %s\n", my.g_projno, my.g_proj, my.g_projname);   <*/
    }
    DEBUG_OUTP   yLOG_value   ("g_fileno"  , my.g_fileno);
    if (my.g_fileno >= 0) {
       DEBUG_OUTP   yLOG_note    ("handle a specific file");
       rc     = poly_file_by_proj_index (my.g_proj, my.g_fileno, &(my.g_file));
-      strlcpy (my.g_filename, my.g_file->name, LEN_LABEL);
+      ystrlcpy (my.g_filename, my.g_file->name, LEN_LABEL);
       /*> printf ("file    %2d, %p, %s\n", my.g_fileno, my.g_proj, my.g_projname);   <*/
    }
    DEBUG_PROG   yLOG_char    ("g_rptg"    , my.g_rptg);

@@ -27,7 +27,7 @@ poly_db_cli             (char *a_name, char a_loud)
       return rce;
    }
    DEBUG_ARGS  yLOG_info    ("a_name"    , a_name);
-   strlcpy (x_recd, a_name, LEN_RECD);
+   ystrlcpy (x_recd, a_name, LEN_RECD);
    /*---(check length)-------------------*/
    l = strlen (x_recd);
    DEBUG_ARGS  yLOG_value   ("l"         , l);
@@ -46,11 +46,11 @@ poly_db_cli             (char *a_name, char a_loud)
    }
    /*---(check extension)----------------*/
    if (l >= 4 && strcmp (x_recd + l - 3, ".db") != 0) {
-      strlcat (x_recd, ".db", LEN_RECD);
+      ystrlcat (x_recd, ".db", LEN_RECD);
       DEBUG_ARGS  yLOG_info    ("fixed"     , x_recd);
    }
    /*---(copy)---------------------------*/
-   strlcpy (my.n_db, x_recd, LEN_RECD);
+   ystrlcpy (my.n_db, x_recd, LEN_RECD);
    DEBUG_ARGS  yLOG_info    ("database"  , my.n_db);
    /*---(complete)-----------------------*/
    DEBUG_FILE   yLOG_exit    (__FUNCTION__);
@@ -110,10 +110,10 @@ poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, 
    DEBUG_FILE   yLOG_char    ("a_mode"    , a_mode);
    --rce;  switch (a_mode) {
    case 'r' :
-      strlcpy (x_mode, "rb", LEN_TERSE);
+      ystrlcpy (x_mode, "rb", LEN_TERSE);
       break;
    case 'w' :
-      strlcpy (x_mode, "wb", LEN_TERSE);
+      ystrlcpy (x_mode, "wb", LEN_TERSE);
       break;
    default  :
       DEBUG_FILE   yLOG_exitr   (__FUNCTION__, rce);
@@ -153,11 +153,11 @@ poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, 
       break;
    case 'w' :
       for (n = 0; n < LEN_LABEL; n++)  t [n] = ' ';
-      strlcpy (t, P_BASENAME, LEN_LABEL);
+      ystrlcpy (t, P_BASENAME, LEN_LABEL);
       fwrite (t, LEN_LABEL, 1, my.f_db);
       DEBUG_FILE   yLOG_info    ("name"      , t);
       for (n = 0; n < LEN_LABEL; n++)  t [n] = ' ';
-      strlcpy (t, P_VERNUM  , LEN_SHORT);
+      ystrlcpy (t, P_VERNUM  , LEN_SHORT);
       fwrite (t, LEN_SHORT, 1, my.f_db);
       DEBUG_FILE   yLOG_info    ("vernum"    , t);
       poly_db__write_head ("projs", my.COUNT_PROJS);

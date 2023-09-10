@@ -109,7 +109,7 @@ PROG__init              (int a_argc, char *a_argv[])
    my.g_filename [0] = '\0';
    my.g_extern [0]   = '\0';
    my.g_funcname [0] = '\0';
-   strlcpy (my.g_hint, "--", LEN_TERSE);
+   ystrlcpy (my.g_hint, "--", LEN_TERSE);
    /*---(files)--------------------------*/
    DEBUG_PROG   yLOG_note    ("initialize file pointers");
    my.f_code      = NULL;
@@ -217,7 +217,7 @@ PROG__args              (int a_argc, char *a_argv[])
       /*---(compound)--------------------*/
       else if (strcmp (a, "--extern" ) == 0) {
          my.g_mode = POLY_RPTG_EXTERN;
-         if (++i < a_argc)  strlcpy (my.g_extern, a_argv [i], LEN_TITLE);
+         if (++i < a_argc)  ystrlcpy (my.g_extern, a_argv [i], LEN_TITLE);
          else {
             DEBUG_PROG  yLOG_note  ("extern name not included");
             DEBUG_PROG  yLOG_exitr (__FUNCTION__, -1);
@@ -226,7 +226,7 @@ PROG__args              (int a_argc, char *a_argv[])
       }
       else if (strcmp (a, "--libuse" ) == 0) {
          my.g_mode = POLY_RPTG_YLIB;
-         if (++i < a_argc)  strlcpy (my.g_libuse, a_argv [i], LEN_TITLE);
+         if (++i < a_argc)  ystrlcpy (my.g_libuse, a_argv [i], LEN_TITLE);
          else {
             DEBUG_PROG  yLOG_note  ("library name not included");
             DEBUG_PROG  yLOG_exitr (__FUNCTION__, -1);
@@ -246,8 +246,8 @@ PROG__args              (int a_argc, char *a_argv[])
             if      (x_proj == 0)   my.g_projno = c - 1;
             else if (x_file == 0)   my.g_fileno = c - 1;
          } else {
-            if      (my.g_projname [0] == '\0')   strlcpy (my.g_projname, a_argv [i], LEN_LABEL);
-            else if (my.g_filename [0] == '\0')   strlcpy (my.g_filename, a_argv [i], LEN_LABEL);
+            if      (my.g_projname [0] == '£')   ystrlcpy (my.g_projname, a_argv [i], LEN_LABEL);
+            else if (my.g_filename [0] == '£')   ystrlcpy (my.g_filename, a_argv [i], LEN_LABEL);
          }
       }
       else {
@@ -340,14 +340,14 @@ PROG_summarize          (tPROJ *a_proj)
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
    DEBUG_PROG   yLOG_info    ("->name"    , a_proj->name);
    /*---(prepare)------------------------*/
-   if      (a_proj->COUNT_SLOCL < 100    )  strlcpy (a_proj->codesize, "u.micro        (< 100 slocl)"             , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 500    )  strlcpy (a_proj->codesize, "t.tiny         (100 - 499 slocl)"         , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 2000   )  strlcpy (a_proj->codesize, "s.small        (500 - 1,999 slocl)"       , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 10000  )  strlcpy (a_proj->codesize, "m.moderate     (2,000 - 9,999 slocl)"     , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 50000  )  strlcpy (a_proj->codesize, "l.large        (10,000 - 49,999 slocl)"   , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 250000 )  strlcpy (a_proj->codesize, "h.huge         (50,000 - 249,999 slocl)"  , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 1000000)  strlcpy (a_proj->codesize, "e.elephantine  (250,000 - 999,999 slocl)" , LEN_DESC);
-   else                                     strlcpy (a_proj->codesize, "g.gargantuan   (>= 1,000,000 slocl)"      , LEN_DESC);
+   if      (a_proj->COUNT_SLOCL < 100    )  ystrlcpy (a_proj->codesize, "u.micro        (< 100 slocl)"             , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 500    )  ystrlcpy (a_proj->codesize, "t.tiny         (100 - 499 slocl)"         , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 2000   )  ystrlcpy (a_proj->codesize, "s.small        (500 - 1,999 slocl)"       , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 10000  )  ystrlcpy (a_proj->codesize, "m.moderate     (2,000 - 9,999 slocl)"     , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 50000  )  ystrlcpy (a_proj->codesize, "l.large        (10,000 - 49,999 slocl)"   , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 250000 )  ystrlcpy (a_proj->codesize, "h.huge         (50,000 - 249,999 slocl)"  , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 1000000)  ystrlcpy (a_proj->codesize, "e.elephantine  (250,000 - 999,999 slocl)" , LEN_DESC);
+   else                                     ystrlcpy (a_proj->codesize, "g.gargantuan   (>= 1,000,000 slocl)"      , LEN_DESC);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
    a_proj->funcs = 0;
@@ -395,25 +395,25 @@ PROG__stats             (void)
    printf ("db     å%sæ\n" , my.n_db);
    printf ("name   å%sæ\n" , g_audit.name);
    printf ("ver    å%sæ\n" , g_audit.vernum);
-   strl4main (g_audit.COUNT_PROJS, t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_PROJS, t , 0, 'c', '-', LEN_LABEL);
    printf ("projs  %7.7s\n", t);
-   strl4main (g_audit.COUNT_FILES, t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_FILES, t , 0, 'c', '-', LEN_LABEL);
    printf ("files  %7.7s\n", t);
-   strl4main (g_audit.COUNT_FUNCS, t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_FUNCS, t , 0, 'c', '-', LEN_LABEL);
    printf ("funcs  %7.7s\n", t);
-   strl4main (g_audit.COUNT_YLIBS, t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_YLIBS, t , 0, 'c', '-', LEN_LABEL);
    printf ("ylibs  %7.7s\n", t);
-   strl4main (g_audit.COUNT_LINES, t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_LINES, t , 0, 'c', '-', LEN_LABEL);
    printf ("lines  %7.7s\n", t);
-   strl4main (g_audit.COUNT_EMPTY, t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_EMPTY, t , 0, 'c', '-', LEN_LABEL);
    printf ("empty  %7.7s\n", t);
-   strl4main (g_audit.COUNT_DOCS , t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_DOCS , t , 0, 'c', '-', LEN_LABEL);
    printf ("docs   %7.7s\n", t);
-   strl4main (g_audit.COUNT_DEBUG, t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_DEBUG, t , 0, 'c', '-', LEN_LABEL);
    printf ("debug  %7.7s\n", t);
-   strl4main (g_audit.COUNT_CODE , t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_CODE , t , 0, 'c', '-', LEN_LABEL);
    printf ("code   %7.7s\n", t);
-   strl4main (g_audit.COUNT_SLOCL, t , 0, 'c', '-', LEN_LABEL);
+   ystrl4main (g_audit.COUNT_SLOCL, t , 0, 'c', '-', LEN_LABEL);
    printf ("slocl  %7.7s\n", t);
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
@@ -574,7 +574,7 @@ PROG__stats             (void)
  *>    IF_VERBOSE   yURG_msg ('>', "  option --vwithdraw, remove named project from the to registry");                                           <* 
  *>    IF_VERBOSE   yURG_msg (' ', "");                                                                                                          <* 
  *>    /+---(call action)--------------------+/                                                                                                  <* 
- *>    strlcpy (my.g_projname, my.run_file, LEN_LABEL);                                                                                          <* 
+ *>    ystrlcpy (my.g_projname, my.run_file, LEN_LABEL);                                                                                          <* 
  *>    /+> rc = poly_world_unregister ();                                                 <+/                                                    <* 
  *>    /+---(failure)------------------------+/                                                                                                  <* 
  *>    if (rc < 0) {                                                                                                                             <* 
@@ -608,7 +608,7 @@ PROG__stats             (void)
  *>    IF_VERBOSE   yURG_msg ('>', "  option --vclear, remove named project from the database");                                         <* 
  *>    IF_VERBOSE   yURG_msg (' ', "");                                                                                                  <* 
  *>    /+---(call action)--------------------+/                                                                                          <* 
- *>    strlcpy (my.g_projname, my.run_file, LEN_LABEL);                                                                                  <* 
+ *>    ystrlcpy (my.g_projname, my.run_file, LEN_LABEL);                                                                                  <* 
  *>    rc = poly_action_remove    ();                                                                                                    <* 
  *>    /+---(failure)------------------------+/                                                                                          <* 
  *>    if (rc < 0) {                                                                                                                     <* 
@@ -642,7 +642,7 @@ PROG__stats             (void)
  *>    IF_VERBOSE   yURG_msg ('>', "  option --vremove, remove named project from database and registry");                                     <* 
  *>    IF_VERBOSE   yURG_msg (' ', "");                                                                                                        <* 
  *>    /+---(call action)--------------------+/                                                                                                <* 
- *>    strlcpy (my.g_projname, my.run_file, LEN_LABEL);                                                                                        <* 
+ *>    ystrlcpy (my.g_projname, my.run_file, LEN_LABEL);                                                                                        <* 
  *>    /+> rc = poly_world_unregister ();                                                 <+/                                                  <* 
  *>    /+---(failure)------------------------+/                                                                                                <* 
  *>    if (rc < 0) {                                                                                                                           <* 
@@ -826,8 +826,8 @@ prog__unit              (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "PROG unit        : question unknown");
    /*---(simple)-------------------------*/
    if      (strcmp (a_question, "mode"    )        == 0) {
-      strlcpy (s, yJOBS_iam  (), LEN_TITLE);
-      strlcpy (t, yJOBS_mode (), LEN_TITLE);
+      ystrlcpy (s, yJOBS_iam  (), LEN_TITLE);
+      ystrlcpy (t, yJOBS_mode (), LEN_TITLE);
       snprintf (unit_answer, LEN_RECD, "PROG mode        : iam (%c) %-18.18s, run (%c) %-18.18s, å%sæ", my.run_as, s, my.run_mode, t, my.run_file);
    }
    /*---(complete)-----------------------*/

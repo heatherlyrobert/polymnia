@@ -143,28 +143,28 @@ poly_action__gather     (tPROJ *a_proj)
    rc = poly_extern_review ();
    /*---(summarize)----------------------*/
    rc = PROG_summarize (a_proj);
-   strl4main (a_proj->COUNT_LINES, s , 0, 'c', '-', LEN_TERSE);
-   strlcpy   (t, "lines "  , LEN_HUND);
-   strlcat   (t, s         , LEN_HUND);
-   strl4main (a_proj->COUNT_EMPTY, s , 0, 'c', '-', LEN_TERSE);
-   strlcat   (t, ", empty ", LEN_HUND);
-   strlcat   (t, s         , LEN_HUND);
-   strl4main (a_proj->COUNT_DOCS , s , 0, 'c', '-', LEN_TERSE);
-   strlcat   (t, ", docs  ", LEN_HUND);
-   strlcat   (t, s         , LEN_HUND);
-   strl4main (a_proj->COUNT_DEBUG, s , 0, 'c', '-', LEN_TERSE);
-   strlcat   (t, ", debug ", LEN_HUND);
-   strlcat   (t, s         , LEN_HUND);
-   strl4main (a_proj->COUNT_CODE , s , 0, 'c', '-', LEN_TERSE);
-   strlcat   (t, ", code  ", LEN_HUND);
-   strlcat   (t, s         , LEN_HUND);
-   strl4main (a_proj->COUNT_SLOCL, s , 0, 'c', '-', LEN_TERSE);
-   strlcat   (t, ", slocl ", LEN_HUND);
-   strlcat   (t, s         , LEN_HUND);
+   ystrl4main (a_proj->COUNT_LINES, s , 0, 'c', '-', LEN_TERSE);
+   ystrlcpy   (t, "lines "  , LEN_HUND);
+   ystrlcat   (t, s         , LEN_HUND);
+   ystrl4main (a_proj->COUNT_EMPTY, s , 0, 'c', '-', LEN_TERSE);
+   ystrlcat   (t, ", empty ", LEN_HUND);
+   ystrlcat   (t, s         , LEN_HUND);
+   ystrl4main (a_proj->COUNT_DOCS , s , 0, 'c', '-', LEN_TERSE);
+   ystrlcat   (t, ", docs  ", LEN_HUND);
+   ystrlcat   (t, s         , LEN_HUND);
+   ystrl4main (a_proj->COUNT_DEBUG, s , 0, 'c', '-', LEN_TERSE);
+   ystrlcat   (t, ", debug ", LEN_HUND);
+   ystrlcat   (t, s         , LEN_HUND);
+   ystrl4main (a_proj->COUNT_CODE , s , 0, 'c', '-', LEN_TERSE);
+   ystrlcat   (t, ", code  ", LEN_HUND);
+   ystrlcat   (t, s         , LEN_HUND);
+   ystrl4main (a_proj->COUNT_SLOCL, s , 0, 'c', '-', LEN_TERSE);
+   ystrlcat   (t, ", slocl ", LEN_HUND);
+   ystrlcat   (t, s         , LEN_HUND);
    yURG_msg ('-', "%s", t);
    yURG_msg ('-', "verified %d files, %d functions, %d ylibs", a_proj->COUNT_FILES, a_proj->COUNT_FUNCS, a_proj->COUNT_YLIBS);
-   strlcpy (t, a_proj->codesize, LEN_HUND);
-   strltrim (t, ySTR_SINGLE, LEN_HUND);
+   ystrlcpy (t, a_proj->codesize, LEN_HUND);
+   ystrltrim (t, ySTR_SINGLE, LEN_HUND);
    yURG_msg ('-', "evaluated as å%sæ", t);
    yURG_msg ('-', "project read and verified successfully ");
    yURG_msg (' ', "");
@@ -574,21 +574,21 @@ poly_action_search      (void)
  *>    printf("reminder  : %s\n", P_REMINDER);                                                           <* 
  *>    printf("\n");                                                                                     <* 
  *>    printf("statistics...\n");                                                                        <* 
- *>    strl4comma (x_proj->COUNT_FILES, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    ystrl4comma (x_proj->COUNT_FILES, t, 0, 'c', '-', LEN_LABEL);                                      <* 
  *>    printf("files     : %10.10s\n", t);                                                               <* 
- *>    strl4comma (x_proj->COUNT_FUNCS, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    ystrl4comma (x_proj->COUNT_FUNCS, t, 0, 'c', '-', LEN_LABEL);                                      <* 
  *>    printf("funcs     : %10.10s    %d\n", t, x_proj->funcs);                                          <* 
- *>    strl4comma (x_proj->COUNT_LINES, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+ *>    ystrl4comma (x_proj->COUNT_LINES, t, 0, 'c', '-', LEN_LABEL);                                      <* 
  *>    printf("lines     : %10.10s    %4.2f\n", t, 1.00);                                                <* 
-*>    strl4comma (x_proj->COUNT_EMPTY, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    ystrl4comma (x_proj->COUNT_EMPTY, t, 0, 'c', '-', LEN_LABEL);                                      <* 
 *>    printf("empty     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_EMPTY / x_proj->COUNT_LINES);   <* 
-*>    strl4comma (x_proj->COUNT_DOCS , t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    ystrl4comma (x_proj->COUNT_DOCS , t, 0, 'c', '-', LEN_LABEL);                                      <* 
 *>    printf("docs      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DOCS  / x_proj->COUNT_LINES);   <* 
-*>    strl4comma (x_proj->COUNT_DEBUG, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    ystrl4comma (x_proj->COUNT_DEBUG, t, 0, 'c', '-', LEN_LABEL);                                      <* 
 *>    printf("debug     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_DEBUG / x_proj->COUNT_LINES);   <* 
-*>    strl4comma (x_proj->COUNT_CODE , t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    ystrl4comma (x_proj->COUNT_CODE , t, 0, 'c', '-', LEN_LABEL);                                      <* 
 *>    printf("code      : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_CODE  / x_proj->COUNT_LINES);   <* 
-*>    strl4comma (x_proj->COUNT_SLOCL, t, 0, 'c', '-', LEN_LABEL);                                      <* 
+*>    ystrl4comma (x_proj->COUNT_SLOCL, t, 0, 'c', '-', LEN_LABEL);                                      <* 
 *>    printf("slocl     : %10.10s    %4.2f\n", t, (float) x_proj->COUNT_SLOCL / x_proj->COUNT_LINES);   <* 
 *>    printf("\n");                                                                                     <* 
 *>    /+---(complete)-----------------------+/                                                          <* 

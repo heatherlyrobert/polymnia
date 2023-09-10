@@ -25,7 +25,7 @@ poly_proj_cli           (char *a_name, char a_loud)
    /*---(header)-------------------------*/
    DEBUG_FILE   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
-   strlcpy (my.g_projname, ""    , LEN_LABEL);
+   ystrlcpy (my.g_projname, ""    , LEN_LABEL);
    /*---(defense)------------------------*/
    DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
@@ -56,7 +56,7 @@ poly_proj_cli           (char *a_name, char a_loud)
       return rce;
    }
    /*---(copy)---------------------------*/
-   strlcpy (my.g_projname, a_name, LEN_LABEL);
+   ystrlcpy (my.g_projname, a_name, LEN_LABEL);
    DEBUG_ARGS  yLOG_info    ("project"  , my.n_db);
    /*---(complete)-----------------------*/
    DEBUG_FILE   yLOG_exit    (__FUNCTION__);
@@ -69,7 +69,7 @@ poly_proj__wipe    (tPROJ *a_dst)
    if (a_dst == NULL)  return -1;
    /*---(overall)-----------*/
    a_dst->name     [0] = '\0';
-   strlcpy (a_dst->header, "-.-.----.------.-.-----.----.-------.--.----", LEN_DESC);
+   ystrlcpy (a_dst->header, "-.-.----.------.-.-----.----.-------.--.----", LEN_DESC);
    a_dst->written       =    0;
    /*---(master)------------*/
    a_dst->focus     [0] = '\0';
@@ -113,7 +113,7 @@ poly_proj__wipe    (tPROJ *a_dst)
    a_dst->vernum    [0] = '\0';
    a_dst->vertxt    [0] = '\0';
    /*---(manuals)-----------*/
-   strlcpy (a_dst->manual, "········", LEN_LABEL);
+   ystrlcpy (a_dst->manual, "········", LEN_LABEL);
    a_dst->git       = '·';
    /*---(stats)-------------*/
    a_dst->funcs     = 0;
@@ -132,7 +132,7 @@ char*
 poly_proj__memory       (tPROJ *a_proj)
 {
    /*---(overall)------------------------*/
-   strlcpy (s_print, "å"  , LEN_RECD);
+   ystrlcpy (s_print, "å"  , LEN_RECD);
    poly_shared__check_str  (s_print, a_proj->name);
    poly_shared__check_str  (s_print, a_proj->header);
    poly_shared__spacer     (s_print);
@@ -195,7 +195,7 @@ poly_proj__memory       (tPROJ *a_proj)
    poly_shared__spacer     (s_print);
    /*---(btree)--------------------------*/
    poly_shared__check_ptr  (s_print, a_proj->btree);
-   strlcat (s_print, "æ"  , LEN_RECD);
+   ystrlcat (s_print, "æ"  , LEN_RECD);
    /*---(complete)-----------------------*/
    return s_print;
 }
@@ -428,8 +428,8 @@ poly_proj__adder         (char *a_name, char *a_home, tPROJ **a_proj, char a_for
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   strlcpy (x_new->name    , a_name, LEN_TITLE);
-   strlcpy (x_new->homedir , a_home, LEN_HUND);
+   ystrlcpy (x_new->name    , a_name, LEN_TITLE);
+   ystrlcpy (x_new->homedir , a_home, LEN_HUND);
    /*---(into btree)---------------------*/
    rc = poly_proj__hook (x_new);
    DEBUG_DATA   yLOG_value   ("hook"      , rc);
@@ -539,7 +539,7 @@ poly_proj__get_home     (char *a_home)
       return rce;
    }
    /*---(default)------------------------*/
-   strlcpy (a_home, ""    , LEN_HUND);
+   ystrlcpy (a_home, ""    , LEN_HUND);
    /*---(get the home)-------------------*/
    p = getcwd (x_home, LEN_HUND);
    DEBUG_DATA   yLOG_spoint  (p);
@@ -580,7 +580,7 @@ poly_proj__get_home     (char *a_home)
       return rce;
    }
    /*---(save back)----------------------*/
-   strlcpy (a_home, x_home, LEN_HUND);
+   ystrlcpy (a_home, x_home, LEN_HUND);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -604,7 +604,7 @@ poly_proj__get_name     (cchar *a_home, char *a_name)
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_name, ""    , LEN_TITLE);
+   ystrlcpy (a_name, ""    , LEN_TITLE);
    DEBUG_DATA   yLOG_spoint  (a_home);
    --rce;  if (a_home == NULL) {
       yURG_err ('f', "home directory string was null");
@@ -620,7 +620,7 @@ poly_proj__get_name     (cchar *a_home, char *a_name)
    }
    /*---(prepare)------------------------*/
    yURG_msg ('-', "current project path %2då%sæ", strlen (a_home), a_home);
-   strlcpy (x_home, a_home, LEN_HUND);
+   ystrlcpy (x_home, a_home, LEN_HUND);
    if (x_home [x_len - 1] == '/') x_home [--x_len] = '\0';
    DEBUG_DATA   yLOG_snote   (x_home);
    /*---(get the name)-------------------*/
@@ -643,7 +643,7 @@ poly_proj__get_name     (cchar *a_home, char *a_name)
    if (x_len > LEN_TITLE)  x_len = LEN_TITLE;
    DEBUG_DATA   yLOG_sint    (x_len);
    /*---(save back)----------------------*/
-   strlcpy (a_name, p, x_len);
+   ystrlcpy (a_name, p, x_len);
    yURG_msg ('-', "current project name %2då%sæ", strlen (a_name), a_name);
    DEBUG_DATA   yLOG_snote   (a_name);
    /*---(complete)-----------------------*/
@@ -662,8 +662,8 @@ poly_proj_identify       (char *a_name, char *a_home)
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defaults)-----------------------*/
-   if (a_name != NULL)    strlcpy (a_name, "", LEN_TITLE);
-   if (a_home != NULL)    strlcpy (a_home, "", LEN_TITLE);
+   if (a_name != NULL)    ystrlcpy (a_name, "", LEN_TITLE);
+   if (a_home != NULL)    ystrlcpy (a_home, "", LEN_TITLE);
    /*---(get directory)------------------*/
    rc = poly_proj__get_home (x_home);
    DEBUG_DATA   yLOG_value   ("get_home"   , rc);
@@ -680,8 +680,8 @@ poly_proj_identify       (char *a_name, char *a_home)
    }
    yURG_msg ('-', "current project name %2då%sæ", strlen (x_name), x_name);
    /*---(save results)-------------------*/
-   strlcpy (a_name, x_name, LEN_TITLE);
-   strlcpy (a_home, x_home, LEN_HUND);
+   ystrlcpy (a_name, x_name, LEN_TITLE);
+   ystrlcpy (a_home, x_home, LEN_HUND);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -760,7 +760,7 @@ static void  o___SYSTEM__________o () { return; }
  *>       return  rce;                                                                          <* 
  *>    }                                                                                        <* 
  *>    DEBUG_INPT   yLOG_info    ("a_path"     , a_path);                                       <* 
- *>    strlcpy  (x_base, a_path, LEN_HUND);                                                     <* 
+ *>    ystrlcpy  (x_base, a_path, LEN_HUND);                                                     <* 
  *>    x_dir = opendir (a_path);                                                                <* 
  *>    DEBUG_INPT   yLOG_point   ("x_dir"      , x_dir);                                        <* 
  *>    --rce;  if (x_dir == NULL) {                                                             <* 
@@ -777,7 +777,7 @@ static void  o___SYSTEM__________o () { return; }
  *>       DEBUG_INPT   yLOG_point   ("x_file"    , x_file);                                     <* 
  *>       if (x_file == NULL)  break;                                                           <* 
  *>       /+---(filter by name)--------------+/                                                 <* 
- *>       strlcpy (x_name, x_file->d_name, LEN_TITLE);                                          <* 
+ *>       ystrlcpy (x_name, x_file->d_name, LEN_TITLE);                                          <* 
  *>       DEBUG_INPT   yLOG_info    ("x_name"    , x_name);                                     <* 
  *>       x_len = strlen (x_name);                                                              <* 
  *>       DEBUG_INPT   yLOG_value   ("x_len"     , x_len);                                      <* 
@@ -1035,7 +1035,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    char        x_unit      =  's';
    char        x_aged      [LEN_SHORT] = "";
    /*---(prepare)------------------------*/
-   strlcpy (s_print, "", LEN_RECD);
+   ystrlcpy (s_print, "", LEN_RECD);
    x_type = a_use;
    if (a_proj == NULL) {
       if (a_use == '-')  x_type = 'h';
@@ -1045,9 +1045,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    switch (a_pre) {
    case '>' :   if (strchr ("pt", x_type) != NULL)  sprintf (t, "··"); else sprintf (t, "  "); break;
    case '#' :   sprintf (t, "# ");                             break;
-   default  :   strlcpy (t, "", LEN_RECD);                     break;
+   default  :   ystrlcpy (t, "", LEN_RECD);                     break;
    }
-   strlcat (s_print, t, LEN_RECD);
+   ystrlcat (s_print, t, LEN_RECD);
    /*---(index)--------------------------*/
    if (strchr ("aAT", a_style) != NULL) {
       switch (x_type) {
@@ -1055,9 +1055,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 'p' :   sprintf (t, "Ï--·Ï--·Ï--··");               break;
       case 't' :   sprintf (t, "prj·fil·fnc··");               break;
       case 'd' :   sprintf (t, "%-3d ·   ·    ", a + 1);       break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    if (strchr ("sLp", a_style) != NULL) {
       switch (x_type) {
@@ -1065,9 +1065,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 'p' :   sprintf (t, "Ï--··");                       break;
       case 't' :   sprintf (t, "prj··");                       break;
       case 'd' :   sprintf (t, "%-3d  ", a + 1);               break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(name)---------------------------*/
    switch (x_type) {
@@ -1075,28 +1075,28 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    case 'p' :   sprintf (t, "Ï-----------··");                 break;
    case 't' :   sprintf (t, "name··········");                 break;
    case 'd' :   sprintf (t, "%-12.12s  ", a_proj->name);       break;
-   default  :   strlcpy (t, "", LEN_RECD);                     break;
+   default  :   ystrlcpy (t, "", LEN_RECD);                     break;
    }
-   strlcat (s_print, t, LEN_RECD);
+   ystrlcat (s_print, t, LEN_RECD);
    /*---(spacer for tree reporting)------*/
    if (strchr ("T", a_style) != NULL) {
       switch (x_type) {
-      case 'h' :   strlcat (s_print, "········  ", LEN_RECD);      break;
-      default  :   strlcat (s_print, "          ", LEN_RECD);      break;
+      case 'h' :   ystrlcat (s_print, "········  ", LEN_RECD);      break;
+      default  :   ystrlcat (s_print, "          ", LEN_RECD);      break;
       }
    }
    /*---(statistics)---------------------*/
    if (strchr ("sLaApPT", a_style) != NULL) {
       if (a_proj != NULL) {
-         if (a_proj->COUNT_FILES > 0)  strl4main (a_proj->COUNT_FILES, x_files, 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_FUNCS > 0)  strl4main (a_proj->COUNT_FUNCS, x_funcs, 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_YLIBS > 0)  strl4main (a_proj->COUNT_YLIBS, x_ylibs, 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_LINES > 0)  strl4main (a_proj->COUNT_LINES, x_lines, 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_EMPTY > 0)  strl4main (a_proj->COUNT_EMPTY, x_empty, 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_DOCS  > 0)  strl4main (a_proj->COUNT_DOCS , x_docs , 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_DEBUG > 0)  strl4main (a_proj->COUNT_DEBUG, x_debug, 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_CODE  > 0)  strl4main (a_proj->COUNT_CODE , x_code , 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_SLOCL > 0)  strl4main (a_proj->COUNT_SLOCL, x_slocl, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_FILES > 0)  ystrl4main (a_proj->COUNT_FILES, x_files, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_FUNCS > 0)  ystrl4main (a_proj->COUNT_FUNCS, x_funcs, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_YLIBS > 0)  ystrl4main (a_proj->COUNT_YLIBS, x_ylibs, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_LINES > 0)  ystrl4main (a_proj->COUNT_LINES, x_lines, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_EMPTY > 0)  ystrl4main (a_proj->COUNT_EMPTY, x_empty, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_DOCS  > 0)  ystrl4main (a_proj->COUNT_DOCS , x_docs , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_DEBUG > 0)  ystrl4main (a_proj->COUNT_DEBUG, x_debug, 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_CODE  > 0)  ystrl4main (a_proj->COUNT_CODE , x_code , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_SLOCL > 0)  ystrl4main (a_proj->COUNT_SLOCL, x_slocl, 0, 'c', '-', LEN_TERSE);
       }
       switch (x_type) {
       case 'h' :
@@ -1113,9 +1113,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
                x_files, x_funcs, x_ylibs,
                x_lines, x_empty, x_docs , x_debug, x_code , x_slocl);
          break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(header flags)-------------------*/
    if (strchr ("sLaA" , a_style) != NULL) {
@@ -1124,9 +1124,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 'p' : sprintf (t, "Ï-------------------------------------------··");    break;
       case 't' : sprintf (t, "header-checklist······························");    break;
       case 'd' : sprintf (t, "%-44.44s  ", a_proj->header);               break;
-      default  :   strlcpy (t, "", LEN_RECD);                             break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                             break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(master)-------------------------*/
    if (strchr ("LAm", a_style) != NULL) {
@@ -1138,9 +1138,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
                        a_proj->focus   , a_proj->niche   ,
                        a_proj->subject , a_proj->purpose );
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(greek)--------------------------*/
    if (strchr ("LAg", a_style) != NULL) {
@@ -1152,9 +1152,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
                        a_proj->namesake, a_proj->heritage, a_proj->imagery ,
                        a_proj->reason  , a_proj->oneline );
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    if (strchr ("Op" , a_style) != NULL) {
       switch (x_type) {
@@ -1162,9 +1162,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 'p' : sprintf (t, "Ï---------------------------------------------------------------------··");  break;
       case 't' : sprintf (t, "oneline·································································");  break;
       case 'd' : sprintf (t, "%-70.70s  ", a_proj->oneline);   break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(location)-----------------------*/
    if (strchr ("LAl", a_style) != NULL) {
@@ -1176,9 +1176,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
                        a_proj->homedir , a_proj->progname,
                        a_proj->fullpath, a_proj->suffix  , a_proj->content );
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(chars)--------------------------*/
    if (strchr ("LAc", a_style) != NULL) {
@@ -1190,9 +1190,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
                        a_proj->systems , a_proj->language,
                        a_proj->compiler, a_proj->codesize);
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(author)-------------------------*/
    if (strchr ("LAw", a_style) != NULL) {
@@ -1203,9 +1203,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 'd' : sprintf (t, "%-40.40s %-20.20s  ",
                        a_proj->author  , a_proj->created );
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(version)------------------------*/
    if (strchr ("LAv", a_style) != NULL) {
@@ -1217,31 +1217,14 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
                        a_proj->vermajor, a_proj->verminor,
                        a_proj->vernum  , a_proj->vertxt  );
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    if (strchr ("p"  , a_style) != NULL) {
       x_age = 0;
       if (a_proj != NULL)  x_age = my.runtime - a_proj->written;
-      strlage (x_age, 'U', x_aged);
-      /*> x_unit = 's';                                                               <* 
-       *> if (x_age >= 60) {                                                          <* 
-       *>    x_age /= 60; x_unit = 'm';                                               <* 
-       *>    if (x_age >= 60) {                                                       <* 
-       *>       x_age /= 60; x_unit = 'h';                                            <* 
-       *>       if (x_age >= 24) {                                                    <* 
-       *>          x_age /= 24; x_unit = 'd';                                         <* 
-       *>          if (x_age >= 30) {                                                 <* 
-       *>             x_age /= 30; x_unit = 'o';                                      <* 
-       *>             if (x_age >= 12) {                                              <* 
-       *>                x_age /= 12; x_unit = 'y';                                   <* 
-       *>                if (x_age > 99) { x_age  = 99; x_unit = '!'; }               <* 
-       *>             }                                                               <* 
-       *>          }                                                                  <* 
-       *>       }                                                                     <* 
-       *>    }                                                                        <* 
-       *> }                                                                           <*/
+      ystrlage (x_age, 'U', x_aged);
       switch (x_type) {
       case 'h' : sprintf (t, "age  vers  g  ---codesize---  ");  break;
       case 'p' : sprintf (t, "Ï--··Ï---··Ï··Ï-------------··");  break;
@@ -1250,9 +1233,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 'd' : sprintf (t, "%-3.3s  %-4.4s  %c  %-14.14s  ",
                        x_aged, a_proj->vernum, a_proj->git, a_proj->codesize);
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(manual)-------------------------*/
    if (strchr ("p"    , a_style) != NULL) {
@@ -1262,16 +1245,16 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 't' : sprintf (t, "mans······");  break;
       case 'd' : sprintf (t, "%8.8s  ", a_proj->manual);
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(memory)-------------------------*/
    if (strchr ("pfT"  , a_style) != NULL) {
       if (a_proj != NULL) {
-         if (a_proj->COUNT_TEXT  > 0)  strl4main (a_proj->COUNT_TEXT , x_text , 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_DATA  > 0)  strl4main (a_proj->COUNT_DATA , x_data , 0, 'c', '-', LEN_TERSE);
-         if (a_proj->COUNT_BSS   > 0)  strl4main (a_proj->COUNT_BSS  , x_bss  , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_TEXT  > 0)  ystrl4main (a_proj->COUNT_TEXT , x_text , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_DATA  > 0)  ystrl4main (a_proj->COUNT_DATA , x_data , 0, 'c', '-', LEN_TERSE);
+         if (a_proj->COUNT_BSS   > 0)  ystrl4main (a_proj->COUNT_BSS  , x_bss  , 0, 'c', '-', LEN_TERSE);
       }
       switch (x_type) {
       case 'h' : sprintf (t, "---text-- ---data-- ---bss---  ");  break;
@@ -1279,9 +1262,9 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
       case 't' : sprintf (t, "text······data······bss········");  break;
       case 'd' : sprintf (t, "%9.9s %9.9s %9.9s  ", x_text, x_data, x_bss);
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(newline)------------------------*/
    if (a_print == 'y') {
@@ -1390,8 +1373,8 @@ poly_proj_footprint    (tPROJ *a_proj)
    }
    DEBUG_INPT   yLOG_info    ("name"      , a_proj->name);
    /*---(prepare name)--------------------------*/
-   strlcpy (x_base, a_proj->name, LEN_LABEL);
-   strlcpy (x_name, a_proj->name, LEN_TITLE);
+   ystrlcpy (x_base, a_proj->name, LEN_LABEL);
+   ystrlcpy (x_name, a_proj->name, LEN_TITLE);
    if (x_name [0] == 'y' && strchr (YSTR_UPPER, x_name [1]) != NULL) {
       sprintf (x_name, "lib%s.so.%c.%c.%c", a_proj->name, a_proj->vernum [0], a_proj->vernum [2], a_proj->vernum [3]);
    }

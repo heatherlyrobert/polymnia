@@ -34,7 +34,7 @@ poly_tags__handler      (tFILE *a_file, char *a_recd)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (x_recd, a_recd, LEN_RECD);
+   ystrlcpy (x_recd, a_recd, LEN_RECD);
    /*---(get name)-----------------------*/
    p = strtok (x_recd, q);
    --rce;  if (p == NULL) {
@@ -42,7 +42,7 @@ poly_tags__handler      (tFILE *a_file, char *a_recd)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (x_name, p, LEN_TITLE);
+   ystrlcpy (x_name, p, LEN_TITLE);
    DEBUG_INPT   yLOG_info    ("name"      , x_name);
    /*---(get type)-----------------------*/
    p = strtok (NULL  , q);
@@ -61,7 +61,7 @@ poly_tags__handler      (tFILE *a_file, char *a_recd)
       DEBUG_INPT   yLOG_info    ("local for" , a_file->tail->name);
       ++(a_file->tail->WORK_LVARS );
       sprintf (t, " %s ", x_name);
-      strlcat (a_file->tail->WORK_LOCALS, t, LEN_RECD);
+      ystrlcat (a_file->tail->WORK_LOCALS, t, LEN_RECD);
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
@@ -161,7 +161,7 @@ poly_tags_inventory     (tFILE *a_file)
          DEBUG_INPT   yLOG_info    ("local for" , a_file->tail->name);
          ++(a_file->tail->WORK_LVARS );
          sprintf (t, " %s ", x_name);
-         strlcat (a_file->tail->WORK_LOCALS, t, LEN_RECD);
+         ystrlcat (a_file->tail->WORK_LOCALS, t, LEN_RECD);
       }
       /*---(handle prototype)---------------*/
       else if (x_type == 'p') {

@@ -39,7 +39,7 @@ char*
 poly_file__unit_memory  (tFILE *a_file)
 {
    /*---(master)-------------------------*/
-   strlcpy (s_print, "["  , LEN_RECD);
+   ystrlcpy (s_print, "["  , LEN_RECD);
    poly_shared__check_char (s_print, a_file->type);
    poly_shared__check_str  (s_print, a_file->name);
    poly_shared__check_str  (s_print, a_file->sort);
@@ -56,7 +56,7 @@ poly_file__unit_memory  (tFILE *a_file)
    poly_shared__spacer     (s_print);
    /*---(btree)--------------------------*/
    poly_shared__check_ptr  (s_print, a_file->btree);
-   strlcat (s_print, "]" , LEN_RECD);
+   ystrlcat (s_print, "]" , LEN_RECD);
    /*---(complete)-----------------------*/
    return s_print;
 }
@@ -219,7 +219,7 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   strlcpy (x_new->name, a_name, LEN_TITLE);
+   ystrlcpy (x_new->name, a_name, LEN_TITLE);
    x_new->type   = a_type;
    /*---(standard names to front)--------*/
    if (strncmp (a_name, a_proj->name, strlen (a_proj->name)) == 0) {
@@ -264,7 +264,7 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
       return rce;
    }
    /*---(create hint)--------------------*/
-   /*> rc = strlhint (ySORT_count (B_FUNCS) - 1 + ySORT_count (B_FILES) - 1, "uA", x_new->hint);   <* 
+   /*> rc = ystrlhint (ySORT_count (B_FUNCS) - 1 + ySORT_count (B_FILES) - 1, "uA", x_new->hint);   <* 
     *> DEBUG_DATA   yLOG_value   ("hint"      , rc);                                                         <* 
     *> --rce;  if (rc < 0) {                                                                                 <* 
     *>    DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                                     <* 
@@ -752,7 +752,7 @@ poly_file_inventory     (tPROJ *a_proj)
       if (x_file == NULL)  break;
       ++x_read;
       /*---(filter by name)--------------*/
-      strlcpy (x_name, x_file->d_name, LEN_TITLE);
+      ystrlcpy (x_name, x_file->d_name, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
       rc = poly_file__filter (x_name, my.g_unit, &x_type, a_proj->manual);
       DEBUG_INPT   yLOG_value   ("filter"    , rc);
@@ -855,7 +855,7 @@ poly_file_footprint    (tFILE *a_file)
       return 0;
    }
    /*---(prepare name)--------------------------*/
-   strlcpy (x_name, a_file->name, LEN_TITLE);
+   ystrlcpy (x_name, a_file->name, LEN_TITLE);
    x_len = strlen (x_name);
    x_name [--x_len] = 'o';
    x_name [++x_len] = 's';
@@ -963,7 +963,7 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
    char        x_data      [LEN_TERSE] = "·";
    char        x_bss       [LEN_TERSE] = "·";
    /*---(prepare)------------------------*/
-   strlcpy (s_print, "", LEN_RECD);
+   ystrlcpy (s_print, "", LEN_RECD);
    x_type   = a_use;
    if (a_file == NULL) {
       if (a_use == '-')  x_type = 'h';
@@ -973,9 +973,9 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
    switch (a_pre) {
    case '>' :   if (strchr ("pt", x_type) != NULL)  sprintf (t, "··"); else sprintf (t, "  "); break;
    case '#' :   sprintf (t, "# ");                             break;
-   default  :   strlcpy (t, "", LEN_RECD);                     break;
+   default  :   ystrlcpy (t, "", LEN_RECD);                     break;
    }
-   strlcat (s_print, t, LEN_RECD);
+   ystrlcat (s_print, t, LEN_RECD);
    /*---(index)--------------------------*/
    if (strchr ("aA", a_style) != NULL) {
       switch (x_type) {
@@ -983,9 +983,9 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
       case 'p' :   sprintf (t, "Ï--·Ï--·Ï--··");               break;
       case 't' :   sprintf (t, "prj·fil·fnc··");               break;
       case 'd' :   sprintf (t, "%-3d %-3d ·    ", a + 1, b + 1); break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    if (strchr ("sL", a_style) != NULL) {
       switch (x_type) {
@@ -993,9 +993,9 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
       case 'p' :   sprintf (t, "Ï--··");                       break;
       case 't' :   sprintf (t, "fil··");                       break;
       case 'd' :   sprintf (t, "%-3d  ", b + 1);               break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(name)---------------------------*/
    switch (x_type) {
@@ -1003,20 +1003,20 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
    case 'p' :   sprintf (t, "Ï---------------------··");    break;
    case 't' :   sprintf (t, "name····················");    break;
    case 'd' :   sprintf (t, "%-22.22s  ", a_file->name);    break;
-   default  :   strlcpy (t, "", LEN_RECD);                  break;
+   default  :   ystrlcpy (t, "", LEN_RECD);                  break;
    }
-   strlcat (s_print, t, LEN_RECD);
+   ystrlcat (s_print, t, LEN_RECD);
    /*---(statistics)---------------------*/
    if (strchr ("sLaA", a_style) != NULL) {
       if (a_file != NULL) {
-         if (a_file->COUNT_FUNCS > 0)  strl4main (a_file->COUNT_FUNCS, x_funcs, 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_YLIBS > 0)  strl4main (a_file->COUNT_YLIBS, x_ylibs, 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_LINES > 0)  strl4main (a_file->COUNT_LINES, x_lines, 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_EMPTY > 0)  strl4main (a_file->COUNT_EMPTY, x_empty, 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_DOCS  > 0)  strl4main (a_file->COUNT_DOCS , x_docs , 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_DEBUG > 0)  strl4main (a_file->COUNT_DEBUG, x_debug, 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_CODE  > 0)  strl4main (a_file->COUNT_CODE , x_code , 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_SLOCL > 0)  strl4main (a_file->COUNT_SLOCL, x_slocl, 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_FUNCS > 0)  ystrl4main (a_file->COUNT_FUNCS, x_funcs, 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_YLIBS > 0)  ystrl4main (a_file->COUNT_YLIBS, x_ylibs, 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_LINES > 0)  ystrl4main (a_file->COUNT_LINES, x_lines, 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_EMPTY > 0)  ystrl4main (a_file->COUNT_EMPTY, x_empty, 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_DOCS  > 0)  ystrl4main (a_file->COUNT_DOCS , x_docs , 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_DEBUG > 0)  ystrl4main (a_file->COUNT_DEBUG, x_debug, 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_CODE  > 0)  ystrl4main (a_file->COUNT_CODE , x_code , 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_SLOCL > 0)  ystrl4main (a_file->COUNT_SLOCL, x_slocl, 0, 'c', '-', LEN_TERSE);
       }
       switch (x_type) {
       case 'h' :
@@ -1033,16 +1033,16 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
                "-", x_funcs, x_ylibs,
                x_lines, x_empty, x_docs , x_debug, x_code , x_slocl);
          break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(memory)-------------------------*/
    if (strchr ("aAf"  , a_style) != NULL) {
       if (a_file != NULL) {
-         if (a_file->COUNT_TEXT  > 0)  strl4main (a_file->COUNT_TEXT , x_text , 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_DATA  > 0)  strl4main (a_file->COUNT_DATA , x_data , 0, 'c', '-', LEN_TERSE);
-         if (a_file->COUNT_BSS   > 0)  strl4main (a_file->COUNT_BSS  , x_bss  , 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_TEXT  > 0)  ystrl4main (a_file->COUNT_TEXT , x_text , 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_DATA  > 0)  ystrl4main (a_file->COUNT_DATA , x_data , 0, 'c', '-', LEN_TERSE);
+         if (a_file->COUNT_BSS   > 0)  ystrl4main (a_file->COUNT_BSS  , x_bss  , 0, 'c', '-', LEN_TERSE);
       }
       switch (x_type) {
       case 'h' : sprintf (t, "---text-- ---data-- ---bss---  ");  break;
@@ -1050,9 +1050,9 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
       case 't' : sprintf (t, "text······data······bss········");  break;
       case 'd' : sprintf (t, "%9.9s %9.9s %9.9s  ", x_text, x_data, x_bss);
                  break;
-      default  :   strlcpy (t, "", LEN_RECD);                  break;
+      default  :   ystrlcpy (t, "", LEN_RECD);                  break;
       }
-      strlcat (s_print, t, LEN_RECD);
+      ystrlcat (s_print, t, LEN_RECD);
    }
    /*---(newline)------------------------*/
    if (a_print == 'y') {

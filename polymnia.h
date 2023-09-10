@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1c"
-#define     P_VERTXT    "really happy with this update, still improving, but stable."
+#define     P_VERNUM    "1.1d"
+#define     P_VERTXT    "replaced all str functions with ¶ystr¶"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -527,12 +527,11 @@ struct cFILE {
 #define     STATS_PIN      stats [61]
 #define     STATS_POUT     stats [62]
 #define     STATS_PBOTH    stats [63]
+#define     STATS_PCHG     stats [72]
 #define     STATS_PNUM     stats [64]
 #define     STATS_PMULTI   stats [65]
 #define     STATS_PFUNC    stats [66]
-
-
-
+#define     STATS_PSTRUCT  stats [71]
 /*---(group one.b)--------------------*/
 #define     STATS_TOTAL    stats [ 7]
 #define     STATS_DEBUG    stats [ 8]
@@ -637,6 +636,7 @@ struct      cFUNC {
    int         counts      [MAX_COUNTS];    /* line counts                    */
    char        stats       [MAX_STATS];     /* statistics                     */
    char        anatomy     [LEN_TERSE];     /* function type                  */
+   char        match       [LEN_LABEL];     /* function type match sting      */
    /*---(parent)------------*/
    tFILE      *file;
    /*---(tags)--------------*/
@@ -690,9 +690,11 @@ struct cWORLD {
 #define     WORK_PIN       work->temp  [61]
 #define     WORK_POUT      work->temp  [62]
 #define     WORK_PBOTH     work->temp  [63]
+#define     WORK_PCHG      work->temp  [72]
 #define     WORK_PNUM      work->temp  [64]
 #define     WORK_PMULTI    work->temp  [65]
 #define     WORK_PFUNC     work->temp  [66]
+#define     WORK_PSTRUCT   work->temp  [71]
 /*---(group one.c)--------------------*/
 #define     WORK_LVARS     work->temp  [ 1]
 #define     WORK_FVARS     work->temp  [ 2]
@@ -902,14 +904,14 @@ char*       poly_tags__unit         (char *a_question, int n);
 
 char        poly_cats_counts_clear  (int  a_counts [MAX_COUNTS]);
 char        poly_cats_stats_clear   (char a_stats  [MAX_STATS]);
-char        poly_cats_flag          (char *a_label, int a_src, char *r_dst, char a_zero);
-char        poly_cats_exists        (char *a_label, int a_src, char *r_dst, char a_zero);
-char        poly_cats_exact         (char *a_label, int a_src, char *r_dst, char a_zero);
-char        poly_cats_scaled        (char *a_label, int a_src, char *r_dst, char a_zero);
-char        poly_cats_logic         (tFUNC *a_tag, char a_type);
+char        poly_cats_flag          (char a_label [LEN_TERSE], int a_src, char *r_dst, char a_zero);
+char        poly_cats_exists        (char a_label [LEN_TERSE], int a_src, char *r_dst, char a_zero);
+char        poly_cats_exact         (char a_label [LEN_TERSE], int a_src, char *r_dst, char a_zero);
+char        poly_cats_scaled        (char a_label [LEN_TERSE], int a_src, char *r_dst, char a_zero);
+/*> char        poly_cats_logic         (tFUNC *a_tag, char a_type);                  <*/
 /*---(complexity)-----------*/
 char        poly_cats__group_1a     (tFUNC *a_func, char a_style, char a_scope, char a_rc, char a_proto, char r_out [LEN_LABEL]);
-char        poly_cats__group_1bcd   (tFUNC *a_func, char a_style, char a_paudit, int a_nparam, int a_pin, int a_pout, int a_pboth, int a_pnum, int a_pmulti, int a_pfunc, char r_out [LEN_LABEL]);
+char        poly_cats__group_1bcd   (tFUNC *a_func, char a_style, char a_paudit, int a_nparam, int a_pin, int a_pout, int a_pboth, int a_pchg, int a_pnum, int a_pmulti, int a_pfunc, int a_pstruct, char r_out [LEN_LABEL]);
 char        poly_cats__group_1e     (tFUNC *a_func, char a_style, int a_lines, int a_debug, int a_slocl, char r_out [LEN_LABEL]);
 char        poly_cats__group_1f     (tFUNC *a_func, char a_style, int a_local, int a_file, int a_global, char r_out [LEN_LABEL]);
 char        poly_cats__group_1gh    (tFUNC *a_func, char a_style, int a_indent, int a_loop, int a_choice, int a_return, int a_error, int a_memory, char r_out [LEN_LABEL]);
@@ -927,7 +929,7 @@ char        poly_cats__group_3c     (tFUNC *a_func, char a_style, int a_vmask, i
 char        poly_cats__group_3d     (tFUNC *a_func, char a_style, int a_tunit, int a_sunit, int a_nunit, int a_stest, char r_out [LEN_LABEL]);
 char        poly_cats__watchpoints  (tFUNC *a_func, char a_style, char a_update, char *r_out);
 /*---(other)----------------*/
-char        poly_cats__anatomy      (char a_rtype, char a_vars, char a_calls, char a_graph, char a_read, char a_write, char a_memory, char r_anatomy [LEN_TERSE]);
+char        poly_cats__anatomy      (char a_name [LEN_TITLE], char a_rtype, char a_fvars, char a_gvars, char a_fcalls, char a_gcalls, char a_graph, char a_read, char a_write, char a_memory, char r_anatomy [LEN_TERSE], char r_match [LEN_LABEL]);
 char        poly_cats_anatomy       (tFUNC *a_func);
 char        poly_cats_function      (tFUNC *a_func);
 char*       poly_cats_header        (int n, char *a_title, int a_curr, int a_total);
@@ -1147,8 +1149,8 @@ char        poly_line__purpose      (cchar a_recd [LEN_RECD], int a_beg, char r_
 char        poly_line_purpose       (cchar a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready);
 char        poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL]);
 char        poly_line__params_cut   (char a_recd [LEN_RECD], char r_params [LEN_RECD], char *r_audit, int *r_count);
-char        poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_both, int *r_pnum, int *r_pmulti, int *r_pfunc);
-char        poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, int *r_in, int *r_out, int *r_both, int *r_pnum, int *r_pmulti, int *r_pfunc);
+char        poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_both, int *r_chg, int *r_pnum, int *r_pmulti, int *r_pfunc, int *r_pstruct);
+char        poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, int *r_in, int *r_out, int *r_both, int *r_chg, int *r_pnum, int *r_pmulti, int *r_pfunc, int *r_pstruct);
 /*---(old-stuff)------------*/
 /*> char        poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type);   <*/
 /*> char        poly_debug_line         (tFILE *a_file, tFUNC *a_func, char *a_recd);   <*/
@@ -1156,15 +1158,15 @@ char        poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int 
 /*> char        poly_debug_cflow        (tFUNC *a_func, char a_type, char a_more);    <*/
 /*> char        poly_debug_function     (tFUNC *a_func);                              <*/
 /*---(unittest)-------------*/
-char        poly_debug__fake        (tFUNC *a_func, int a_return, int a_intern, int a_ylib);
+char        poly_debug__fake        (int a_return, int a_intern, int a_ylib, tFUNC *c_func);
 char*       poly_debug__unit        (char *a_question, int i);
 
 
 
 /*---(support)--------------*/
-char        poly_func__wipe         (tFUNC *a_func);
+char        poly_func__wipe         (tFUNC *c_func);
 char*       poly_func__memory       (tFUNC *a_func);
-char        poly_work__wipe         (tWORK *a_work);
+char        poly_work__wipe         (tWORK *c_work);
 char*       poly_work__memory       (tWORK *a_work);
 char        poly_func_cli           (char *a_hint, char a_loud);
 char        poly_func_cli_name      (char *a_name, char a_loud);
@@ -1211,8 +1213,8 @@ char*       poly_func__unit         (char *a_question, int i);
 
 char        poly_code__unquote      (char *a_dst, char *a_src, int a_max);
 /*> char        poly_code__oneliners    (tFILE *a_file, char *a_recd);                <*/
-char        poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd);
-char        poly_code__indent       (tFUNC *a_func, char *a_recd);
+/*> char        poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd);   <*/
+/*> char        poly_code__indent       (tFUNC *a_func, char *a_recd);                <*/
 char        poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev);
 char        poly_code_nextfunc      (tFILE *a_file, tFUNC **a_func);
 char        poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr, char *a_prev);
