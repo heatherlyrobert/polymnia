@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1d"
-#define     P_VERTXT    "replaced all str functions with ¶ystr¶"
+#define     P_VERNUM    "1.1e"
+#define     P_VERTXT    "small fix required due to yJOBS upgrade to accept paths better"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

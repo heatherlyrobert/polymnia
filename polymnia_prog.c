@@ -16,7 +16,7 @@ char      unit_answer [LEN_RECD] = "";
 /*====================------------------------------------====================*/
 /*===----                         support functions                    ----===*/
 /*====================------------------------------------====================*/
-static void      o___SUPPORT_________________o (void) {;}
+static void      o___SUPPORT____________o (void) {;}
 
 char*        /*--: return versioning information ---------[ ------ [ ------ ]-*/
 PROG_version       (void)
@@ -49,7 +49,7 @@ PROG_vershow       (void)
 /*====================------------------------------------====================*/
 /*===----                       pre-initialization                     ----===*/
 /*====================------------------------------------====================*/
-static void      o___PREINIT_________________o (void) {;}
+static void      o___PREINIT____________o (void) {;}
 
 
 char
@@ -69,7 +69,7 @@ PROG_urgents            (int argc, char *argv[])
 /*====================------------------------------------====================*/
 /*===----                        program startup                       ----===*/
 /*====================------------------------------------====================*/
-static void      o___STARTUP_________________o (void) {;}
+static void      o___STARTUP____________o (void) {;}
 
 char
 PROG_reset_yjobs   (void)
@@ -152,7 +152,7 @@ PROG__args              (int a_argc, char *a_argv[])
    char       *b           = NULL;          /* next argument                  */
    int         x_total     = 0;
    int         x_args      = 0;
-   char        x_name      [LEN_RECD]   = "";
+   char        x_home      [LEN_HUND]   = "";
    char        t           [LEN_RECD]   = "";
    int         x_proj      =    0;
    int         x_file      =    0;
@@ -167,6 +167,9 @@ PROG__args              (int a_argc, char *a_argv[])
       return rce;
    }
    DEBUG_PROG  yLOG_char    ("run_as"    , my.run_as);
+   /*---(get current directory)----------*/
+   rc = poly_proj_identify (NULL, x_home);
+   ystrlcat (x_home, "/", LEN_HUND);
    /*---(process)------------------------*/
    for (i = 1; i < a_argc; ++i) {
       a = a_argv [i];
@@ -184,6 +187,9 @@ PROG__args              (int a_argc, char *a_argv[])
       else                 b = NULL;
       /*---(standards first)-------------*/
       if (strcmp (a, "--htags"     ) == 0)  a = "--local";
+      if (strstr (" --verify --cverify --vverify --local --clocal --vlocal --registir --cregister --vregister --update --cupdate --vupdate --install --cinstall --vinstall ", a) != NULL) {
+         b = x_home;
+      }
       rc = yJOBS_argument (&i, a, b, &(my.run_as), &(my.run_mode), my.run_file);
       if (rc < 0) {
          DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
@@ -318,7 +324,7 @@ PROG_startup            (int argc, char *argv[])
 /*====================------------------------------------====================*/
 /*===----                         unknown                              ----===*/
 /*====================------------------------------------====================*/
-static void      o___OTHER___________________o (void) {;}
+static void      o___OTHER______________o (void) {;}
 
 char
 PROG_prepare            (void)
@@ -373,7 +379,7 @@ PROG_summarize          (tPROJ *a_proj)
 /*====================------------------------------------====================*/
 /*===----                      action dispatching                      ----===*/
 /*====================------------------------------------====================*/
-static void      o___DISPATCH________________o (void) {;}
+static void      o___DISPATCH___________o (void) {;}
 
 char
 PROG__stats             (void)
@@ -752,7 +758,7 @@ PROG__system            (void)
 /*====================------------------------------------====================*/
 /*===----                        program shutdown                      ----===*/
 /*====================------------------------------------====================*/
-static void      o___SHUTDOWN________________o (void) {;}
+static void      o___SHUTDOWN___________o (void) {;}
 
 char         /*-> shutdown program and free memory ---[ ------ [gz.422.001.03]*/ /*-[00.0000.111.!]-*/ /*-[--.---.---.--]-*/
 PROG__end               (void)
@@ -784,7 +790,7 @@ PROG_shutdown          (void)
 /*====================------------------------------------====================*/
 /*===----                       unit testing                           ----===*/
 /*====================------------------------------------====================*/
-static void      o___UNITTEST________________o (void) {;}
+static void      o___UNITTEST___________o (void) {;}
 
 char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.#]-*/ /*-[--.---.---.--]-*/
 PROG__unit_quiet   (void)
