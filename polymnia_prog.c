@@ -44,6 +44,23 @@ PROG_vershow       (void)
    exit (0);
 }
 
+char
+PROG_usage              (void)
+{
+   printf("\n");
+   printf("%s\n", P_ONELINE);
+   printf("  purpose : %s\n", P_PURPOSE);
+   printf("\n");
+   printf("quick usage helpers, please refer to man file for real help (polymnia.1)\n");
+   printf("\n");
+   printf("maintaining world file\n");
+   printf("  polymnia --list             list existing world.ctrl file\n");
+   printf("  polymnia --vregister        add present directory to world.ctrl file\n");
+   printf("  polymnia --vwithdrawl       remove present directory from world.ctrl file\n");
+   printf("\n");
+   exit(0);
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -200,6 +217,8 @@ PROG__args              (int a_argc, char *a_argv[])
       /*> if (rc == 1)   continue;                                                    <*/
       /*---(simple)----------------------*/
       if      (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
+      else if (strcmp (a, "--quick"     ) == 0)  PROG_usage   ();
+      else if (strcmp (a, "--help"      ) == 0)  PROG_usage   ();
       /*---(complicated)-----------------*/
       /*> else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }   <*/
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
