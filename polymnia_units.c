@@ -195,6 +195,11 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
          t [14] = a_recd [ 9];
          t [15] = a_recd [10];
       }
+      else if (a_recd [ 6] == '[' && a_recd [11] == ']') {
+         t [13] = ' ';
+         t [14] = a_recd [ 7];
+         t [15] = a_recd [ 8];
+      }
       rc = poly_func_add (a_file, t, 's', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {
