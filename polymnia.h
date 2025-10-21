@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1g"
-#define     P_VERTXT    "update to yEXEC_whoami"
+#define     P_VERNUM    "1.1h"
+#define     P_VERTXT    "full string test on ySCORE using polymnia table"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -193,6 +193,9 @@
 #include    <yURG.h>         /* CUSTOM  heatherly urgent processing           */
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
+#include    <yENV.h>
+#include    <yAUDIT.h>
+#include    <ySCORE.h>
 #include    <yJOBS.h>             /* heatherly job execution and control      */
 #include    <ySORT.h>             /* heatherly sorting and searching          */
 #include    <yREGEX.h>       /* CUSTOM  heatherly regular expressions         */
@@ -417,6 +420,8 @@ struct cMY {
    char        s_curr      [LEN_RECD]; /* current source line                 */
    char        s_prev      [LEN_RECD]; /* previous source line                */
    char        s_pprev     [LEN_RECD]; /* prev-previous source line           */
+   /*---(ySCORE)--------------*/
+   void       *s_yscore;
    /*---(done)----------------*/
 };
 extern      tMY         my;
@@ -903,7 +908,9 @@ char*       poly_tags__unit         (char *a_question, int n);
 
 
 char        poly_cats_counts_clear  (int  a_counts [MAX_COUNTS]);
+char*       poly_cats_counts_DEBUG  (int  a_counts [MAX_COUNTS]);
 char        poly_cats_stats_clear   (char a_stats  [MAX_STATS]);
+char*       poly_cats_stats_DEBUG   (char a_stats  [MAX_STATS]);
 char        poly_cats_flag          (char a_label [LEN_TERSE], int a_src, char *r_dst, char a_zero);
 char        poly_cats_exists        (char a_label [LEN_TERSE], int a_src, char *r_dst, char a_zero);
 char        poly_cats_exact         (char a_label [LEN_TERSE], int a_src, char *r_dst, char a_zero);
@@ -946,6 +953,7 @@ char*       poly_cats__unit         (char *a_question, int n);
 
 /*---(support)--------------*/
 char        PROG_reset_yjobs        (void);
+char        PROG_reset_everything   (void);
 /*---(urgents)--------------*/
 char        PROG_urgents            (int a_argc, char *a_argv[]);
 /*---(startup)--------------*/
@@ -1089,7 +1097,7 @@ char        poly_rptg_dump          (void);
 char        poly_rptg_extern        (tEXTERN *a_extern);
 char        poly_rptg_dispatch      (void);
 
-/*> char        poly_action_whoami      (void);                                       <*/
+char        poly_action_whoami      (void);
 /*> char        poly_action_htags       (void);                                       <*/
 char        poly_action_generate    (void);
 char        poly_action_search      (void);
@@ -1309,5 +1317,11 @@ char        poly_units_inventory    (tFILE *a_file);
 
 char        PROG_dispatch           (void);
 char        poly_yjobs_callback     (cchar a_req, cchar *a_data);
+
+
+char        poly_yscore_init       (void);
+char        poly_yscore_wrap       (void);
+
+
 
 #endif

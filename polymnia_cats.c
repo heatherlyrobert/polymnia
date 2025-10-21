@@ -64,112 +64,113 @@ static struct cPOS    {
    char        name        [LEN_LABEL];     /* short description              */
    char        desc        [LEN_DESC];      /* longer description             */
    int         n;                           /* statistics entry               */
+   char        legend      [LEN_HUND];
 } const s_cats [MAX_CATS] = {
    /*===[[ PREFIX ]]=============================================*/
    /*--  -123456-   -123456789012345678901234567890- */
-   {  0,  1,  0, "oneline", "one line function"               ,  0 },
+   {  0,  1,  0, "oneline", "one line function"               ,  0 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP ONE -- COMPLEXITY ]]============================*/
-   {  1,  0,  0, "-----"  , "complexity"                      , -1 },
+   {  1,  0,  0, "-----"  , "complexity"                      , -1 , "" },
+   /*--  --  --  -123456-   -123456789012345678901234567890-    --   -123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+   {  1,  1,  1, "scope"  , "function scope"                  ,  1 , "e)extern   g)global   f)file     s)static   u)unit"                                                  },
+   {  1,  1,  2, "rtype"  , "return type"                     ,  2 , "s)string   c)char     v)void     p)point    n)number   o)other    _)title"                           },
+   {  1,  1,  3, "proto"  , "prototype location"              ,  6 , "g)global   f)file     -)none"                                                                        },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  1,  1, "scope"  , "function scope"                  ,  1 },
-   {  1,  1,  2, "rtype"  , "return type"                     ,  2 },
-   {  1,  1,  3, "proto"  , "prototype location"              ,  6 },
+   {  1,  2,  4, "paudit" , "audit of params"                 ,  3 , "tbd"                                                                                                 },
+   {  1,  2,  5, "params" , "number of parameters"            ,  3 , "?)WTF      0)void     1-3)low    4-6)mid    7-9)high   #)huge"                                       },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  2,  4, "paudit" , "audit of params"                 ,  3 },
-   {  1,  2,  5, "params" , "number of parameters"            ,  3 },
+   {  1,  3,  6, "pin"    , "incomming parameters   (a)"      ,  3 , "?)WTF      0)none     1-3)low    4-6)mid    7-9)high   #)huge"                                       },
+   {  1,  3,  7, "pout"   , "outgoing parameters    (r)"      ,  3 , "?)WTF      0)none     1-3)low    4-6)mid    7-9)high   #)huge"                                       },
+   {  1,  3,  8, "pboth"  , "both in/out parameters (b)"      ,  3 , "?)WTF      0)none     1-3)low    4-6)mid    7-9)high   #)huge"                                       },
+   {  1,  3,  9, "pconf"  , "run-time configuration (c)"      ,  3 , "?)WTF      0)none     1-3)ok     4+)high"                                                            },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  3,  6, "pin"    , "incomming parameters"            ,  3 },
-   {  1,  3,  7, "pout"   , "outgoing parameters"             ,  3 },
-   {  1,  3,  8, "pboth"  , "both in/out parameters"          ,  3 },
-   {  1,  3,  9, "pchg"   , "contents/internals changed"      ,  3 },
+   {  1,  4, 10, "pnum"   , "params use number pointers"      ,  4 , "?)WTF      0)none     1-3)low    4-6)mid    7-9)high   #)huge"                                       },
+   {  1,  4, 11, "pmulti" , "params use multiple pointers"    ,  5 , "?)WTF      0)none     1-3)low    4-6)mid    7-9)high   #)huge"                                       },
+   {  1,  4, 12, "pfunc"  , "function pointers      (f)"      ,  5 , "?)WTF      0)none     1-3)low    4-6)mid    7-9)high   #)huge"                                       },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  4, 10, "pnum"   , "params use number pointers"      ,  4 },
-   {  1,  4, 11, "pmulti" , "params use multiple pointers"    ,  5 },
-   {  1,  4, 12, "pfunc"  , "function pointers"               ,  5 },
+   {  1,  5, 13, "pstruct", "params use structures"           ,  4 , "?)WTF      0)none     1-3)low    4-6)mid    7-9)high   #)huge"                                       },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  5, 13, "pstruct", "params use structures"           ,  4 },
+   {  1,  6, 14, "total"  , "total actual lines (div 5)"      ,  7 , "1-4)small  5-9)mod    A-D)full   E-H)large  I-N)huge   O-Z)SCARY  #)JESUS"                           },
+   {  1,  6, 15, "%debug" , "debugging lines (% total)"       ,  8 , "0-1)tiny   2-4)avg    5-7)high   A)warning"                                                          },
+   {  1,  6, 16, "%code"  , "lines of code logical (% total)" ,  9 , "1-3)low    4-7)avg    8-9)high   A)warning"                                                          },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  6, 14, "total"  , "total actual lines (div 5)"      ,  7 },
-   {  1,  6, 15, "%debug" , "debugging lines (% total)"       ,  8 },
-   {  1,  6, 16, "%code"  , "lines of code logical (% total)" ,  9 },
+   {  1,  7, 17, "Lvars"  , "number of local vars used"       , 10 , "0)none     1-3)few    4-6)avg    7-9)heavy  A-Z)SCARY  #)JESUS"                                      },
+   {  1,  7, 18, "Fvars"  , "number of file/static vars used" , 11 , "0)none     1-3)few    4-6)avg    7-9)heavy  A-Z)SCARY  #)JESUS"                                      },
+   {  1,  7, 19, "Gvars"  , "number of global vars used"      , 12 , "0)none     1-2)avg    3-6)lots   7-9)heavy  A-Z)SCARY  #)JESUS"                                      },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  7, 17, "Lvars"  , "number of local vars used"       , 10 },
-   {  1,  7, 18, "Fvars"  , "number of file/static vars used" , 11 },
-   {  1,  7, 19, "Gvars"  , "number of global vars used"      , 12 },
+   {  1,  8, 20, "indent" , "depth of indentation"            , 15 , "0)none     1)avg      2-4)lots   5+)SCARY"                                                           },
+   {  1,  8, 21, "loop"   , "number of loops"                 , 58 , "0)none     1)avg      2-4)lots   5+)SCARY"                                                           },
+   {  1,  8, 22, "choice" , "number of choices/decisions"     , 13 , "0)none     1-3)avg    4-9)lots   A-Z)SCARY  #)JESUS"                                                 },
+   {  1,  8, 23, "return" , "number of return/exit points"    , 14 , "0)WTF      1)perfect  2-5)avg    6+)SCARY"                                                           },
+   {  1,  8, 24, "w´error", "return with errors"              , 57 , "0)none     1-3)avg    4-6)logs   9+)major"                                                           },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  8, 20, "indent" , "depth of indentation"            , 15 },
-   {  1,  8, 21, "loop"   , "number of loops"                 , 58 },
-   {  1,  8, 22, "choice" , "number of choices/decisions"     , 13 },
-   {  1,  8, 23, "return" , "number of return/exit points"    , 14 },
-   {  1,  8, 24, "w´error", "return with errors"              , 57 },
-   /*--  -123456-   -123456789012345678901234567890- */
-   {  1,  9, 25, "memory" , "memory management used"          , 16 },
+   {  1,  9, 25, "memory" , "memory management used"          , 16 , "-)none     #)in-use"                                                                                 },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP TWO -- INTEGRATION ]]===========================*/
-   {  2,  0,  0, "-----"  , "integration"                     , -1 },
+   {  2,  0,  0, "-----"  , "integration"                     , -1 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  1,  1, "call´by", "called by anything else"         , 17 },
+   {  2,  1,  1, "call´by", "called by anything else"         , 17 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  2,  2, "Fcaller", "called by in-file functions"     , 18 },
-   {  2,  2,  3, "Gcaller", "called by global functions"      , 19 },
-   {  3,  2,  4, "Xcaller", "called by external programs"     , 20 },
-   {  2,  2,  5, "recurse", "function is recursive"           , 21 },
+   {  2,  2,  2, "Fcaller", "called by in-file functions"     , 18 , "" },
+   {  2,  2,  3, "Gcaller", "called by global functions"      , 19 , "" },
+   {  3,  2,  4, "Xcaller", "called by external programs"     , 20 , "" },
+   {  2,  2,  5, "recurse", "function is recursive"           , 21 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  3,  6, "call´to", "calls to any/all functions"      , 22 },
-   {  2,  3,  7, "Dfuncs" , "calls to debugging functions"    , 23 },
-   {  2,  3,  8, "Rfuncs" , "calls to real/non-debug"         , 24 },
+   {  2,  3,  6, "call´to", "calls to any/all functions"      , 22 , "" },
+   {  2,  3,  7, "Dfuncs" , "calls to debugging functions"    , 23 , "" },
+   {  2,  3,  8, "Rfuncs" , "calls to real/non-debug"         , 24 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  4,  9, "Ffuncs" , "calls to in-file functions"      , 25 },
-   {  2,  4, 10, "Gfuncs" , "calls to global functions"       , 26 },
-   {  2,  4, 11, "cstd"   , "calls to c-std libraries"        , 27 },
-   {  2,  4, 12, "ylib"   , "calls to my custom libraries"    , 28 },
-   {  2,  4, 13, "vikeys" , "calls to vi-keys libraries"      , 28 },
-   {  2,  4, 14, "Ofuncs" , "calls to other libraries"        , 29 },
-   {  2,  4, 15, "mystry" , "calls to unknown functions"      , 30 },
+   {  2,  4,  9, "Ffuncs" , "calls to in-file functions"      , 25 , "" },
+   {  2,  4, 10, "Gfuncs" , "calls to global functions"       , 26 , "" },
+   {  2,  4, 11, "cstd"   , "calls to c-std libraries"        , 27 , "" },
+   {  2,  4, 12, "ylib"   , "calls to my custom libraries"    , 28 , "" },
+   {  2,  4, 13, "vikeys" , "calls to vi-keys libraries"      , 28 , "" },
+   {  2,  4, 14, "Ofuncs" , "calls to other libraries"        , 29 , "" },
+   {  2,  4, 15, "mystry" , "calls to unknown functions"      , 30 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  5, 16, "input"  , "stdin and file input"            , 31 },
-   {  2,  5, 17, "output" , "stdout and file output"          , 32 },
-   {  2,  5, 18, "system" , "unix process or system calls"    , 33 },
+   {  2,  5, 16, "input"  , "stdin and file input"            , 31 , "" },
+   {  2,  5, 17, "output" , "stdout and file output"          , 32 , "" },
+   {  2,  5, 18, "system" , "unix process or system calls"    , 33 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  6, 19, "ncurses", "ncurses function calls"          , 34 },
-   {  2,  6, 20, "opengl" , "opengl function calls"           , 35 },
-   {  2,  6, 21, "windows", "x11 and like functions calls"    , 36 },
-   {  2,  6, 22, "ygraph" , "my x11/opengl support libs"      , 37 },
+   {  2,  6, 19, "ncurses", "ncurses function calls"          , 34 , "" },
+   {  2,  6, 20, "opengl" , "opengl function calls"           , 35 , "" },
+   {  2,  6, 21, "windows", "x11 and like functions calls"    , 36 , "" },
+   {  2,  6, 22, "ygraph" , "my x11/opengl support libs"      , 37 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*===[[ GROUP THREE -- WATCH POINTS ]]========================*/
-   {  3,  0,  0, "-----"  , "watch-points"                    , -1 },
+   {  3,  0,  0, "-----"  , "watch-points"                    , -1 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  2,  1,  1, "Dactive", "debugging is used"               , 23 },
-   {  3,  1,  2, "Dstyle" , "debugging style"                 , 38 },
-   {  3,  1,  3, "Dmacro" , "debugging macros used"           , 39 },
-   {  3,  1,  4, "Dmatch" , "debugging enter/exit match"      , 40 },
-   {  3,  1,  5, "Dwarn"  , "debugging trouble marker"        , 42 },
+   {  2,  1,  1, "Dactive", "debugging is used"               , 23 , "" },
+   {  3,  1,  2, "Dstyle" , "debugging style"                 , 38 , "" },
+   {  3,  1,  3, "Dmacro" , "debugging macros used"           , 39 , "" },
+   {  3,  1,  4, "Dmatch" , "debugging enter/exit match"      , 40 , "" },
+   {  3,  1,  5, "Dwarn"  , "debugging trouble marker"        , 42 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  2,  6, "macros" , "potential #define macros"        , 43 },
-   {  3,  3,  7, "file"   , "in-file #define macro use"       , 44 },
-   {  3,  3,  8, "global" , "global #define macro use"        , 45 },
-   {  3,  3,  9, "cstd"   , "cstd #define macro use"          , 46 },
-   {  3,  3, 10, "ylib"   , "ylib #define macro use"          , 47 },
-   {  3,  3, 11, "vikeys" , "vikeys #define macro use"        , 47 },
-   {  3,  3, 12, "other"  , "unknown/other macros"            , 48 },
+   {  3,  2,  6, "macros" , "potential #define macros"        , 43 , "" },
+   {  3,  3,  7, "file"   , "in-file #define macro use"       , 44 , "" },
+   {  3,  3,  8, "global" , "global #define macro use"        , 45 , "" },
+   {  3,  3,  9, "cstd"   , "cstd #define macro use"          , 46 , "" },
+   {  3,  3, 10, "ylib"   , "ylib #define macro use"          , 47 , "" },
+   {  3,  3, 11, "vikeys" , "vikeys #define macro use"        , 47 , "" },
+   {  3,  3, 12, "other"  , "unknown/other macros"            , 48 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  4, 13, "Vmask"  , "vars masking other vars"         , 49 },
-   {  3,  4, 14, "Mmask"  , "macros masking other macros"     , 50 },
-   {  3,  4, 15, "Fmask"  , "funcs masking other funcs"       , 51 },
-   {  3,  4, 16, "Lstatic", "local static variables"          , 52 },
+   {  3,  4, 13, "Vmask"  , "vars masking other vars"         , 49 , "" },
+   {  3,  4, 14, "Mmask"  , "macros masking other macros"     , 50 , "" },
+   {  3,  4, 15, "Fmask"  , "funcs masking other funcs"       , 51 , "" },
+   {  3,  4, 16, "Lstatic", "local static variables"          , 52 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
-   {  3,  5, 17, "units"  , "count of unit tests used"        , 53 },
-   {  3,  5, 18, "scrps"  , "count of unit scripts used"      , 54 },
-   {  3,  5, 19, "steps"  , "count of unit steps used"        , 55 },
-   {  3,  5, 20, "string" , "count of string tests"           , 56 },
+   {  3,  5, 17, "units"  , "count of unit tests used"        , 53 , "" },
+   {  3,  5, 18, "scrps"  , "count of unit scripts used"      , 54 , "" },
+   {  3,  5, 19, "steps"  , "count of unit steps used"        , 55 , "" },
+   {  3,  5, 20, "string" , "count of string tests"           , 56 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
 
    /*--  -123456-   -123456789012345678901234567890- */
-   { -1, -1, -1, ""       , ""                                , -1 },
+   { -1, -1, -1, ""       , ""                                , -1 , "" },
    /*--  -123456-   -123456789012345678901234567890- */
 };
 
@@ -316,8 +317,23 @@ char         /*-> clear all function counts -------------------[ leaf······ ]-*/
 poly_cats_counts_clear  (int a_counts [MAX_COUNTS])
 {
    int         i           =    0;
+   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    for (i = 0; i < MAX_COUNTS; ++i)  a_counts [i] = 0;
+   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
+}
+
+char*
+poly_cats_counts_DEBUG  (int a_counts [MAX_COUNTS])
+{
+   int         i           =    0;
+   static char t           [LEN_LABEL] = "";
+   for (i = 0; i < MAX_COUNTS; ++i) {
+      if (a_counts [i] > 0) t [i] = 'Ï';
+      else                  t [i] = '·';
+   }
+   t [i] = '\0';
+   return t;
 }
 
 char         /*-> clear all function statistics ---------------[ leaf······ ]-*/ /*-ågcg´·1á1··á···á·´1·A´1··´·1·1·á·æ¬å1á·1··´···á·······´···´····æ¬å·····´1·1····´····´····æ-*/
@@ -326,6 +342,19 @@ poly_cats_stats_clear   (char a_stats [MAX_STATS])
    int         i           =    0;
    for (i = 0; i < MAX_STATS; ++i)  a_stats [i] = '·';
    return 0;
+}
+
+char*
+poly_cats_stats_DEBUG   (char a_stats [MAX_STATS])
+{
+   int         i           =    0;
+   static char t           [LEN_FULL]  = "";
+   for (i = 0; i < MAX_STATS; ++i) {
+      if (a_stats   [i] > 0) t [i] = 'Ï';
+      else                   t [i] = '·';
+   }
+   t [i] = '\0';
+   return t;
 }
 
 
@@ -514,7 +543,7 @@ poly_cats__group_1bcd   (tFUNC *c_func, char a_style, char a_paudit, int a_npara
    poly_cats_exact  ("pin"     , a_pin    , &x_in, '·');
    poly_cats_exact  ("pout"    , a_pout   , &x_ou, '·');
    poly_cats_exact  ("pboth"   , a_pboth  , &x_bo, '·');
-   poly_cats_exact  ("pboth"   , a_pchg   , &x_ch, '·');
+   poly_cats_exact  ("pchg"    , a_pchg   , &x_ch, '·');
    poly_cats_exact  ("pnum"    , a_pnum   , &x_pn, '·');
    poly_cats_exact  ("pmulti"  , a_pmulti , &x_pm, '·');
    poly_cats_exact  ("pfunc"   , a_pfunc  , &x_pf, '·');
@@ -1388,9 +1417,10 @@ poly_cats_by_index      (tFUNC *a_func, char n, char *a_grp, char *a_sub, char *
 static void  o___UNITTEST________o () { return; }
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_cats__unit      (char *a_question, int i)
+poly_cats__unit      (char *a_question, int n)
 {
    /*---(locals)-----------+-----------+-*/
+   int         i           =    0;
    char        t           [LEN_RECD]  = "[]";
    char        a           [LEN_RECD]  = "[]";
    char        b           [LEN_RECD]  = "[]";
@@ -1399,29 +1429,29 @@ poly_cats__unit      (char *a_question, int i)
    tFUNC      *u           = NULL;
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "CATS unit        : tag number unknown");
-   if (i <  0)       return unit_answer;
+   if (n <  0)       return unit_answer;
    /*---(prepare)------------------------*/
-   poly_func_by_index (i, &u);
+   poly_func_by_index (n, &u);
    if (u != NULL)  sprintf  (t, "[%.20s]", u->name);
    /*---(simple)-------------------------*/
    if        (strcmp (a_question, "complex"   )     == 0) {
       if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
       poly_cats__single      (u, r);
       poly_cats__complexity    (u, 'l', 'y', a);
-      sprintf (unit_answer, "CATS complex(%2d) : %-17.17s %s [%s]", i, t, r, a);
+      sprintf (unit_answer, "CATS complex(%2d) : %-17.17s %s [%s]", n, t, r, a);
    }
    else if   (strcmp (a_question, "integ"     )     == 0) {
       if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
       poly_cats__single      (u, r);
       poly_cats__integration (u, 'l', 'y', b);
-      sprintf (unit_answer, "CATS integ  (%2d) : %-17.17s %s [%s]", i, t, r, b);
+      sprintf (unit_answer, "CATS integ  (%2d) : %-17.17s %s [%s]", n, t, r, b);
    }
    else if   (strcmp (a_question, "watch"     )     == 0) {
       if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
       poly_cats__single      (u, r);
       poly_cats__watchpoints (u, 'l', 'y', c);
       poly_cats_anatomy      (u);
-      sprintf (unit_answer, "CATS watch  (%2d) : %-17.17s %s [%s]", i, t, r, c);
+      sprintf (unit_answer, "CATS watch  (%2d) : %-17.17s %s [%s]", n, t, r, c);
    }
    else if   (strcmp (a_question, "full"      )     == 0) {
       if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
@@ -1430,11 +1460,19 @@ poly_cats__unit      (char *a_question, int i)
       poly_cats__integration   (u, '-', 'y', b);
       poly_cats__watchpoints   (u, '-', 'y', c);
       poly_cats_anatomy      (u);
-      sprintf (unit_answer, "CATS full   (%2d) : %-17.17s %s %s %s %s", i, t, r, a, b, c);
+      sprintf (unit_answer, "CATS full   (%2d) : %-17.17s %s %s %s %s", n, t, r, a, b, c);
    }
    else if   (strcmp (a_question, "header"    )     == 0) {
-      ystrlcpy (t, poly_cats_header (i, "test", 0, 0), LEN_RECD);
+      ystrlcpy (t, poly_cats_header (n, "test", 0, 0), LEN_RECD);
       sprintf (unit_answer, "CATS header (%2d) : %3d[%s]", i, strlen (t), t);
+   }
+   else if   (strcmp (a_question, "my.counts" )     == 0) {
+      for (i = 0; i < MAX_COUNTS; ++i) {
+         if (my.counts [i] > 0) t [i] = 'Ï';
+         else                   t [i] = '·';
+      }
+      t [i] = '\0';
+      sprintf (unit_answer, "CATS my.counts   : å%sæ", t);
    }
    /*---(complete)-----------------------*/
    return unit_answer;

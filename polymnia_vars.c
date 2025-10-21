@@ -48,6 +48,7 @@ char
 poly_vars__purge        (void)
 {
    int         i           =    0;
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    for (i = 0; i < MAX_VARS; ++i) {
       s_vars [i].file     = NULL;
       s_vars [i].scope    = '-';
@@ -57,12 +58,14 @@ poly_vars__purge        (void)
    }
    s_nvar    = 0;
    s_nglobal = 0;
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
 poly_vars_init          (void)
 {
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    poly_vars__purge ();
    ystrlcpy (s_macros, "", LEN_RECD);
    ystrlcpy (s_smacros, "", LEN_RECD);
@@ -73,6 +76,7 @@ poly_vars_init          (void)
    ystrlcpy (s_intern, "", LEN_RECD);
    ystrlcpy (s_sintern, "", LEN_RECD);
    s_nintern = 0;
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

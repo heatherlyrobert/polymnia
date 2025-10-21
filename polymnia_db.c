@@ -60,8 +60,10 @@ poly_db_cli             (char *a_name, char a_loud)
 char
 poly_db_init            (void)
 {
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    poly_db_cli (F_DB, '-');
    my.f_db = NULL;
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

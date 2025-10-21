@@ -8,7 +8,7 @@ NAME_BASE  = polymnia
 # additional standard and outside libraries
 LIB_STD    = -lm
 # all heatherly libraries used, debug versions whenever available
-LIB_MINE   = -lySTR_debug -lyREGEX_debug -lyJOBS_debug -lySORT_debug
+LIB_MINE   = -lySTR_debug -lyREGEX_debug -lyJOBS_debug -lySORT_debug -lyENV_debug -lyAUDIT_debug -lySCORE_debug
 # directory for production code, no trailing slash
 INST_DIR   = /usr/local/bin
 
@@ -32,7 +32,7 @@ LIB_UTIL   =
 
 
 #===(master template)======================================#
-include /usr/local/sbin/make_program
+include /usr/local/sbin/zeno_make
 
 
 

@@ -180,7 +180,8 @@ poly_yjobs_localrpt     (void)
    my.g_data  = POLY_DATA_HTAGS;
    my.g_scope = POLY_FULL;
    my.g_rptg  = POLY_RPTG_HTAGS;
-   rc = poly_rptg_htags (NULL);
+   poly_action_whoami ();
+   rc = poly_rptg_htags (my.g_proj);
    DEBUG_PROG    yLOG_value   ("htags"     , rc);
    /*---(complete)-----------------------*/
    return rc;
@@ -216,7 +217,8 @@ poly_yjobs_callback     (cchar a_req, cchar *a_data)
    char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG    yLOG_enter   (__FUNCTION__);
-   DEBUG_PROG    yLOG_char    ("a_req"     , a_req);
+   DEBUG_PROG    yLOG_value   ("a_req"     , a_req);
+   DEBUG_PROG    yLOG_char    ("a_req"     , ychrvisible (a_req));
    DEBUG_PROG    yLOG_info    ("a_data"    , a_data);
    /*---(handle)-------------------------*/
    switch (a_req) {

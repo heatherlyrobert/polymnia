@@ -211,33 +211,33 @@ poly_action__here       (void)
    return 0;
 }
 
-/*> char                                                                              <* 
- *> poly_action_whoami      (void)                                                    <* 
- *> {                                                                                 <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
- *>    char        rce         =  -10;                                                <* 
- *>    char        rc          =    0;                                                <* 
- *>    tPROJ      *x_proj      = NULL;                                                <* 
- *>    /+---(header)-------------------------+/                                       <* 
- *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                      <* 
- *>    /+---(setup project)------------------+/                                       <* 
- *>    rc  = poly_proj_here    (&x_proj);                                             <* 
- *>    DEBUG_PROG   yLOG_value   ("proj_here"  , rc);                                 <* 
- *>    --rce;  if (rc < 0) {                                                          <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);                             <* 
- *>    --rce;  if (x_proj == NULL) {                                                  <* 
- *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
- *>       return rce;                                                                 <* 
- *>    }                                                                              <* 
- *>    /+---(save off)-----------------------+/                                       <* 
- *>    my.g_proj = x_proj;                                                            <* 
- *>    /+---(complete)-----------------------+/                                       <* 
- *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                      <* 
- *>    return 0;                                                                      <* 
- *> }                                                                                 <*/
+char
+poly_action_whoami      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tPROJ      *x_proj      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(setup project)------------------*/
+   rc  = poly_proj_here    (&x_proj);
+   DEBUG_PROG   yLOG_value   ("proj_here"  , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
+   --rce;  if (x_proj == NULL) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(save off)-----------------------*/
+   my.g_proj = x_proj;
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
 
 

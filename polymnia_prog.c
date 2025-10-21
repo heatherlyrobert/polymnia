@@ -89,7 +89,7 @@ PROG_urgents            (int argc, char *argv[])
 static void      o___STARTUP____________o (void) {;}
 
 char
-PROG_reset_yjobs   (void)
+PROG_reset_yjobs        (void)
 {
    my.run_as   = IAM_POLYMNIA;
    my.run_mode = ACT_NONE;
@@ -97,13 +97,21 @@ PROG_reset_yjobs   (void)
    return 0;
 }
 
-char         /*-> very first setup -------------------[ shoot  [gz.633.201.0A]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
-PROG__init              (int a_argc, char *a_argv[])
+char
+PROG_reset_everything   (void)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(yJOB config)--------------------*/
-   PROG_reset_yjobs ();
+   rc = PROG_reset_yjobs ();
+   DEBUG_PROG  yLOG_value   ("yjobs"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    DEBUG_PROG  yLOG_char    ("run_as"    , my.run_as);
    my.run_uid     = getuid ();
    my.runtime     = time (NULL);
@@ -140,17 +148,76 @@ PROG__init              (int a_argc, char *a_argv[])
    my.f_error     = stderr;
    /*---(global counts)------------------*/
    DEBUG_PROG   yLOG_note    ("initialize global counts");
-   poly_cats_counts_clear (my.counts);
+   rc = poly_cats_counts_clear (my.counts);
+   DEBUG_PROG  yLOG_value   ("cats"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(initialization)-----------------*/
    DEBUG_PROG   yLOG_note    ("run sub initialization functions");
-   poly_db_init      ();
-   poly_proj_init    ();
-   poly_file_init    ();
-   poly_func_init    ();
-   poly_extern_init  ();
-   poly_vars_init    ();
-   poly_proto_init   ();
-   /*> poly_world_init   ();                                                          <*/
+   rc = poly_db_init      ();
+   DEBUG_PROG  yLOG_value   ("db"        , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_proj_init    ();
+   DEBUG_PROG  yLOG_value   ("proj"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_file_init    ();
+   DEBUG_PROG  yLOG_value   ("file"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_func_init    ();
+   DEBUG_PROG  yLOG_value   ("func"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_extern_init  ();
+   DEBUG_PROG  yLOG_value   ("extern"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_vars_init    ();
+   DEBUG_PROG  yLOG_value   ("vars"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = poly_proto_init   ();
+   DEBUG_PROG  yLOG_value   ("proto"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+char         /*-> very first setup -------------------[ shoot  [gz.633.201.0A]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
+PROG__init              (int a_argc, char *a_argv[])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(yJOB config)--------------------*/
+   rc = PROG_reset_everything ();
+   DEBUG_PROG  yLOG_value   ("reset"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -271,8 +338,8 @@ PROG__args              (int a_argc, char *a_argv[])
             if      (x_proj == 0)   my.g_projno = c - 1;
             else if (x_file == 0)   my.g_fileno = c - 1;
          } else {
-            if      (my.g_projname [0] == '£')   ystrlcpy (my.g_projname, a_argv [i], LEN_LABEL);
-            else if (my.g_filename [0] == '£')   ystrlcpy (my.g_filename, a_argv [i], LEN_LABEL);
+            if      (my.g_projname [0] == '\0')   ystrlcpy (my.g_projname, a_argv [i], LEN_LABEL);
+            else if (my.g_filename [0] == '\0')   ystrlcpy (my.g_filename, a_argv [i], LEN_LABEL);
          }
       }
       else {
@@ -811,35 +878,35 @@ PROG_shutdown          (void)
 /*====================------------------------------------====================*/
 static void      o___UNITTEST___________o (void) {;}
 
-char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.#]-*/ /*-[--.---.---.--]-*/
-PROG__unit_quiet   (void)
-{
-   char        x_argc      = 1;
-   char       *x_args [1]  = { "polymnia" };
-   PROG_urgents (x_argc, x_args);
-   PROG_startup (x_argc, x_args);
-   return 0;
-}
+/*> char         /+-> set up programgents/debugging ------[ light  [uz.320.011.05]+/ /+-[00.0000.00#.#]-+/ /+-[--.---.---.--]-+/   <* 
+ *> PROG__unit_quiet   (void)                                                                                                      <* 
+ *> {                                                                                                                              <* 
+ *>    char        x_argc      = 1;                                                                                                <* 
+ *>    char       *x_args [1]  = { "polymnia" };                                                                                   <* 
+ *>    PROG_urgents (x_argc, x_args);                                                                                              <* 
+ *>    PROG_startup (x_argc, x_args);                                                                                              <* 
+ *>    return 0;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
 
-char         /*-> set up programgents/debugging ------[ light  [uz.320.011.05]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-PROG__unit_loud      (void)
-{
-   char        x_argc      = 3;
-   char       *x_args [3]  = { "polymnia_unit", "@@kitchen", "@@nosort" };
-   PROG_urgents (x_argc, x_args);
-   /*> yURG_by_name  ("mid"          , YURG_ON);                                         <*/
-   yURG_by_name  ("kitchen"      , YURG_ON);
-   yURG_by_name  ("yexec"        , YURG_ON);
-   PROG_startup (x_argc, x_args);
-   return 0;
-}
+/*> char         /+-> set up programgents/debugging ------[ light  [uz.320.011.05]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> PROG__unit_loud      (void)                                                                                                    <* 
+ *> {                                                                                                                              <* 
+ *>    char        x_argc      = 3;                                                                                                <* 
+ *>    char       *x_args [3]  = { "polymnia_unit", "@@kitchen", "@@nosort" };                                                     <* 
+ *>    PROG_urgents (x_argc, x_args);                                                                                              <* 
+ *>    /+> yURG_by_name  ("mid"          , YURG_ON);                                         <+/                                   <* 
+ *>    yURG_by_name  ("kitchen"      , YURG_ON);                                                                                   <* 
+ *>    yURG_by_name  ("yexec"        , YURG_ON);                                                                                   <* 
+ *>    PROG_startup (x_argc, x_args);                                                                                              <* 
+ *>    return 0;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
 
-char         /*-> set up program urgents/debugging ---[ light  [uz.210.001.01]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-PROG__unit_end       (void)
-{
-   PROG_shutdown  ();
-   return 0;
-}
+/*> char         /+-> set up program urgents/debugging ---[ light  [uz.210.001.01]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> PROG__unit_end       (void)                                                                                                    <* 
+ *> {                                                                                                                              <* 
+ *>    PROG_shutdown  ();                                                                                                          <* 
+ *>    return 0;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
 
 char*        /*-[ unit test accessor ]---------------------[us2---·A-7·6--·B21-]¬[----·T-B1H---·---·----]¬[---·------]*/
 prog__unit              (char *a_question, int i)

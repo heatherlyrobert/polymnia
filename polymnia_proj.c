@@ -551,26 +551,26 @@ poly_proj__get_home     (char *a_home)
    DEBUG_DATA   yLOG_snote   (x_home);
    x_len = strlen (x_home);
    DEBUG_DATA   yLOG_sint    (x_len);
-   yURG_msg ('-', "current working directory %2då%sæ", x_len, x_home);
+   /*> yURG_msg ('-', "current working directory %2då%sæ", x_len, x_home);            <*/
    /*---(check valid areas)--------------*/
    --rce; if (x_len > 16 && strncmp ("/home/system/"         , x_home, 13) == 0) {
-      yURG_msg ('-', "sub-directory of å/home/system/æ is allowed");
+      /*> yURG_msg ('-', "sub-directory of å/home/system/æ is allowed");              <*/
       DEBUG_DATA   yLOG_snote   ("system");
       ;;
    } else if (x_len > 16 && strncmp ("/home/monkey/"         , x_home, 13) == 0) {
-      yURG_msg ('-', "sub-directory of å/home/monkey/æ is allowed");
+      /*> yURG_msg ('-', "sub-directory of å/home/monkey/æ is allowed");              <*/
       DEBUG_DATA   yLOG_snote   ("monkey");
       ;;
    } else if (x_len > 25 && strncmp ("/home/member/p_gvskav/", x_home, 22) == 0) {
-      yURG_msg ('-', "sub-directory of å/home/member/p_gvskav/æ is allowed");
+      /*> yURG_msg ('-', "sub-directory of å/home/member/p_gvskav/æ is allowed");     <*/
       DEBUG_DATA   yLOG_snote   ("member");
       ;;
    } else if (x_len > 20 && strncmp ("/tmp/polymnia_test/"   , x_home, 19) == 0) {
-      yURG_msg ('-', "sub-directory of å/tmp/polymnia_test/æ is allowed");
+      /*> yURG_msg ('-', "sub-directory of å/tmp/polymnia_test/æ is allowed");        <*/
       DEBUG_DATA   yLOG_snote   ("unittest");
       ;;
    } else if (x_len >  8 && strncmp ("/tmp/"                 , x_home,  5) == 0) {
-      yURG_msg ('-', "sub-directory of å/tmp/æ is allowed");
+      /*> yURG_msg ('-', "sub-directory of å/tmp/æ is allowed");                      <*/
       DEBUG_DATA   yLOG_snote   ("unittest");
       ;;
    } else {
@@ -619,7 +619,7 @@ poly_proj__get_name     (cchar *a_home, char *a_name)
       return rce;
    }
    /*---(prepare)------------------------*/
-   yURG_msg ('-', "current project path %2då%sæ", strlen (a_home), a_home);
+   /*> yURG_msg ('-', "current project path %2då%sæ", strlen (a_home), a_home);       <*/
    ystrlcpy (x_home, a_home, LEN_HUND);
    if (x_home [x_len - 1] == '/') x_home [--x_len] = '\0';
    DEBUG_DATA   yLOG_snote   (x_home);
@@ -644,7 +644,7 @@ poly_proj__get_name     (cchar *a_home, char *a_name)
    DEBUG_DATA   yLOG_sint    (x_len);
    /*---(save back)----------------------*/
    ystrlcpy (a_name, p, x_len);
-   yURG_msg ('-', "current project name %2då%sæ", strlen (a_name), a_name);
+   /*> yURG_msg ('-', "current project name %2då%sæ", strlen (a_name), a_name);       <*/
    DEBUG_DATA   yLOG_snote   (a_name);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
@@ -678,7 +678,7 @@ poly_proj_identify       (char *a_name, char *a_home)
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   yURG_msg ('-', "current project name %2då%sæ", strlen (x_name), x_name);
+   /*> yURG_msg ('-', "current project name %2då%sæ", strlen (x_name), x_name);       <*/
    /*---(save results)-------------------*/
    ystrlcpy (a_name, x_name, LEN_TITLE);
    ystrlcpy (a_home, x_home, LEN_HUND);
