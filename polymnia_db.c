@@ -217,7 +217,7 @@ poly_db__write_ylib     (tFUNC *a_func)
    /*---(header)-------------------------*/
    DEBUG_OUTP   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   x_ylib = a_func->y_head;
+   x_ylib = a_func->c_yhead;
    DEBUG_OUTP   yLOG_point   ("x_ylib"     , x_ylib);
    /*---(walk projects)------------------*/
    while (x_ylib != NULL) {
@@ -243,12 +243,12 @@ poly_db__write_func     (tFILE *x_file)
    /*---(header)-------------------------*/
    DEBUG_OUTP   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   x_func = x_file->head;
+   x_func = x_file->i_chead;
    DEBUG_OUTP   yLOG_point   ("x_func"    , x_func);
    /*---(walk projects)------------------*/
    while (x_func != NULL) {
       /*---(write)-----------------------*/
-      DEBUG_OUTP   yLOG_info    ("tag"       , x_func->name);
+      DEBUG_OUTP   yLOG_info    ("tag"       , x_func->c_name);
       fwrite (x_func  , sizeof (tFUNC), 1, my.f_db);
       /*---(dive)------------------------*/
       rc = poly_db__write_ylib (x_func);
@@ -257,7 +257,7 @@ poly_db__write_func     (tFILE *x_file)
          return rc;
       }
       /*---(next)------------------------*/
-      x_func = x_func->next;
+      x_func = x_func->c_next;
       DEBUG_OUTP   yLOG_point   ("x_func"    , x_func);
    }
    /*---(complete)-----------------------*/
@@ -275,13 +275,13 @@ poly_db__write_file     (tPROJ *x_proj)
    /*---(header)-------------------------*/
    DEBUG_OUTP   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   DEBUG_OUTP   yLOG_value   ("count"     , x_proj->count);
-   x_file = x_proj->head;
+   DEBUG_OUTP   yLOG_value   ("count"     , x_proj->j_icount);
+   x_file = x_proj->j_ihead;
    DEBUG_OUTP   yLOG_point   ("x_file"    , x_file);
    /*---(walk projects)------------------*/
    while (rc >= 0 && x_file != NULL) {
       /*---(write)-----------------------*/
-      DEBUG_OUTP   yLOG_info    ("file"      , x_file->name);
+      DEBUG_OUTP   yLOG_info    ("file"      , x_file->i_name);
       fwrite (x_file  , sizeof (tFILE), 1, my.f_db);
       /*---(dive)------------------------*/
       rc = poly_db__write_func (x_file);
@@ -290,7 +290,7 @@ poly_db__write_file     (tPROJ *x_proj)
          return rc;
       }
       /*---(next)------------------------*/
-      x_file = x_file->next;
+      x_file = x_file->i_next;
       DEBUG_OUTP   yLOG_point   ("x_file"    , x_file);
    }
    /*---(complete)-----------------------*/
@@ -322,7 +322,7 @@ poly_db_write         (void)
    /*---(walk projects)------------------*/
    while (x_proj != NULL) {
       /*---(write)-----------------------*/
-      DEBUG_OUTP   yLOG_info    ("project"   , x_proj->name);
+      DEBUG_OUTP   yLOG_info    ("project"   , x_proj->j_name);
       fwrite (x_proj  , sizeof (tPROJ), 1, my.f_db);
       /*---(dive)------------------------*/
       rc = poly_db__write_file (x_proj);
@@ -438,16 +438,16 @@ poly_db__read_func      (tFILE *a_file, int n)
       }
       /*---(read)---------------------------*/
       fread  (x_func, sizeof (tFUNC), 1, my.f_db);
-      DEBUG_INPT   yLOG_info    ("func"      , x_func->name);
+      DEBUG_INPT   yLOG_info    ("func"      , x_func->c_name);
       /*---(clear the pointers)-------------*/
-      x_nylib         = x_func->y_count;
-      x_func->file    = NULL;
-      x_func->next    = x_func->prev    = NULL;
-      x_func->y_head  = x_func->y_tail  = NULL;
-      x_func->y_count = 0;
+      x_nylib         = x_func->c_ycount;
+      x_func->c_file    = NULL;
+      x_func->c_next    = x_func->c_prev    = NULL;
+      x_func->c_yhead  = x_func->c_ytail  = NULL;
+      x_func->c_ycount = 0;
       x_func->COUNT_PROJS = x_func->COUNT_FILES = x_func->COUNT_FUNCS = x_func->COUNT_YLIBS = 0;
-      x_func->work    = NULL;
-      x_func->btree   = NULL;
+      x_func->c_work    = NULL;
+      x_func->c_btree   = NULL;
       /*---(add to project)-----------------*/
       rc = poly_func_hook (a_file, x_func);
       DEBUG_INPT   yLOG_value   ("hook"      , rc);
@@ -456,7 +456,7 @@ poly_db__read_func      (tFILE *a_file, int n)
          return rce;
       }
       /*---(into btree)---------------------*/
-      rc = ySORT_hook (B_FUNCS, x_func, x_func->name, &x_func->btree);
+      rc = ySORT_hook (B_FUNCS, x_func, x_func->c_name, &x_func->c_btree);
       DEBUG_INPT   yLOG_value   ("btree"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -499,15 +499,15 @@ poly_db__read_file      (tPROJ *a_proj, int n)
       }
       /*---(read)---------------------------*/
       fread  (x_file, sizeof (tFILE), 1, my.f_db);
-      DEBUG_INPT   yLOG_info    ("file"      , x_file->name);
+      DEBUG_INPT   yLOG_info    ("file"      , x_file->i_name);
       /*---(clear the pointers)-------------*/
       DEBUG_INPT   yLOG_note    ("overwrite with some defaults");
-      x_nfunc       = x_file->count;
-      x_file->proj  = NULL;
-      x_file->head  = x_file->tail  = NULL;
-      x_file->next  = x_file->prev  = NULL;
-      x_file->count = x_file->COUNT_PROJS = x_file->COUNT_FILES = x_file->COUNT_FUNCS = x_file->COUNT_YLIBS = 0;
-      x_file->btree = NULL;
+      x_nfunc       = x_file->i_ccount;
+      x_file->i_proj  = NULL;
+      x_file->i_chead  = x_file->i_ctail  = NULL;
+      x_file->i_next  = x_file->i_prev  = NULL;
+      x_file->i_ccount = x_file->COUNT_PROJS = x_file->COUNT_FILES = x_file->COUNT_FUNCS = x_file->COUNT_YLIBS = 0;
+      x_file->i_btree = NULL;
       /*---(add to project)-----------------*/
       DEBUG_INPT   yLOG_note    ("prepare for hook");
       rc = poly_file_hook (a_proj, x_file);
@@ -517,7 +517,7 @@ poly_db__read_file      (tPROJ *a_proj, int n)
          return rce;
       }
       /*---(into btree)---------------------*/
-      rc = ySORT_hook (B_FILES, x_file, x_file->name, &x_file->btree);
+      rc = ySORT_hook (B_FILES, x_file, x_file->i_name, &x_file->i_btree);
       DEBUG_INPT   yLOG_value   ("btree"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -653,14 +653,14 @@ poly_db_read          (void)
       }
       /*---(read)---------------------------*/
       fread  (x_proj, sizeof (tPROJ), 1, my.f_db);
-      DEBUG_INPT   yLOG_info    ("project"   , x_proj->name);
+      DEBUG_INPT   yLOG_info    ("project"   , x_proj->j_name);
       /*---(clear the pointers)-------------*/
-      x_nfile = x_proj->count;
-      x_proj->head  = x_proj->tail  = NULL;
-      x_proj->count = x_proj->COUNT_PROJS = x_proj->COUNT_FILES = x_proj->COUNT_FUNCS = x_proj->COUNT_YLIBS = 0;
-      x_proj->btree = NULL;
+      x_nfile = x_proj->j_icount;
+      x_proj->j_ihead  = x_proj->j_itail  = NULL;
+      x_proj->j_icount = x_proj->COUNT_PROJS = x_proj->COUNT_FILES = x_proj->COUNT_FUNCS = x_proj->COUNT_YLIBS = 0;
+      x_proj->j_btree = NULL;
       /*---(into btree)---------------------*/
-      rc = ySORT_hook (B_PROJ, x_proj, x_proj->name, &x_proj->btree);
+      rc = ySORT_hook (B_PROJ, x_proj, x_proj->j_name, &x_proj->j_btree);
       DEBUG_INPT   yLOG_value   ("btree"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);

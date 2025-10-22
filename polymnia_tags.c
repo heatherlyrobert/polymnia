@@ -54,14 +54,14 @@ poly_tags__handler      (tFILE *a_file, char *a_recd)
    /*---(handle locals)------------------*/
    --rce;  if (strcmp ("local", p) == 0) {
       DEBUG_INPT   yLOG_note    ("found a local");
-      if (a_file->tail == NULL) {
+      if (a_file->i_ctail == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      DEBUG_INPT   yLOG_info    ("local for" , a_file->tail->name);
-      ++(a_file->tail->WORK_LVARS );
+      DEBUG_INPT   yLOG_info    ("local for" , a_file->i_ctail->c_name);
+      ++(a_file->i_ctail->WORK_LVARS );
       sprintf (t, " %s ", x_name);
-      ystrlcat (a_file->tail->WORK_LOCALS, t, LEN_RECD);
+      ystrlcat (a_file->i_ctail->WORK_LOCALS, t, LEN_RECD);
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
@@ -129,7 +129,7 @@ poly_tags_inventory     (tFILE *a_file)
       return  rce;
    }
    /*---(prepare)------------------------*/
-   rc = poly_shared_open ('t', a_file->name);
+   rc = poly_shared_open ('t', a_file->i_name);
    DEBUG_INPT   yLOG_value   ("create"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -154,14 +154,14 @@ poly_tags_inventory     (tFILE *a_file)
       /*---(handle locals)------------------*/
       if (x_type == 'l') {
          DEBUG_INPT   yLOG_note    ("found a file/static variable");
-         if (a_file->tail == NULL) {
+         if (a_file->i_ctail == NULL) {
             DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
-         DEBUG_INPT   yLOG_info    ("local for" , a_file->tail->name);
-         ++(a_file->tail->WORK_LVARS );
+         DEBUG_INPT   yLOG_info    ("local for" , a_file->i_ctail->c_name);
+         ++(a_file->i_ctail->WORK_LVARS );
          sprintf (t, " %s ", x_name);
-         ystrlcat (a_file->tail->WORK_LOCALS, t, LEN_RECD);
+         ystrlcat (a_file->i_ctail->WORK_LOCALS, t, LEN_RECD);
       }
       /*---(handle prototype)---------------*/
       else if (x_type == 'p') {
@@ -220,15 +220,15 @@ poly_tags__unit      (char *a_question, int i)
    if (strcmp (a_question, "entry"     )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
-         if (u->work != NULL)  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->line, u->type, u->WORK_BEG, u->WORK_END);
-         else                  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  %c  non      -    -", i, t, u->line, u->type);
-      } else                   snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s   -  -  -        -    -", i, t);
+         sprintf  (t, "[%.20s]", u->c_name);
+         if (u->c_work != NULL)  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->c_line, u->c_type, u->WORK_BEG, u->WORK_END);
+         else                    snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  %c  non      -    -", i, t, u->c_line, u->c_type);
+      } else                     snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s   -  -  -        -    -" , i, t);
    }
    else if (strcmp (a_question, "stats"     )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
+         sprintf  (t, "[%.20s]", u->c_name);
          snprintf (unit_answer, LEN_RECD, "TAGS stats  (%2d) : %-22.22s     ·   ·   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
       }  else
          snprintf (unit_answer, LEN_RECD, "TAGS stats  (%2d) : %-22.22s     ·   ·     -   -   -   -   -   -", i, t, 0, 0, 0, 0, 0, 0);

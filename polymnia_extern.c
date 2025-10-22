@@ -752,7 +752,7 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_info    ("file name" , x_file->name);
+   DEBUG_INPT   yLOG_info    ("file name" , x_file->i_name);
    /*---(get source tag)--------------*/
    rc = poly_func_by_line (x_file, a_line, r_src);
    DEBUG_INPT   yLOG_point   ("*a_scr"    , *r_src);
@@ -761,23 +761,23 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_info    ("->name"    , (*r_src)->name);
-   DEBUG_INPT   yLOG_info    ("->file"    , (*r_src)->file->name);
-   DEBUG_INPT   yLOG_info    ("->proj"    , (*r_src)->file->proj->name);
-   x_len = strlen ((*r_src)->file->proj->name);
-   if ((*r_src)->file->proj->name [0] == 'y') {
-      if (strchr (YSTR_UPPER, (*r_src)->file->proj->name [1]) != NULL) {
+   DEBUG_INPT   yLOG_info    ("->name"    , (*r_src)->c_name);
+   DEBUG_INPT   yLOG_info    ("->file"    , (*r_src)->c_file->i_name);
+   DEBUG_INPT   yLOG_info    ("->proj"    , (*r_src)->c_file->i_proj->j_name);
+   x_len = strlen ((*r_src)->c_file->i_proj->j_name);
+   if ((*r_src)->c_file->i_proj->j_name [0] == 'y') {
+      if (strchr (YSTR_UPPER, (*r_src)->c_file->i_proj->j_name [1]) != NULL) {
          DEBUG_INPT   yLOG_note    ("found a heatherly library reference");
-         ystrlcpy (x_proj, (*r_src)->file->proj->name, LEN_TITLE);
+         ystrlcpy (x_proj, (*r_src)->c_file->i_proj->j_name, LEN_TITLE);
       }
    }
    /*---(get destination tag)---------*/
    poly_func_by_name (a_func, r_dst);
    DEBUG_INPT   yLOG_point   ("*r_dst"    , *r_dst);
    if (*r_dst != NULL) {
-      DEBUG_INPT   yLOG_info    ("->name"    , (*r_dst)->name);
-      DEBUG_INPT   yLOG_info    ("->file"    , (*r_dst)->file->name);
-      DEBUG_INPT   yLOG_info    ("->proj"    , (*r_dst)->file->proj->name);
+      DEBUG_INPT   yLOG_info    ("->name"    , (*r_dst)->c_name);
+      DEBUG_INPT   yLOG_info    ("->file"    , (*r_dst)->c_file->i_name);
+      DEBUG_INPT   yLOG_info    ("->proj"    , (*r_dst)->c_file->i_proj->j_name);
    }
    /*---(get external tag)------------*/
    poly_extern_by_name (a_func, r_ext);
@@ -1078,8 +1078,8 @@ poly_extern__tally      (tFUNC *a_src, tFUNC *a_dst, tEXTERN *a_ext, int a_line)
    /*---(intra-project)------------------*/
    if (a_dst != NULL) {
       x_recurse = (a_src == a_dst);
-      x_local   = (a_src->file == a_dst->file);
-      x_global  = (a_src->file->proj == a_dst->file->proj);
+      x_local   = (a_src->c_file == a_dst->c_file);
+      x_global  = (a_src->c_file->i_proj == a_dst->c_file->i_proj);
       rc = poly_extern__scope  (x_recurse, x_local, x_global, &(a_src->WORK_FUNCS), &(a_src->WORK_RECURS), &(a_dst->WORK_ACALLS), &(a_src->WORK_LFUNCS), &(a_dst->WORK_LCALLS), &(a_src->WORK_GFUNCS), &(a_dst->WORK_GCALLS));
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return rc;
@@ -1236,7 +1236,7 @@ poly_extern__unit       (char *a_question, int i)
    else if   (strcmp (a_question, "work"      )     == 0) {
       poly_func_by_index (i, &v);
       if (v != NULL) {
-         sprintf  (s, "[%.13s]", v->name);
+         sprintf  (s, "[%.13s]", v->c_name);
          sprintf  (unit_answer, "EXTERN work (%2d) : %-15.15s", i, s);
          poly_extern__unit_work ('y', 'e', v->WORK_ECALLS, unit_answer);
          poly_extern__unit_work ('-', 'g', v->WORK_GCALLS, unit_answer);

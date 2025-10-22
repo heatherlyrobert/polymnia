@@ -18,19 +18,19 @@ poly_file__wipe    (tFILE *a_dst)
    if (a_dst == NULL)  return -1;
    DEBUG_DATA   yLOG_snote   ("wipe");
    /*---(master)------------*/
-   a_dst->type     = '-';
-   a_dst->name [0] = '\0';
-   a_dst->sort [0] = '\0';
+   a_dst->i_type     = '-';
+   a_dst->i_name [0] = '\0';
+   a_dst->i_sort [0] = '\0';
    /*---(stats)-------------*/
    poly_cats_counts_clear (a_dst->counts);
    /*---(tags)--------------*/
-   a_dst->proj     = NULL;
-   a_dst->prev     = NULL;
-   a_dst->next     = NULL;
-   a_dst->head     = NULL;
-   a_dst->tail     = NULL;
-   a_dst->count    = 0;
-   a_dst->btree    = NULL;
+   a_dst->i_proj     = NULL;
+   a_dst->i_prev     = NULL;
+   a_dst->i_next     = NULL;
+   a_dst->i_chead    = NULL;
+   a_dst->i_ctail    = NULL;
+   a_dst->i_ccount   = 0;
+   a_dst->i_btree    = NULL;
    /*---(tags)--------------*/
    return 1;
 }
@@ -40,22 +40,22 @@ poly_file__unit_memory  (tFILE *a_file)
 {
    /*---(master)-------------------------*/
    ystrlcpy (s_print, "["  , LEN_RECD);
-   poly_shared__check_char (s_print, a_file->type);
-   poly_shared__check_str  (s_print, a_file->name);
-   poly_shared__check_str  (s_print, a_file->sort);
+   poly_shared__check_char (s_print, a_file->i_type);
+   poly_shared__check_str  (s_print, a_file->i_name);
+   poly_shared__check_str  (s_print, a_file->i_sort);
    poly_shared__spacer     (s_print);
    /*---(project/file)-------------------*/
-   poly_shared__check_ptr  (s_print, a_file->proj);
-   poly_shared__check_ptr  (s_print, a_file->prev);
-   poly_shared__check_ptr  (s_print, a_file->next);
+   poly_shared__check_ptr  (s_print, a_file->i_proj);
+   poly_shared__check_ptr  (s_print, a_file->i_prev);
+   poly_shared__check_ptr  (s_print, a_file->i_next);
    poly_shared__spacer     (s_print);
    /*---(functions)----------------------*/
-   poly_shared__check_ptr  (s_print, a_file->head);
-   poly_shared__check_ptr  (s_print, a_file->tail);
-   poly_shared__check_num  (s_print, a_file->count);
+   poly_shared__check_ptr  (s_print, a_file->i_chead);
+   poly_shared__check_ptr  (s_print, a_file->i_ctail);
+   poly_shared__check_num  (s_print, a_file->i_ccount);
    poly_shared__spacer     (s_print);
    /*---(btree)--------------------------*/
-   poly_shared__check_ptr  (s_print, a_file->btree);
+   poly_shared__check_ptr  (s_print, a_file->i_btree);
    ystrlcat (s_print, "]" , LEN_RECD);
    /*---(complete)-----------------------*/
    return s_print;
@@ -97,32 +97,32 @@ poly_file_hook          (tPROJ *a_proj, tFILE *a_file)
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_point   ("->proj"    , a_file->proj);
-   --rce;  if (a_file->proj != NULL) {
+   DEBUG_DATA   yLOG_point   ("->proj"    , a_file->i_proj);
+   --rce;  if (a_file->i_proj != NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_note    (a_file->name);
+   DEBUG_DATA   yLOG_note    (a_file->i_name);
    /*---(into linked list)---------------*/
-   DEBUG_DATA   yLOG_value   ("count"     , a_proj->count);
-   DEBUG_DATA   yLOG_point   ("->head"    , a_proj->head);
-   DEBUG_DATA   yLOG_point   ("->tail"    , a_proj->tail);
-   if (a_proj->head == NULL) {
+   DEBUG_DATA   yLOG_value   ("count"     , a_proj->j_icount);
+   DEBUG_DATA   yLOG_point   ("->head"    , a_proj->j_ihead);
+   DEBUG_DATA   yLOG_point   ("->tail"    , a_proj->j_itail);
+   if (a_proj->j_ihead == NULL) {
       DEBUG_DATA   yLOG_note    ("first");
-      a_proj->head = a_proj->tail = a_file;
+      a_proj->j_ihead = a_proj->j_itail = a_file;
    } else {
       DEBUG_DATA   yLOG_note    ("append");
-      a_file->prev        = a_proj->tail;
-      a_proj->tail->next  = a_file;
-      a_proj->tail        = a_file;
+      a_file->i_prev        = a_proj->j_itail;
+      a_proj->j_itail->i_next  = a_file;
+      a_proj->j_itail        = a_file;
    }
    /*---(tie file back to proj)----------*/
-   a_file->proj  = a_proj;
+   a_file->i_proj  = a_proj;
    /*---(update count)-------------------*/
-   ++a_proj->count;
+   ++a_proj->j_icount;
    ++a_proj->COUNT_FILES;
    ++my.COUNT_FILES;
-   DEBUG_DATA   yLOG_value   ("count"     , a_proj->count);
+   DEBUG_DATA   yLOG_value   ("count"     , a_proj->j_icount);
    /*---(complete)------------------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -139,30 +139,30 @@ poly_file__unhook       (tFILE *a_file)
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -1);
       return -1;
    }
-   DEBUG_DATA   yLOG_spoint  (a_file->proj);
-   if (a_file->proj == NULL) {
+   DEBUG_DATA   yLOG_spoint  (a_file->i_proj);
+   if (a_file->i_proj == NULL) {
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, -2);
       return -2;
    }
-   DEBUG_DATA   yLOG_snote   (a_file->name);
+   DEBUG_DATA   yLOG_snote   (a_file->i_name);
    /*---(out of linked list)-------------*/
-   DEBUG_DATA   yLOG_sint    (a_file->proj->count);
-   DEBUG_DATA   yLOG_spoint  (a_file->proj->head);
-   DEBUG_DATA   yLOG_spoint  (a_file->proj->tail);
+   DEBUG_DATA   yLOG_sint    (a_file->i_proj->j_icount);
+   DEBUG_DATA   yLOG_spoint  (a_file->i_proj->j_ihead);
+   DEBUG_DATA   yLOG_spoint  (a_file->i_proj->j_itail);
    DEBUG_DATA   yLOG_snote   ("unlink");
-   if (a_file->next != NULL)  a_file->next->prev = a_file->prev;
-   else                       a_file->proj->tail = a_file->prev;
-   if (a_file->prev != NULL)  a_file->prev->next = a_file->next;
-   else                       a_file->proj->head = a_file->next;
+   if (a_file->i_next != NULL)  a_file->i_next->i_prev = a_file->i_prev;
+   else                       a_file->i_proj->j_itail = a_file->i_prev;
+   if (a_file->i_prev != NULL)  a_file->i_prev->i_next = a_file->i_next;
+   else                       a_file->i_proj->j_ihead = a_file->i_next;
    /*---(update count)-------------------*/
-   --(a_file->proj->count);
-   --(a_file->proj->COUNT_FILES);
+   --(a_file->i_proj->j_icount);
+   --(a_file->i_proj->COUNT_FILES);
    --(my.COUNT_FILES);
-   DEBUG_DATA   yLOG_sint    (a_file->proj->count);
+   DEBUG_DATA   yLOG_sint    (a_file->i_proj->j_icount);
    /*---(ground pointers)----------------*/
-   a_file->proj = NULL;
-   a_file->prev = NULL;
-   a_file->next = NULL;
+   a_file->i_proj = NULL;
+   a_file->i_prev = NULL;
+   a_file->i_next = NULL;
    /*---(complete)------------------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -219,58 +219,58 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   ystrlcpy (x_new->name, a_name, LEN_TITLE);
-   x_new->type   = a_type;
+   ystrlcpy (x_new->i_name, a_name, LEN_TITLE);
+   x_new->i_type   = a_type;
    /*---(standard names to front)--------*/
-   if (strncmp (a_name, a_proj->name, strlen (a_proj->name)) == 0) {
+   if (strncmp (a_name, a_proj->j_name, strlen (a_proj->j_name)) == 0) {
       DEBUG_DATA   yLOG_note    ("matches project prefix");
       x_prefix = 'Y';
    }
    /*---(headers to front)---------------*/
-   if (x_new->type == 'h') {
+   if (x_new->i_type == 'h') {
       DEBUG_DATA   yLOG_note    ("header type");
       x_type = 'H';
    }
    /*---(units come last)----------------*/
-   if (strstr (x_new->name, ".unit")       != NULL) {
+   if (strstr (x_new->i_name, ".unit")       != NULL) {
       DEBUG_DATA   yLOG_note    ("unit test file");
       x_prefix = 'Z';
    }
    /*---(master to top of units)---------*/
-   if (strcmp (x_new->name, "master.unit") == 0) {
+   if (strcmp (x_new->i_name, "master.unit") == 0) {
       DEBUG_DATA   yLOG_note    ("master unit test file");
       x_type   = 'H';
    }
    /*---(into temp btree)----------------*/
-   sprintf (x_new->sort, "%c%c%s", x_prefix, x_type, x_new->name);
-   DEBUG_DATA   yLOG_info    ("sort"      , x_new->sort);
+   sprintf (x_new->i_sort, "%c%c%s", x_prefix, x_type, x_new->i_name);
+   DEBUG_DATA   yLOG_info    ("sort"      , x_new->i_sort);
    rc = poly_file_hook (a_proj, x_new);
    DEBUG_DATA   yLOG_value   ("addfile"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> rc = ySORT_hook (B_TEMP , x_new, x_new->sort, &x_new->btree);                  <* 
+   /*> rc = ySORT_hook (B_TEMP , x_new, x_new->i_sort, &x_new->btree);                  <* 
     *> DEBUG_DATA   yLOG_value   ("temp"      , rc);                                  <* 
     *> --rce;  if (rc < 0) {                                                          <* 
     *>    DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                              <* 
     *>    return rce;                                                                 <* 
     *> }                                                                              <*/
    /*---(into btree)---------------------*/
-   rc = ySORT_hook (B_FILES, x_new, x_new->name, &x_new->btree);
+   rc = ySORT_hook (B_FILES, x_new, x_new->i_name, &x_new->i_btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(create hint)--------------------*/
-   /*> rc = ystrlhint (ySORT_count (B_FUNCS) - 1 + ySORT_count (B_FILES) - 1, "uA", x_new->hint);   <* 
+   /*> rc = ystrlhint (ySORT_count (B_FUNCS) - 1 + ySORT_count (B_FILES) - 1, "uA", x_new->c_hint);   <* 
     *> DEBUG_DATA   yLOG_value   ("hint"      , rc);                                                         <* 
     *> --rce;  if (rc < 0) {                                                                                 <* 
     *>    DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                                     <* 
     *>    return rce;                                                                                        <* 
     *> }                                                                                                     <* 
-    *> DEBUG_DATA   yLOG_info    ("hint"      , x_new->hint);                                                <*/
+    *> DEBUG_DATA   yLOG_info    ("hint"      , x_new->c_hint);                                                <*/
    /*---(save)---------------------------*/
    if (a_file != NULL) {
       *a_file = x_new;
@@ -301,14 +301,14 @@ poly_file_remove        (tFILE **a_file)
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_info    ("->name"    , x_file->name);
+   DEBUG_DATA   yLOG_info    ("->i_name"    , x_file->i_name);
    /*---(remove line counts first)-------*/
-   x_file->proj->COUNT_LINES -= x_file->COUNT_LINES;
-   x_file->proj->COUNT_EMPTY -= x_file->COUNT_EMPTY;
-   x_file->proj->COUNT_DOCS  -= x_file->COUNT_DOCS ;
-   x_file->proj->COUNT_DEBUG -= x_file->COUNT_DEBUG;
-   x_file->proj->COUNT_CODE  -= x_file->COUNT_CODE ;
-   x_file->proj->COUNT_SLOCL -= x_file->COUNT_SLOCL;
+   x_file->i_proj->COUNT_LINES -= x_file->COUNT_LINES;
+   x_file->i_proj->COUNT_EMPTY -= x_file->COUNT_EMPTY;
+   x_file->i_proj->COUNT_DOCS  -= x_file->COUNT_DOCS ;
+   x_file->i_proj->COUNT_DEBUG -= x_file->COUNT_DEBUG;
+   x_file->i_proj->COUNT_CODE  -= x_file->COUNT_CODE ;
+   x_file->i_proj->COUNT_SLOCL -= x_file->COUNT_SLOCL;
    my.COUNT_LINES            -= x_file->COUNT_LINES;
    my.COUNT_EMPTY            -= x_file->COUNT_EMPTY;
    my.COUNT_DOCS             -= x_file->COUNT_DOCS ;
@@ -316,8 +316,8 @@ poly_file_remove        (tFILE **a_file)
    my.COUNT_CODE             -= x_file->COUNT_CODE ;
    my.COUNT_SLOCL            -= x_file->COUNT_SLOCL;
    /*---(purge assigned tags)------------*/
-   DEBUG_DATA   yLOG_point   ("->proj"    , x_file->proj);
-   if (x_file->proj != NULL) {
+   DEBUG_DATA   yLOG_point   ("->proj"    , x_file->i_proj);
+   if (x_file->i_proj != NULL) {
       rc = poly_func_purge (x_file, '-');
       DEBUG_DATA   yLOG_value   ("purge"     , rc);
       --rce;  if (rc < 0) {
@@ -326,8 +326,8 @@ poly_file_remove        (tFILE **a_file)
       }
    }
    /*---(out of linked list)-------------*/
-   DEBUG_DATA   yLOG_point   ("->proj"    , x_file->proj);
-   if (x_file->proj != NULL) {
+   DEBUG_DATA   yLOG_point   ("->proj"    , x_file->i_proj);
+   if (x_file->i_proj != NULL) {
       rc = poly_file__unhook (x_file);
       DEBUG_DATA   yLOG_value   ("unhook"    , rc);
       --rce;  if (rc < 0) {
@@ -336,7 +336,7 @@ poly_file_remove        (tFILE **a_file)
       }
    }
    /*---(unhook from btree)--------------*/
-   rc = ySORT_unhook (&x_file->btree);
+   rc = ySORT_unhook (&x_file->i_btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -402,18 +402,18 @@ poly_file_purge         (tPROJ *a_proj, char a_update)
       return rce;
    }
    /*---(walk-through)-------------------*/
-   DEBUG_DATA   yLOG_value   ("->count"   , a_proj->count);
-   x_file = a_proj->head;
+   DEBUG_DATA   yLOG_value   ("->count"   , a_proj->j_icount);
+   x_file = a_proj->j_ihead;
    while (x_file != NULL) {
-      x_next = x_file->next;
+      x_next = x_file->i_next;
       DEBUG_DATA   yLOG_point   ("x_file"    , x_file);
-      DEBUG_DATA   yLOG_info    ("->name"    , x_file->name);
+      DEBUG_DATA   yLOG_info    ("->i_name"    , x_file->i_name);
       rc = poly_file_remove  (&x_file);
       x_file = x_next;
    }
    /*---(check)--------------------------*/
-   DEBUG_DATA   yLOG_value   ("->count"   , a_proj->count);
-   --rce;  if (a_proj->count > 0) {
+   DEBUG_DATA   yLOG_value   ("->count"   , a_proj->j_icount);
+   --rce;  if (a_proj->j_icount > 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -489,17 +489,17 @@ poly_file__swap        (tFILE *a_one, tFILE *a_two)
    }
    /*---(cut two from list)--------------*/
    DEBUG_SORT   yLOG_snote   ("unlink");
-   if (a_two->next != NULL)   a_two->next->prev = a_two->prev;
-   else                       a_two->proj->tail = a_two->prev;
-   if (a_two->prev != NULL)   a_two->prev->next = a_two->next;
-   else                       a_two->proj->head = a_two->next;
+   if (a_two->i_next != NULL)   a_two->i_next->i_prev = a_two->i_prev;
+   else                       a_two->i_proj->j_itail = a_two->i_prev;
+   if (a_two->i_prev != NULL)   a_two->i_prev->i_next = a_two->i_next;
+   else                       a_two->i_proj->j_ihead = a_two->i_next;
    /*---(insert before one)--------------*/
    DEBUG_SORT   yLOG_snote   ("insert");
-   if (a_one->prev != NULL)   a_one->prev->next = a_two;
-   else                       a_one->proj->head = a_two;
-   a_two->prev = a_one->prev;
-   a_two->next = a_one;
-   a_one->prev = a_two;
+   if (a_one->i_prev != NULL)   a_one->i_prev->i_next = a_two;
+   else                       a_one->i_proj->j_ihead = a_two;
+   a_two->i_prev = a_one->i_prev;
+   a_two->i_next = a_one;
+   a_one->i_prev = a_two;
    /*---(complete)-----------------------*/
    DEBUG_SORT   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -516,27 +516,27 @@ poly_file__dgnome       (tPROJ *x_proj)
    /*---(header)-------------------------*/
    DEBUG_SORT   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   o = x_proj->head;
+   o = x_proj->j_ihead;
    /*---(do the gnome walk)--------------*/
    while (o != NULL) {
       /*---(beginning)-------------------*/
-      if (o == x_proj->head) {
+      if (o == x_proj->j_ihead) {
          DEBUG_SORT   yLOG_note    ("bounce off beginning");
-         o = o->next;
+         o = o->i_next;
          continue;
       }
       /*---(compare)---------------------*/
-      x_match = strcmp (o->prev->sort, o->sort);
+      x_match = strcmp (o->i_prev->i_sort, o->i_sort);
       x_flag  = (x_match <= 0) ? 'y' : '#';
-      DEBUG_SORT   yLOG_complex ("compare"   , "%-10p (%-30.30s) v %-10p (%-30.30s)   %c %4d", o->prev, o->prev->sort, o, o->sort, x_flag, x_match);
+      DEBUG_SORT   yLOG_complex ("compare"   , "%-10p (%-30.30s) v %-10p (%-30.30s)   %c %4d", o->i_prev, o->i_prev->i_sort, o, o->i_sort, x_flag, x_match);
       if (x_match <= 0) {
          DEBUG_SORT   yLOG_note    ("move forward");
-         o = o->next;
+         o = o->i_next;
          continue;
       }
       /*---(swap)------------------------*/
       DEBUG_SORT   yLOG_note    ("swap and move back");
-      poly_file__swap (o->prev, o);
+      poly_file__swap (o->i_prev, o);
       /*---(next)------------------------*/
    }
    /*---(complete)-----------------------*/
@@ -727,7 +727,7 @@ poly_file_inventory     (tPROJ *a_proj)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
-   DEBUG_INPT   yLOG_info    ("a_proj"     , a_proj->name);
+   DEBUG_INPT   yLOG_info    ("a_proj"     , a_proj->j_name);
    /*---(prepare temp)-------------------*/
    rc = ySORT_purge     (B_TEMP );
    DEBUG_SORT   yLOG_value   ("temp"       , rc);
@@ -754,7 +754,7 @@ poly_file_inventory     (tPROJ *a_proj)
       /*---(filter by name)--------------*/
       ystrlcpy (x_name, x_file->d_name, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
-      rc = poly_file__filter (x_name, my.g_unit, &x_type, a_proj->manual);
+      rc = poly_file__filter (x_name, my.g_unit, &x_type, a_proj->j_manual);
       DEBUG_INPT   yLOG_value   ("filter"    , rc);
       if (rc <= 0)   continue;
       /*---(save)------------------------*/
@@ -806,13 +806,13 @@ poly_file_by_proj_index (tPROJ *a_proj, int n, tFILE **r_file)
    --rce;  if (a_proj == NULL)   return rce;
    --rce;  if (r_file == NULL)   return rce;
    *r_file = NULL;
-   x_file = a_proj->head;
+   x_file = a_proj->j_ihead;
    while (x_file != NULL) {
       if (c == n) {
          *r_file = x_file;
          return 0;
       }
-      x_file = x_file->next;
+      x_file = x_file->i_next;
       ++c;
    }
    --rce;  return rce;
@@ -848,14 +848,14 @@ poly_file_footprint    (tFILE *a_file)
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_info    ("name"      , a_file->name);
-   DEBUG_INPT   yLOG_char    ("type"      , a_file->type);
-   --rce;  if (a_file->type != 'c') {
+   DEBUG_INPT   yLOG_info    ("name"      , a_file->i_name);
+   DEBUG_INPT   yLOG_char    ("type"      , a_file->i_type);
+   --rce;  if (a_file->i_type != 'c') {
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(prepare name)--------------------------*/
-   ystrlcpy (x_name, a_file->name, LEN_TITLE);
+   ystrlcpy (x_name, a_file->i_name, LEN_TITLE);
    x_len = strlen (x_name);
    x_name [--x_len] = 'o';
    x_name [++x_len] = 's';
@@ -903,19 +903,19 @@ poly_file_footprint    (tFILE *a_file)
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   a_file->proj->COUNT_TEXT += a_file->COUNT_TEXT = atoi (p);
+   a_file->i_proj->COUNT_TEXT += a_file->COUNT_TEXT = atoi (p);
    p = strtok_r (NULL  , " ", &r);
    --rce;  if (p == NULL) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   a_file->proj->COUNT_DATA += a_file->COUNT_DATA = atoi (p);
+   a_file->i_proj->COUNT_DATA += a_file->COUNT_DATA = atoi (p);
    p = strtok_r (NULL  , " ", &r);
    --rce;  if (p == NULL) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   a_file->proj->COUNT_BSS  += a_file->COUNT_BSS  = atoi (p);
+   a_file->i_proj->COUNT_BSS  += a_file->COUNT_BSS  = atoi (p);
    /*---(close)---------------------------------*/
    rc = fclose (f);
    DEBUG_INPT   yLOG_point   ("close"     , rc);
@@ -1002,7 +1002,7 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
    case 'h' :   sprintf (t, "---name---------------  ");    break;
    case 'p' :   sprintf (t, "Ï---------------------··");    break;
    case 't' :   sprintf (t, "name····················");    break;
-   case 'd' :   sprintf (t, "%-22.22s  ", a_file->name);    break;
+   case 'd' :   sprintf (t, "%-22.22s  ", a_file->i_name);    break;
    default  :   ystrlcpy (t, "", LEN_RECD);                  break;
    }
    ystrlcat (s_print, t, LEN_RECD);
@@ -1101,7 +1101,7 @@ poly_file__unit         (char *a_question, int i)
    if (strcmp (a_question, "stats"     )     == 0) {
       poly_file_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
+         sprintf  (t, "[%.20s]", u->i_name);
          snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : %-22.22s     · %3d %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
       } else {
          snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : []                         ·   -   -     -   -   -   -   -   -", i);
@@ -1110,14 +1110,14 @@ poly_file__unit         (char *a_question, int i)
    else if (strcmp (a_question, "funcs"     )     == 0) {
       poly_file_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
-         if (u->head != NULL) {
-            sprintf  (s, "[%.15s]", u->head->name);
-            sprintf  (r, "[%.15s]", u->tail->name);
-            v = u->head; while (v != NULL) { ++x_fore; v = v->next; }
-            v = u->tail; while (v != NULL) { ++x_back; v = v->prev; }
+         sprintf  (t, "[%.20s]", u->i_name);
+         if (u->i_chead != NULL) {
+            sprintf  (s, "[%.15s]", u->i_chead->c_name);
+            sprintf  (r, "[%.15s]", u->i_ctail->c_name);
+            v = u->i_chead; while (v != NULL) { ++x_fore; v = v->c_next; }
+            v = u->i_ctail; while (v != NULL) { ++x_back; v = v->c_prev; }
          }
-         snprintf (unit_answer, LEN_RECD, "FILE funcs  (%2d) : %-22.22s   %3dc %3df %3db   %-17.17s %s", i, t, u->count, x_fore, x_back, s, r);
+         snprintf (unit_answer, LEN_RECD, "FILE funcs  (%2d) : %-22.22s   %3dc %3df %3db   %-17.17s %s", i, t, u->i_ccount, x_fore, x_back, s, r);
       } else {
          snprintf (unit_answer, LEN_RECD, "FILE funcs  (%2d) : []                         -c   -f   -b   []                []", i);
       }
@@ -1125,7 +1125,7 @@ poly_file__unit         (char *a_question, int i)
    else if (strcmp (a_question, "footprint" )     == 0) {
       poly_file_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
+         sprintf  (t, "[%.20s]", u->i_name);
          snprintf (unit_answer, LEN_RECD, "FILE foot   (%2d) : %-22.22s   %7d text, %7d data, %7d bss", i, t, u->COUNT_TEXT, u->COUNT_DATA, u->COUNT_BSS);
       } else {
          snprintf (unit_answer, LEN_RECD, "FILE foot   (%2d) : []                             - text,       - data,       - bss", i);

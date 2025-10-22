@@ -72,15 +72,15 @@ static void  o___HOOKING_________o () { return; }
 #define    S_NAME      a_ylib->name
 #define    S_PARENT    a_func
 #define    S_OWNER     a_ylib->func
-#define    S_HEAD      a_ylib->func->y_head
-#define    S_TAIL      a_ylib->func->y_tail
-#define    S_TNEXT     a_ylib->func->y_tail->f_next
+#define    S_HEAD      a_ylib->func->c_yhead
+#define    S_TAIL      a_ylib->func->c_ytail
+#define    S_TNEXT     a_ylib->func->c_ytail->f_next
 #define    S_PREV      a_ylib->f_prev
 #define    S_PNEXT     (a_ylib->f_prev == NULL) ? NULL : a_ylib->f_prev->f_next
 #define    S_NEXT      a_ylib->f_next
 #define    S_NPREV     (a_ylib->f_next == NULL) ? NULL : a_ylib->f_next->f_prev
-#define    S_COUNT     &(a_ylib->func->y_count)
-#define    S_COUNTA    &(a_ylib->func->file->proj->COUNT_YLIBS)
+#define    S_COUNT     &(a_ylib->func->c_ycount)
+#define    S_COUNTA    &(a_ylib->func->file->i_proj->COUNT_YLIBS)
 #define    S_COUNTB    &(a_ylib->func->file->COUNT_YLIBS)
 #define    S_COUNTC    &(a_ylib->func->COUNT_YLIBS)
 
@@ -114,29 +114,29 @@ poly_ylib__fhook        (tFUNC *a_func, tYLIB *a_ylib)
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_snote   (a_func->name);
+   DEBUG_DATA   yLOG_snote   (a_func->c_name);
    /*---(into linked list)---------------*/
-   DEBUG_DATA   yLOG_sint    (a_func->y_count);
-   DEBUG_DATA   yLOG_spoint  (a_func->y_head);
-   DEBUG_DATA   yLOG_spoint  (a_func->y_tail);
-   if (a_func->y_head  == NULL) {
+   DEBUG_DATA   yLOG_sint    (a_func->c_ycount);
+   DEBUG_DATA   yLOG_spoint  (a_func->c_yhead);
+   DEBUG_DATA   yLOG_spoint  (a_func->c_ytail);
+   if (a_func->c_yhead  == NULL) {
       DEBUG_DATA   yLOG_snote   ("first");
-      a_func->y_head  = a_func->y_tail  = a_ylib;
+      a_func->c_yhead  = a_func->c_ytail  = a_ylib;
    } else {
       DEBUG_DATA   yLOG_snote   ("append");
-      a_ylib->f_prev         = a_func->y_tail;
-      a_func->y_tail->f_next = a_ylib;
-      a_func->y_tail         = a_ylib;
+      a_ylib->f_prev         = a_func->c_ytail;
+      a_func->c_ytail->f_next = a_ylib;
+      a_func->c_ytail         = a_ylib;
    }
    /*---(parent pointer)-----------------*/
    a_ylib->func  = a_func;
    /*---(function counts)----------------*/
-   ++(a_func->y_count);
-   DEBUG_DATA   yLOG_sint    (a_func->y_count);
+   ++(a_func->c_ycount);
+   DEBUG_DATA   yLOG_sint    (a_func->c_ycount);
    /*---(global counts)------------------*/
    ++(my.COUNT_YLIBS);
-   ++(a_func->file->proj->COUNT_YLIBS);
-   ++(a_func->file->COUNT_YLIBS);
+   ++(a_func->c_file->i_proj->COUNT_YLIBS);
+   ++(a_func->c_file->COUNT_YLIBS);
    ++(a_func->COUNT_YLIBS);
    /*---(complete)------------------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
@@ -164,22 +164,22 @@ poly_ylib__funhook      (tYLIB *a_ylib)
       return rce;
    }
    x_func = a_ylib->func;
-   DEBUG_DATA   yLOG_snote   (x_func->name);
+   DEBUG_DATA   yLOG_snote   (x_func->c_name);
    /*---(out of linked list)-------------*/
-   DEBUG_DATA   yLOG_sint    (x_func->y_count);
-   DEBUG_DATA   yLOG_spoint  (x_func->y_head);
-   DEBUG_DATA   yLOG_spoint  (x_func->y_tail);
+   DEBUG_DATA   yLOG_sint    (x_func->c_ycount);
+   DEBUG_DATA   yLOG_spoint  (x_func->c_yhead);
+   DEBUG_DATA   yLOG_spoint  (x_func->c_ytail);
    if (a_ylib->f_next != NULL)  a_ylib->f_next->f_prev = a_ylib->f_prev;
-   else                         x_func->y_tail         = a_ylib->f_prev;
+   else                         x_func->c_ytail         = a_ylib->f_prev;
    if (a_ylib->f_prev != NULL)  a_ylib->f_prev->f_next = a_ylib->f_next;
-   else                         x_func->y_head         = a_ylib->f_next;
+   else                         x_func->c_yhead        = a_ylib->f_next;
    /*---(function counts)----------------*/
-   --(x_func->y_count);
-   DEBUG_DATA   yLOG_sint    (x_func->y_count);
+   --(x_func->c_ycount);
+   DEBUG_DATA   yLOG_sint    (x_func->c_ycount);
    /*---(global counts)------------------*/
    --(my.COUNT_YLIBS);
-   --(x_func->file->proj->COUNT_YLIBS);
-   --(x_func->file->COUNT_YLIBS);
+   --(x_func->c_file->i_proj->COUNT_YLIBS);
+   --(x_func->c_file->COUNT_YLIBS);
    --(x_func->COUNT_YLIBS);
    /*---(ground function)----------------*/
    a_ylib->func = NULL;
@@ -311,7 +311,7 @@ poly_ylib_add           (tFUNC *a_func, tEXTERN *a_extern, int a_line, tYLIB **a
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_point   ("->name"   , a_func->name);
+   DEBUG_DATA   yLOG_point   ("->name"   , a_func->c_name);
    DEBUG_DATA   yLOG_point   ("a_extern" , a_extern);
    --rce;  if (a_extern == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -425,8 +425,8 @@ poly_ylib_purge         (tFUNC *a_func, char a_update)
       return rce;
    }
    /*---(walk-through)-------------------*/
-   DEBUG_DATA   yLOG_value   ("->count"   , a_func->y_count);
-   x_ylib = a_func->y_head;
+   DEBUG_DATA   yLOG_value   ("->count"   , a_func->c_ycount);
+   x_ylib = a_func->c_yhead;
    while (x_ylib != NULL) {
       x_next = x_ylib->f_next;
       DEBUG_DATA   yLOG_point   ("x_ylib"    , x_ylib);
@@ -435,8 +435,8 @@ poly_ylib_purge         (tFUNC *a_func, char a_update)
       x_ylib = x_next;
    }
    /*---(check)--------------------------*/
-   DEBUG_DATA   yLOG_value   ("->count"   , a_func->y_count);
-   --rce;  if (a_func->y_count > 0) {
+   DEBUG_DATA   yLOG_value   ("->count"   , a_func->c_ycount);
+   --rce;  if (a_func->c_ycount > 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -466,7 +466,7 @@ poly_ylib_by_func_index (tFUNC *a_func, int n, tYLIB **r_ylib)
    --rce;  if (a_func == NULL)   return rce;
    --rce;  if (r_ylib == NULL)   return rce;
    *r_ylib = NULL;
-   x_ylib = a_func->y_head;
+   x_ylib = a_func->c_yhead;
    while (x_ylib != NULL) {
       if (c == n) {
          *r_ylib = x_ylib;
@@ -529,13 +529,13 @@ poly_ylib__unit         (char *a_question, char *a_name)
       poly_func_by_name  (a_name, &x_func);
       if (x_func == NULL)  snprintf (unit_answer, LEN_RECD, "YLIB func        : function not found    -c   -f   -b   []                     []");
       else {
-         sprintf  (t, "[%.15s]", x_func->name);
-         if (x_func->y_head != NULL) {
-            sprintf  (s, "[%02d:%.15s]", x_func->y_head->line, x_func->y_head->name);
-            sprintf  (r, "[%02d:%.15s]", x_func->y_tail->line, x_func->y_tail->name);
-            c = x_func->y_count;
-            o = x_func->y_head; while (o != NULL) { ++x_fore; o = o->f_next; }
-            o = x_func->y_tail; while (o != NULL) { ++x_back; o = o->f_prev; }
+         sprintf  (t, "[%.15s]", x_func->c_name);
+         if (x_func->c_yhead != NULL) {
+            sprintf  (s, "[%02d:%.15s]", x_func->c_yhead->line, x_func->c_yhead->name);
+            sprintf  (r, "[%02d:%.15s]", x_func->c_ytail->line, x_func->c_ytail->name);
+            c = x_func->c_ycount;
+            o = x_func->c_yhead; while (o != NULL) { ++x_fore; o = o->f_next; }
+            o = x_func->c_ytail; while (o != NULL) { ++x_back; o = o->f_prev; }
          }
          snprintf (unit_answer, LEN_RECD, "YLIB func        : %-17.17s   %3dc %3df %3db   %-20.20s   %s",
                t, c, x_fore, x_back, s, r);
@@ -547,8 +547,8 @@ poly_ylib__unit         (char *a_question, char *a_name)
       else {
          sprintf  (t, "[%.15s]", x_ext->name);
          if (x_ext->y_head != NULL) {
-            sprintf  (s, "[%02d:%.15s]", x_ext->y_head->line, x_ext->y_head->func->name);
-            sprintf  (r, "[%02d:%.15s]", x_ext->y_tail->line, x_ext->y_tail->func->name);
+            sprintf  (s, "[%02d:%.15s]", x_ext->y_head->line, x_ext->y_head->func->c_name);
+            sprintf  (r, "[%02d:%.15s]", x_ext->y_tail->line, x_ext->y_tail->func->c_name);
             c = x_ext->y_count;
             o = x_ext->y_head; while (o != NULL) { ++x_fore; o = o->e_next; }
             o = x_ext->y_tail; while (o != NULL) { ++x_back; o = o->e_prev; }

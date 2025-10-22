@@ -173,25 +173,25 @@ poly_func__wipe         (tFUNC *c_func)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(master)-------------------------*/
-   c_func->type        = '-';
-   c_func->name [0]    = '\0';
-   c_func->line        = -1;
-   c_func->hint [0]    = '\0';
-   c_func->purpose [0] = '\0';
-   c_func->ready       = '?';
+   c_func->c_type        = '-';
+   c_func->c_name [0]    = '\0';
+   c_func->c_line        = -1;
+   c_func->c_hint [0]    = '\0';
+   c_func->c_purpose [0] = '\0';
+   c_func->c_ready       = '?';
    /*---(pointers)-----------------------*/
-   c_func->file        = NULL;
-   c_func->prev        = NULL;
-   c_func->next        = NULL;
-   c_func->work        = NULL;
-   c_func->y_head      = NULL;
-   c_func->y_tail      = NULL;
-   c_func->y_count     = 0;
+   c_func->c_file        = NULL;
+   c_func->c_prev        = NULL;
+   c_func->c_next        = NULL;
+   c_func->c_work        = NULL;
+   c_func->c_yhead       = NULL;
+   c_func->c_ytail       = NULL;
+   c_func->c_ycount      = 0;
    /*---(clear counts/stats)-------------*/
    poly_cats_counts_clear (c_func->counts);
    poly_cats_stats_clear  (c_func->stats);
-   c_func->anatomy [0] = '\0';
-   c_func->match   [0] = '\0';
+   c_func->c_anatomy [0] = '\0';
+   c_func->c_match   [0] = '\0';
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -202,21 +202,21 @@ poly_func__memory       (tFUNC *a_func)
 {
    /*---(master)-------------------------*/
    ystrlcpy (s_print, "["  , LEN_RECD);
-   poly_shared__check_char (s_print, a_func->type);
-   poly_shared__check_str  (s_print, a_func->name);
-   poly_shared__check_num  (s_print, a_func->line);
-   poly_shared__check_str  (s_print, a_func->hint);
-   poly_shared__check_str  (s_print, a_func->purpose);
-   poly_shared__check_char (s_print, a_func->ready);
+   poly_shared__check_char (s_print, a_func->c_type);
+   poly_shared__check_str  (s_print, a_func->c_name);
+   poly_shared__check_num  (s_print, a_func->c_line);
+   poly_shared__check_str  (s_print, a_func->c_hint);
+   poly_shared__check_str  (s_print, a_func->c_purpose);
+   poly_shared__check_char (s_print, a_func->c_ready);
    poly_shared__spacer     (s_print);
    /*---(func/ylib)----------------------*/
-   poly_shared__check_ptr  (s_print, a_func->file);
-   poly_shared__check_ptr  (s_print, a_func->prev);
-   poly_shared__check_ptr  (s_print, a_func->next);
-   poly_shared__check_ptr  (s_print, a_func->work);
-   poly_shared__check_ptr  (s_print, a_func->y_head);
-   poly_shared__check_ptr  (s_print, a_func->y_tail);
-   poly_shared__check_num  (s_print, a_func->y_count);
+   poly_shared__check_ptr  (s_print, a_func->c_file);
+   poly_shared__check_ptr  (s_print, a_func->c_prev);
+   poly_shared__check_ptr  (s_print, a_func->c_next);
+   poly_shared__check_ptr  (s_print, a_func->c_work);
+   poly_shared__check_ptr  (s_print, a_func->c_yhead);
+   poly_shared__check_ptr  (s_print, a_func->c_ytail);
+   poly_shared__check_num  (s_print, a_func->c_ycount);
    ystrlcat (s_print, "]" , LEN_RECD);
    /*---(complete)-----------------------*/
    return s_print;
@@ -294,28 +294,28 @@ poly_func_hook          (tFILE *a_file, tFUNC *a_func)
       return rce;
    }
    /*---(into linked list)---------------*/
-   DEBUG_DATA   yLOG_point   ("head"      , a_file->head);
-   DEBUG_DATA   yLOG_point   ("tail"      , a_file->tail);
-   if (a_file->head  == NULL) {
+   DEBUG_DATA   yLOG_point   ("head"      , a_file->i_chead);
+   DEBUG_DATA   yLOG_point   ("tail"      , a_file->i_ctail);
+   if (a_file->i_chead  == NULL) {
       DEBUG_DATA   yLOG_note    ("first");
-      a_file->head  = a_file->tail  = a_func;
+      a_file->i_chead  = a_file->i_ctail  = a_func;
    } else {
       DEBUG_DATA   yLOG_note    ("append");
-      a_func->prev        = a_file->tail;
-      a_file->tail->next  = a_func;
-      a_file->tail        = a_func;
+      a_func->c_prev           = a_file->i_ctail;
+      a_file->i_ctail->c_next  = a_func;
+      a_file->i_ctail          = a_func;
    }
    /*---(tie function back to file)------*/
    DEBUG_DATA   yLOG_note    ("set file");
-   a_func->file  = a_file;
+   a_func->c_file  = a_file;
    /*---(update count)-------------------*/
    DEBUG_DATA   yLOG_note    ("increment counts");
-   ++(a_file->count);
-   ++(a_file->proj->funcs);
-   DEBUG_DATA   yLOG_value   ("count"     , a_file->count);
-   if (strchr ("fsS", a_func->type) != NULL)  {
+   ++(a_file->i_ccount);
+   ++(a_file->i_proj->j_funcs);
+   DEBUG_DATA   yLOG_value   ("count"     , a_file->i_ccount);
+   if (strchr ("fsS", a_func->c_type) != NULL)  {
       ++(a_file->COUNT_FUNCS);
-      ++(a_file->proj->COUNT_FUNCS);
+      ++(a_file->i_proj->COUNT_FUNCS);
       ++(my.COUNT_FUNCS);
    }
    /*---(complete)------------------------------*/
@@ -335,26 +335,26 @@ poly_func_unhook        (tFUNC *a_func)
       return -1;
    }
    /*---(out of linked list)-------------*/
-   DEBUG_DATA   yLOG_spoint  (a_func->file->head);
-   DEBUG_DATA   yLOG_spoint  (a_func->file->tail);
+   DEBUG_DATA   yLOG_spoint  (a_func->c_file->i_chead);
+   DEBUG_DATA   yLOG_spoint  (a_func->c_file->i_ctail);
    DEBUG_DATA   yLOG_note    ("unlink");
-   if (a_func->next != NULL)   a_func->next->prev = a_func->prev;
-   else                       a_func->file->tail = a_func->prev;
-   if (a_func->prev != NULL)   a_func->prev->next = a_func->next;
-   else                       a_func->file->head = a_func->next;
+   if (a_func->c_next != NULL)   a_func->c_next->c_prev  = a_func->c_prev;
+   else                          a_func->c_file->i_ctail = a_func->c_prev;
+   if (a_func->c_prev != NULL)   a_func->c_prev->c_next  = a_func->c_next;
+   else                          a_func->c_file->i_chead = a_func->c_next;
    /*---(update count)-------------------*/
    DEBUG_DATA   yLOG_note    ("decrement counts");
-   --(a_func->file->count);
-   --(a_func->file->proj->funcs);
-   DEBUG_DATA   yLOG_sint    (a_func->file->count);
-   if (strchr ("fsS", a_func->type) != NULL)  {
-      --(a_func->file->COUNT_FUNCS);
-      --(a_func->file->proj->COUNT_FUNCS);
+   --(a_func->c_file->i_ccount);
+   --(a_func->c_file->i_proj->j_funcs);
+   DEBUG_DATA   yLOG_sint    (a_func->c_file->i_ccount);
+   if (strchr ("fsS", a_func->c_type) != NULL)  {
+      --(a_func->c_file->COUNT_FUNCS);
+      --(a_func->c_file->i_proj->COUNT_FUNCS);
       --(my.COUNT_FUNCS);
    }
    /*---(untie func from file)-----------*/
    DEBUG_DATA   yLOG_snote   ("unset file");
-   a_func->file  = NULL;
+   a_func->c_file  = NULL;
    /*---(complete)------------------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -418,17 +418,17 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
       return rce;
    }
    /*---(create working data)------------*/
-   rc = poly_work__new (&(x_new->work));
-   DEBUG_DATA   yLOG_point   ("->work"    , x_new->work);
-   --rce;  if (rc < 0 || x_new->work == NULL) {
+   rc = poly_work__new (&(x_new->c_work));
+   DEBUG_DATA   yLOG_point   ("->work"    , x_new->c_work);
+   --rce;  if (rc < 0 || x_new->c_work == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   ystrlcpy (x_new->name, a_name, LEN_TITLE);
-   x_new->type   = a_type;
-   x_new->line   = a_line;
+   ystrlcpy (x_new->c_name, a_name, LEN_TITLE);
+   x_new->c_type   = a_type;
+   x_new->c_line   = a_line;
    /*---(into file list)-----------------*/
    rc = poly_func_hook (a_file, x_new);
    DEBUG_DATA   yLOG_value   ("hook"      , rc);
@@ -437,7 +437,7 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
       return rce;
    }
    /*---(into btree)---------------------*/
-   rc = ySORT_hook (B_FUNCS, x_new, x_new->name, &x_new->btree);
+   rc = ySORT_hook (B_FUNCS, x_new, x_new->c_name, &x_new->c_btree);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -445,13 +445,13 @@ poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, t
    }
    /*---(create hint)--------------------*/
    /*> rc = poly_func__hint (ySORT_count (B_FUNCS) - 1, x_new->hint);            <*/
-   rc = ystrlhint (ySORT_count (B_FUNCS) - 1, "lA", x_new->hint);
+   rc = ystrlhint (ySORT_count (B_FUNCS) - 1, "lA", x_new->c_hint);
    DEBUG_DATA   yLOG_value   ("hint"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_info    ("hint"      , x_new->hint);
+   DEBUG_DATA   yLOG_info    ("hint"      , x_new->c_hint);
    /*---(save)---------------------------*/
    if (r_func != NULL)  *r_func = x_new;
    /*---(complete)-----------------------*/
@@ -477,7 +477,7 @@ poly_func_remove        (tFUNC **b_func)
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_note    ((*b_func)->name);
+   DEBUG_DATA   yLOG_note    ((*b_func)->c_name);
    /*---(purge ylib links)---------------*/
    rc = poly_ylib_purge  (*b_func, '-');
    DEBUG_DATA   yLOG_value   ("purge ylib", rc);
@@ -493,7 +493,7 @@ poly_func_remove        (tFUNC **b_func)
       return rce;
    }
    /*---(btree)--------------------------*/
-   rc = ySORT_unhook (&((*b_func)->btree));
+   rc = ySORT_unhook (&((*b_func)->c_btree));
    DEBUG_DATA   yLOG_value   ("un-btree"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -526,25 +526,25 @@ poly_func_enter         (tFUNC *a_func, int a_line)
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_note    (__FUNCTION__);
    /*---(defense)------------------------*/
-   --rce;  if (a_func       == NULL)             return rce;
-   --rce;  if (a_func->work == NULL)             return rce;
-   DEBUG_DATA   yLOG_note    (a_func->name);
+   --rce;  if (a_func       == NULL)               return rce;
+   --rce;  if (a_func->c_work == NULL)             return rce;
+   DEBUG_DATA   yLOG_note    (a_func->c_name);
    /*---(self)---------------------------*/
-   --rce;  if (a_func->WORK_BEG >  0)            return rce;
-   --rce;  if (a_func->WORK_END >  0)            return rce;
-   --rce;  if (a_func->line     >  a_line)       return rce;
+   --rce;  if (a_func->WORK_BEG >  0)              return rce;
+   --rce;  if (a_func->WORK_END >  0)              return rce;
+   --rce;  if (a_func->c_line     >  a_line)       return rce;
    /*---(sequence)-----------------------*/
-   --rce;  if (a_func->prev != NULL) {
-      if (a_func->prev->WORK_END < 0)            return rce;
-      if (a_func->prev->WORK_END >= a_line)      return rce;
+   --rce;  if (a_func->c_prev != NULL) {
+      if (a_func->c_prev->WORK_END < 0)            return rce;
+      if (a_func->c_prev->WORK_END >= a_line)      return rce;
    }
-   --rce;  if (a_func->next != NULL) {
-      if (a_func->next->WORK_BEG > 0)            return rce;
-      if (a_func->next->line     <= a_line)      return rce;
+   --rce;  if (a_func->c_next != NULL) {
+      if (a_func->c_next->WORK_BEG > 0)            return rce;
+      if (a_func->c_next->c_line     <= a_line)    return rce;
    }
    /*---(update)-------------------------*/
    a_func->WORK_BEG  = a_line;
-   a_func->beg       = a_line;
+   a_func->c_beg     = a_line;
    poly_vars_reset (a_func);
    /*---(complete)-----------------------*/
    /*> DEBUG_DATA   yLOG_sexit   (__FUNCTION__);                                      <*/
@@ -559,23 +559,23 @@ poly_func_exit          (tFUNC *c_func, int a_line)
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_note    (__FUNCTION__);
    /*---(defense)------------------------*/
-   --rce;  if (c_func       == NULL)             return rce;
-   --rce;  if (c_func->work == NULL)             return rce;
+   --rce;  if (c_func         == NULL)           return rce;
+   --rce;  if (c_func->c_work == NULL)           return rce;
    /*---(self)---------------------------*/
    --rce;  if (c_func->WORK_BEG < 0)             return rce;
    --rce;  if (c_func->WORK_END > 0)             return rce;
    --rce;  if (c_func->WORK_BEG >  a_line)       return rce;
    /*---(sequence)-----------------------*/
-   --rce;  if (c_func->prev != NULL) {
-      if (c_func->prev->WORK_END < 0)            return rce;
+   --rce;  if (c_func->c_prev != NULL) {
+      if (c_func->c_prev->WORK_END < 0)          return rce;
    }
-   --rce;  if (c_func->next != NULL) {
-      if (c_func->next->WORK_BEG > 0)            return rce;
-      if (c_func->next->line     <= a_line)      return rce;
+   --rce;  if (c_func->c_next != NULL) {
+      if (c_func->c_next->WORK_BEG > 0)          return rce;
+      if (c_func->c_next->c_line  <= a_line)     return rce;
    }
    /*---(update)-------------------------*/
    c_func->WORK_END  = a_line;
-   c_func->end       = a_line;
+   c_func->c_end     = a_line;
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -591,8 +591,8 @@ poly_func_inside        (tFUNC *a_func)
    DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
    --rce;  if (a_func       == NULL)   return rce;
    /*---(filter)-------------------------*/
-   DEBUG_DATA   yLOG_point   ("work"      , a_func->work);
-   --rce;  if (a_func->work == NULL)   return rce;
+   DEBUG_DATA   yLOG_point   ("work"      , a_func->c_work);
+   --rce;  if (a_func->c_work == NULL)   return rce;
    DEBUG_DATA   yLOG_complex ("beg/end"   , "%3d, %3d", a_func->WORK_BEG, a_func->WORK_END);
    --rce;  if (a_func->WORK_BEG <  0)  return 0;
    --rce;  if (a_func->WORK_END >  0)  return 0;
@@ -632,17 +632,17 @@ poly_func_by_line       (tFILE *a_file, int a_line, tFUNC **a_func)
    }
    DEBUG_PROG   yLOG_sint    (a_line);
    /*---(locate)-------------------------*/
-   x_func = a_file->head;
+   x_func = a_file->i_chead;
    while (x_func != NULL) {
-      DEBUG_PROG   yLOG_snote   (x_func->name);
+      DEBUG_PROG   yLOG_snote   (x_func->c_name);
       DEBUG_PROG   yLOG_sint    (x_func->WORK_BEG);
       DEBUG_PROG   yLOG_sint    (x_func->WORK_END);
       /*---(filter enter)----------------*/
-      if (x_func->WORK_BEG < 0)          { x_func = x_func->next; continue; }
-      if (x_func->WORK_BEG > a_line)     { x_func = x_func->next; continue; }
+      if (x_func->WORK_BEG < 0)          { x_func = x_func->c_next; continue; }
+      if (x_func->WORK_BEG > a_line)     { x_func = x_func->c_next; continue; }
       /*---(filter exit)-----------------*/
       if (x_func->WORK_END > 0) {
-         if (x_func->WORK_END < a_line)  { x_func = x_func->next; continue; }
+         if (x_func->WORK_END < a_line)  { x_func = x_func->c_next; continue; }
       }
       /*---(return positive)-------------*/
       DEBUG_PROG   yLOG_snote   ("match");
@@ -678,18 +678,18 @@ poly_func_by_hint       (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func)
    /*---(prepare)------------------------*/
    *a_func = NULL;
    /*---(walk files)---------------------*/
-   x_file = a_proj->head;
+   x_file = a_proj->j_ihead;
    while (x_file != NULL) {
       /*---(walk functions)--------------*/
-      x_func = x_file->head;
+      x_func = x_file->i_chead;
       while (x_func != NULL) {
-         if (strcmp (x_func->hint, a_hint) == 0) {
+         if (strcmp (x_func->c_hint, a_hint) == 0) {
             *a_func = x_func;
             return 0;
          }
-         x_func = x_func->next;
+         x_func = x_func->c_next;
       }
-      x_file = x_file->next;
+      x_file = x_file->i_next;
    }
    /*---(complete)-----------------------*/
    --rce;  return rce;
@@ -707,20 +707,20 @@ poly_func_by_cursor     (tPROJ *a_proj, uchar a_mode, tFUNC **a_func)
    --rce;  if (a_func   == NULL)   return rce;
    /*---(prepare)------------------------*/
    x_func = *a_func;
-   if (x_func == NULL)  x_func = a_proj->head->head;
+   if (x_func == NULL)  x_func = a_proj->j_ihead->i_chead;
    --rce;  if (x_func   == NULL)   return rce;
-   x_file = x_func->file;
+   x_file = x_func->c_file;
    --rce;  if (x_file   == NULL)   return rce;
    /*---(select)-------------------------*/
    switch (a_mode) {
    case '['  :
-      x_func = a_proj->head->head;
+      x_func = a_proj->j_ihead->i_chead;
       break;
    case '<'  :
-      x_func = x_func->prev;
+      x_func = x_func->c_prev;
       if (x_func == NULL || x_func == *a_func) {
-         if (x_file->prev != NULL) {
-            x_func = x_file->prev->tail;
+         if (x_file->i_prev != NULL) {
+            x_func = x_file->i_prev->i_ctail;
          }
       }
       break;
@@ -728,15 +728,15 @@ poly_func_by_cursor     (tPROJ *a_proj, uchar a_mode, tFUNC **a_func)
       ;;
       break;
    case '>'  :
-      x_func = x_func->next;
+      x_func = x_func->c_next;
       if (x_func == NULL || x_func == *a_func) {
-         if (x_file->next != NULL) {
-            x_func = x_file->next->head;
+         if (x_file->i_next != NULL) {
+            x_func = x_file->i_next->i_chead;
          }
       }
       break;
    case ']'  :
-      x_func = a_proj->tail->tail;
+      x_func = a_proj->j_itail->i_ctail;
       break;
    default   :
       --rce;
@@ -795,18 +795,18 @@ poly_func_purge         (tFILE *a_file, char a_update)
       return rce;
    }
    /*---(walk-through)-------------------*/
-   DEBUG_DATA   yLOG_value   ("->count"   , a_file->count);
-   x_func = a_file->head;
+   DEBUG_DATA   yLOG_value   ("->count"   , a_file->i_ccount);
+   x_func = a_file->i_chead;
    while (x_func != NULL) {
-      x_next = x_func->next;
+      x_next = x_func->c_next;
       DEBUG_DATA   yLOG_point   ("x_func"    , x_func);
-      DEBUG_DATA   yLOG_info    ("->name"    , x_func->name);
+      DEBUG_DATA   yLOG_info    ("->name"    , x_func->c_name);
       rc = poly_func_remove (&x_func);
       x_func = x_next;
    }
    /*---(check)--------------------------*/
-   DEBUG_DATA   yLOG_value   ("->count"   , a_file->count);
-   --rce;  if (a_file->count > 0) {
+   DEBUG_DATA   yLOG_value   ("->count"   , a_file->i_ccount);
+   --rce;  if (a_file->i_ccount > 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -870,7 +870,7 @@ poly_func__prefix       (tFUNC *a_func, char a_spec, int a, int b, int c)
    if (strchr ("AHOo", a_spec) != NULL) {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%-15.15s § %-20.20s § %4d § ", a_func->file->proj->name, a_func->file->name, a_func->line);
+         sprintf (t, "%-15.15s § %-20.20s § %4d § ", a_func->c_file->i_proj->j_name, a_func->c_file->i_name, a_func->c_line);
          break;
       case 'h' :
          sprintf (t, "%s § ", s_owner);
@@ -882,7 +882,7 @@ poly_func__prefix       (tFUNC *a_func, char a_spec, int a, int b, int c)
    if (strchr ("AO", a_spec) != NULL) {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%4d § %4d § ", a_func->beg, a_func->end);
+         sprintf (t, "%4d § %4d § ", a_func->c_beg, a_func->c_end);
          break;
       case 'h' :
          sprintf (t, "%s § ", s_ends);
@@ -918,7 +918,7 @@ poly_func__prefix       (tFUNC *a_func, char a_spec, int a, int b, int c)
    if (strchr ("AHh", a_spec) != NULL) {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%-2.2s § ", a_func->hint);
+         sprintf (t, "%-2.2s § ", a_func->c_hint);
          break;
       case 'h' :
          sprintf (t, "-- § ");
@@ -931,10 +931,10 @@ poly_func__prefix       (tFUNC *a_func, char a_spec, int a, int b, int c)
       switch (x_type) {
       case '-' :
          if (a_func->STATS_SINGLE == 'y') {
-            if (strncmp (a_func->name, "o___", 4) == 0)   sprintf (t, "%-2.2s ·", a_func->hint);
-            else                                          sprintf (t, "%-2.2s á", a_func->hint);
+            if (strncmp (a_func->c_name, "o___", 4) == 0)   sprintf (t, "%-2.2s ·", a_func->c_hint);
+            else                                          sprintf (t, "%-2.2s á", a_func->c_hint);
          }
-         else  sprintf (t, "%-2.2s  ", a_func->hint);
+         else  sprintf (t, "%-2.2s  ", a_func->c_hint);
          break;
       case 'h' :
          sprintf (t, "func");
@@ -964,7 +964,7 @@ poly_func__core         (tFUNC *a_func, char a_spec, int c)
    if (a_spec == 't') {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%-25.25s § ", a_func->name);
+         sprintf (t, "%-25.25s § ", a_func->c_name);
          break;
       case 'h' : 
          sprintf (t, "tion (%2d)                 § ", c);
@@ -976,7 +976,7 @@ poly_func__core         (tFUNC *a_func, char a_spec, int c)
    if (strchr ("Ssn" , a_spec) != NULL) {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%-25.25s § ", a_func->name);
+         sprintf (t, "%-25.25s § ", a_func->c_name);
          break;
       case 'h' :  
          sprintf (t, "%s § "      , s_name);
@@ -1058,7 +1058,7 @@ poly_func__suffix       (tFUNC *a_func, char a_spec)
    if (strchr ("ft"  , a_spec) != NULL) {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%4d § %-40.40s § "   , a_func->line, a_func->file->name);
+         sprintf (t, "%4d § %-40.40s § "   , a_func->c_line, a_func->c_file->i_name);
          break;
       case 'h' :
          sprintf (t, "%-s § "   , s_file);
@@ -1070,7 +1070,7 @@ poly_func__suffix       (tFUNC *a_func, char a_spec)
    if (strchr ("pt"  , a_spec) != NULL) {
       switch (x_type) {
       case '-' :
-         sprintf (t, "%-40.40s § %-10.10s § %-20.20s § %-20.20s §" , a_func->purpose, a_func->anatomy, a_func->rlong, a_func->match);
+         sprintf (t, "%-40.40s § %-10.10s § %-20.20s § %-20.20s §" , a_func->c_purpose, a_func->c_anatomy, a_func->c_rlong, a_func->c_match);
          break;
       case 'h' :
          sprintf (t, "%-s § %-s § %-s § %-s §"                     , s_purpose, "-anatomy--", "--full-return-type--", "---match-string-----");
@@ -1132,7 +1132,7 @@ poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char 
    /*> if (strchr ("tT" , a_style) != NULL) {                                         <* 
     *>    switch (x_type) {                                                           <* 
     *>    case '-' :   sprintf (t, "%2s  %-25.25s § ",                                <* 
-    *>                       a_func->hint, a_func->name);                             <* 
+    *>                       a_func->c_hint, a_func->name);                             <* 
     *>                 break;                                                         <* 
     *>    case 'h' :   sprintf (t, "function (%2d)                 § ", c);           <* 
     *>                 break;                                                         <* 
@@ -1176,7 +1176,7 @@ poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char 
    /*> if (strchr ("LAfT", a_style) != NULL) {                                        <* 
     *>    switch (x_type) {                                                           <* 
     *>    case '-' : sprintf (t, "%4d § %-40.40s § "   ,                              <* 
-    *>                     a_func->line, a_func->file->name);                         <* 
+    *>                     a_func->c_line, a_func->file->i_name);                         <* 
     *>               break;                                                           <* 
     *>    case 'h' : sprintf (t, "%-s § "   , s_file);             break;             <* 
     *>    }                                                                           <* 
@@ -1185,7 +1185,7 @@ poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char 
    /*---(purpose view)-------------------*/
    /*> if (strchr ("LApT", a_style) != NULL) {                                        <* 
     *>    switch (x_type) {                                                           <* 
-    *>    case '-' : sprintf (t, "%-40.40s § "   , a_func->purpose); break;           <* 
+    *>    case '-' : sprintf (t, "%-40.40s § "   , a_func->c_purpose); break;           <* 
     *>    case 'h' : sprintf (t, "%-s § "   , s_purpose);            break;           <* 
     *>    }                                                                           <* 
     *>    ystrlcat (s_print, t, LEN_RECD);                                             <* 
@@ -1234,38 +1234,38 @@ poly_func__unit         (char *a_question, int i)
    if (strcmp (a_question, "head"      )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
-         sprintf  (r, "[%.40s]", u->purpose);
-         snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : %-22.22s %2d%-42.42s  %c", i, t, strlen (u->purpose), r, u->ready);
+         sprintf  (t, "[%.20s]", u->c_name);
+         sprintf  (r, "[%.40s]", u->c_purpose);
+         snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : %-22.22s %2d%-42.42s  %c", i, t, strlen (u->c_purpose), r, u->c_ready);
       }  else
          snprintf (unit_answer, LEN_RECD, "FUNC head   (%2d) : []                     []         0[]                                          -", i);
    }
    else if (strcmp (a_question, "entry"     )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
-         if (u->work != NULL)  snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->line, u->type, u->WORK_BEG, u->WORK_END);
-         else                  snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s %3d  %c  non      -    -", i, t, u->line, u->type);
+         sprintf  (t, "[%.20s]", u->c_name);
+         if (u->c_work != NULL)  snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->c_line, u->c_type, u->WORK_BEG, u->WORK_END);
+         else                  snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s %3d  %c  non      -    -", i, t, u->c_line, u->c_type);
       } else                   snprintf (unit_answer, LEN_RECD, "FUNC entry  (%2d) : %-22.22s   -  -  -        -    -", i, t);
    }
    else if (strcmp (a_question, "stats"     )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
-         if (u->work != NULL) {
+         sprintf  (t, "[%.20s]", u->c_name);
+         if (u->c_work != NULL) {
             if (u->WORK_BEG    >= 0)  sprintf  (r, "%3d",     u->WORK_BEG);
             if (u->WORK_END    >= 0)  sprintf  (s, "%3d",     u->WORK_END);
             if (u->WORK_LVARS  >  0)  sprintf  (q, "%3d",     u->WORK_LVARS );
          }
-         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   · %3d   %3d %3d %3d %3d %3d %3d   %3d %s %s %s", i, t, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL, u->line, r, s, q);
+         snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   · %3d   %3d %3d %3d %3d %3d %3d   %3d %s %s %s", i, t, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL, u->c_line, r, s, q);
       }  else
          snprintf (unit_answer, LEN_RECD, "FUNC stats  (%2d) : %-22.22s     ·   ·   -     -   -   -   -   -   -     -   -   -   -", i, t);
    }
    else if (strcmp (a_question, "units"     )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
-         if (u->work != NULL) {
+         sprintf  (t, "[%.20s]", u->c_name);
+         if (u->c_work != NULL) {
             if (u->WORK_TUNIT  >  0)  sprintf  (r, "%3d",     u->WORK_TUNIT);
             if (u->WORK_SUNIT  >  0)  sprintf  (s, "%3d",     u->WORK_SUNIT);
             if (u->WORK_NUNIT  >  0)  sprintf  (q, "%3d",     u->WORK_NUNIT );

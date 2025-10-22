@@ -121,7 +121,7 @@ poly_vars__push         (tFILE *a_file, int a_line, char *a_name, char a_type)
    /*---(defense)------------------------*/
    --rce;  if (s_nvar >= MAX_VARS)  return rce;
    --rce;  if (a_file == NULL)      return rce;
-   x_type = a_file->type;
+   x_type = a_file->i_type;
    --rce;  if (x_type == 'h' && s_nvar > s_nglobal)  return rce;
    --rce;  if (a_name == NULL)      return rce;
    /*---(prepare)------------------------*/
@@ -193,7 +193,7 @@ poly_vars_inventory     (tFILE *a_file)
     *>    return  rce;                                                                <* 
     *> }                                                                              <*/
    /*---(prepare)------------------------*/
-   rc = poly_shared_open ('v', a_file->name);
+   rc = poly_shared_open ('v', a_file->i_name);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -298,8 +298,8 @@ poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_point   ("work"      , a_func->work);
-   --rce;  if (a_func->work  == NULL) {
+   DEBUG_INPT   yLOG_point   ("work"      , a_func->c_work);
+   --rce;  if (a_func->c_work  == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -452,8 +452,8 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_point   ("work"      , a_func->work);
-   --rce;  if (a_func->work  == NULL) {
+   DEBUG_INPT   yLOG_point   ("work"      , a_func->c_work);
+   --rce;  if (a_func->c_work  == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -478,7 +478,7 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
    /*---(walk variables)-----------------*/
    DEBUG_INPT   yLOG_value   ("s_nvar"    , s_nvar);
    for (i = 0; i < s_nvar; ++i) {
-      if (s_vars [i].scope == 'f' && s_vars [i].file != a_func->file)  continue;
+      if (s_vars [i].scope == 'f' && s_vars [i].file != a_func->c_file)  continue;
       DEBUG_INPT   yLOG_info    ("search"    , s_vars [i].name);
       b = strstr (t, s_vars [i].name);
       DEBUG_INPT   yLOG_point   ("b"         , b);
@@ -498,7 +498,7 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
                   poly_vars__intern_tally (a_func, i);
                   break;
                case CODE_VAR_V :
-                  printf ("%4d  %4d  %-20.20s  %3d  %3d  %3d    %-20.20s  %-20.20s  %4d  %c  %c", a_line, i, s_vars [i].name, b - t, e - t, s_vars [i].len, (s_vars [i].file)->name, s_vars [i].name, s_vars [i].line, s_vars [i].scope, s_vars [i].type);
+                  printf ("%4d  %4d  %-20.20s  %3d  %3d  %3d    %-20.20s  %-20.20s  %4d  %c  %c", a_line, i, s_vars [i].name, b - t, e - t, s_vars [i].len, (s_vars [i].file)->i_name, s_vars [i].name, s_vars [i].line, s_vars [i].scope, s_vars [i].type);
                   if (strstr (s_extern, s) != NULL)  printf ("  potenally masking external\n");
                   else                               printf ("\n");
                   ystrlcpy (s_sintern, s_intern, LEN_RECD);
@@ -593,10 +593,10 @@ poly_vars__hiding       (tFUNC *a_func)
       p = strtok_r (NULL, " ", &r);
    }
    /*---(function hiding)----------------*/
-   poly_extern_by_name (a_func->name, &x_ext);
+   poly_extern_by_name (a_func->c_name, &x_ext);
    if (x_ext != NULL) {
       ++a_func->WORK_FMASK;
-   } else if (poly_vars__confirm (a_func->file, a_func->name) == 1) {
+   } else if (poly_vars__confirm (a_func->c_file, a_func->c_name) == 1) {
       ++a_func->WORK_FMASK;
    }
    /*---(complete)-----------------------*/
@@ -611,7 +611,7 @@ poly_vars_list      (void)
       for (i = 0; i < s_nvar; ++i) {
          if (i % 25 == 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  t\n");
          if (i %  5 == 0)  printf ("\n");
-         printf ("%4d  %-20.20s  %4d  %-20.20s  %c  %c\n", i, s_vars [i].file->name, s_vars [i].line, s_vars [i].name, s_vars [i].scope, s_vars [i].type);
+         printf ("%4d  %-20.20s  %4d  %-20.20s  %c  %c\n", i, s_vars [i].file->i_name, s_vars [i].line, s_vars [i].name, s_vars [i].scope, s_vars [i].type);
       }
       --i;
       if (i % 25 != 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  t\n");
@@ -700,8 +700,8 @@ poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act)
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_point   ("work"      , a_func->work);
-   --rce;  if (a_func->work  == NULL) {
+   DEBUG_INPT   yLOG_point   ("work"      , a_func->c_work);
+   --rce;  if (a_func->c_work  == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -818,7 +818,7 @@ poly_vars__unit         (char *a_question, int i)
    else if (strcmp (a_question, "hide"      )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
+         sprintf  (t, "[%.20s]", u->c_name);
          sprintf  (s, "%3dv %3dm %3df %3ds  [%-.35s]",
                u->WORK_VMASK, u->WORK_MMASK,
                u->WORK_FMASK, u->WORK_LSTATIC,
@@ -828,14 +828,14 @@ poly_vars__unit         (char *a_question, int i)
          snprintf (unit_answer, LEN_RECD, "VARS hide   (%2d) : []                       0v   0m   0f   0s", i);
    }
    else if (strcmp (a_question, "entry"     )     == 0) {
-      if (s_vars [i].file != NULL)  sprintf (t, "[%0.15s]", s_vars [i].file->name);
+      if (s_vars [i].file != NULL)  sprintf (t, "[%0.15s]", s_vars [i].file->i_name);
       sprintf (s, "[%0.15s]", s_vars [i].name);
       snprintf (unit_answer, LEN_RECD, "VARS entry  (%2d) : %-17.17s   %c %c   %2d%s", i, t, s_vars [i].scope, s_vars [i].type, strlen (s_vars [i].name), s);
    }
    else if (strcmp (a_question, "func"      )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
+         sprintf  (t, "[%.20s]", u->c_name);
          sprintf  (s, "%3dn %3df %3dg      %3dp %3df %3dg %3dm %3dy %3do",
                u->WORK_LVARS, u->WORK_FVARS, u->WORK_GVARS, 
                u->WORK_PUSE , u->WORK_FUSE , u->WORK_GUSE , 

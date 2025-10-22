@@ -95,9 +95,9 @@ poly_proto_push         (tFILE *a_file, int a_line, char *a_name)
    x_len  = strlen (a_name);
    --rce;  if (x_len  <= 0)         return rce;
    /*---(add entry)----------------------*/
-   x_type = a_file->type;
+   x_type = a_file->i_type;
    if (x_type == 'h') {
-      if (strstr (a_file->name, "_priv.h") == NULL) {
+      if (strstr (a_file->i_name, "_priv.h") == NULL) {
          s_protos [s_nproto].scope = 'g';
          ++s_nglobal;
       } else  {
@@ -159,10 +159,10 @@ poly_proto_list     (void)
       for (i = 0; i < s_nproto; ++i) {
          if (i % 25 == 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  ---function---------\n");
          if (i %  5 == 0)  printf ("\n");
-         if ((s_protos [i].func)->name == NULL)  ystrlcpy (t, "", LEN_TITLE);
-         else sprintf (t, "%-20.20s", (s_protos [i].func)->name);
+         if ((s_protos [i].func)->c_name == NULL)  ystrlcpy (t, "", LEN_TITLE);
+         else sprintf (t, "%-20.20s", (s_protos [i].func)->c_name);
          printf ("%4d  %-20.20s  %4d  %-20.20s  %c  %-20.20s\n", i,
-               s_protos [i].file->name, s_protos [i].line,
+               s_protos [i].file->i_name, s_protos [i].line,
                s_protos [i].name, s_protos [i].scope, t);
       }
       --i;
@@ -194,8 +194,8 @@ poly_proto__unit        (char *a_question, int i)
    }
    else if (strcmp (a_question, "entry"     )     == 0) {
       sprintf (s, "%2d[%0.15s]", strlen (s_protos [i].name), s_protos [i].name);
-      if (s_protos [i].file != NULL)  sprintf (t, "%2d[%0.15s]", strlen (s_protos [i].file->name), s_protos [i].file->name);
-      if (s_protos [i].func != NULL)  sprintf (u, "%2d[%0.15s]", strlen (s_protos [i].func->name), s_protos [i].func->name);
+      if (s_protos [i].file != NULL)  sprintf (t, "%2d[%0.15s]", strlen (s_protos [i].file->i_name), s_protos [i].file->i_name);
+      if (s_protos [i].func != NULL)  sprintf (u, "%2d[%0.15s]", strlen (s_protos [i].func->c_name), s_protos [i].func->c_name);
       snprintf (unit_answer, LEN_RECD, "PROTO entry (%2d) : %-19.19s  %4d  %-19.19s  %c  %s", i, s, s_protos [i].line, t, s_protos [i].scope, u);
    }
    /*---(complete)-----------------------*/

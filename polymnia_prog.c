@@ -430,28 +430,28 @@ PROG_summarize          (tPROJ *a_proj)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    DEBUG_PROG   yLOG_point   ("a_proj"    , a_proj);
-   DEBUG_PROG   yLOG_info    ("->name"    , a_proj->name);
+   DEBUG_PROG   yLOG_info    ("->j_name"    , a_proj->j_name);
    /*---(prepare)------------------------*/
-   if      (a_proj->COUNT_SLOCL < 100    )  ystrlcpy (a_proj->codesize, "u.micro        (< 100 slocl)"             , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 500    )  ystrlcpy (a_proj->codesize, "t.tiny         (100 - 499 slocl)"         , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 2000   )  ystrlcpy (a_proj->codesize, "s.small        (500 - 1,999 slocl)"       , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 10000  )  ystrlcpy (a_proj->codesize, "m.moderate     (2,000 - 9,999 slocl)"     , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 50000  )  ystrlcpy (a_proj->codesize, "l.large        (10,000 - 49,999 slocl)"   , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 250000 )  ystrlcpy (a_proj->codesize, "h.huge         (50,000 - 249,999 slocl)"  , LEN_DESC);
-   else if (a_proj->COUNT_SLOCL < 1000000)  ystrlcpy (a_proj->codesize, "e.elephantine  (250,000 - 999,999 slocl)" , LEN_DESC);
-   else                                     ystrlcpy (a_proj->codesize, "g.gargantuan   (>= 1,000,000 slocl)"      , LEN_DESC);
+   if      (a_proj->COUNT_SLOCL < 100    )  ystrlcpy (a_proj->j_codesize, "u.micro        (< 100 slocl)"             , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 500    )  ystrlcpy (a_proj->j_codesize, "t.tiny         (100 - 499 slocl)"         , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 2000   )  ystrlcpy (a_proj->j_codesize, "s.small        (500 - 1,999 slocl)"       , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 10000  )  ystrlcpy (a_proj->j_codesize, "m.moderate     (2,000 - 9,999 slocl)"     , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 50000  )  ystrlcpy (a_proj->j_codesize, "l.large        (10,000 - 49,999 slocl)"   , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 250000 )  ystrlcpy (a_proj->j_codesize, "h.huge         (50,000 - 249,999 slocl)"  , LEN_DESC);
+   else if (a_proj->COUNT_SLOCL < 1000000)  ystrlcpy (a_proj->j_codesize, "e.elephantine  (250,000 - 999,999 slocl)" , LEN_DESC);
+   else                                     ystrlcpy (a_proj->j_codesize, "g.gargantuan   (>= 1,000,000 slocl)"      , LEN_DESC);
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
-   a_proj->funcs = 0;
-   x_file = a_proj->head;
+   a_proj->j_funcs = 0;
+   x_file = a_proj->j_ihead;
    while (x_file != NULL) {
-      x_tag = x_file->head;
+      x_tag = x_file->i_chead;
       while (x_tag != NULL)  {
          poly_cats_function (x_tag);
-         x_tag = x_tag->next;
+         x_tag = x_tag->c_next;
       }
-      a_proj->funcs += x_file->count;
-      x_file = x_file->next;
+      a_proj->j_funcs += x_file->i_ccount;
+      x_file = x_file->i_next;
    }
    poly_proj_header (a_proj);
    poly_units_by_func ();

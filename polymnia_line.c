@@ -637,7 +637,7 @@ static void  o___FUNCTION________o () { return; }
  *>       t [j] = '\0';                                                               <* 
  *>    }                                                                              <* 
  *>    /+---(save)---------------------------+/                                       <* 
- *>    ystrlcpy (a_func->purpose, t, 41);                                              <* 
+ *>    ystrlcpy (a_func->c_purpose, t, 41);                                              <* 
  *>    a_func->ready = 'y';                                                           <* 
  *>    /+---(complete)-----------------------+/                                       <* 
  *>    return 0;                                                                      <* 
@@ -1179,7 +1179,7 @@ poly_debug__unit        (char *a_question, int i)
    if (strcmp (a_question, "work"      )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
+         sprintf  (t, "[%.20s]", u->c_name);
          if (u->WORK_DCOUNT > 0)  sprintf (s, " %3dc", u->WORK_DCOUNT);
          else                     sprintf (s, "   ·c");
          ystrlcat (r, s, LEN_RECD);

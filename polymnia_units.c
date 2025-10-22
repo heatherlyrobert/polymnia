@@ -71,24 +71,24 @@ poly_units_by_func      (void)
          DEBUG_INPT   yLOG_note    ("could not find function");
          continue;
       }
-      DEBUG_INPT   yLOG_info    ("function"  , x_func->name);
-      DEBUG_INPT   yLOG_point   ("project"   , x_func->file->proj);
+      DEBUG_INPT   yLOG_info    ("function"  , x_func->c_name);
+      DEBUG_INPT   yLOG_point   ("project"   , x_func->c_file->i_proj);
       DEBUG_INPT   yLOG_point   ("g_proj"    , my.g_proj);
       /*---(verify the right project)-------*/
-      while (x_func->file->proj != my.g_proj) {
+      while (x_func->c_file->i_proj != my.g_proj) {
          DEBUG_INPT   yLOG_note    ("project does not match, next function");
          rc = poly_func_cursor ('>', &x_func);
          DEBUG_INPT   yLOG_point   ("x_func"    , x_func);
          if (rc < 0)                              break;
          if (x_func == NULL)                     { rc = -1;  break; }
-         DEBUG_INPT   yLOG_info    ("name"      , x_func->name);
-         if (strcmp (x_name, x_func->name) != 0) { rc = -2;  break; }
+         DEBUG_INPT   yLOG_info    ("name"      , x_func->c_name);
+         if (strcmp (x_name, x_func->c_name) != 0) { rc = -2;  break; }
       }
       if (rc < 0 || x_func == NULL) {
          DEBUG_INPT   yLOG_note    ("could not find function in right project");
          continue;
       }
-      if (x_func->work == NULL) {
+      if (x_func->c_work == NULL) {
          DEBUG_INPT   yLOG_note    ("function does not have WORK setup");
          continue;
       }
@@ -162,9 +162,9 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       /* add purpose from description */
       if (x_curr != NULL) {
          *a_func = x_curr;
-         (*a_func)->beg      = a_line;
+         (*a_func)->c_beg      = a_line;
          (*a_func)->WORK_BEG = a_line;
-         (*a_func)->end      = a_line;
+         (*a_func)->c_end      = a_line;
          (*a_func)->WORK_END = a_line;
       }
       rc = 1;
@@ -175,9 +175,9 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       /* add purpose from description */
       if (x_curr != NULL) {
          *a_func = x_curr;
-         (*a_func)->beg      = a_line;
+         (*a_func)->c_beg      = a_line;
          (*a_func)->WORK_BEG = a_line;
-         (*a_func)->end      = a_line;
+         (*a_func)->c_end      = a_line;
          (*a_func)->WORK_END = a_line;
       }
       rc = 1;
@@ -204,9 +204,9 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       /* add purpose from description */
       if (x_curr != NULL) {
          *a_func = x_curr;
-         (*a_func)->beg      = a_line;
+         (*a_func)->c_beg      = a_line;
          (*a_func)->WORK_BEG = a_line;
-         (*a_func)->end      = a_line;
+         (*a_func)->c_end      = a_line;
          (*a_func)->WORK_END = a_line;
       }
       ++c;
@@ -229,9 +229,9 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       /* change name to be single char lettes identifier in unit test */
       if (x_curr != NULL) {
          *a_func = x_curr;
-         (*a_func)->beg      = a_line;
+         (*a_func)->c_beg      = a_line;
          (*a_func)->WORK_BEG = a_line;
-         (*a_func)->end      = a_line;
+         (*a_func)->c_end      = a_line;
          (*a_func)->WORK_END = a_line;
       }
       ++d;
@@ -244,9 +244,9 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       /* change name to be single char lettes identifier in unit test */
       if (x_curr != NULL) {
          *a_func = x_curr;
-         (*a_func)->beg      = a_line;
+         (*a_func)->c_beg      = a_line;
          (*a_func)->WORK_BEG = a_line;
-         (*a_func)->end      = a_line;
+         (*a_func)->c_end      = a_line;
          (*a_func)->WORK_END = a_line;
       }
       rc = 1;
@@ -258,9 +258,9 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       /* change name to be single char lettes identifier in unit test */
       if (x_curr != NULL) {
          *a_func = x_curr;
-         (*a_func)->beg      = a_line;
+         (*a_func)->c_beg      = a_line;
          (*a_func)->WORK_BEG = a_line;
-         (*a_func)->end      = a_line;
+         (*a_func)->c_end      = a_line;
          (*a_func)->WORK_END = a_line;
       }
       rc = 1;
@@ -297,7 +297,7 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    /*---(add a line)------------------*/
    DEBUG_INPT   yLOG_note    ("found empty");
    ++(my.COUNT_LINES);
-   ++(a_file->proj->COUNT_LINES);
+   ++(a_file->i_proj->COUNT_LINES);
    ++(a_file->COUNT_LINES);
    if (a_func != NULL)  ++(a_func->COUNT_LINES);
    /*---(tag verbs)-------------------*/
@@ -316,7 +316,7 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    if (l <= 0) {
       DEBUG_INPT   yLOG_note    ("found empty");
       ++my.COUNT_EMPTY;
-      ++(a_file->proj->COUNT_EMPTY);
+      ++(a_file->i_proj->COUNT_EMPTY);
       ++(a_file->COUNT_EMPTY);
       if (a_func != NULL)  ++(a_func->COUNT_EMPTY);
    }
@@ -324,7 +324,7 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    else if (a_recd [0] == '#') {
       DEBUG_INPT   yLOG_note    ("found comment");
       ++(my.COUNT_DOCS);
-      ++(a_file->proj->COUNT_DOCS);
+      ++(a_file->i_proj->COUNT_DOCS);
       ++(a_file->COUNT_DOCS);
       if (a_func != NULL)  ++(a_func->COUNT_DOCS);
    }
@@ -332,7 +332,7 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    else if (g == 'y') {
       DEBUG_INPT   yLOG_note    ("found debugging");
       ++(my.COUNT_DEBUG);
-      ++(a_file->proj->COUNT_DEBUG);
+      ++(a_file->i_proj->COUNT_DEBUG);
       ++(a_file->COUNT_DEBUG);
       if (a_func != NULL)  ++(a_func->COUNT_DEBUG);
    }
@@ -340,17 +340,17 @@ poly_units__classify    (tFILE *a_file, tFUNC *a_func, int a_line, char *a_recd)
    else {
       DEBUG_INPT   yLOG_note    ("found code");
       ++(my.COUNT_CODE);
-      ++(a_file->proj->COUNT_CODE);
+      ++(a_file->i_proj->COUNT_CODE);
       ++(a_file->COUNT_CODE);
       if (a_func != NULL)  ++(a_func->COUNT_CODE);
       ++(my.COUNT_SLOCL);
-      ++(a_file->proj->COUNT_SLOCL);
+      ++(a_file->i_proj->COUNT_SLOCL);
       ++(a_file->COUNT_SLOCL);
       if (a_func != NULL)  ++(a_func->COUNT_SLOCL);
    }
    /*---(update lines)-------------------*/
-   if (a_func != NULL && a_line > a_func->end) {
-      a_func->end      = a_line;
+   if (a_func != NULL && a_line > a_func->c_end) {
+      a_func->c_end      = a_line;
       a_func->WORK_END = a_line;
    }
    /*---(complete)-----------------------*/
@@ -388,7 +388,7 @@ poly_units_inventory    (tFILE *a_file)
       return  rce;
    }
    /*---(prepare)------------------------*/
-   rc = poly_shared_open ('s', a_file->name);
+   rc = poly_shared_open ('s', a_file->i_name);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);

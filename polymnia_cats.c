@@ -460,13 +460,13 @@ static void  o___ADDING__________o () { return; }
  *>       IN_TAG  ++(a_tag->WORK_LOOP);                                               <* 
  *>       ++(my.COUNT_SLOCL);                                                         <* 
  *>       ++(a_tag->file->COUNT_SLOCL);                                               <* 
- *>       ++(a_tag->file->proj->COUNT_SLOCL);                                         <* 
+ *>       ++(a_tag->file->i_proj->COUNT_SLOCL);                                         <* 
  *>       break;                                                                      <* 
  *>    case 'L' :  /+ for (remove one semi-colon from SLOCL +/                        <* 
  *>       IN_TAG  ++(a_tag->WORK_LOOP);                                               <* 
  *>       --(my.COUNT_SLOCL);                                                         <* 
  *>       --(a_tag->file->COUNT_SLOCL);                                               <* 
- *>       --(a_tag->file->proj->COUNT_SLOCL);                                         <* 
+ *>       --(a_tag->file->i_proj->COUNT_SLOCL);                                         <* 
  *>       IN_TAG  --(a_tag->COUNT_SLOCL);                                             <* 
  *>       break;                                                                      <* 
  *>    }                                                                              <* 
@@ -703,7 +703,7 @@ poly_cats__complexity   (tFUNC *c_func, char a_style, char a_update, char *r_out
       }
       return 0;
    }
-   if (c_func != NULL && c_func->work != NULL && a_update == 'y')   x_func = c_func;
+   if (c_func != NULL && c_func->c_work != NULL && a_update == 'y')   x_func = c_func;
    poly_cats__group_1pre (c_func->WORK_FVARS , c_func->WORK_GVARS , c_func->WORK_LFUNCS, c_func->WORK_GFUNCS , &(c_func->STATS_SCOPE));
    poly_cats__group_1a   (x_func, a_style, c_func->STATS_SCOPE , c_func->STATS_RTYPE, c_func->STATS_PROTO, a);
    poly_cats__group_1bcd (x_func, a_style, c_func->STATS_PAUDIT, c_func->WORK_PARAMS, c_func->WORK_PIN   , c_func->WORK_POUT  , c_func->WORK_PBOTH, c_func->WORK_PCHG , c_func->WORK_PNUM  , c_func->WORK_PMULTI, c_func->WORK_PFUNC, c_func->WORK_PSTRUCT, bcd);
@@ -895,7 +895,7 @@ poly_cats__integration  (tFUNC *c_func, char a_style, char a_update, char *r_out
       }
       return 0;
    }
-   if (c_func != NULL && c_func->work != NULL && a_update == 'y')   x_func = c_func;
+   if (c_func != NULL && c_func->c_work != NULL && a_update == 'y')   x_func = c_func;
    poly_cats__group_2ab  (x_func, a_style, c_func->WORK_LCALLS , c_func->WORK_GCALLS, c_func->WORK_ECALLS, c_func->WORK_RECURS , ab);
    poly_cats__group_2cd  (x_func, a_style, c_func->WORK_FUNCS  , c_func->WORK_DFUNCS, c_func->WORK_LFUNCS, c_func->WORK_GFUNCS , c_func->WORK_CSTD  , c_func->WORK_YLIB, c_func->WORK_VIKEYS, c_func->WORK_OFUNCS, c_func->WORK_MYSTRY, cd);
    poly_cats__group_2e   (x_func, a_style, c_func->WORK_INPUT  , c_func->WORK_TREAD , c_func->WORK_BREAD , c_func->WORK_OUTPUT , c_func->WORK_TWRITE, c_func->WORK_BWRITE, c_func->WORK_PROCS, c_func->WORK_OPSYS, c_func->WORK_FILESYS, e);
@@ -1101,7 +1101,7 @@ poly_cats__watchpoints  (tFUNC *c_func, char a_style, char a_update, char *r_out
       }
       return 0;
    }
-   if (c_func != NULL && c_func->work != NULL && a_update == 'y')   x_func = c_func;
+   if (c_func != NULL && c_func->c_work != NULL && a_update == 'y')   x_func = c_func;
    poly_cats__group_3a   (x_func, a_style, c_func->COUNT_DEBUG , c_func->WORK_DCOUNT , c_func->WORK_DLONG  , c_func->WORK_DSHORT , c_func->STATS_DMACRO , c_func->WORK_DFREE  , c_func->WORK_DENTER , c_func->WORK_DEXIT  , c_func->WORK_DEXITR , c_func->WORK_RETURN , c_func->WORK_RCE    , c_func->WORK_LFUNCS , c_func->WORK_GFUNCS , c_func->WORK_YLIB   , c_func->WORK_DEXTRA , a);
    poly_cats__group_3b   (x_func, a_style, c_func->WORK_PUSE   , c_func->WORK_FUSE   , c_func->WORK_GUSE   , c_func->WORK_CUSE   , c_func->WORK_YUSE    , c_func->WORK_VUSE    , c_func->WORK_OUSE   , b);
    poly_cats__group_3c   (x_func, a_style, c_func->WORK_VMASK  , c_func->WORK_MMASK  , c_func->WORK_FMASK  , c_func->WORK_LSTATIC, c);
@@ -1189,7 +1189,7 @@ poly_cats_anatomy       (tFUNC *c_func)
    x_read   = c_func->WORK_INPUT  + c_func->WORK_TREAD  + c_func->WORK_BREAD;
    x_write  = c_func->WORK_OUTPUT + c_func->WORK_TWRITE + c_func->WORK_BWRITE;
    x_memory = c_func->WORK_MEMORY;
-   poly_cats__anatomy  (c_func->name, c_func->STATS_RTYPE, c_func->WORK_FVARS, c_func->WORK_GVARS, c_func->WORK_LFUNCS, c_func->WORK_GFUNCS, x_graph, x_read, x_write, x_memory, c_func->anatomy, c_func->match);
+   poly_cats__anatomy  (c_func->c_name, c_func->STATS_RTYPE, c_func->WORK_FVARS, c_func->WORK_GVARS, c_func->WORK_LFUNCS, c_func->WORK_GFUNCS, x_graph, x_read, x_write, x_memory, c_func->c_anatomy, c_func->c_match);
    return 0;
 }
 
@@ -1257,13 +1257,13 @@ poly_cats_database      (tFUNC *a_func)
    tFUNC      *x_func      = NULL;
    x_func = a_func;
    poly_cats__single      (a_func, r);
-   if (x_func != NULL && a_func->type == '_')   x_func = NULL;
+   if (x_func != NULL && a_func->c_type == '_')   x_func = NULL;
    poly_cats__complexity    (x_func, 'l', 'y', a);
    poly_cats__integration   (x_func, 'l', 'y', b);
    poly_cats__watchpoints   (x_func, 'l', 'y', c);
    poly_cats_anatomy        (a_func);
    sprintf  (s_print, "%s  %s %s %s", r, a, b, c);
-   if (a_func->type == '_')  ystrldchg (s_print, '-', ' ', LEN_RECD);
+   if (a_func->c_type == '_')  ystrldchg (s_print, '-', ' ', LEN_RECD);
    else                      ystrldchg (s_print, '-', '·', LEN_RECD);
    return s_print;
 }
@@ -1279,13 +1279,13 @@ poly_cats_comment       (tFUNC *a_func)
    tFUNC      *x_func      = NULL;
    x_func = a_func;
    poly_cats__single      (a_func, r);
-   if (x_func != NULL && a_func->type == '_')   x_func = NULL;
+   if (x_func != NULL && a_func->c_type == '_')   x_func = NULL;
    poly_cats__complexity    (x_func, '-', 'y', a);
    poly_cats__integration   (x_func, '-', 'y', b);
    poly_cats__watchpoints   (x_func, '-', 'y', c);
    poly_cats_anatomy        (a_func);
    sprintf (s_print, "%s¬%s¬%s", a, b, c);
-   if (a_func->type == '_') {
+   if (a_func->c_type == '_') {
       ystrldchg (s_print, '[', ' ', LEN_RECD);
       ystrldchg (s_print, ']', ' ', LEN_RECD);
       ystrldchg (s_print, '.', ' ', LEN_RECD);
@@ -1308,20 +1308,20 @@ poly_cats_full          (tFUNC *a_func, char *a_out)
    tFUNC      *x_func      = NULL;
    x_func = a_func;
    poly_cats__single      (a_func, r);
-   if (x_func != NULL && a_func->type == '_')   x_func = NULL;
+   if (x_func != NULL && a_func->c_type == '_')   x_func = NULL;
    poly_cats__complexity    (x_func, 'l', 'y', a);
    poly_cats__integration   (x_func, 'l', 'y', b);
    poly_cats__watchpoints   (x_func, 'l', 'y', c);
    sprintf (a_out, "%s  %s %s %s ", r, a, b, c);
    /*> ystrldchg (a_out, '-', '·', LEN_RECD);                                          <*/
-   if (a_func->type == '_')  ystrldchg (a_out, '-', ' ', LEN_RECD);
+   if (a_func->c_type == '_')  ystrldchg (a_out, '-', ' ', LEN_RECD);
    else                      ystrldchg (a_out, '-', '·', LEN_RECD);
    poly_cats__complexity    (x_func, '-', 'y', a);
    poly_cats__integration   (x_func, '-', 'y', b);
    poly_cats__watchpoints   (x_func, '-', 'y', c);
    poly_cats_anatomy        (a_func);
    sprintf (t    , " %s¬%s¬%s ", a, b, c);
-   if (a_func->type == '_') {
+   if (a_func->c_type == '_') {
       ystrldchg (t, '[', ' ', LEN_RECD);
       ystrldchg (t, ']', ' ', LEN_RECD);
       ystrldchg (t, '.', ' ', LEN_RECD);
@@ -1348,7 +1348,7 @@ poly_cats_func          (tFUNC *a_func)
    if (a_func == NULL)  poly_func_by_index (10, &x_func);
    else                 x_func = a_func;
    if (x_func == NULL)  return 0;
-   printf ("%s\n\n", x_func->name);
+   printf ("%s\n\n", x_func->c_name);
    for (i = 0; i < MAX_CATS; ++i) {
       /*---(end-of-data)-----------------*/
       if (s_cats [i].grp <  0)  break;
@@ -1432,29 +1432,29 @@ poly_cats__unit      (char *a_question, int n)
    if (n <  0)       return unit_answer;
    /*---(prepare)------------------------*/
    poly_func_by_index (n, &u);
-   if (u != NULL)  sprintf  (t, "[%.20s]", u->name);
+   if (u != NULL)  sprintf  (t, "[%.20s]", u->c_name);
    /*---(simple)-------------------------*/
    if        (strcmp (a_question, "complex"   )     == 0) {
-      if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
+      if (u != NULL)  sprintf  (t, "[%.15s]", u->c_name);
       poly_cats__single      (u, r);
       poly_cats__complexity    (u, 'l', 'y', a);
       sprintf (unit_answer, "CATS complex(%2d) : %-17.17s %s [%s]", n, t, r, a);
    }
    else if   (strcmp (a_question, "integ"     )     == 0) {
-      if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
+      if (u != NULL)  sprintf  (t, "[%.15s]", u->c_name);
       poly_cats__single      (u, r);
       poly_cats__integration (u, 'l', 'y', b);
       sprintf (unit_answer, "CATS integ  (%2d) : %-17.17s %s [%s]", n, t, r, b);
    }
    else if   (strcmp (a_question, "watch"     )     == 0) {
-      if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
+      if (u != NULL)  sprintf  (t, "[%.15s]", u->c_name);
       poly_cats__single      (u, r);
       poly_cats__watchpoints (u, 'l', 'y', c);
       poly_cats_anatomy      (u);
       sprintf (unit_answer, "CATS watch  (%2d) : %-17.17s %s [%s]", n, t, r, c);
    }
    else if   (strcmp (a_question, "full"      )     == 0) {
-      if (u != NULL)  sprintf  (t, "[%.15s]", u->name);
+      if (u != NULL)  sprintf  (t, "[%.15s]", u->c_name);
       poly_cats__single      (u, r);
       poly_cats__complexity    (u, '-', 'y', a);
       poly_cats__integration   (u, '-', 'y', b);

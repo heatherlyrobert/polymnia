@@ -319,7 +319,7 @@ char
 poly_rptg__stats        (tFUNC *a_tag)
 {
    printf ("%c   ", a_tag->STATS_SINGLE);
-   if (strncmp (a_tag->name, "o___", 4) != 0) {
+   if (strncmp (a_tag->c_name, "o___", 4) != 0) {
       printf ("%c %c %c  %c %c %c  %c %c %c %c %c   %c %c  %c %c %c %c %c  %c %c %c %c   %c %c %c  %c %c %c %c  %c %c %c %c   ",
             a_tag->STATS_SCOPE , a_tag->STATS_RTYPE , a_tag->STATS_PARAMS,
             a_tag->STATS_TOTAL , a_tag->STATS_DEBUG , a_tag->STATS_SLOCL ,
@@ -386,8 +386,8 @@ poly_rptg_projects      (void)
    DEBUG_OUTP   yLOG_point   ("proj"      , x_proj);
    while (rc >= 0 && x_proj != NULL) {
       /*---(prepare)---------------------*/
-      DEBUG_OUTP   yLOG_info    ("->name"    , x_proj->name);
-      DEBUG_OUTP   yLOG_value   ("files"     , x_proj->count);
+      DEBUG_OUTP   yLOG_info    ("->name"    , x_proj->j_name);
+      DEBUG_OUTP   yLOG_value   ("files"     , x_proj->j_icount);
       if (s_opt != POLY_DUMP) {
          if (c > 0 && c %  5 == 0)  printf ("\n");
          if (c % 25 == 0)  { poly_proj_line (NULL, s_options [0], 'h', '-', 0, 'y'); printf ("\n"); }
@@ -435,8 +435,8 @@ poly_rptg_files         (void)
    DEBUG_OUTP   yLOG_point   ("proj"      , x_file);
    while (rc >= 0 && x_file != NULL) {
       /*---(prepare)---------------------*/
-      DEBUG_OUTP   yLOG_info    ("->name"    , x_file->name);
-      DEBUG_OUTP   yLOG_value   ("files"     , x_file->count);
+      DEBUG_OUTP   yLOG_info    ("->name"    , x_file->i_name);
+      DEBUG_OUTP   yLOG_value   ("files"     , x_file->i_ccount);
       if (s_opt != POLY_DUMP) {
          if (c %  5 == 0)  printf ("\n");
          if (c % 25 == 0)  { poly_file_line (NULL, s_options [1], 'h', '>', 0, 0, 'y'); printf ("\n"); }
@@ -481,17 +481,17 @@ poly_rptg_ylibs         (void)
    printf ("\n");
    /*> poly_proj_line (my.g_proj, s_options [0], 'h', '#', my.g_projno, 'y');         <*/
    /*> poly_proj_line (my.g_proj, s_options [0], 'd', '#', my.g_projno, 'y');         <*/
-   x_file = my.g_proj->head;
+   x_file = my.g_proj->j_ihead;
    while (x_file != NULL) {
       if (x_file->COUNT_YLIBS > 0) {
          /*> poly_file_line (x_file, s_options [1], 'h', '>', my.g_projno, c, 'y');   <*/
          /*> poly_file_line (x_file, s_options [1], 'd', '>', my.g_projno, c, 'y');   <*/
-         x_func = x_file->head;
+         x_func = x_file->i_chead;
          while (x_func != NULL) {
             if (x_func->COUNT_YLIBS > 0) {
                /*> poly_func_line (x_func, POLY_RPTG_HTAGS, 0, 0, 0, 'y');                  <*/
                c = 0;
-               x_ylib = x_func->y_head;
+               x_ylib = x_func->c_yhead;
                while (x_ylib != NULL) {
                   if (n %  5 == 0 && n > 0)  printf ("\n");
                   if (n % 25 == 0)  printf ("#cum --proj------ cnt-   ---file------------- cnt-   ---function-------------- -cnt -top -beg -end   ref- line ---ylib-------------   ---source--- line t c s uses--\n\n");
@@ -500,18 +500,18 @@ poly_rptg_ylibs         (void)
                   ++x_ylib->ylib->elib->wuse;
                   ystrl4main (x_ylib->ylib->y_count, x_count, 0, 'c', '-', LEN_TERSE);
                   printf ("%-4d %-12.12s %4d   %-20.20s %4d   %-25.25s %4d %4d %4d %4d   %4d %4d %-20.20s   %-12.12s %4d %c %c %c %6s\n",
-                        n, my.g_proj->name, my.g_proj->COUNT_YLIBS,
-                        x_file->name, x_file->COUNT_YLIBS,
-                        x_func->name, x_func->COUNT_YLIBS, x_func->line, x_func->beg, x_func->end,
+                        n, my.g_proj->j_name, my.g_proj->COUNT_YLIBS,
+                        x_file->i_name, x_file->COUNT_YLIBS,
+                        x_func->c_name, x_func->COUNT_YLIBS, x_func->c_line, x_func->c_beg, x_func->c_end,
                         c, x_ylib->line, x_ylib->name,
                         x_ylib->ylib->elib->name, x_ylib->ylib->line, x_ylib->ylib->type, x_ylib->ylib->cat, x_ylib->ylib->sub, x_count);
                   x_ylib = x_ylib->f_next;
                }
             }
-            x_func = x_func->next;
+            x_func = x_func->c_next;
          }
       }
-      x_file = x_file->next;
+      x_file = x_file->i_next;
    }
    /*---(summarize)----------------------*/
    c = 0;
@@ -605,14 +605,14 @@ poly_rptg_file          (tPROJ *a_proj)
    /*---(header)-------------------------*/
    DEBUG_OUTP   yLOG_enter   (__FUNCTION__);
    /*---(files)--------------------------*/
-   x_file = a_proj->head;
+   x_file = a_proj->j_ihead;
    DEBUG_OUTP   yLOG_point   ("file"      , x_file);
    while (x_file != NULL) {
-      DEBUG_OUTP   yLOG_info    ("->name"    , x_file->name);
-      DEBUG_OUTP   yLOG_value   ("tags"      , x_file->count);
+      DEBUG_OUTP   yLOG_info    ("->name"    , x_file->i_name);
+      DEBUG_OUTP   yLOG_value   ("tags"      , x_file->i_ccount);
       if (my.g_mode != POLY_RPTG_DUMP) {
          printf ("  %-23.23s       %7d %7d %7d %7d %7d %7d %7d\n",
-               x_file->name , x_file->count,
+               x_file->i_name , x_file->i_ccount,
                x_file->COUNT_LINES, x_file->COUNT_EMPTY,
                x_file->COUNT_DOCS , x_file->COUNT_DEBUG,
                x_file->COUNT_CODE , x_file->COUNT_SLOCL);
@@ -624,7 +624,7 @@ poly_rptg_file          (tPROJ *a_proj)
       case POLY_RPTG_HTAGS :
          break;
       }
-      x_file = x_file->next;
+      x_file = x_file->i_next;
       DEBUG_OUTP   yLOG_point   ("file"      , x_file);
    }
 }
@@ -648,7 +648,7 @@ poly_rptg_projfilter    (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_PROG   yLOG_point   ("->name"     , my.g_proj->name);
+   DEBUG_PROG   yLOG_point   ("->name"     , my.g_proj->j_name);
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -685,8 +685,8 @@ poly_rptg_proj          (void)
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    while (x_proj != NULL) {
       /*---(prepare)---------------------*/
-      DEBUG_OUTP   yLOG_info    ("->name"    , x_proj->name);
-      DEBUG_OUTP   yLOG_value   ("files"     , x_proj->count);
+      DEBUG_OUTP   yLOG_info    ("->name"    , x_proj->j_name);
+      DEBUG_OUTP   yLOG_value   ("files"     , x_proj->j_icount);
       /*---(grand totals)----------------*/
       my.COUNT_FILES += x_proj->COUNT_FILES;
       my.COUNT_FUNCS += x_proj->COUNT_FUNCS;
@@ -706,16 +706,16 @@ poly_rptg_proj          (void)
       /*---(reporting)-------------------*/
       if (my.g_mode != POLY_RPTG_DUMP) {
          printf ("%-25.25s  %4d %7d %7d %7d %7d %7d %7d %7d  %-13.13s  ",
-               x_proj->name , x_proj->count, x_proj->funcs,
+               x_proj->j_name , x_proj->j_icount, x_proj->j_funcs,
                x_proj->COUNT_LINES, x_proj->COUNT_EMPTY,
                x_proj->COUNT_DOCS , x_proj->COUNT_DEBUG,
                x_proj->COUNT_CODE , x_proj->COUNT_SLOCL,
-               x_proj->codesize);
+               x_proj->j_codesize);
          printf ("%-60.60s  %-60.60s  %-5.5s %-60.65s  %-20.20s  %-20.20s  %-10.10s  %-60.60s\n",
-               x_proj->heritage, x_proj->purpose,
-               x_proj->vernum  , x_proj->vertxt,
-               x_proj->focus   , x_proj->niche,
-               x_proj->created , x_proj->homedir);
+               x_proj->j_heritage, x_proj->j_purpose,
+               x_proj->j_vernum  , x_proj->j_vertxt,
+               x_proj->j_focus   , x_proj->j_niche,
+               x_proj->j_created , x_proj->j_homedir);
       }
       /*---(diving)----------------------*/
       switch (my.g_mode) {
@@ -776,10 +776,10 @@ poly_rptg_dump          (void)
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    while (x_proj != NULL) {
       /*---(prepare)---------------------*/
-      DEBUG_OUTP   yLOG_info    ("->name"    , x_proj->name);
-      DEBUG_OUTP   yLOG_value   ("files"     , x_proj->count);
-      if (my.g_titles == RPTG_TITLES && x_proj->count > 0) {
-         printf ("\nPROJECT : %s, %s\n", x_proj->name, x_proj->purpose);
+      DEBUG_OUTP   yLOG_info    ("->name"    , x_proj->j_name);
+      DEBUG_OUTP   yLOG_value   ("files"     , x_proj->j_icount);
+      if (my.g_titles == RPTG_TITLES && x_proj->j_icount > 0) {
+         printf ("\nPROJECT : %s, %s\n", x_proj->j_name, x_proj->j_purpose);
       }
       /*---(project filtering)-----------*/
       if (my.g_proj != NULL && x_proj != my.g_proj) {
@@ -788,20 +788,20 @@ poly_rptg_dump          (void)
          continue;
       }
       /*---(files)-----------------------*/
-      x_file = x_proj->head;
+      x_file = x_proj->j_ihead;
       DEBUG_OUTP   yLOG_point   ("file"      , x_file);
       while (x_file != NULL) {
          /*---(prepare)------------------*/
-         DEBUG_OUTP   yLOG_info    ("->name"    , x_file->name);
-         DEBUG_OUTP   yLOG_value   ("tags"      , x_file->count);
-         if (my.g_titles == RPTG_TITLES && x_file->count > 0) {
-            printf ("\nFILE    : %s\n", x_file->name);
+         DEBUG_OUTP   yLOG_info    ("->name"    , x_file->i_name);
+         DEBUG_OUTP   yLOG_value   ("tags"      , x_file->i_ccount);
+         if (my.g_titles == RPTG_TITLES && x_file->i_ccount > 0) {
+            printf ("\nFILE    : %s\n", x_file->i_name);
          }
          /*---(tags)---------------------*/
-         x_func  = x_file->head;
+         x_func  = x_file->i_chead;
          DEBUG_OUTP   yLOG_point   ("tag"       , x_func);
          while (x_func  != NULL) {
-            DEBUG_OUTP   yLOG_info    ("->name"    , x_func->name);
+            DEBUG_OUTP   yLOG_info    ("->name"    , x_func->c_name);
             switch (my.g_filter) {
             case FILTER_DEBUG  : x_show = poly_rptg__debug  (x_func);  break;
             case FILTER_PARAMS : x_show = poly_rptg__params (x_func);  break;
@@ -821,10 +821,10 @@ poly_rptg_dump          (void)
                printf ("%s\n", poly_func_line (x_func, POLY_RPTG_DUMP, 0, 0, 0, NULL));
                ++c;
             }
-            x_func  = x_func->next;
+            x_func  = x_func->c_next;
             DEBUG_OUTP   yLOG_point   ("x_func"    , x_func);
          }
-         x_file = x_file->next;
+         x_file = x_file->i_next;
          DEBUG_OUTP   yLOG_point   ("file"      , x_file);
       }
       rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
@@ -872,7 +872,7 @@ poly_rptg_extern        (tEXTERN *a_extern)
    DEBUG_OUTP   yLOG_point   ("x_ylib"    , x_ylib);
    while (x_ylib != NULL) {
       /*---(project filtering)-----------*/
-      if (my.g_proj != NULL && x_ylib->func->file->proj != my.g_proj) {
+      if (my.g_proj != NULL && x_ylib->func->c_file->i_proj != my.g_proj) {
          x_ylib = x_ylib->e_next;
          DEBUG_OUTP   yLOG_point   ("x_ylib"    , x_ylib);
          continue;
@@ -883,28 +883,28 @@ poly_rptg_extern        (tEXTERN *a_extern)
       DEBUG_OUTP   yLOG_info    ("->name"    , x_ylib->name);
       /*---(tree view)-------------------*/
       if (my.g_titles == RPTG_TREEVIEW) {
-         if (x_ylib->func->file->proj != x_proj) {
+         if (x_ylib->func->c_file->i_proj != x_proj) {
             x_file = NULL;
             printf ("\n");
-            printf ("%-25.25s\n", x_ylib->func->file->proj->name);
+            printf ("%-25.25s\n", x_ylib->func->c_file->i_proj->j_name);
          }
-         if (x_ylib->func->file != x_file) {
+         if (x_ylib->func->c_file != x_file) {
             x_func  = NULL;
             if (x_file != NULL)  printf ("\n");
-            printf ("   %-25.25s\n", x_ylib->func->file->name);
+            printf ("   %-25.25s\n", x_ylib->func->c_file->i_name);
          } 
          if (x_ylib->func != x_func) {
             if (x_func != NULL)  printf ("\n");
-            printf ("      %-25.25s", x_ylib->func->name);
+            printf ("      %-25.25s", x_ylib->func->c_name);
          } 
          printf ("%4d,", x_ylib->line);
-         x_proj = x_ylib->func->file->proj;
-         x_file = x_ylib->func->file;
+         x_proj = x_ylib->func->c_file->i_proj;
+         x_file = x_ylib->func->c_file;
          x_func = x_ylib->func;
       }
       /*---(normal view)-----------------*/
       else {
-         printf ("%-25.25s  %-25.25s  %-25.25s  %4d  %-25.25s\n", a_extern->name, x_ylib->func->file->proj->name, x_ylib->func->file->name, x_ylib->line, x_ylib->func->name);
+         printf ("%-25.25s  %-25.25s  %-25.25s  %4d  %-25.25s\n", a_extern->name, x_ylib->func->c_file->i_proj->j_name, x_ylib->func->c_file->i_name, x_ylib->line, x_ylib->func->c_name);
       }
       /*---(next)------------------------*/
       ++c;
@@ -927,68 +927,68 @@ poly_rptg__htags_header (tPROJ *a_proj)
    printf ("##   version %s, %s\n", P_VERNUM, P_VERTXT);
    printf ("##   htags reporting file for use with vim-ide\n");
    printf ("##\n");
-   printf ("##   33 headers ·  [%s]\n", a_proj->header);
+   printf ("##   33 headers ·  [%s]\n", a_proj->j_header);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   name       N  [%s]\n", a_proj->name);
+   printf ("##   name       N  [%s]\n", a_proj->j_name);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   focus      f  [%s]\n", a_proj->focus);
-   printf ("##   niche      n  [%s]\n", a_proj->niche);
-   printf ("##   subject    s  [%s]\n", a_proj->subject);
-   printf ("##   purpose    p  [%s]\n", a_proj->purpose);
+   printf ("##   focus      f  [%s]\n", a_proj->j_focus);
+   printf ("##   niche      n  [%s]\n", a_proj->j_niche);
+   printf ("##   subject    s  [%s]\n", a_proj->j_subject);
+   printf ("##   purpose    p  [%s]\n", a_proj->j_purpose);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   namesake   ê  [%s]\n", a_proj->namesake);
-   printf ("##   pronounce  ÷  [%s]\n", a_proj->pronounce);
-   printf ("##   heritage   î  [%s]\n", a_proj->heritage);
-   printf ("##   briefly    é  [%s]\n", a_proj->briefly);
-   printf ("##   imagery    ð  [%s]\n", a_proj->imagery);
-   printf ("##   reason     ø  [%s]\n", a_proj->reason);
+   printf ("##   namesake   ê  [%s]\n", a_proj->j_namesake);
+   printf ("##   pronounce  ÷  [%s]\n", a_proj->j_pronounce);
+   printf ("##   heritage   î  [%s]\n", a_proj->j_heritage);
+   printf ("##   briefly    é  [%s]\n", a_proj->j_briefly);
+   printf ("##   imagery    ð  [%s]\n", a_proj->j_imagery);
+   printf ("##   reason     ø  [%s]\n", a_proj->j_reason);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   one-line   ö  [%s]\n", a_proj->oneline);
+   printf ("##   one-line   ö  [%s]\n", a_proj->j_oneline);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   homedir    d  [%s]\n", a_proj->homedir);
-   printf ("##   basename   b  [%s]\n", a_proj->progname);
-   printf ("##   fullpath   f  [%s]\n", a_proj->fullpath);
-   printf ("##   suffix     s  [%s]\n", a_proj->suffix);
-   printf ("##   content    c  [%s]\n", a_proj->content);
+   printf ("##   homedir    d  [%s]\n", a_proj->j_homedir);
+   printf ("##   basename   b  [%s]\n", a_proj->j_progname);
+   printf ("##   fullpath   f  [%s]\n", a_proj->j_fullpath);
+   printf ("##   suffix     s  [%s]\n", a_proj->j_suffix);
+   printf ("##   content    c  [%s]\n", a_proj->j_content);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   system     s  [%s]\n", a_proj->systems);
-   printf ("##   language   l  [%s]\n", a_proj->language);
-   printf ("##   compiler   c  [%s]\n", a_proj->compiler);
-   printf ("##   code-size  z  [%s]\n", a_proj->codesize);
+   printf ("##   system     s  [%s]\n", a_proj->j_systems);
+   printf ("##   language   l  [%s]\n", a_proj->j_language);
+   printf ("##   compiler   c  [%s]\n", a_proj->j_compiler);
+   printf ("##   code-size  z  [%s]\n", a_proj->j_codesize);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   dep_cstd   D  [%s]\n", a_proj->dep_cstd);
-   printf ("##   dep_posix  P  [%s]\n", a_proj->dep_posix);
-   printf ("##   dep_core   C  [%s]\n", a_proj->dep_core);
-   printf ("##   dep_vikey  V  [%s]\n", a_proj->dep_vikey);
-   printf ("##   dep_other  O  [%s]\n", a_proj->dep_other);
-   printf ("##   dep_graph  G  [%s]\n", a_proj->dep_graph);
-   printf ("##   dep_solo   S  [%s]\n", a_proj->dep_solo);
+   printf ("##   dep_cstd   D  [%s]\n", a_proj->j_dep_cstd);
+   printf ("##   dep_posix  P  [%s]\n", a_proj->j_dep_posix);
+   printf ("##   dep_core   C  [%s]\n", a_proj->j_dep_core);
+   printf ("##   dep_vikey  V  [%s]\n", a_proj->j_dep_vikey);
+   printf ("##   dep_other  O  [%s]\n", a_proj->j_dep_other);
+   printf ("##   dep_graph  G  [%s]\n", a_proj->j_dep_graph);
+   printf ("##   dep_solo   S  [%s]\n", a_proj->j_dep_solo);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   author     a  [%s]\n", a_proj->author);
-   printf ("##   created    c  [%s]\n", a_proj->created);
+   printf ("##   author     a  [%s]\n", a_proj->j_author);
+   printf ("##   created    c  [%s]\n", a_proj->j_created);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n");
-   printf ("##   vermajor   x  [%s]\n", a_proj->vermajor);
-   printf ("##   verminor   n  [%s]\n", a_proj->verminor);
-   printf ("##   vernum     v  [%s]\n", a_proj->vernum);
-   printf ("##   vertxt     t  [%s]\n", a_proj->vertxt);
+   printf ("##   vermajor   x  [%s]\n", a_proj->j_vermajor);
+   printf ("##   verminor   n  [%s]\n", a_proj->j_verminor);
+   printf ("##   vernum     v  [%s]\n", a_proj->j_vernum);
+   printf ("##   vertxt     t  [%s]\n", a_proj->j_vertxt);
    printf ("##\n");
    printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
    printf ("##\n\n\n\n");
@@ -1020,34 +1020,34 @@ poly_rptg_htags         (tPROJ *a_proj)
    }
    /*---(output)-------------------------*/
    DEBUG_PROG   yLOG_note    ("review all tags and code");
-   x_file = a_proj->head;
+   x_file = a_proj->j_ihead;
    DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    if (my.g_rptg == POLY_RPTG_HTAGS)    poly_rptg__htags_header (a_proj);
    while (x_file != NULL) {
-      DEBUG_PROG   yLOG_info    ("file name" , x_file->name);
-      printf ("%-29.29s   FILE\n", x_file->name);
+      DEBUG_PROG   yLOG_info    ("file name" , x_file->i_name);
+      printf ("%-29.29s   FILE\n", x_file->i_name);
       if (my.g_rptg == POLY_RPTG_HTAGS) {
-         /*> printf ("%s\n", poly_cats_header (7, "lines", x_file->COUNT_LINES, x_file->proj->COUNT_LINES));   <* 
-          *> printf ("%s\n", poly_cats_header (6, "empty", x_file->COUNT_EMPTY, x_file->proj->COUNT_EMPTY));   <* 
-          *> printf ("%s\n", poly_cats_header (5, "docs" , x_file->COUNT_DOCS , x_file->proj->COUNT_DOCS ));   <* 
-          *> printf ("%s\n", poly_cats_header (4, "debug", x_file->COUNT_DEBUG, x_file->proj->COUNT_DEBUG));   <* 
-          *> printf ("%s\n", poly_cats_header (3, "code" , x_file->COUNT_CODE , x_file->proj->COUNT_CODE ));   <* 
-          *> printf ("%s\n", poly_cats_header (2, "slocl", x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL));   <*/
-         printf ("%s\n", poly_cats_header (7, "line" , x_file->COUNT_LINES, x_file->proj->COUNT_LINES));
-         printf ("%s\n", poly_cats_header (6, "empt" , x_file->COUNT_EMPTY, x_file->proj->COUNT_EMPTY));
-         printf ("%s\n", poly_cats_header (5, "docs" , x_file->COUNT_DOCS , x_file->proj->COUNT_DOCS ));
-         printf ("%s\n", poly_cats_header (4, "dbug" , x_file->COUNT_DEBUG, x_file->proj->COUNT_DEBUG));
-         printf ("%s\n", poly_cats_header (3, "code" , x_file->COUNT_CODE , x_file->proj->COUNT_CODE ));
-         printf ("%s\n", poly_cats_header (2, "sloc" , x_file->COUNT_SLOCL, x_file->proj->COUNT_SLOCL));
+         /*> printf ("%s\n", poly_cats_header (7, "lines", x_file->COUNT_LINES, x_file->i_proj->COUNT_LINES));   <* 
+          *> printf ("%s\n", poly_cats_header (6, "empty", x_file->COUNT_EMPTY, x_file->i_proj->COUNT_EMPTY));   <* 
+          *> printf ("%s\n", poly_cats_header (5, "docs" , x_file->COUNT_DOCS , x_file->i_proj->COUNT_DOCS ));   <* 
+          *> printf ("%s\n", poly_cats_header (4, "debug", x_file->COUNT_DEBUG, x_file->i_proj->COUNT_DEBUG));   <* 
+          *> printf ("%s\n", poly_cats_header (3, "code" , x_file->COUNT_CODE , x_file->i_proj->COUNT_CODE ));   <* 
+          *> printf ("%s\n", poly_cats_header (2, "slocl", x_file->COUNT_SLOCL, x_file->i_proj->COUNT_SLOCL));   <*/
+         printf ("%s\n", poly_cats_header (7, "line" , x_file->COUNT_LINES, x_file->i_proj->COUNT_LINES));
+         printf ("%s\n", poly_cats_header (6, "empt" , x_file->COUNT_EMPTY, x_file->i_proj->COUNT_EMPTY));
+         printf ("%s\n", poly_cats_header (5, "docs" , x_file->COUNT_DOCS , x_file->i_proj->COUNT_DOCS ));
+         printf ("%s\n", poly_cats_header (4, "dbug" , x_file->COUNT_DEBUG, x_file->i_proj->COUNT_DEBUG));
+         printf ("%s\n", poly_cats_header (3, "code" , x_file->COUNT_CODE , x_file->i_proj->COUNT_CODE ));
+         printf ("%s\n", poly_cats_header (2, "sloc" , x_file->COUNT_SLOCL, x_file->i_proj->COUNT_SLOCL));
          printf ("%s\n", poly_cats_header (1, ""     , 0                   , 0                       ));
-         printf ("%s\n", poly_func_line   (NULL, POLY_RPTG_HTAGS, 0, 0, x_file->count, '-'));
+         printf ("%s\n", poly_func_line   (NULL, POLY_RPTG_HTAGS, 0, 0, x_file->i_ccount, '-'));
       }
       x_func = NULL;
       rc = poly_code_nextfunc (x_file, &x_func);
       DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
       DEBUG_PROG   yLOG_point   ("x_func"    , x_func);
       while (rc >= 0)  {
-         DEBUG_PROG   yLOG_info    ("name"      , x_func->name);
+         DEBUG_PROG   yLOG_info    ("name"      , x_func->c_name);
          printf ("%s\n", poly_func_line (x_func, POLY_RPTG_HTAGS, 0, 0, 0, '-'));
          rc = poly_code_nextfunc (x_file, &x_func);
          DEBUG_PROG   yLOG_value   ("nexttag"   , rc);
@@ -1056,20 +1056,20 @@ poly_rptg_htags         (tPROJ *a_proj)
       printf ("\n");
       printf ("footprint\n");
       ystrl4main (x_file->COUNT_TEXT       , s , 0, 'c', '-', LEN_TERSE);
-      ystrl4main (x_file->proj->COUNT_TEXT , t , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->i_proj->COUNT_TEXT , t , 0, 'c', '-', LEN_TERSE);
       printf ("txt %7.7s %8.8s\n", s, t);
       ystrl4main (x_file->COUNT_DATA       , s , 0, 'c', '-', LEN_TERSE);
-      ystrl4main (x_file->proj->COUNT_DATA , t , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->i_proj->COUNT_DATA , t , 0, 'c', '-', LEN_TERSE);
       printf ("dat %7.7s %8.8s\n", s, t);
       ystrl4main (x_file->COUNT_BSS        , s , 0, 'c', '-', LEN_TERSE);
-      ystrl4main (x_file->proj->COUNT_BSS  , t , 0, 'c', '-', LEN_TERSE);
+      ystrl4main (x_file->i_proj->COUNT_BSS  , t , 0, 'c', '-', LEN_TERSE);
       printf ("bss %7.7s %8.8s\n", s, t);
-      /*> printf ("text %6d %7d\n", x_file->COUNT_TEXT, x_file->proj->COUNT_TEXT);    <* 
-       *> printf ("data %6d %7d\n", x_file->COUNT_DATA, x_file->proj->COUNT_DATA);    <* 
-       *> printf ("bss  %6d %7d\n", x_file->COUNT_BSS , x_file->proj->COUNT_BSS);     <*/
-      if (my.g_rptg == POLY_RPTG_HTAGS)  for (i = 0; i < 70 - x_file->count; ++i)  printf ("\n");
+      /*> printf ("text %6d %7d\n", x_file->COUNT_TEXT, x_file->i_proj->COUNT_TEXT);    <* 
+       *> printf ("data %6d %7d\n", x_file->COUNT_DATA, x_file->i_proj->COUNT_DATA);    <* 
+       *> printf ("bss  %6d %7d\n", x_file->COUNT_BSS , x_file->i_proj->COUNT_BSS);     <*/
+      if (my.g_rptg == POLY_RPTG_HTAGS)  for (i = 0; i < 70 - x_file->i_ccount; ++i)  printf ("\n");
       else         printf ("\n\n");
-      x_file = x_file->next;
+      x_file = x_file->i_next;
       DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    }
    /*---(complete)-----------------------*/
@@ -1102,13 +1102,13 @@ poly_rptg_func          (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   x_file = x_func->file;
+   x_file = x_func->c_file;
    DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    --rce;  if (x_file == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   x_proj = x_file->proj;
+   x_proj = x_file->i_proj;
    DEBUG_PROG   yLOG_point   ("x_proj"    , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -1116,8 +1116,8 @@ poly_rptg_func          (void)
    }
    /*---(report header)------------------*/
    printf ("#!/usr/local/bin/polymnia --report function\n");
-   printf ("   function %s -> %s -> %s\n", x_proj->name, x_file->name, x_func->name);
-   printf ("   location   head %4d, beg %4d, end %4d\n", x_func->line, x_func->beg, x_func->end);
+   printf ("   function %s -> %s -> %s\n", x_proj->j_name, x_file->i_name, x_func->c_name);
+   printf ("   location   head %4d, beg %4d, end %4d\n", x_func->c_line, x_func->c_beg, x_func->c_end);
    printf ("\n");
    /*---(display summary)----------------*/
    poly_cats_by_index (x_func, i, &x_grp, &x_sub, x_name, x_desc, &x_set);
@@ -1163,14 +1163,14 @@ poly_rptg_dispatch      (void)
    if (my.g_projno >= 0) {
       DEBUG_OUTP   yLOG_note    ("handle a specific project");
       rc     = poly_proj_by_index (my.g_projno, &(my.g_proj));
-      ystrlcpy (my.g_projname, my.g_proj->name, LEN_LABEL);
+      ystrlcpy (my.g_projname, my.g_proj->j_name, LEN_LABEL);
       /*> printf ("project %2d, %p, %s\n", my.g_projno, my.g_proj, my.g_projname);   <*/
    }
    DEBUG_OUTP   yLOG_value   ("g_fileno"  , my.g_fileno);
    if (my.g_fileno >= 0) {
       DEBUG_OUTP   yLOG_note    ("handle a specific file");
       rc     = poly_file_by_proj_index (my.g_proj, my.g_fileno, &(my.g_file));
-      ystrlcpy (my.g_filename, my.g_file->name, LEN_LABEL);
+      ystrlcpy (my.g_filename, my.g_file->i_name, LEN_LABEL);
       /*> printf ("file    %2d, %p, %s\n", my.g_fileno, my.g_proj, my.g_projname);   <*/
    }
    DEBUG_PROG   yLOG_char    ("g_rptg"    , my.g_rptg);

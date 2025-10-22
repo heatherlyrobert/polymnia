@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1h"
-#define     P_VERTXT    "full string test on ySCORE using polymnia table"
+#define     P_VERNUM    "1.1i"
+#define     P_VERTXT    "prefixed elements of structures proj (j_), file (i_), and func (c_) for easier finding"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -428,89 +428,97 @@ extern      tMY         my;
 
 
 
-
-/*----------+-----------+-----------+-----------+-----------+-----------+-----*/
+/*
+ *  PROJECT LEVEL
+ *  -- all structure elements are prefixed with j_ for fourth letter
+ *
+ */
 struct cPROJ {
    /*---(overall)-----------*/
-   char        name        [LEN_TITLE];
-   char        header      [LEN_DESC];      /* flags on each header oneliner  */
-   long        written;
+   char        j_name        [LEN_TITLE];
+   char        j_header      [LEN_DESC];      /* flags on each header oneliner  */
+   long        j_written;
    /*---(master)------------*/
-   char        focus       [LEN_DESC]; 
-   char        niche       [LEN_DESC]; 
-   char        subject     [LEN_DESC];
-   char        purpose     [LEN_HUND];
+   char        j_focus       [LEN_DESC]; 
+   char        j_niche       [LEN_DESC]; 
+   char        j_subject     [LEN_DESC];
+   char        j_purpose     [LEN_HUND];
    /*---(greek)-------------*/
-   char        namesake    [LEN_HUND];
-   char        pronounce   [LEN_TITLE];
-   char        heritage    [LEN_HUND];
-   char        briefly     [LEN_TITLE];
-   char        imagery     [LEN_HUND];
-   char        reason      [LEN_HUND];
+   char        j_namesake    [LEN_HUND];
+   char        j_pronounce   [LEN_TITLE];
+   char        j_heritage    [LEN_HUND];
+   char        j_briefly     [LEN_TITLE];
+   char        j_imagery     [LEN_HUND];
+   char        j_reason      [LEN_HUND];
    /*---(oneline)-----------*/
-   char        oneline     [LEN_HUND];
+   char        j_oneline     [LEN_HUND];
    /*---(location)----------*/
-   char        homedir     [LEN_HUND];
-   char        progname    [LEN_TITLE];
-   char        fullpath    [LEN_HUND];
-   char        suffix      [LEN_LABEL];
-   char        content     [LEN_TITLE];
+   char        j_homedir     [LEN_HUND];
+   char        j_progname    [LEN_TITLE];
+   char        j_fullpath    [LEN_HUND];
+   char        j_suffix      [LEN_LABEL];
+   char        j_content     [LEN_TITLE];
    /*---(system)------------*/
-   char        systems     [LEN_HUND];
-   char        language    [LEN_HUND];
-   char        compiler    [LEN_LABEL];
-   char        codesize    [LEN_DESC];
+   char        j_systems     [LEN_HUND];
+   char        j_language    [LEN_HUND];
+   char        j_compiler    [LEN_LABEL];
+   char        j_codesize    [LEN_DESC];
    /*---(depends)-----------*/
-   char        dep_cstd    [LEN_HUND];
-   char        dep_posix   [LEN_HUND];
-   char        dep_core    [LEN_HUND];
-   char        dep_vikey   [LEN_HUND];
-   char        dep_other   [LEN_HUND];
-   char        dep_graph   [LEN_HUND];
-   char        dep_solo    [LEN_HUND];
+   char        j_dep_cstd    [LEN_HUND];
+   char        j_dep_posix   [LEN_HUND];
+   char        j_dep_core    [LEN_HUND];
+   char        j_dep_vikey   [LEN_HUND];
+   char        j_dep_other   [LEN_HUND];
+   char        j_dep_graph   [LEN_HUND];
+   char        j_dep_solo    [LEN_HUND];
    /*---(author)------------*/
-   char        author      [LEN_TITLE];
-   char        created     [LEN_LABEL];
+   char        j_author      [LEN_TITLE];
+   char        j_created     [LEN_LABEL];
    /*---(versioning)--------*/
-   char        vermajor    [LEN_HUND];
-   char        verminor    [LEN_HUND];
-   char        vernum      [LEN_LABEL];
-   char        vertxt      [LEN_HUND];
+   char        j_vermajor    [LEN_HUND];
+   char        j_verminor    [LEN_HUND];
+   char        j_vernum      [LEN_LABEL];
+   char        j_vertxt      [LEN_HUND];
    /*---(other)-------------*/
-   char        manual      [LEN_LABEL];
-   char        git;
+   char        j_manual      [LEN_LABEL];
+   char        j_git;
    /*---(new stats interface)-*/
-   int         funcs;
+   int         j_funcs;
    int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(files)-------------*/
-   tFILE      *head;
-   tFILE      *tail;
-   int         count;
+   tFILE      *j_ihead;                     /* file (i) list head             */
+   tFILE      *j_itail;                     /* file (i) list tail             */
+   int         j_icount;                    /* file (i) list count            */
    /*---(btree)-------------*/
-   tBTREE     *btree;
+   tBTREE     *j_btree;
    /*---(done)--------------*/
 };
 
 
-
+/*
+ *  FILE LEVEL
+ *  -- all file structure elements are prefixed with i_ for third letter
+ *
+ *
+ */
 struct cFILE {
    /*---(master)------------*/
-   char        type;
-   char        name        [LEN_TITLE];
-   char        sort        [LEN_TITLE];
+   char        i_type;
+   char        i_name        [LEN_TITLE];
+   char        i_sort        [LEN_TITLE];
    /*---(new stats interface)-*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(parent)------------*/
-   tPROJ      *proj;
+   tPROJ      *i_proj;
    /*---(files)-------------*/
-   tFILE      *prev;
-   tFILE      *next;
+   tFILE      *i_prev;
+   tFILE      *i_next;
    /*---(tags)--------------*/
-   tFUNC      *head;
-   tFUNC      *tail;
-   int         count;
+   tFUNC      *i_chead;                     /* function (c) list head         */
+   tFUNC      *i_ctail;                     /* function (c) list tail         */
+   int         i_ccount;                    /* function (c) list count        */
    /*---(btree)-------------*/
-   tBTREE     *btree;
+   tBTREE     *i_btree;
    /*---(done)--------------*/
 };
 
@@ -625,38 +633,48 @@ struct cSIBS {
 
 
 
+/*
+ *  FUNCTION LEVEL
+ *  -- all function data elements are prefixed with c_ with third letter
+ *
+ */
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 struct      cFUNC {
    /*---(master)-------------------------*/
-   char        type;                        /* 'f' normal, '_' separator      */
-   char        name        [LEN_TITLE];     /* c function name                */
-   char        hint        [LEN_SHORT];     /* two-char navigation hint       */
-   char        rlong       [LEN_LABEL];     /* actual return string           */
-   char        purpose     [LEN_DESC];      /* short description of purpose   */
-   int         line;                        /* function header                */
-   int         beg;                         /* first code line                */
-   int         end;                         /* last code line                 */
-   char        ready;
+   char        c_type;                        /* 'f' normal, '_' separator      */
+   char        c_name        [LEN_TITLE];     /* c function name                */
+   char        c_hint        [LEN_SHORT];     /* two-char navigation hint       */
+   char        c_rlong       [LEN_LABEL];     /* actual return string           */
+   char        c_purpose     [LEN_DESC];      /* short description of purpose   */
+   int         c_line;                        /* function header                */
+   int         c_beg;                         /* first code line                */
+   int         c_end;                         /* last code line                 */
+   char        c_ready;
    /*---(new stats interface)------------*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    char        stats       [MAX_STATS];     /* statistics                     */
-   char        anatomy     [LEN_TERSE];     /* function type                  */
-   char        match       [LEN_LABEL];     /* function type match sting      */
+   char        c_anatomy     [LEN_TERSE];     /* function type                  */
+   char        c_match       [LEN_LABEL];     /* function type match sting      */
    /*---(parent)------------*/
-   tFILE      *file;
+   tFILE      *c_file;
    /*---(tags)--------------*/
-   tFUNC      *prev;
-   tFUNC      *next;
-   tWORK      *work;
+   tFUNC      *c_prev;
+   tFUNC      *c_next;
+   tWORK      *c_work;
    /*---(extern)------------*/
-   int         y_count;
-   tYLIB      *y_head;
-   tYLIB      *y_tail;
+   tYLIB      *c_yhead;
+   tYLIB      *c_ytail;
+   int         c_ycount;
    /*---(btree)-------------*/
-   tBTREE     *btree;
+   tBTREE     *c_btree;
    /*---(done)--------------*/
 };
 
+/*
+ *  YLIB LEVEL
+ *  -- all ylib data elements are prefixed with y_ with first letter
+ *
+ */
 struct cYLIB {
    /*---(main)--------------*/
    uchar       name       [LEN_TITLE];
@@ -687,93 +705,93 @@ struct cWORLD {
 #define     MAX_TEMPS      100
 
 /*---(location)-----------------------*/
-#define     WORK_BEG       work->beg
-#define     WORK_END       work->end
-#define     WORK_LOCALS    work->locals
+#define     WORK_BEG       c_work->beg
+#define     WORK_END       c_work->end
+#define     WORK_LOCALS    c_work->locals
 /*---(group one.b)--------------------*/
-#define     WORK_PARAMS    work->temp  [ 0]
-#define     WORK_PIN       work->temp  [61]
-#define     WORK_POUT      work->temp  [62]
-#define     WORK_PBOTH     work->temp  [63]
-#define     WORK_PCHG      work->temp  [72]
-#define     WORK_PNUM      work->temp  [64]
-#define     WORK_PMULTI    work->temp  [65]
-#define     WORK_PFUNC     work->temp  [66]
-#define     WORK_PSTRUCT   work->temp  [71]
+#define     WORK_PARAMS    c_work->temp  [ 0]
+#define     WORK_PIN       c_work->temp  [61]
+#define     WORK_POUT      c_work->temp  [62]
+#define     WORK_PBOTH     c_work->temp  [63]
+#define     WORK_PCHG      c_work->temp  [72]
+#define     WORK_PNUM      c_work->temp  [64]
+#define     WORK_PMULTI    c_work->temp  [65]
+#define     WORK_PFUNC     c_work->temp  [66]
+#define     WORK_PSTRUCT   c_work->temp  [71]
 /*---(group one.c)--------------------*/
-#define     WORK_LVARS     work->temp  [ 1]
-#define     WORK_FVARS     work->temp  [ 2]
-#define     WORK_GVARS     work->temp  [ 3]
+#define     WORK_LVARS     c_work->temp  [ 1]
+#define     WORK_FVARS     c_work->temp  [ 2]
+#define     WORK_GVARS     c_work->temp  [ 3]
 /*---(group one.d)--------------------*/
-#define     WORK_CHOICE    work->temp  [ 4]
-#define     WORK_RETURN    work->temp  [ 5]
-#define     WORK_INDENT    work->temp  [ 6]
-#define     WORK_MEMORY    work->temp  [ 7]
+#define     WORK_CHOICE    c_work->temp  [ 4]
+#define     WORK_RETURN    c_work->temp  [ 5]
+#define     WORK_INDENT    c_work->temp  [ 6]
+#define     WORK_MEMORY    c_work->temp  [ 7]
 /*---(group two.a)--------------------*/
-#define     WORK_ACALLS    work->temp  [ 8]
-#define     WORK_LCALLS    work->temp  [ 9]
-#define     WORK_GCALLS    work->temp  [10]
-#define     WORK_ECALLS    work->temp  [11]
-#define     WORK_RECURS    work->temp  [12]
+#define     WORK_ACALLS    c_work->temp  [ 8]
+#define     WORK_LCALLS    c_work->temp  [ 9]
+#define     WORK_GCALLS    c_work->temp  [10]
+#define     WORK_ECALLS    c_work->temp  [11]
+#define     WORK_RECURS    c_work->temp  [12]
 /*---(group two.b)--------------------*/
-#define     WORK_FUNCS     work->temp  [13]
-#define     WORK_DFUNCS    work->temp  [14]
-#define     WORK_RFUNCS    work->temp  [15]
-#define     WORK_LFUNCS    work->temp  [16]
-#define     WORK_GFUNCS    work->temp  [17]
-#define     WORK_CSTD      work->temp  [18]
-#define     WORK_YLIB      work->temp  [19]
-#define     WORK_VIKEYS    work->temp  [68]
-#define     WORK_OFUNCS    work->temp  [20]
-#define     WORK_MYSTRY    work->temp  [21]
+#define     WORK_FUNCS     c_work->temp  [13]
+#define     WORK_DFUNCS    c_work->temp  [14]
+#define     WORK_RFUNCS    c_work->temp  [15]
+#define     WORK_LFUNCS    c_work->temp  [16]
+#define     WORK_GFUNCS    c_work->temp  [17]
+#define     WORK_CSTD      c_work->temp  [18]
+#define     WORK_YLIB      c_work->temp  [19]
+#define     WORK_VIKEYS    c_work->temp  [68]
+#define     WORK_OFUNCS    c_work->temp  [20]
+#define     WORK_MYSTRY    c_work->temp  [21]
 /*---(group two.c)--------------------*/
-#define     WORK_INPUT     work->temp  [22]
-#define     WORK_TREAD     work->temp  [23]
-#define     WORK_BREAD     work->temp  [24]
-#define     WORK_OUTPUT    work->temp  [25]
-#define     WORK_TWRITE    work->temp  [26]
-#define     WORK_BWRITE    work->temp  [27]
-#define     WORK_PROCS     work->temp  [28]
-#define     WORK_OPSYS     work->temp  [29]
-#define     WORK_FILESYS   work->temp  [30]
+#define     WORK_INPUT     c_work->temp  [22]
+#define     WORK_TREAD     c_work->temp  [23]
+#define     WORK_BREAD     c_work->temp  [24]
+#define     WORK_OUTPUT    c_work->temp  [25]
+#define     WORK_TWRITE    c_work->temp  [26]
+#define     WORK_BWRITE    c_work->temp  [27]
+#define     WORK_PROCS     c_work->temp  [28]
+#define     WORK_OPSYS     c_work->temp  [29]
+#define     WORK_FILESYS   c_work->temp  [30]
 /*---(group two.d)--------------------*/
-#define     WORK_NCURSE    work->temp  [31]
-#define     WORK_OPENGL    work->temp  [32]
-#define     WORK_WINDOW    work->temp  [33]
-#define     WORK_MYX       work->temp  [34]
+#define     WORK_NCURSE    c_work->temp  [31]
+#define     WORK_OPENGL    c_work->temp  [32]
+#define     WORK_WINDOW    c_work->temp  [33]
+#define     WORK_MYX       c_work->temp  [34]
 /*---(group three.a)------------------*/
-#define     WORK_DCOUNT    work->temp  [35]
-#define     WORK_DLONG     work->temp  [36]
-#define     WORK_DSHORT    work->temp  [37]
-#define     WORK_DENTER    work->temp  [38]
-#define     WORK_DEXIT     work->temp  [39]
-#define     WORK_DEXITR    work->temp  [67]
-#define     WORK_DFREE     work->temp  [40]
+#define     WORK_DCOUNT    c_work->temp  [35]
+#define     WORK_DLONG     c_work->temp  [36]
+#define     WORK_DSHORT    c_work->temp  [37]
+#define     WORK_DENTER    c_work->temp  [38]
+#define     WORK_DEXIT     c_work->temp  [39]
+#define     WORK_DEXITR    c_work->temp  [67]
+#define     WORK_DFREE     c_work->temp  [40]
 /*---(group three.b)------------------*/
-#define     WORK_PUSE      work->temp  [41]
-#define     WORK_FUSE      work->temp  [42]
-#define     WORK_GUSE      work->temp  [43]
-#define     WORK_CUSE      work->temp  [44]
-#define     WORK_YUSE      work->temp  [45]
-#define     WORK_VUSE      work->temp  [69]
-#define     WORK_OUSE      work->temp  [46]
-#define     WORK_MUSE      work->temp  [70]
+#define     WORK_PUSE      c_work->temp  [41]
+#define     WORK_FUSE      c_work->temp  [42]
+#define     WORK_GUSE      c_work->temp  [43]
+#define     WORK_CUSE      c_work->temp  [44]
+#define     WORK_YUSE      c_work->temp  [45]
+#define     WORK_VUSE      c_work->temp  [69]
+#define     WORK_OUSE      c_work->temp  [46]
+#define     WORK_MUSE      c_work->temp  [70]
 /*---(group three.c)------------------*/
-#define     WORK_VMASK     work->temp  [47]
-#define     WORK_MMASK     work->temp  [48]
-#define     WORK_FMASK     work->temp  [49]
-#define     WORK_LSTATIC   work->temp  [50]
+#define     WORK_VMASK     c_work->temp  [47]
+#define     WORK_MMASK     c_work->temp  [48]
+#define     WORK_FMASK     c_work->temp  [49]
+#define     WORK_LSTATIC   c_work->temp  [50]
 /*---(group three.d)------------------*/
-#define     WORK_TSAVE     work->temp  [51]
-#define     WORK_TUNIT     work->temp  [52]
-#define     WORK_SSAVE     work->temp  [53]
-#define     WORK_SUNIT     work->temp  [54]
-#define     WORK_NUNIT     work->temp  [55]
-#define     WORK_STEST     work->temp  [56]
+#define     WORK_TSAVE     c_work->temp  [51]
+#define     WORK_TUNIT     c_work->temp  [52]
+#define     WORK_SSAVE     c_work->temp  [53]
+#define     WORK_SUNIT     c_work->temp  [54]
+#define     WORK_NUNIT     c_work->temp  [55]
+#define     WORK_STEST     c_work->temp  [56]
 /*---(new)----------------------------*/
-#define     WORK_RCE       work->temp  [57]
-#define     WORK_LOOP      work->temp  [58]
-#define     WORK_DEXTRA    work->temp  [60]
+#define     WORK_RCE       c_work->temp  [57]
+#define     WORK_LOOP      c_work->temp  [58]
+#define     WORK_DEXTRA    c_work->temp  [60]
 
 
 
@@ -792,7 +810,7 @@ struct cWORK {
 struct      cBTREE {
    /*---(information)-------*/
    char        n;
-   char       *sort;
+   char       *i_sort;
    /*---(linked list)-------*/
    tBTREE     *prev;
    tBTREE     *next;
@@ -814,6 +832,11 @@ struct      cBTREE {
 #define     B_ALL       "TftpewlU"
 #define     B_TEMP      'Z'
 
+/*
+ *  ELIB LEVEL
+ *  -- all ylib data elements are prefixed with e_ with first letter
+ *
+ */
 struct      cELIB {
    /*---(info)--------------*/
    char        name        [LEN_LABEL];
@@ -828,6 +851,11 @@ struct      cELIB {
 };
 
 
+/*
+ *  EXTERN LEVEL
+ *  -- all ylib data elements are prefixed with t_ with third letter
+ *
+ */
 /*----------+-----------+-----------+-----------+-----------+-----------+-----*/
 struct      cEXTERN {
    /*---(information)-------*/

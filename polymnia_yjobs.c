@@ -80,7 +80,7 @@ poly_yjobs_pull         (cchar *a_data)
    if (x_proj == NULL) {
       yURG_err ('w', "project does not exist in the database, nothing to do");
    } else {
-      DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);
+      DEBUG_PROG   yLOG_point   ("->name"     , x_proj->j_name);
       /*---(remove existing target)---------*/
       yURG_msg ('-', "remove current project");
       rc = poly_proj_remove (&x_proj);
@@ -100,10 +100,10 @@ poly_yjobs_pull         (cchar *a_data)
       return rc;
    }
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
-   DEBUG_PROG   yLOG_info    ("->name"     , x_proj->name);
+   DEBUG_PROG   yLOG_info    ("->name"     , x_proj->j_name);
    /*---(save off)-----------------------*/
    my.g_proj = x_proj;
-   x_proj->written = my.runtime;
+   x_proj->j_written = my.runtime;
    /*---(analyze project)----------------*/
    rc = poly_action__gather (x_proj);
    DEBUG_PROG   yLOG_value   ("gather"     , rc);
@@ -146,10 +146,10 @@ poly_yjobs_clear        (cchar *a_data)
    } else {
       yURG_msg ('-', "found project in current data");
    }
-   DEBUG_PROG   yLOG_point   ("->name"     , x_proj->name);
+   DEBUG_PROG   yLOG_point   ("->name"     , x_proj->j_name);
    /*---(save off)-----------------------*/
    my.g_proj = x_proj;
-   x_proj->written = my.runtime;
+   x_proj->j_written = my.runtime;
    /*---(remove existing target)---------*/
    yURG_msg ('-', "remove current project");
    rc = poly_proj_remove (&x_proj);
@@ -322,7 +322,7 @@ poly_yjobs_callback     (cchar a_req, cchar *a_data)
       *>       }                                                                              <* 
       *>       /+---(save off)-----------------------+/                                       <* 
       *>       my.g_proj = x_proj;                                                            <* 
-      *>       x_proj->written = my.runtime;                                                  <* 
+      *>       x_proj->j_written = my.runtime;                                                  <* 
       *>       /+---(analyze project)----------------+/                                       <* 
       *>       rc = poly_action__gather (x_proj);                                             <* 
       *>       DEBUG_PROG   yLOG_value   ("gather"     , rc);                                 <* 

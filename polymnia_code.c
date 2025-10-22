@@ -96,45 +96,45 @@ poly_code__unquote      (char *a_dst, char *a_src, int a_max)
  *>    }                                                                                                                                          <* 
  *>    DEBUG_INPT   yLOG_info    ("r"         , r);                                                                                               <* 
  *>    /+---(master)-------------------+/                                                                                                         <* 
- *>    if      (strncmp (q, "P_FOCUS     ", 12) == 0)  poly_code__unquote (a_file->proj->focus    , r, LEN_DESC);                                 <* 
- *>    else if (strncmp (q, "P_NICHE     ", 12) == 0)  poly_code__unquote (a_file->proj->niche    , r, LEN_DESC);                                 <* 
- *>    else if (strncmp (q, "P_SUBJECT   ", 12) == 0)  poly_code__unquote (a_file->proj->subject  , r, LEN_DESC);                                 <* 
- *>    else if (strncmp (q, "P_PURPOSE   ", 12) == 0)  poly_code__unquote (a_file->proj->purpose  , r, LEN_HUND);                                 <* 
+ *>    if      (strncmp (q, "P_FOCUS     ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_focus    , r, LEN_DESC);                                 <* 
+ *>    else if (strncmp (q, "P_NICHE     ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_niche    , r, LEN_DESC);                                 <* 
+ *>    else if (strncmp (q, "P_SUBJECT   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_subject  , r, LEN_DESC);                                 <* 
+ *>    else if (strncmp (q, "P_PURPOSE   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_purpose  , r, LEN_HUND);                                 <* 
  *>    /+---(greek)--------------------+/                                                                                                         <* 
- *>    else if (strncmp (q, "P_NAMESAKE  ", 12) == 0)  poly_code__unquote (a_file->proj->namesake , r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_PRONOUNCE ", 12) == 0)  poly_code__unquote (a_file->proj->pronounce, r, LEN_TITLE);                                <* 
- *>    else if (strncmp (q, "P_HERITAGE  ", 12) == 0)  poly_code__unquote (a_file->proj->heritage , r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_BRIEFLY   ", 12) == 0)  poly_code__unquote (a_file->proj->briefly  , r, LEN_TITLE);                                <* 
- *>    else if (strncmp (q, "P_IMAGERY   ", 12) == 0)  poly_code__unquote (a_file->proj->imagery  , r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_REASON    ", 12) == 0)  poly_code__unquote (a_file->proj->reason   , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_NAMESAKE  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_namesake , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_PRONOUNCE ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_pronounce, r, LEN_TITLE);                                <* 
+ *>    else if (strncmp (q, "P_HERITAGE  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_heritage , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_BRIEFLY   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_briefly  , r, LEN_TITLE);                                <* 
+ *>    else if (strncmp (q, "P_IMAGERY   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_imagery  , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_REASON    ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_reason   , r, LEN_HUND);                                 <* 
  *>    /+---(oneline)------------------+/                                                                                                         <* 
- *>    else if (strncmp (q, "P_ONELINE   ", 12) == 0)  sprintf (a_file->proj->oneline, "%s %s", a_file->proj->namesake, a_file->proj->subject);   <* 
+ *>    else if (strncmp (q, "P_ONELINE   ", 12) == 0)  sprintf (a_file->i_proj->j_oneline, "%s %s", a_file->i_proj->j_namesake, a_file->i_proj->j_subject);   <* 
  *>    /+---(location)-----------------+/                                                                                                         <* 
- *>    else if (strncmp (q, "P_BASENAME  ", 12) == 0)  poly_code__unquote (a_file->proj->progname , r, LEN_TITLE);                                <* 
- *>    else if (strncmp (q, "P_FULLPATH  ", 12) == 0)  poly_code__unquote (a_file->proj->fullpath , r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_SUFFIX    ", 12) == 0)  poly_code__unquote (a_file->proj->suffix   , r, LEN_LABEL);                                <* 
- *>    else if (strncmp (q, "P_CONTENT   ", 12) == 0)  poly_code__unquote (a_file->proj->content  , r, LEN_TITLE);                                <* 
+ *>    else if (strncmp (q, "P_BASENAME  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_progname , r, LEN_TITLE);                                <* 
+ *>    else if (strncmp (q, "P_FULLPATH  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_fullpath , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_SUFFIX    ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_suffix   , r, LEN_LABEL);                                <* 
+ *>    else if (strncmp (q, "P_CONTENT   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_content  , r, LEN_TITLE);                                <* 
  *>    /+---(chars)--------------------+/                                                                                                         <* 
- *>    else if (strncmp (q, "P_SYSTEM    ", 12) == 0)  poly_code__unquote (a_file->proj->systems  , r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_LANGUAGE  ", 12) == 0)  poly_code__unquote (a_file->proj->language , r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_COMPILER  ", 12) == 0)  poly_code__unquote (a_file->proj->compiler , r, LEN_LABEL);                                <* 
- *>    else if (strncmp (q, "P_CODESIZE  ", 12) == 0)  poly_code__unquote (a_file->proj->codesize , r, LEN_DESC);                                 <* 
+ *>    else if (strncmp (q, "P_SYSTEM    ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_systems  , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_LANGUAGE  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_language , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_COMPILER  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_compiler , r, LEN_LABEL);                                <* 
+ *>    else if (strncmp (q, "P_CODESIZE  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_codesize , r, LEN_DESC);                                 <* 
  *>    /+---(depends)------------------+/                                                                                                         <* 
- *>    else if (strncmp (q, "P_DEPSTDC   ", 12) == 0)  poly_code__unquote (a_file->proj->dep_cstd , r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_DEPPOSIX  ", 12) == 0)  poly_code__unquote (a_file->proj->dep_posix, r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_DEPCORE   ", 12) == 0)  poly_code__unquote (a_file->proj->dep_core , r, LEN_HUND);                                 <* 
- *>    else if (strncmp (q, "P_DEPVIKEY  ", 12) == 0)  poly_code__unquote (a_file->proj->dep_vikey, r, LEN_HUND);                                 <* 
-*>    else if (strncmp (q, "P_DEPOTHER  ", 12) == 0)  poly_code__unquote (a_file->proj->dep_other, r, LEN_HUND);                                 <* 
-*>    else if (strncmp (q, "P_DEPGRAPH  ", 12) == 0)  poly_code__unquote (a_file->proj->dep_graph, r, LEN_HUND);                                 <* 
-*>    else if (strncmp (q, "P_DEPSOLO   ", 12) == 0)  poly_code__unquote (a_file->proj->dep_solo , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_DEPSTDC   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_dep_cstd , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_DEPPOSIX  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_dep_posix, r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_DEPCORE   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_dep_core , r, LEN_HUND);                                 <* 
+ *>    else if (strncmp (q, "P_DEPVIKEY  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_dep_vikey, r, LEN_HUND);                                 <* 
+*>    else if (strncmp (q, "P_DEPOTHER  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_dep_other, r, LEN_HUND);                                 <* 
+*>    else if (strncmp (q, "P_DEPGRAPH  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_dep_graph, r, LEN_HUND);                                 <* 
+*>    else if (strncmp (q, "P_DEPSOLO   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_dep_solo , r, LEN_HUND);                                 <* 
 *>    /+---(created)------------------+/                                                                                                         <* 
-*>    else if (strncmp (q, "P_AUTHOR    ", 12) == 0)  poly_code__unquote (a_file->proj->author   , r, LEN_TITLE);                                <* 
-*>    else if (strncmp (q, "P_CREATED   ", 12) == 0)  poly_code__unquote (a_file->proj->created  , r, LEN_LABEL);                                <* 
+*>    else if (strncmp (q, "P_AUTHOR    ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_author   , r, LEN_TITLE);                                <* 
+*>    else if (strncmp (q, "P_CREATED   ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_created  , r, LEN_LABEL);                                <* 
 *>    /+---(version)------------------+/                                                                                                         <* 
-*>    else if (strncmp (q, "P_VERMAJOR  ", 12) == 0)  poly_code__unquote (a_file->proj->vermajor , r, LEN_HUND);                                 <* 
-*>    else if (strncmp (q, "P_VERMINOR  ", 12) == 0)  poly_code__unquote (a_file->proj->verminor , r, LEN_HUND);                                 <* 
-*>    else if (strncmp (q, "P_VERNUM    ", 12) == 0)  poly_code__unquote (a_file->proj->vernum   , r, LEN_LABEL);                                <* 
-*>    else if (strncmp (q, "P_VERTXT    ", 12) == 0)  poly_code__unquote (a_file->proj->vertxt   , r, LEN_HUND);                                 <* 
+*>    else if (strncmp (q, "P_VERMAJOR  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_vermajor , r, LEN_HUND);                                 <* 
+*>    else if (strncmp (q, "P_VERMINOR  ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_verminor , r, LEN_HUND);                                 <* 
+*>    else if (strncmp (q, "P_VERNUM    ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_vernum   , r, LEN_LABEL);                                <* 
+*>    else if (strncmp (q, "P_VERTXT    ", 12) == 0)  poly_code__unquote (a_file->i_proj->j_vertxt   , r, LEN_HUND);                                 <* 
 *>    /+---(notes)--------------------+/                                                                                                         <* 
 *>    else if (strncmp (q, "P_PRIORITY  ", 12) == 0)  ;                                                                                          <* 
 *>    else if (strncmp (q, "P_PRINCIPLE ", 12) == 0)  ;                                                                                          <* 
@@ -208,8 +208,8 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
    if (a_func == NULL) {
       DEBUG_DATA   yLOG_note    ("function is null");
    } else {
-      DEBUG_DATA   yLOG_point   ("->work"    , a_func->work);
-      if (a_func->work == NULL) {
+      DEBUG_DATA   yLOG_point   ("->work"    , a_func->c_work);
+      if (a_func->c_work == NULL) {
          DEBUG_DATA   yLOG_note   ("a_func->work null");
       } else {
          DEBUG_DATA   yLOG_value  ("WORK_BEG"  , a_func->WORK_BEG);
@@ -220,12 +220,12 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
    if (x_inside == 0)    DEBUG_DATA   yLOG_note   ("inside a function");
    /*---(line counts)--------------------*/
    ++my.COUNT_LINES;
-   ++a_file->proj->COUNT_LINES;
+   ++a_file->i_proj->COUNT_LINES;
    ++a_file->COUNT_LINES;
    if (x_inside == 0) ++a_func->COUNT_LINES;
    /*---(code counts)--------------------*/
    ++my.COUNT_CODE;
-   ++a_file->proj->COUNT_CODE;
+   ++a_file->i_proj->COUNT_CODE;
    ++a_file->COUNT_CODE;
    if (x_inside == 0) ++a_func->COUNT_CODE;
    /*---(slocl counts)-------------------*/
@@ -236,7 +236,7 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
       DEBUG_DATA   yLOG_note   ("slocl");
       my.COUNT_SLOCL += c;
       a_file->COUNT_SLOCL += c;
-      a_file->proj->COUNT_SLOCL += c;
+      a_file->i_proj->COUNT_SLOCL += c;
       if (x_inside == 0) a_func->COUNT_SLOCL += c;
    }
    /*---(complete)-----------------------*/
@@ -335,12 +335,12 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
    }
    DEBUG_DATA   yLOG_point   ("a_recd"    , a_recd);
    --rce;  if (a_recd == NULL) {
-      a_func->ready = 'e';
+      a_func->c_ready = 'e';
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(return)-------------------------*/
-   rc = poly_line_func   (a_prev, a_recd, a_func->name, &(a_func->STATS_SINGLE), &(a_func->STATS_SCOPE), &(a_func->STATS_RTYPE), a_func->rlong);
+   rc = poly_line_func   (a_prev, a_recd, a_func->c_name, &(a_func->STATS_SINGLE), &(a_func->STATS_SCOPE), &(a_func->STATS_RTYPE), a_func->c_rlong);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -350,14 +350,14 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
       p  = strstr (a_prev, "/*");
       if (p != NULL) {
          x_len = p - a_prev;
-         rc = poly_line_purpose (a_prev + x_len, a_func->purpose, &(a_func->ready));
+         rc = poly_line_purpose (a_prev + x_len, a_func->c_purpose, &(a_func->c_ready));
          if (rc < 0) {
             DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
       }
    } else {
-      rc = poly_line_purpose ("/* */", a_func->purpose, &(a_func->ready));
+      rc = poly_line_purpose ("/* */", a_func->c_purpose, &(a_func->c_ready));
    }
    /*---(parameters)---------------------*/
    rc = poly_line_params (a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));
@@ -366,7 +366,7 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
       return rce;
    }
    /*---(prototype)----------------------*/
-   rc = poly_proto_hook  (a_func->file, a_func, a_func->name);
+   rc = poly_proto_hook  (a_func->c_file, a_func, a_func->c_name);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -405,12 +405,12 @@ poly_code_nextfunc      (tFILE *a_file, tFUNC **a_func)
    /*---(first time)---------------------*/
    --rce;  if (*a_func == NULL) {
       DEBUG_DATA   yLOG_snote   ("first");
-      *a_func = a_file->head;
+      *a_func = a_file->i_chead;
    }
    /*---(next time)----------------------*/
    else { 
       DEBUG_DATA   yLOG_snote   ("next");
-      *a_func = (*a_func)->next;
+      *a_func = (*a_func)->c_next;
    }
    DEBUG_DATA   yLOG_spoint  (*a_func);
    /*---(trouble)-------------------------------*/
@@ -456,8 +456,8 @@ poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr
    DEBUG_INPT   yLOG_point   ("*a_func"   , *a_func);
    /*---(found header)----------------*/
    if (*a_func != NULL) {
-      DEBUG_INPT   yLOG_value   ("line"      , (*a_func)->line);
-      if (a_line == (*a_func)->line) {
+      DEBUG_INPT   yLOG_value   ("line"      , (*a_func)->c_line);
+      if (a_line == (*a_func)->c_line) {
          DEBUG_INPT   yLOG_note    ("FUNCTION HEADER FOUND");
          ystrlcpy   (x_full, a_curr   , LEN_RECD);
          ystrltrim  (x_full, ySTR_BOTH, LEN_RECD);
@@ -512,37 +512,37 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    if (a_func == NULL) {
       DEBUG_INPT   yLOG_info    ("CURR"      , "no function(s) in file");
    } else {
-      DEBUG_INPT   yLOG_complex ("CURR"      , "%4d] %-20.20s %4d %c %4d %4d -- %4d %4d", a_line, a_func->name, a_func->line, a_func->STATS_SINGLE, a_func->beg, a_func->end, a_func->WORK_BEG, a_func->WORK_END);
+      DEBUG_INPT   yLOG_complex ("CURR"      , "%4d] %-20.20s %4d %c %4d %4d -- %4d %4d", a_line, a_func->c_name, a_func->c_line, a_func->STATS_SINGLE, a_func->c_beg, a_func->c_end, a_func->WORK_BEG, a_func->WORK_END);
    }
    x_inside = poly_func_inside (a_func);
    DEBUG_INPT   yLOG_value   ("x_inside"  , x_inside);
    /*---(outside)---------------------*/
    if (x_inside != 1) {
       DEBUG_INPT   yLOG_note    ("outside all functions, but including headers and { } outside braces");
-      poly_line_all       (        0, &(my.COUNT_LINES), &(a_file->proj->COUNT_LINES), &(a_file->COUNT_LINES), NULL);
-      if (rc == 0)  rc = poly_line_empty     (x_full, 0, &(my.COUNT_EMPTY), &(a_file->proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), NULL);
-      if (rc == 0)  rc = poly_line_comment   (x_full, 0, &(my.COUNT_DOCS ), &(a_file->proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), NULL);
-      if (rc == 0)  rc = poly_line_debug     (x_full, 0, &(my.COUNT_DEBUG), &(a_file->proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL, NULL);
-      if (rc == 0)  rc = poly_line_unguard   (x_full, 0, &(my.COUNT_DEBUG), &(a_file->proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL);
+      poly_line_all       (        0, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), NULL);
+      if (rc == 0)  rc = poly_line_empty     (x_full, 0, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), NULL);
+      if (rc == 0)  rc = poly_line_comment   (x_full, 0, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), NULL);
+      if (rc == 0)  rc = poly_line_debug     (x_full, 0, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL, NULL);
+      if (rc == 0)  rc = poly_line_unguard   (x_full, 0, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL);
       if (rc == 0) {
-         poly_line_code      (        0, &(my.COUNT_CODE ), &(a_file->proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
-         poly_line_slocl     (x_full, 0, &(my.COUNT_SLOCL), &(a_file->proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
+         poly_line_code      (        0, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
+         poly_line_slocl     (x_full, 0, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
       }
    }
    /*---(inside)----------------------*/
    else {
       DEBUG_INPT   yLOG_note    ("inside function code");
-      poly_line_all       (        1, &(my.COUNT_LINES), &(a_file->proj->COUNT_LINES), &(a_file->COUNT_LINES), &(a_func->COUNT_LINES));
-      if (rc == 0)  rc = poly_line_empty     (x_full, 1, &(my.COUNT_EMPTY), &(a_file->proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), &(a_func->COUNT_EMPTY));
-      if (rc == 0)  rc = poly_line_comment   (x_full, 1, &(my.COUNT_DOCS ), &(a_file->proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), &(a_func->COUNT_DOCS ));
-      if (rc == 0)  rc = poly_line_debug     (x_full, 1, &(my.COUNT_DEBUG), &(a_file->proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->WORK_DEXTRA), &(a_func->STATS_DMACRO));
-      if (rc == 0)  rc = poly_line_unguard   (x_full, 1, &(my.COUNT_DEBUG), &(a_file->proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->STATS_DMACRO));
+      poly_line_all       (        1, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), &(a_func->COUNT_LINES));
+      if (rc == 0)  rc = poly_line_empty     (x_full, 1, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), &(a_func->COUNT_EMPTY));
+      if (rc == 0)  rc = poly_line_comment   (x_full, 1, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), &(a_func->COUNT_DOCS ));
+      if (rc == 0)  rc = poly_line_debug     (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->WORK_DEXTRA), &(a_func->STATS_DMACRO));
+      if (rc == 0)  rc = poly_line_unguard   (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->STATS_DMACRO));
       if (rc == 0) {
-         poly_line_code      (        1, &(my.COUNT_CODE ), &(a_file->proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
-         poly_line_slocl     (x_full, 1, &(my.COUNT_SLOCL), &(a_file->proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
+         poly_line_code      (        1, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
+         poly_line_slocl     (x_full, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
          rc = poly_line_exit   (a_curr, 1, &(a_func->WORK_RETURN), &(a_func->WORK_RCE));
          rc = poly_line_choice (a_curr, 1, &(a_func->WORK_CHOICE));
-         rc = poly_line_loop   (a_curr, 1, &(my.COUNT_SLOCL), &(a_file->proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), &(a_func->WORK_LOOP));
+         rc = poly_line_loop   (a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), &(a_func->WORK_LOOP));
          rc = poly_line_indent (a_curr, 1, &(a_func->WORK_INDENT));
       }
    }
@@ -621,7 +621,7 @@ poly_code_driver        (tFILE *a_file, int a_beg, int a_end, char a_act)
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(open file)----------------------*/
-   rc = poly_shared_open ('c', a_file->name);
+   rc = poly_shared_open ('c', a_file->i_name);
    DEBUG_INPT   yLOG_value   ("open"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -638,9 +638,9 @@ poly_code_driver        (tFILE *a_file, int a_beg, int a_end, char a_act)
       }
       DEBUG_INPT   yLOG_value   ("x_line"    , x_line);
       /*---(check headers)---------------*/
-      if (a_file->type == 'h') {
+      if (a_file->i_type == 'h') {
          DEBUG_INPT   yLOG_note    ("header file (h) line");
-         poly_proj_oneliners (a_file->proj, x_curr);
+         poly_proj_oneliners (a_file->i_proj, x_curr);
          rc = poly_code__current (a_file, 0     , NULL  , x_curr, x_prev);
       }
       /*---(check sources)---------------*/
@@ -692,7 +692,7 @@ poly_code__unit         (char *a_question, int i)
    if (strcmp (a_question, "work"      )     == 0) {
       poly_func_by_index (i, &u);
       if (u != NULL) {
-         sprintf  (t, "[%.20s]", u->name);
+         sprintf  (t, "[%.20s]", u->c_name);
          if (u->WORK_CHOICE > 0)  sprintf (s, " %3dc", u->WORK_CHOICE);
          else                     sprintf (s, "   ·c");
          ystrlcat (r, s, LEN_RECD);
