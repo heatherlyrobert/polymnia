@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1i"
-#define     P_VERTXT    "prefixed elements of structures proj (j_), file (i_), and func (c_) for easier finding"
+#define     P_VERNUM    "1.1j"
+#define     P_VERTXT    "isolated header reading code and built table to support"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -1100,13 +1100,16 @@ char        poly_proj_wrap          (void);
 char        poly_proj_git           (tPROJ *a_proj);
 char        poly_proj_footprint     (tPROJ *a_proj);
 /*---(reporting)------------*/
-char        poly_proj_oneliners     (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
-char        poly_proj__headerline   (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
-char        poly_proj_header        (tPROJ *a_proj);
 char        poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
 /*---(unittest)-------------*/
 char*       poly_proj__unit         (char *a_question, int i);
 
+
+
+char        poly_header__single     (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
+char        poly_header__encode     (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
+char        poly_header_summarize   (tPROJ *a_proj);
+char        poly_header_quick       (void);
 
 
 char        poly_db_cli             (char *a_name, char a_loud);

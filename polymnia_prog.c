@@ -286,6 +286,7 @@ PROG__args              (int a_argc, char *a_argv[])
       if      (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
       else if (strcmp (a, "--quick"     ) == 0)  PROG_usage   ();
       else if (strcmp (a, "--help"      ) == 0)  PROG_usage   ();
+      else if (strcmp (a, "--header"    ) == 0)  poly_header_quick   ();
       /*---(complicated)-----------------*/
       /*> else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }   <*/
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
@@ -453,7 +454,7 @@ PROG_summarize          (tPROJ *a_proj)
       a_proj->j_funcs += x_file->i_ccount;
       x_file = x_file->i_next;
    }
-   poly_proj_header (a_proj);
+   poly_header_summarize (a_proj);
    poly_units_by_func ();
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);

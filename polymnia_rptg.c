@@ -918,82 +918,6 @@ poly_rptg_extern        (tEXTERN *a_extern)
    return 0;
 }
 
-char
-poly_rptg__htags_header (tPROJ *a_proj)
-{
-   printf ("##/usr/local/bin/polymnia --htags\n");
-   printf ("##\n");
-   printf ("##   polymnia-hymnos (many praises) greek muse and protector of divine hymns, dancing, geometry, and grammar\n");
-   printf ("##   version %s, %s\n", P_VERNUM, P_VERTXT);
-   printf ("##   htags reporting file for use with vim-ide\n");
-   printf ("##\n");
-   printf ("##   33 headers ·  [%s]\n", a_proj->j_header);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   name       N  [%s]\n", a_proj->j_name);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   focus      f  [%s]\n", a_proj->j_focus);
-   printf ("##   niche      n  [%s]\n", a_proj->j_niche);
-   printf ("##   subject    s  [%s]\n", a_proj->j_subject);
-   printf ("##   purpose    p  [%s]\n", a_proj->j_purpose);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   namesake   ê  [%s]\n", a_proj->j_namesake);
-   printf ("##   pronounce  ÷  [%s]\n", a_proj->j_pronounce);
-   printf ("##   heritage   î  [%s]\n", a_proj->j_heritage);
-   printf ("##   briefly    é  [%s]\n", a_proj->j_briefly);
-   printf ("##   imagery    ð  [%s]\n", a_proj->j_imagery);
-   printf ("##   reason     ø  [%s]\n", a_proj->j_reason);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   one-line   ö  [%s]\n", a_proj->j_oneline);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   homedir    d  [%s]\n", a_proj->j_homedir);
-   printf ("##   basename   b  [%s]\n", a_proj->j_progname);
-   printf ("##   fullpath   f  [%s]\n", a_proj->j_fullpath);
-   printf ("##   suffix     s  [%s]\n", a_proj->j_suffix);
-   printf ("##   content    c  [%s]\n", a_proj->j_content);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   system     s  [%s]\n", a_proj->j_systems);
-   printf ("##   language   l  [%s]\n", a_proj->j_language);
-   printf ("##   compiler   c  [%s]\n", a_proj->j_compiler);
-   printf ("##   code-size  z  [%s]\n", a_proj->j_codesize);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   dep_cstd   D  [%s]\n", a_proj->j_dep_cstd);
-   printf ("##   dep_posix  P  [%s]\n", a_proj->j_dep_posix);
-   printf ("##   dep_core   C  [%s]\n", a_proj->j_dep_core);
-   printf ("##   dep_vikey  V  [%s]\n", a_proj->j_dep_vikey);
-   printf ("##   dep_other  O  [%s]\n", a_proj->j_dep_other);
-   printf ("##   dep_graph  G  [%s]\n", a_proj->j_dep_graph);
-   printf ("##   dep_solo   S  [%s]\n", a_proj->j_dep_solo);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   author     a  [%s]\n", a_proj->j_author);
-   printf ("##   created    c  [%s]\n", a_proj->j_created);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n");
-   printf ("##   vermajor   x  [%s]\n", a_proj->j_vermajor);
-   printf ("##   verminor   n  [%s]\n", a_proj->j_verminor);
-   printf ("##   vernum     v  [%s]\n", a_proj->j_vernum);
-   printf ("##   vertxt     t  [%s]\n", a_proj->j_vertxt);
-   printf ("##\n");
-   printf ("##   [···´····] ·  [····´····1····´····2····´····3····´····4····´····5····´····6····´····7····´·····]\n");
-   printf ("##\n\n\n\n");
-   return 0;
-}
 
 char
 poly_rptg_htags         (tPROJ *a_proj)
@@ -1022,7 +946,7 @@ poly_rptg_htags         (tPROJ *a_proj)
    DEBUG_PROG   yLOG_note    ("review all tags and code");
    x_file = a_proj->j_ihead;
    DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
-   if (my.g_rptg == POLY_RPTG_HTAGS)    poly_rptg__htags_header (a_proj);
+   /*> if (my.g_rptg == POLY_RPTG_HTAGS)    poly_header_report (a_proj);              <*/
    while (x_file != NULL) {
       DEBUG_PROG   yLOG_info    ("file name" , x_file->i_name);
       printf ("%-29.29s   FILE\n", x_file->i_name);
