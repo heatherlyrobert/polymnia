@@ -69,50 +69,10 @@ poly_proj__wipe    (tPROJ *a_dst)
    if (a_dst == NULL)  return -1;
    /*---(overall)-----------*/
    a_dst->j_name      [0] = '\0';
-   /*> ystrlcpy (a_dst->j_header, "-.-.----.------.-.-----.----.-------.--.----", LEN_DESC);   <*/
+   a_dst->j_dir       [0] = '\0';
    a_dst->j_written       =    0;
+   /*---(header entries)----*/
    poly_header_clear (a_dst);
-   /*> /+---(master)------------+/                                                    <* 
-    *> a_dst->j_focus     [0] = '\0';                                                 <* 
-    *> a_dst->j_niche     [0] = '\0';                                                 <* 
-    *> a_dst->j_subject   [0] = '\0';                                                 <* 
-    *> a_dst->j_purpose   [0] = '\0';                                                 <* 
-    *> /+---(greek)-------------+/                                                    <* 
-    *> a_dst->j_namesake  [0] = '\0';                                                 <* 
-    *> a_dst->j_pronounce [0] = '\0';                                                 <* 
-    *> a_dst->j_heritage  [0] = '\0';                                                 <* 
-    *> a_dst->j_briefly   [0] = '\0';                                                 <* 
-    *> a_dst->j_imagery   [0] = '\0';                                                 <* 
-    *> a_dst->j_reason    [0] = '\0';                                                 <* 
-    *> /+---(oneline)-----------+/                                                    <* 
-    *> a_dst->j_oneline   [0] = '\0';                                                 <* 
-    *> /+---(location)----------+/                                                    <* 
-    *> a_dst->j_progname  [0] = '£';                                                  <* 
-    *> a_dst->j_homedir   [0] = '\0';                                                 <* 
-    *> a_dst->j_fullpath  [0] = '\0';                                                 <* 
-    *> a_dst->j_suffix    [0] = '\0';                                                 <* 
-    *> a_dst->j_content   [0] = '\0';                                                 <* 
-    *> /+---(chars)-------------+/                                                    <* 
-    *> a_dst->j_systems   [0] = '\0';                                                 <* 
-    *> a_dst->j_language  [0] = '\0';                                                 <* 
-    *> a_dst->j_compiler  [0] = '\0';                                                 <* 
-    *> a_dst->j_codesize  [0] = '\0';                                                 <* 
-    *> /+---(depends)-----------+/                                                    <* 
-    *> a_dst->j_dep_cstd  [0] = '\0';                                                 <* 
-    *> a_dst->j_dep_posix [0] = '\0';                                                 <* 
-    *> a_dst->j_dep_core  [0] = '\0';                                                 <* 
-    *> a_dst->j_dep_vikey [0] = '\0';                                                 <* 
-    *> a_dst->j_dep_other [0] = '\0';                                                 <* 
-    *> a_dst->j_dep_graph [0] = '\0';                                                 <* 
-    *> a_dst->j_dep_solo  [0] = '\0';                                                 <* 
-    *> /+---(when)--------------+/                                                    <* 
-    *> a_dst->j_author    [0] = '\0';                                                 <* 
-    *> a_dst->j_created   [0] = '\0';                                                 <* 
-    *> /+---(versioning)--------+/                                                    <* 
-    *> a_dst->j_vermajor  [0] = '\0';                                                 <* 
-    *> a_dst->j_verminor  [0] = '\0';                                                 <* 
-    *> a_dst->j_vernum    [0] = '\0';                                                 <* 
-    *> a_dst->j_vertxt    [0] = '\0';                                                 <*/
    /*---(manuals)-----------*/
    ystrlcpy (a_dst->j_manual, "········", LEN_LABEL);
    a_dst->j_git       = '·';

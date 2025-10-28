@@ -85,15 +85,25 @@ const struct {
    { 'r' , "P_REMINDER"    , "reminder"     , "just so you know"                , '!' , (long) &(s_place.j_reminder [0])   - (long) &s_place,   1,   1,  70, LEN_LABEL         },
    { 'd' , "P_DISCLAIM"    , "disclaim"     , "programming disclaimer"          , '!' , (long) &(s_place.j_disclaim [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
-   /*-------longer----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { '*' , "P_SUMMARY"     , "summary"      , "project summary"                 , '-' , (long) &(s_place.j_summary [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'D' , "P_DEFINE"      , "define"       , "specific niche definition"       , '-' , (long) &(s_place.j_define [0])     - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'C' , "P_CURRENT"     , "current"      , "current state of market"         , '-' , (long) &(s_place.j_current [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'M' , "P_MISSING"     , "missing"      , "what's missing that i need?"     , '-' , (long) &(s_place.j_missing [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'S' , "P_SOLUTION"    , "solution"     , "my solution"                     , '-' , (long) &(s_place.j_solution [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'A' , "P_ACCEPT"      , "accepted"     , "accepted requirements"           , '-' , (long) &(s_place.j_accept [0])     - (long) &s_place,   1,   1, 999, LEN_LABEL         },
-   { 'R' , "P_REJECT"      , "rejected"     , "rejected requirements"           , '-' , (long) &(s_place.j_reject [0])     - (long) &s_place,   1,   1, 999, LEN_LABEL         },
-   { 'G' , "P_GREEK"       , "greek"        , "longer heritage"                 , '-' , (long) &(s_place.j_deeper [0])     - (long) &s_place,   1,   1, 999, LEN_LABEL         },
+   /*-------why-------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
+   { 'B' , "P_BOTHER"      , "bother"       , "why do anything?"                , '-' , (long) &(s_place.j_bother [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'C' , "P_COVERS"      , "existing"     , "what's the overall niche"        , '-' , (long) &(s_place.j_covers [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'S' , "P_SUBDISC"     , "sub-disc"     , "what are the niche parts"        , '-' , (long) &(s_place.j_subdisc [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'C' , "P_CURRENT"     , "current"      , "current state-of-play"           , '-' , (long) &(s_place.j_current [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'V' , "P_VALUE"       , "value"        , "benefit of getting this right"   , '-' , (long) &(s_place.j_value [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'F' , "P_FEAR"        , "fear"         , "are there an overridding need"   , '-' , (long) &(s_place.j_fear [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'M' , "P_MISSING"     , "missing"      , "current state gets what wrong"   , '-' , (long) &(s_place.j_missing [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'K' , "P_KEEP"        , "keep"         , "current state gets what right"   , '-' , (long) &(s_place.j_keep [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'P' , "P_PERK"        , "perk"         , "benefit of custom tool"          , '-' , (long) &(s_place.j_perk [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   /*-------what------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
+   { 'S' , "P_SCOPE"       , "scope"        , "scope of this solution"          , '-' , (long) &(s_place.j_scope [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'A' , "P_ACCEPT"      , "accepted"     , "accepted objectives"             , '-' , (long) &(s_place.j_accept [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'R' , "P_REJECT"      , "rejected"     , "rejected objectives"             , '-' , (long) &(s_place.j_reject [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'A' , "P_ASSUME"      , "assume"       , "environmental assumptions"       , '-' , (long) &(s_place.j_assume [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'A' , "P_ALWAYS"      , "always"       , "universal objectives"            , '-' , (long) &(s_place.j_always [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { '*' , "P_SUMMARY"     , "summary"      , "project summary"                 , '-' , (long) &(s_place.j_summary [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'G' , "P_GREEK"       , "greek"        , "longer greek heritage"           , '-' , (long) &(s_place.j_greek [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------grade-----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
    { ' ' , ""              , "GRADE"        , "final rating on headers"         , '°' , -1                                                  ,   0,   0,   0, 0                 },
@@ -101,6 +111,102 @@ const struct {
    {  0  , "end-of-list"   , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
 };
 
+/*>  GYGES                                                                             <* 
+ *
+ *> .B definition (D).                                                                 <* 
+ *> spreadsheets are a modern adaptation of ancient columnar ledgers used              <* 
+ *> by accountants, bookkeepers, engineers, quartermasters, warehousemen, and          <* 
+ *> statisticians.  they allow control, order, and analysis in situations beyond       <* 
+ *> simple counting.                                                                   <* 
+ *>                                                                                    <* 
+ *> .B what the hell (?).                                                              <* 
+ *> i am tackling this problem set because it is fantasically hard, fully              <* 
+ *> interactive, well understood, and has been mastered by commercial companies.       <* 
+ *> it will cause me to learn a ton and be weighed and measured clearly ];>            <* 
+ *> no hiding, no bitching out.                                                        <* 
+ *>                                                                                    <* 
+ *> .B situation (S).                                                                  <* 
+ *> spreadsheets are a modern wonder of interactive calculation, iterative design,     <* 
+ *> and complex analysis which can be quite reasonably and economically placed in      <* 
+ *> the hands of non-technical users.  they are fantastic and realistic empowerment.   <* 
+ *>                                                                                    <* 
+ *> .B complication (C).                                                               <* 
+ *> raging acceptance led to uncontrolled creeping featurism and kitchen-sink          <* 
+ *> capabilities -- replacing everything from todo lists, graphing, database           <* 
+ *> management and some production systems.  these systems are now fat, expensive,     <* 
+ *> and hard to use efficiently.                                                       <* 
+ *>                                                                                    <* 
+ *> .B problem (P).                                                                    <* 
+ *> spreadsheets are now simply magic -- too many capabilities and flexility           <* 
+ *> combined intersecting complex problems and spaghetti solutions.  none of the       <* 
+ *> safety, debugging, and testing seem to apply.  i need more -- a fast, light,       <* 
+ *> adaptable, portable solution.                                                      <* 
+ *>                                                                                    <* 
+ *> .B my solution (M).                                                                <* 
+ *> tight, keyboard-centric, power-user focused custom solution.  do one thing         <* 
+ *> and do it well.  pare back funtionality to a core feature set which can be         <* 
+ *> fully understood and tested, hand off non-core to other tools, and make the        <* 
+ *> interface more productive.                                                         <* 
+ *>                                                                                    <* 
+ *> .B target user (T).                                                                <* 
+ *> very technical, well-versed, power user.                                           <* 
+ *>                                                                                    <* 
+ *> .B accepted functionality (a).                                                     <* 
+ *>    -- conceptual framework of cells within sheets, within tabs                     <* 
+ *>    -- full vi-keys support and a majority of vi/vim features                       <* 
+ *>    -- console/terminal formatting to enforce value and focus                       <* 
+ *>    -- full set of mathmatical operators for functions                              <* 
+ *>    -- full set of core functions, as in lotus, visicalc, and excel                 <* 
+ *>    -- dependency-graph calculation method to avoid issues                          <* 
+ *>    -- cell coloring for interpretation and dependency-awareness                    <* 
+ *>    -- compile calculations to byte-code for speed                                  <* 
+ *>    -- fully scriptable using the same commands                                     <* 
+ *>                                                                                    <* 
+ *> .B rejected functionality (r).                                                     <* 
+ *>    -- mouse and touchscreen (fuck off)                                             <* 
+ *>    -- any formatting other than alignment and numerical                            <* 
+ *>    -- graphing or visual analyses (integrate with other tools)                     <* 
+ *>    -- importing or exporting of special formats (like xls, etc)                    <* 
+ *>    -- large data tables (which should be in a controlled database)                 <* 
+ *>    -- data sorting and filtering (again, database)                                 <* 
+ *>    -- reporting and printing (just not a spreadsheet thing)                        <* 
+ *>    -- cell notes to provide details                                                <* 
+ *>    -- text wrapping (learn word processors or databases)                           <* 
+ *>    -- variable number of arguments for functions (rare, ambiguous)                 <* 
+ *>    -- any functions that spit out multiple cells                                   <* 
+ *>                                                                                    <* 
+ *> .B as always, all my applications must (#).                                        <* 
+ *>    -- run on any linux box from raspberry to cray                                  <* 
+ *>    -- stay focused, small, tight, reliable, and secure                             <* 
+ *>    -- forgo sloppy, kitchen-sink languages, like python, java, or perl             <* 
+ *>    -- stay away from dependency on external code libraries, like boost             <* 
+ *>    -- only human-readable, 7-bit safe, ascii streams (not database)                <* 
+ *>    -- have dedicated, maintained, automated unit testing                           <* 
+ *>    -- provide either detailed reporting or logging for debugging                   <* 
+ *>    -- use secure communications between systems where required                     <* 
+ *>    -- clean, clean code so i can maintain after long absences                      <* 
+ *>    -- no international, multi-lang, multi-byte support (freaking ever)             <* 
+ *>    -- one-hundred percent keyboard driven and centric                              <* 
+ *>    -- operate using modes and windows/panels like vi/vim                           <* 
+ *>    -- follow the yVIKEYS standard to the letter                                    <* 
+ *>    -- all tables must be self describing with labels and queries                   <* 
+ *>    -- all data structures must include dumps, reports, and audits                  <* 
+ *>                                                                                    <*/
+
+/*>                                                                                   <* 
+ *> yENV
+ *> a) situation       .                                                              <* 
+ *> b) legacy answer   .                                                              <* 
+ *> c) complication    .                                                              <* 
+ *> d) reaction        .                                                              <* 
+ *> e) answer          .                                                              <* 
+ *> f) focus           .                                                              <* 
+ *> g) value           .                                                              <* 
+ *> h) requirements    .                                                              <* 
+ *> i) warnings        .                                                              <* 
+ *> j) alternatives    .                                                              <* 
+ *> k) decision        .                                                              <* 
+ *>                                                                                   <*/
 
 
 /*> spreadsheets are a modern adaptation of ancient columnar ledgers used by accountants, bookkeepers, engineers, quartermasters, warehousemen, and statisticians.  they allow control, order, and analysis in situations beyond simple counting.   <*/
@@ -300,6 +406,26 @@ poly_header_rando       (tPROJ *a_proj)
    return 0;
 }
 
+char*
+poly_header_memory      (tPROJ *a_proj)
+{
+   int         i           =    0;
+   static char x_print     [LEN_HUND]  = "";
+   strcpy (x_print, "");
+   if (a_proj == NULL)  return "((null))";
+   for (i = 0; i < LEN_FULL; ++i) {
+      if (s_header [i].h_abbr == 0)               break;
+      if (s_header [i].h_abbr == 1) {
+         poly_shared__spacer     (x_print);
+         continue;
+      }
+      poly_shared__check_str  (x_print, (long) a_proj + s_header [i].h_offset);
+   }
+   /*---(complete)-----------------------*/
+   return x_print;
+}
+
+
 
 
 /*====================------------------------------------====================*/
@@ -381,6 +507,7 @@ poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD])
    }
    /*---(compare)------------------------*/
    if (strcmp (x_expect, "") != 0) {
+      ystrldchg (x_expect, '¦', ' ', LEN_RECD);
       ystrltrim (x_expect, ySTR_SINGLE, LEN_RECD);
       DEBUG_INPT   yLOG_complex (a_label, "%3då%sæ", strlen (x_expect), x_expect);
       if (strcmp (a_data, x_expect) == 0)  rc = 'y';

@@ -72,8 +72,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1l"
-#define     P_VERTXT    "headers are 95pc right and unit tested, moving to hext fix ;)"
+#define     P_VERNUM    "1.1m"
+#define     P_VERTXT    "oops, headers upgraded to better handle man(7) type narrative ;)"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -84,69 +84,134 @@
 
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define  P_DISCLAIM  \
-   "i am a crazy, selfish, dog-fooding c-programmer. my code tends to be "     \
-   "experimental and constantly evolving. my point is NOT to be the best, it " \
+#define  P_DISCLAIM    \
+   "i am a crazy, selfish, dog-fooding c-programmer. my code tends to be¦"         \
+   "experimental and constantly evolving. my point is NOT to be the best, it¦"     \
    "is to challenge myself, build from scratch, and allow fast problem solving."
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define     P_ITCH      "itch¦" \
-   "i am growing and have a large, evolving code-base. the results can be¦" \
-   "chaotic. i need to make sense of it all, identify potential troubles,¦" \
-   "track inter-dependencies, and help isolate troubles very quickly.¦"
+#define  P_BOTHER      \
+   "i have a very large, growing, and evolving code-base. the results can¦"        \
+   "be chaotic. i need to make sense of it all, identify potential troubles,¦"     \
+   "track inter-dependencies, and help isolate troubles very quickly."
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define     P_EXISTS    "exists¦" \
-   "there are fantastic tools, but they change, devolve, and overbuild.¦" \
-   "i need a targeted tool that finds my personal weaknesses and does¦" \
-   "not include a kitchen sink, no say in development, and weird licensing.¦"
+#define  P_COVERS      \
+   "boadly architecture management, i.e., supporting a systems architect,¦"        \
+   "not a programmer, admisitrator, leader, or project manager.  this would¦"      \
+   "include inventories, interdependencies, and holistic code-base analysis."
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define     P_AVOID     "avoid¦" \
-   "polymnia will not replace or compete with lint, valgrind, and other¦" \
-   "detailed code analyis. it is meant to supplement and help with larger¦" \
-   "troubles and larger context. i am sure many ide's do this well.¦"
+#define  P_SUBDISC     \
+   "-- development priorities, sequencing, and broad timelines¦"                   \
+   "-- program and library inventories, with extensive supporting data¦"           \
+   "-- interfacing architecture for feeds, requirements, and conversions¦          \
+   "-- program technical details to assess issues and vulnerabilties¦"             \
+   "-- overall source code audits to monitor quality and weaknesses¦"              \
+   "-- predictive source code data gathering to identify worrying points¦"         \
+   "-- details on all inter-connections for analysis and navigation¦"              \
+   "-- monitoring of testing and source versioning activity¦"
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define     P_SCRATCH   "scratch¦" \
-   "code navigation and analysis can mean many things, but i am specifically¦" \
-   "targeting predictive statistics for complexity, integration points, and¦" \
-   "personal blind-spots to help me manage a large code-base by myself.¦"
+#define  P_CURRENT     \
+   "my perception is that these activities are almost always ad-hoc,¦              \
+   "disconnected, and typically out-of-date.  the systems are spreadsheets,¦"      \
+   "powerpoint, and word documents."
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define     P_SUMMARY   "summary¦"\
-  "polymnia is a custom code analysis tool offering tag navigation for¦" \
-  "vim-ide, detailed function complexity analysis, and code-base wide¦" \
-  "reporting and research for the one-true language (c) ;)¦"
+#define  P_VALUE       \
+   "having this data close at hand would make code evolution and migration¦"       \
+   "not only faster, but far less contenscious and dangerouske and therefore¦"     \
+   "more likely to be contemplated, phased, smooth, and successful"
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define     P_ASSUME    "assume¦" \
-   "-- all applications are only written in c (nearly ansi-c)¦" \
-   "-- file naming follows my standards (headers, source, and units)¦" \
-   "-- coding practices follow my standards (allowing deeper analysis)¦" \
-   "-- program headers and key information are in standard named macros¦" \
-   "-- zero configuration ;) written for me, by me, for only me¦"
+#define  P_FEAR        \
+   "my code-base is already at 500,000 lines of code over many programs¦"          \
+   "and shared libraries.  if i don't get a tool in place, i will become¦"         \
+   "frozen in place and bogged down with maintenance work alone."
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define     P_GREEK     "greek heritage¦" \
-  "polymnia-hymnos (many praises) is the muse and protector of divine hymns¦" \
-  "and lyric poetry, inventor of the lyre, patron of dancing, geometry, and¦" \
-  "grammar. the muses (mousai) are nine daughters of zeus and mnemosyne¦" \
-  "(titan of memory) and are the goddesses of art, literature, and science.¦" \
-  "they inspire creation, enthusiasm, and the creative impulses. polymnia¦" \
+#define  P_MISSING     \
+   "really, the answer is everything.  but, most environments have so much¦"       \
+   "code in various languages and vintiges that automating it is a ludacis¦"       \
+   "pipedream and viewfs as distracting from real work."
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_KEEP        \
+   "there are reporting methods i have seen and like, but almost everything¶       \
+   "else is typically based on the personality of the current architect.¦"         \
+   "i plan on using this tool to help further refine my standards ;)."
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_PERK        \
+   "there are tools out there that could be bent and modded to help, but¦"         \
+   "this is absolutely critical and i cant get screwed with upgrades,¦"            \
+   "migrations, ownership changes, bug-fix schedules, and licensing¦"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_SCOPE       \
+   "the primary tool will focus on fully automated data gathering to produce¦"     \
+   "systems inventories, dependency diagrams, interface details, source code¦      \
+   "analysis, and standards compliance."
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_ACCEPT      \
+   "-- all data gathering will be fully automated¦"                                \
+   "-- inventories of all programs and libraries with extensive details¦"          \
+   "-- inventories of all program/library inter-dependency details¦"               \
+   "-- inventories of all functions and extensive statistics¦"                     \
+   "-- latest version control data and updates¦"                                   \
+   "-- unit and string testing coverage and compliance¦"                           \
+   "-- create all source data for code navigation within the IDE¦"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_REJECT      \
+   "-- no fancy timelines or architecture diagrams¦"                               \
+   "-- no development requests, evaluations, designs, or any such¦"                \
+   "-- no direct automation or interaction with version control¦"                  \
+   "-- no direct automation or interaction with unit or string testing¦"           \
+   "-- no concern for any other potential users for this system¦"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_ASSUME      \
+   "-- all applications are only written in c (nearly ansi-c)¦"                    \
+   "-- file naming follows my standards (headers, source, and units)¦"             \
+   "-- coding practices follow my standards (allowing deeper analysis)¦"           \
+   "-- program headers and key information are in standard named macros¦"          \
+   "-- zero configuration required ;) written for me, by me, for only me¦"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_ALWAYS      \
+   "-- run on any linux box from raspberry to cray¦"                               \
+   "-- stay focused, small, tight, reliable, and secure¦"                          \
+   "-- as always, tight and portable glibc/ansi-c code¦"                           \
+   "-- stay away from dependency on external code libraries, like boost¦"          \
+   "-- only human-readable, 8-bit safe, ascii streams for moving data¦"            \
+   "-- store data in regular or binary files, not dedicated databases¦"            \
+   "-- dedicated, maintained, automated unit and string testing¦"                  \
+   "-- integrated debugging/logging for rapid problem solving¦"                    \
+   "-- use secure communications between systems where required¦"                  \
+   "-- clean, clean code so i can maintain after long absences¦"                   \
+   "-- no international, multi-lang, multi-byte support (freaking ever)¦"          \
+   "-- one-hundred percent keyboard driven and centric¦"                           \
+   "-- all tables must be self describing with labels and queries¦"                \
+   "-- all data structures must include dumps, reports, and audits¦"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_SUMMARY     \
+  "polymnia is my system architecture tool for monitoring and analyzing¦"          \
+  "my somewhat extensive c-language code-base and providing data to allow¦"        \
+  "safe maintenance and on-going development¦"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_GREEK       \
+  "polymnia-hymnos (many praises) is the muse and protector of divine hymns¦"      \
+  "and lyric poetry, inventor of the lyre, patron of dancing, geometry, and¦"      \
+  "grammar. the muses (mousai) are nine daughters of zeus and mnemosyne¦"          \
+  "(titan of memory) and are the goddesses of art, literature, and science.¦"      \
+  "they inspire creation, enthusiasm, and the creative impulses. polymnia¦"        \
   "is usually depicted wearing a veil and looking up to the heavens.¦"
 
-/*===[[ GREEK HERITAGE ]]=====================================================*/
-/*
- *
- *   polymnia-hymnos (many praises) is the muse and protector of divine hymns
- *   and lyric poetry, inventor of the lyre, patron of dancing, geometry, and
- *   grammar. the muses (mousai) are nine daughters of zeus and mnemosyne
- *   (titan of memory) and are the goddesses of art, literature, and science.
- *   they inspire creation, enthusiasm, and the creative impulses. polymnia
- *   is usually depicted wearing a veil and looking up to the heavens
- *
- */
 
 
 /*
@@ -530,15 +595,24 @@ struct cPROJ {
    char        j_principal   [LEN_LABEL];
    char        j_reminder    [LEN_LABEL];
    char        j_disclaim    [LEN_LABEL];
-   /*---(longer)------------*/
-   char        j_summary     [LEN_LABEL];
-   char        j_define      [LEN_LABEL];
+   /*---(why)---------------*/
+   char        j_bother      [LEN_LABEL];
+   char        j_covers      [LEN_LABEL];
+   char        j_subdisc     [LEN_LABEL];
    char        j_current     [LEN_LABEL];
+   char        j_value       [LEN_LABEL];
+   char        j_fear        [LEN_LABEL];
    char        j_missing     [LEN_LABEL];
-   char        j_solution    [LEN_LABEL];
+   char        j_keep        [LEN_LABEL];
+   char        j_perk        [LEN_LABEL];
+   /*---(what)--------------*/
+   char        j_scope       [LEN_LABEL];
    char        j_accept      [LEN_LABEL];
    char        j_reject      [LEN_LABEL];
-   char        j_deeper      [LEN_LABEL];
+   char        j_assume      [LEN_LABEL];
+   char        j_always      [LEN_LABEL];
+   char        j_summary     [LEN_LABEL];
+   char        j_greek       [LEN_LABEL];
    /*---(other)-------------*/
    char        j_manual      [LEN_LABEL];
    char        j_git;
@@ -1172,6 +1246,7 @@ char*       poly_proj__unit         (char *a_question, int i);
 short       poly_header_count       (void);
 char        poly_header_clear       (tPROJ *a_proj);
 char        poly_header_rando       (tPROJ *a_proj);
+char*       poly_header_memory      (tPROJ *a_proj);
 /*········´ ´···search············´ ´·········································*/
 short       poly_header__find       (char a_label [LEN_LABEL]);
 /*········´ ´···reading···········´ ´·········································*/
