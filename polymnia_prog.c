@@ -286,7 +286,7 @@ PROG__args              (int a_argc, char *a_argv[])
       if      (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
       else if (strcmp (a, "--quick"     ) == 0)  PROG_usage   ();
       else if (strcmp (a, "--help"      ) == 0)  PROG_usage   ();
-      else if (strcmp (a, "--header"    ) == 0)  poly_header_quick   ();
+      else if (strcmp (a, "--header"    ) == 0)  TWOARG  poly_header_only (b);
       /*---(complicated)-----------------*/
       /*> else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }   <*/
       else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';

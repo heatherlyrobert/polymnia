@@ -49,7 +49,7 @@ poly_shared_new          (char *a_terse, int a_size, void **a_new, int *a_count,
    *a_new = NULL;
    /*---(check size)---------------------*/
    DEBUG_DATA   yLOG_sint    (a_size);
-   --rce;  if (a_size <= 0 || a_size > 9999) {
+   --rce;  if (a_size <= 0 || a_size > 15000) {
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }

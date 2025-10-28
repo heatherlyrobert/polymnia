@@ -550,7 +550,7 @@ poly_action_search      (void)
  *>    printf("\n");                                                                                     <* 
  *>    printf("oneline   : %s\n", x_proj->j_oneline);                                                      <* 
  *>    printf("\n");                                                                                     <* 
- *>    printf("basename  : %s\n", x_proj->j_progname);                                                     <* 
+ *>    printf("basename  : %s¦", x_proj->j_progname);                                                     <* 
  *>    printf("homedir   : %s\n", x_proj->j_homedir);                                                      <* 
  *>    printf("fullpath  : %s\n", x_proj->j_fullpath);                                                     <* 
  *>    printf("suffix    : %s\n", x_proj->j_suffix);                                                       <* 

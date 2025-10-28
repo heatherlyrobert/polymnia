@@ -4,10 +4,36 @@
 
 
 
+/*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+
+#define  P_LICENSE  \
+   "the only place you could have gotten this code is my github, my website, "   \
+   "or illegal sharing. given that, you should be aware it is all GPL licensed."
+
+#define  P_COPYLEFT \
+   "the GPL COPYLEFT REQUIREMENT means any modifications or derivative works "   \
+   "must be released under the same GPL license, i.e, must be free and open."
+
+#define  P_INCLUDE  \
+   "the GPL DOCUMENTATION REQUIREMENT means that you must include the original " \
+   "copyright notice and the full licence text with any resulting anything."
+
+#define  P_AS_IS    \
+   "the GPL NO WARRANTY CLAUSE means the software is provided without any "      \
+   "warranty and the author cannot be held liable for damages."
+
+#define  P_WARNING  \
+   "if you knowingly violate the spirit of these ideas, i suspect you might "    \
+   "find any number of freedom-minded hackers may take it quite personally ;)"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+/*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+
+
+
 /*===[[ ONE_LINERS ]]=========================================================*/
-/*                      ´·········1·········2·········3·········4·········5·········6·········7*/
-/*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
-/*········· ··········· ´·····························´········································*/
+/*····················· ´·········1·········2·········3·········4·········5·········6·········7*/
 #define     P_FOCUS     "DE (development environment)"
 #define     P_NICHE     "ca (code anaylsis)"
 #define     P_SUBJECT   "ansi-c analysis and research"
@@ -33,62 +59,67 @@
 #define     P_COMPILER  "gcc 5.3.0"
 #define     P_CODESIZE  "moderate    (appoximately 2,000 to 10,000 slocl)"
 /*········· ··········· ´·····························´········································*/
-#define     P_DEPSTDC   ""
-#define     P_DEPPOSIX  ""
-#define     P_DEPCORE   "ySTR"
-#define     P_DEPVIKEY  ""
-#define     P_DEPGRAPH  ""
-#define     P_DEPOTHER  "ySORT,yJOBS,yEXEC"
-#define     P_DEPSOLO   ""
+#define     P_DEPSTDC   "stdio,stdlib,string,math"
+#define     P_DEPPOSIX  "unistd,dirent,sys/stat"
+#define     P_DEPCORE   "yLOG,yURG,ySTR,yENV"
+#define     P_DEPVIKEY  "´"
+#define     P_DEPGRAPH  "´"
+#define     P_DEPOTHER  "ySORT,yJOBS,yEXEC,ySCORE,yAUDIT,yREGEX"
+#define     P_DEPSOLO   "yDLST_solo"
 /*········· ··········· ´·····························´········································*/
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2019-01"
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1j"
-#define     P_VERTXT    "isolated header reading code and built table to support"
+#define     P_VERNUM    "1.1l"
+#define     P_VERTXT    "headers are 95pc right and unit tested, moving to hext fix ;)"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
-#define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
+#define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
 #define     P_REMINDER  "there are many better options, but i *own* every byte of this one"
 /*········· ··········· ´·····························´········································*/
 #define     P_HEADERS   P_FOCUS, P_NICHE, P_SUBJECT, P_PURPOSE, P_NAMESAKE, P_PRONOUNCE, P_HERITAGE, P_BRIEFLY, P_IMAGERY, P_REASON, P_ONELINE, P_HOMEDIR, P_BASENAME, P_FULLPATH, P_SUFFIX, P_CONTENT, P_SYSTEM, P_LANGUAGE, P_COMPILER, P_CODESIZE, P_DEPSTRC, P_DEPPOSIX, P_DEPCORE, P_DEPVIKEY, P_DEPOTHER, P_DEPGRAPH, P_DEPSOLO, P_AUTHOR, P_CREATED, P_VERMAJOR, P_VERMINOR, P_VERNUM, P_VERTXT
-/*········· ··········· ´·····························´········································*/
-/*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+/*····················· ´·········1·········2·········3·········4·········5·········6·········7*/
 
 
-/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_DISCLAIM  \
+   "i am a crazy, selfish, dog-fooding c-programmer. my code tends to be "     \
+   "experimental and constantly evolving. my point is NOT to be the best, it " \
+   "is to challenge myself, build from scratch, and allow fast problem solving."
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define     P_ITCH      "itch¦" \
-   "i am growing and have a large, evolving code-base.  the results can be¦" \
-   "chaotic.  i need to make sense of it all, identify potential troubles,¦" \
+   "i am growing and have a large, evolving code-base. the results can be¦" \
+   "chaotic. i need to make sense of it all, identify potential troubles,¦" \
    "track inter-dependencies, and help isolate troubles very quickly.¦"
 
-/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define     P_EXISTS    "exists¦" \
    "there are fantastic tools, but they change, devolve, and overbuild.¦" \
    "i need a targeted tool that finds my personal weaknesses and does¦" \
    "not include a kitchen sink, no say in development, and weird licensing.¦"
 
-/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define     P_AVOID     "avoid¦" \
    "polymnia will not replace or compete with lint, valgrind, and other¦" \
-   "detailed code analyis.  it is meant to supplement and help with larger¦" \
-   "troubles and larger context.  i am sure many ide's do this well.¦"
+   "detailed code analyis. it is meant to supplement and help with larger¦" \
+   "troubles and larger context. i am sure many ide's do this well.¦"
 
-/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define     P_SCRATCH   "scratch¦" \
    "code navigation and analysis can mean many things, but i am specifically¦" \
    "targeting predictive statistics for complexity, integration points, and¦" \
    "personal blind-spots to help me manage a large code-base by myself.¦"
 
-/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define     P_SUMMARY   "summary¦"\
   "polymnia is a custom code analysis tool offering tag navigation for¦" \
   "vim-ide, detailed function complexity analysis, and code-base wide¦" \
   "reporting and research for the one-true language (c) ;)¦"
 
-/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define     P_ASSUME    "assume¦" \
    "-- all applications are only written in c (nearly ansi-c)¦" \
    "-- file naming follows my standards (headers, source, and units)¦" \
@@ -96,13 +127,13 @@
    "-- program headers and key information are in standard named macros¦" \
    "-- zero configuration ;) written for me, by me, for only me¦"
 
-/*3456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789- */
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define     P_GREEK     "greek heritage¦" \
   "polymnia-hymnos (many praises) is the muse and protector of divine hymns¦" \
   "and lyric poetry, inventor of the lyre, patron of dancing, geometry, and¦" \
-  "grammar.  the muses (mousai) are nine daughters of zeus and mnemosyne¦" \
+  "grammar. the muses (mousai) are nine daughters of zeus and mnemosyne¦" \
   "(titan of memory) and are the goddesses of art, literature, and science.¦" \
-  "they inspire creation, enthusiasm, and the creative impulses.  polymnia¦" \
+  "they inspire creation, enthusiasm, and the creative impulses. polymnia¦" \
   "is usually depicted wearing a veil and looking up to the heavens.¦"
 
 /*===[[ GREEK HERITAGE ]]=====================================================*/
@@ -110,9 +141,9 @@
  *
  *   polymnia-hymnos (many praises) is the muse and protector of divine hymns
  *   and lyric poetry, inventor of the lyre, patron of dancing, geometry, and
- *   grammar.  the muses (mousai) are nine daughters of zeus and mnemosyne
+ *   grammar. the muses (mousai) are nine daughters of zeus and mnemosyne
  *   (titan of memory) and are the goddesses of art, literature, and science.
- *   they inspire creation, enthusiasm, and the creative impulses.  polymnia
+ *   they inspire creation, enthusiasm, and the creative impulses. polymnia
  *   is usually depicted wearing a veil and looking up to the heavens
  *
  */
@@ -241,6 +272,14 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_CODE           'c'
 #define     POLY_HEAD           'h'
 #define     POLY_UNIT           'u'
+
+
+
+#define     POLY_RPTG_HEAD      'h'
+#define     POLY_RPTG_SIZER     'p'
+#define     POLY_RPTG_TITLE     't'
+#define     POLY_RPTG_DATA      'd'
+
 
 /*
  *  incomming-------------------------------
@@ -436,7 +475,8 @@ extern      tMY         my;
 struct cPROJ {
    /*---(overall)-----------*/
    char        j_name        [LEN_TITLE];
-   char        j_header      [LEN_DESC];      /* flags on each header oneliner  */
+   char        j_dir         [LEN_HUND];
+   char        j_header      [LEN_HUND];      /* flags on each header oneliner  */
    long        j_written;
    /*---(master)------------*/
    char        j_focus       [LEN_DESC]; 
@@ -479,6 +519,26 @@ struct cPROJ {
    char        j_verminor    [LEN_HUND];
    char        j_vernum      [LEN_LABEL];
    char        j_vertxt      [LEN_HUND];
+   /*---(warranty)----------*/
+   char        j_license     [LEN_LABEL];
+   char        j_copyleft    [LEN_LABEL];
+   char        j_include     [LEN_LABEL];
+   char        j_as_is       [LEN_LABEL];
+   char        j_warning     [LEN_LABEL];
+   /*---(extra)-------------*/
+   char        j_priority    [LEN_LABEL];
+   char        j_principal   [LEN_LABEL];
+   char        j_reminder    [LEN_LABEL];
+   char        j_disclaim    [LEN_LABEL];
+   /*---(longer)------------*/
+   char        j_summary     [LEN_LABEL];
+   char        j_define      [LEN_LABEL];
+   char        j_current     [LEN_LABEL];
+   char        j_missing     [LEN_LABEL];
+   char        j_solution    [LEN_LABEL];
+   char        j_accept      [LEN_LABEL];
+   char        j_reject      [LEN_LABEL];
+   char        j_deeper      [LEN_LABEL];
    /*---(other)-------------*/
    char        j_manual      [LEN_LABEL];
    char        j_git;
@@ -493,6 +553,7 @@ struct cPROJ {
    tBTREE     *j_btree;
    /*---(done)--------------*/
 };
+
 
 
 /*
@@ -1106,10 +1167,27 @@ char*       poly_proj__unit         (char *a_question, int i);
 
 
 
+/*===[[ polymnia_header.c ]]==================================================*/
+/*········´ ´···support···········´ ´·········································*/
+short       poly_header_count       (void);
+char        poly_header_clear       (tPROJ *a_proj);
+char        poly_header_rando       (tPROJ *a_proj);
+/*········´ ´···search············´ ´·········································*/
+short       poly_header__find       (char a_label [LEN_LABEL]);
+/*········´ ´···reading···········´ ´·········································*/
+char        poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD]);
 char        poly_header__single     (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
 char        poly_header__encode     (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
+char*       poly_header__macro_fix  (char a_recd [LEN_RECD]);
 char        poly_header_summarize   (tPROJ *a_proj);
-char        poly_header_quick       (void);
+char        poly_header_read        (tFILE *a_file);
+/*········´ ´···reporting·········´ ´·········································*/
+char*       poly_header__report     (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL]);
+char        poly_header_report      (tPROJ *a_proj);
+char        poly_header_only        (char a_file [LEN_PATH]);
+char*       poly_header__show       (tPROJ *a_proj);
+/*········´ ´···done··············´ ´·········································*/
+
 
 
 char        poly_db_cli             (char *a_name, char a_loud);
