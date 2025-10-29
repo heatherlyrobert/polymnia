@@ -72,8 +72,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1m"
-#define     P_VERTXT    "oops, headers upgraded to better handle man(7) type narrative ;)"
+#define     P_VERNUM    "1.1n"
+#define     P_VERTXT    "brought back unit test success after headers upgraded to better handle man(7)"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -137,7 +137,7 @@
    "pipedream and viewfs as distracting from real work."
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
-#define  P_KEEP        \
+#define  P_KEEPING     \
    "there are reporting methods i have seen and like, but almost everything¶       \
    "else is typically based on the personality of the current architect.¦"         \
    "i plan on using this tool to help further refine my standards ;)."
@@ -603,7 +603,7 @@ struct cPROJ {
    char        j_value       [LEN_LABEL];
    char        j_fear        [LEN_LABEL];
    char        j_missing     [LEN_LABEL];
-   char        j_keep        [LEN_LABEL];
+   char        j_keeping     [LEN_LABEL];
    char        j_perk        [LEN_LABEL];
    /*---(what)--------------*/
    char        j_scope       [LEN_LABEL];

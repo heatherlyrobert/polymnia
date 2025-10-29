@@ -87,14 +87,14 @@ const struct {
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------why-------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
    { 'B' , "P_BOTHER"      , "bother"       , "why do anything?"                , '-' , (long) &(s_place.j_bother [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'C' , "P_COVERS"      , "existing"     , "what's the overall niche"        , '-' , (long) &(s_place.j_covers [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'S' , "P_SUBDISC"     , "sub-disc"     , "what are the niche parts"        , '-' , (long) &(s_place.j_subdisc [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'C' , "P_COVERS"      , "covers"       , "what's the overall niche?"       , '-' , (long) &(s_place.j_covers [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'S' , "P_SUBDISC"     , "sub-disc"     , "what are the niche sub-parts?"   , '-' , (long) &(s_place.j_subdisc [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    { 'C' , "P_CURRENT"     , "current"      , "current state-of-play"           , '-' , (long) &(s_place.j_current [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    { 'V' , "P_VALUE"       , "value"        , "benefit of getting this right"   , '-' , (long) &(s_place.j_value [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'F' , "P_FEAR"        , "fear"         , "are there an overridding need"   , '-' , (long) &(s_place.j_fear [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'F' , "P_FEAR"        , "fear"         , "are there overriding needs?"     , '-' , (long) &(s_place.j_fear [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    { 'M' , "P_MISSING"     , "missing"      , "current state gets what wrong"   , '-' , (long) &(s_place.j_missing [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'K' , "P_KEEP"        , "keep"         , "current state gets what right"   , '-' , (long) &(s_place.j_keep [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'P' , "P_PERK"        , "perk"         , "benefit of custom tool"          , '-' , (long) &(s_place.j_perk [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'K' , "P_KEEPING"     , "keeping"      , "current state gets what right"   , '-' , (long) &(s_place.j_keeping [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'P' , "P_PERK"        , "perk"         , "benefit of building custom"      , '-' , (long) &(s_place.j_perk [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------what------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
    { 'S' , "P_SCOPE"       , "scope"        , "scope of this solution"          , '-' , (long) &(s_place.j_scope [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
@@ -935,7 +935,7 @@ poly_header_report      (tPROJ *a_proj)
    /*---(summary)------------------------*/
    DEBUG_INPT   yLOG_note    ("summary");
    yURG_msg (' ', "##   %2d headers ·  å%sæ", poly_header_count (), a_proj->j_header);
-   yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depend··au·ver··gpl··extr··longer··!æ");
+   yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depend··au·ver··gpl···extr·why·······what····!æ");
    DEBUG_INPT   yLOG_note    ("header");
    yURG_msg (' ', "##");
    yURG_msg (' ', x_sep);
