@@ -7,25 +7,28 @@
 /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 
-#define  P_LICENSE  \
-   "the only place you could have gotten this code is my github, my website, "   \
-   "or illegal sharing. given that, you should be aware it is all GPL licensed."
+#define  P_COPYRIGHT   \
+   "copyright (c) 2019 robert.s.heatherly at balsashrike at gmail dot com"
 
-#define  P_COPYLEFT \
-   "the GPL COPYLEFT REQUIREMENT means any modifications or derivative works "   \
+#define  P_LICENSE     \
+   "the only place you could have gotten this code is my github, my website,¦"   \
+   "or illegal sharing. given that, you should be aware that this is GPL licensed."
+
+#define  P_COPYLEFT    \
+   "the GPL COPYLEFT REQUIREMENT means any modifications or derivative works¦"   \
    "must be released under the same GPL license, i.e, must be free and open."
 
-#define  P_INCLUDE  \
-   "the GPL DOCUMENTATION REQUIREMENT means that you must include the original " \
+#define  P_INCLUDE     \
+   "the GPL DOCUMENTATION REQUIREMENT means that you must include the original¦" \
    "copyright notice and the full licence text with any resulting anything."
 
-#define  P_AS_IS    \
-   "the GPL NO WARRANTY CLAUSE means the software is provided without any "      \
+#define  P_AS_IS       \
+   "the GPL NO WARRANTY CLAUSE means the software is provided without any¦"      \
    "warranty and the author cannot be held liable for damages."
 
-#define  P_WARNING  \
-   "if you knowingly violate the spirit of these ideas, i suspect you might "    \
-   "find any number of freedom-minded hackers may take it quite personally ;)"
+#define  P_WARNING     \
+   "if you knowingly violate the spirit of these ideas, i suspect a bounty¦"     \
+   "might be offered to any number of freedom-minded hackers who might object."
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
@@ -71,9 +74,9 @@
 #define     P_CREATED   "2019-01"
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
-#define     P_VERMINOR  "1.1-, big changes to stats, headers, and koios"
-#define     P_VERNUM    "1.1n"
-#define     P_VERTXT    "brought back unit test success after headers upgraded to better handle man(7)"
+#define     P_VERMINOR  "1.2-, switching to common testing sources"
+#define     P_VERNUM    "1.2a"
+#define     P_VERTXT    "invented seven projects and build at header data for poly_header testing (working)"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -178,7 +181,10 @@
    "-- file naming follows my standards (headers, source, and units)¦"             \
    "-- coding practices follow my standards (allowing deeper analysis)¦"           \
    "-- program headers and key information are in standard named macros¦"          \
-   "-- zero configuration required ;) written for me, by me, for only me¦"
+   "-- zero configuration required ;) written for me, by me, for only me¦"         \
+   "-- all projects are kept in /home/system/¦"                                    \
+   "-- project directories are formatted as <projname>.<description>¦"             \
+   "-- all project files prefixed with <projname>_¦"             \
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define  P_ALWAYS      \
@@ -202,6 +208,13 @@
   "polymnia is my system architecture tool for monitoring and analyzing¦"          \
   "my somewhat extensive c-language code-base and providing data to allow¦"        \
   "safe maintenance and on-going development¦"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_DANGERS     \
+  "-- this will be a massive program with many related but different objectives¦"  \
+  "-- because its huge, if one piece breaks, everything will stop working¦"        \
+  "-- polymnia requires a very specific set of macros in every program¦"           \
+  "-- will be using a binary database for speed, then no one else can read¦"
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define  P_GREEK       \
@@ -585,6 +598,7 @@ struct cPROJ {
    char        j_vernum      [LEN_LABEL];
    char        j_vertxt      [LEN_HUND];
    /*---(warranty)----------*/
+   char        j_copyright   [LEN_LABEL];
    char        j_license     [LEN_LABEL];
    char        j_copyleft    [LEN_LABEL];
    char        j_include     [LEN_LABEL];
@@ -612,6 +626,7 @@ struct cPROJ {
    char        j_assume      [LEN_LABEL];
    char        j_always      [LEN_LABEL];
    char        j_summary     [LEN_LABEL];
+   char        j_dangers     [LEN_LABEL];
    char        j_greek       [LEN_LABEL];
    /*---(other)-------------*/
    char        j_manual      [LEN_LABEL];
@@ -641,6 +656,13 @@ struct cFILE {
    char        i_type;
    char        i_name        [LEN_TITLE];
    char        i_sort        [LEN_TITLE];
+   /*---(warranty)----------*/
+   char        i_copyright   [LEN_LABEL];
+   char        i_license     [LEN_LABEL];
+   char        i_copyleft    [LEN_LABEL];
+   char        i_include     [LEN_LABEL];
+   char        i_as_is       [LEN_LABEL];
+   char        i_warning     [LEN_LABEL];
    /*---(new stats interface)-*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(parent)------------*/

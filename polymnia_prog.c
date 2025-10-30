@@ -265,15 +265,22 @@ PROG__args              (int a_argc, char *a_argv[])
          return rce;
       }
       ++x_total;
+      DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s %s", i, a, b);
       if (a[0] == '@')  continue;
       DEBUG_ARGS  yLOG_info    ("cli arg", a);
       ++x_args;
-      if (i < a_argc - 1)  b = a_argv [i + 1];
-      else                 b = NULL;
+      if (i < a_argc - 1) {
+         b = a_argv [i + 1];
+         DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s %s", i, a, b);
+      } else {
+         b = NULL;
+         DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s ((null))", i, a);
+      }
       /*---(standards first)-------------*/
-      if (strcmp (a, "--htags"     ) == 0)  a = "--local";
-      if (strstr (" --verify --cverify --vverify --local --clocal --vlocal --registir --cregister --vregister --update --cupdate --vupdate --install --cinstall --vinstall ", a) != NULL) {
+      if (strcmp (a, "--htags"     ) == 0)   a = "--local";
+      if (strstr (" --verify --cverify --vverify --local --clocal --vlocal --register --cregister --vregister --update --cupdate --vupdate --install --cinstall --vinstall ", a) != NULL) {
          b = x_home;
+         --i;
       }
       rc = yJOBS_argument (&i, a, b, &(my.run_as), &(my.run_mode), my.run_file);
       if (rc < 0) {

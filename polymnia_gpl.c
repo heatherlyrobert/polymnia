@@ -6,9 +6,12 @@
 /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 
-#define  P_LICENSE  \
+#define  P_COPYRIGHT   \
+   "copyright (c) 2019 robert.s.heatherly"
+
+#define  P_LICENSE     \
    "the only place you could have gotten this code is my github, my website, "   \
-   "or illegal sharing. given that, you should be aware it is all GPL licensed."
+   "or illegal sharing. given that, you should be aware that this is GPL licensed."
 
 #define  P_COPYLEFT \
    "the GPL COPYLEFT REQUIREMENT means any modifications or derivative works "   \

@@ -1,6 +1,8 @@
 #!/usr/local/bin/koios
 #   koios-polos (axis of heaven) unit testing meta-language
 #>  data structure waves è to ì
+#>
+#> prepared seven sample projects in the config area
 
 
 
@@ -9,8 +11,21 @@
 PREP          include the prototype headers                                      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
    incl       include public header                polymnia.h                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
    incl       include yENV header                  yENV.h                      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-   global     create working variable              - - - - - - - - - - - - -   char    u_home      [LEN_FULL]  = "";                                                                                                                                                                                      
-
+   global     create working variable              - - - - - - - - - - - - -   char    u_home        [LEN_FULL]  = "";                                                                                                                                                                                      
+   global     create working variable              - - - - - - - - - - - - -   char   *u_ylog        = "yLOG";                                                                                                                                                                        
+   global     create working variable              - - - - - - - - - - - - -   char   *u_dir_ylog    = "/tmp/yLOG.execution_logger";                                                                                                                                                  
+   global     create working variable              - - - - - - - - - - - - -   char   *u_poly        = "polymnia";                                                                                                                                                                    
+   global     create working variable              - - - - - - - - - - - - -   char   *u_dir_poly    = "/tmp/polymnia.muse_of_coding_structure";                                                                                                                                      
+   global     create working variable              - - - - - - - - - - - - -   char   *u_gyges       = "gyges";                                                                                                                                                                    
+   global     create working variable              - - - - - - - - - - - - -   char   *u_dir_gyges   = "/tmp/gyges.technical_spreadsheet";                                                                                                                                      
+   global     create working variable              - - - - - - - - - - - - -   char   *u_arachne     = "arachne";                                                                                                                                                                    
+   global     create working variable              - - - - - - - - - - - - -   char   *u_dir_arachne = "/tmp/arachne.spider_visualization";                                                                                                                                      
+   global     create working variable              - - - - - - - - - - - - -   char   *u_khronos     = "khronos";                                                                                                                                                                    
+   global     create working variable              - - - - - - - - - - - - -   char   *u_dir_khronos = "/tmp/khronos.heatherly_cron_daemon";                                                                                                                                      
+   global     create working variable              - - - - - - - - - - - - -   char   *u_metis       = "metis";                                                                                                                                                                    
+   global     create working variable              - - - - - - - - - - - - -   char   *u_dir_metis   = "/tmp/metis.task_management";                                                                                                                                      
+   global     create working variable              - - - - - - - - - - - - -   char   *u_yjobs       = "yJOBS";                                                                                                                                                                   
+   global     create working variable              - - - - - - - - - - - - -   char   *u_dir_yjobs   = "/tmp/yJOBS.job_control_environment";                                                                                                                                      
 
 
 #23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
@@ -26,7 +41,7 @@ GLOBAL   -A-  set up multi-project, multi-file dataset                         
      code     change directory                     - - - - - - - - - - - - -   chdir ("/tmp/polymnia_test/");                                                                                                                                                                                             
 
    COND       create a project entry                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     ... call add                         poly_proj_add               "first"          , "/home/user"     , &x_projA                                                        i_equal     0                                                                                                    
+     exec     ... call add                         poly_proj_add               "first"          , "/home/user"     , &x_projA                                                        z_equal     0                                                                                                    
      echo     ... review pointer                   - - - - - - - - - - - - -   x_projA                                                                                               p_exists    0                                                                                                    
 
    COND       add entries                                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.003))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -39,11 +54,11 @@ GLOBAL   -A-  set up multi-project, multi-file dataset                         
      code     touch a file                         - - - - - - - - - - - - -   system ("touch /tmp/polymnia_test/foxtrot.c");                                                                                                                                                                             
 
    COND       review directory                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     call review                          poly_file_inventory         x_projA                                                                                               i_equal     6                                                                                                    
+     exec     call review                          poly_file_inventory         x_projA                                                                                               z_equal     6                                                                                                    
      get      ... review count                     poly_file__unit             "count"          , 0                                                                                  s_equal     FILE count       :   6                                                                               
 
    COND       create a project entry                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.005))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     ... call add                         poly_proj_add               "second"         , "/home/user"     , &x_projB                                                        i_equal     0                                                                                                    
+     exec     ... call add                         poly_proj_add               "second"         , "/home/user"     , &x_projB                                                        z_equal     0                                                                                                    
      echo     ... review pointer                   - - - - - - - - - - - - -   x_projB                                                                                               p_exists    0                                                                                                    
 
    COND       add entries                                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.006))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -64,20 +79,20 @@ GLOBAL   -A-  set up multi-project, multi-file dataset                         
      code     touch a file                         - - - - - - - - - - - - -   system ("touch /tmp/polymnia_test/tango.c");                                                                                                                                                                               
 
    COND       review directory                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.007))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     call review                          poly_file_inventory         x_projB                                                                                               i_equal     14                                                                                                   
+     exec     call review                          poly_file_inventory         x_projB                                                                                               z_equal     14                                                                                                   
      get      ... review count                     poly_file__unit             "count"          , 0                                                                                  s_equal     FILE count       :  20                                                                               
 
    COND       create a project entry                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.008))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     ... call add                         poly_proj_add               "third"          , "/home/user"     , &x_projC                                                        i_equal     0                                                                                                    
+     exec     ... call add                         poly_proj_add               "third"          , "/home/user"     , &x_projC                                                        z_equal     0                                                                                                    
      echo     ... review pointer                   - - - - - - - - - - - - -   x_projC                                                                                               p_exists    0                                                                                                    
      code     clear all files                      - - - - - - - - - - - - -   system("rm -f /tmp/polymnia_test/* > /dev/null");                                                                                                                                                                          
 
    COND       review directory                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.009))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     call review                          poly_file_inventory         x_projC                                                                                               i_equal     0                                                                                                    
+     exec     call review                          poly_file_inventory         x_projC                                                                                               z_equal     0                                                                                                    
      get      ... review count                     poly_file__unit             "count"          , 0                                                                                  s_equal     FILE count       :  20                                                                               
 
    COND       create a project entry                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.010))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     ... call add                         poly_proj_add               "fourth"         , "/home/user"     , &x_projD                                                        i_equal     0                                                                                                    
+     exec     ... call add                         poly_proj_add               "fourth"         , "/home/user"     , &x_projD                                                        z_equal     0                                                                                                    
      echo     ... review pointer                   - - - - - - - - - - - - -   x_projD                                                                                               p_exists    0                                                                                                    
 
    COND       add entries                                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.011))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -90,7 +105,7 @@ GLOBAL   -A-  set up multi-project, multi-file dataset                         
      code     touch a file                         - - - - - - - - - - - - -   system ("touch /tmp/polymnia_test/zulu.c");                                                                                                                                                                                
 
    COND       review directory                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((AA.012))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     call review                          poly_file_inventory         x_projD                                                                                               i_equal     6                                                                                                    
+     exec     call review                          poly_file_inventory         x_projD                                                                                               z_equal     6                                                                                                    
      get      ... review count                     poly_file__unit             "count"          , 0                                                                                  s_equal     FILE count       :  26                                                                               
 
    #========  =================================================================  ID   TOP======glob====shar====scrp   MID======cond====ditto=and=usage=======local-reuse-and-list============global-reuse-and-list===========skip   BOT======real====vars====void====skip===DITTO====real====void====skip   
@@ -308,6 +323,695 @@ GLOBAL   -Z-  remove testing (home) directory                                  
 
 #===========  =================================================================  ID   TOP======glob====shar====scrp   MID======cond====ditto=and=usage=======local-reuse-and-list============global-reuse-and-list===========skip   BOT======real====vars====void====skip===DITTO====real====void====skip   
 RETSAM        final master file statistics ------------------------------------   -     8     8     0     0    22    22     0  ··········     0  ·                        0  ·                        0   177    16     4   157     0     0     0     0     0   
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+CONFIG   -ò-  set up details for sample yLOG                                      0s  yLOG            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((ZZ.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   local      create working variable              - - - - - - - - - - - - -   tPROJ  *x_proj        = NULL;                                                                                                                                                                                                
+   local      create working variable              - - - - - - - - - - - - -   char   *x_header      = "yLOG_priv.h";                                                                                                                                                                           
+#> a = create directory
+#> b = plus, create project
+#> c = plus, create normal header
+#> d = plus, create extended headers/gpl
+
+   COND       åabcdefæ create the project                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     åabcdefæ create directory            yENV_mkdir                  u_dir_ylog                            , "root"  , "root"  , "0755"                                    c_equal     'd'                                                                                                  
+     code     åabcdefæ change directory            - - - - - - - - - - - - -   chdir (u_dir_ylog);                                                                                                                                                                                                        
+     code     å·bcdefæ clear x_proj pointer        - - - - - - - - - - - - -   x_proj = NULL;                                                                                                                                                                                                            
+     exec     å·bcdefæ add the project             poly_proj_add               u_ylog           , u_dir_ylog                         , &x_proj                                       z_equal     0                                                                                                    
+     echo     å·bcdefæ ... review pointer          - - - - - - - - - - - - -   x_proj                                                                                                p_exists    0                                                                                                    
+
+   COND       å··cdefæ create a header                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     å··cdefæ remove header file          yENV_rm                     x_header                                                                                              c_equal     '-'                                                                                                  
+     exec     å··cdefæ create header file          yENV_touch                  x_header                                                  , "root"  , "root"  , "0600"                c_equal     'r'                                                                                                  
+     file     å··cdefæ read for writing            - - - - - - - - - - - - -   [[ x_header ]]                                                                                                                                                                                                             
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*===[[ GPL LICENSING ]]======================================================*/
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_LICENSE  \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"the only place you could have gotten this code is my github, my website,\"   \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"or illegal sharing.  given that, you should be aware it is all GPL licensed.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_COPYLEFT \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"the GPL COPYLEFT REQUIREMENT means any modifications or derivative works\"   \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"must be released under the same GPL license, i.e, must be free and open.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_INCLUDE  \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"the GPL DOCUMENTATION REQUIREMENT means that you must include the original\" \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"copyright notice and the full licence text with any resulting anything.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_AS_IS    \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"the GPL NO WARRANTY CLAUSE means the software is provided without any\"      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"warranty and the author cannot be held liable for damages.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_WARNING  \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"if you knowingly violate the spirit of these ideas, i suspect you might\"    \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   ²²²\"find any number of freedom-minded hackers may take it quite personally ;)\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*===[[ GPL LICENSING ]]======================================================*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FOCUS     \"SA (system administration)\"                                      
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NICHE     \"pm (process monitoring)\"                                       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUBJECT   \"process execution logging\"                                     
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PURPOSE   \"simple, automated, consistent process execution logging\"       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NAMESAKE  \"clio-chrysafenios (flowering)\"                                 
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRONOUNCE \"klee·oh\"                                                       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HERITAGE  \"greek muse of written and oral history, song, and poetry\"      
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BRIEFLY   \"muse of written history\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_IMAGERY   \"golden young woman holding a scroll, by a chest of books\"      
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REASON    \"greek muse of beautiful, poetic, historical writings\"          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_ONELINE   \"clio-chrysafenios (flowering) process execution logging\"       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BASENAME  \"yLOG\"                                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FULLPATH  \"/usr/local/lib64/libyLOG.so\"                                   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUFFIX    \"ulog\"                                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CONTENT   \"process logging journal\"                                       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SYSTEM    \"gnu/linux   (powerful, ubiquitous, technical, and hackable)\"   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_LANGUAGE  \"ansi-c      (wicked, limitless, universal, and everlasting)\"   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_COMPILER  \"gcc 13.2.1 20240210\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CODESIZE  \"small       (appoximately 1,000 slocl)\"                        
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPSTDC   \"stdio,string\"                                                    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPPOSIX  \"unistd\"                                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPCORE   \"yURG,yLOG,ySTR\"                                                  
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPVIKEY  \"-\"                                                            
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPOTHER  \"yREGEX,yDLST\"                                                            
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPGRAPH  \"yFONT\"                                                            
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPSOLO   \"yENV_solo\"                                                            
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_AUTHOR    \"heatherlyrobert\"                                               
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CREATED   \"2008-07\"                                                       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMAJOR  \"1.--, working and advancing\"                                   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMINOR  \"1.3-, continue to refine while using\"                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERNUM    \"1.3h\"                                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERTXT    \"trouble with output lines, resolved and added to unit test\"    
+
+   COND       å··cdefæ inventory all files                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     å··cdefæ call review                 poly_file_inventory         x_proj                                                                                                z_greater   0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+CONFIG   -÷-  set up details for sample polymnia                                  0s  polymnia        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((ZZ.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   local      create working variable              - - - - - - - - - - - - -   tPROJ  *x_proj        = NULL;                                                                                                                                                                                                
+   local      create working variable              - - - - - - - - - - - - -   char    x_header      [LEN_PATH]  = "";                                                                                                                                                                                      
+
+   COND       åabcdefæ create the project                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     åabcdefæ create directory            yENV_mkdir                  u_dir_poly                            , "root"  , "root"  , "0755"                                    c_equal     'd'                                                                                                  
+     code     åabcdefæ change directory            - - - - - - - - - - - - -   chdir (u_dir_poly);                                                                                                                                                                                                        
+     code     å·bcdefæ clear x_proj pointer        - - - - - - - - - - - - -   x_proj = NULL;                                                                                                                                                                                                            
+     exec     å·bcdefæ add the project             poly_proj_add               u_poly           , u_dir_poly                         , &x_proj                                       z_equal     0                                                                                                    
+
+   COND       å··cdefæ create a header                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     å··cdefæ make header name            - - - - - - - - - - - - -   sprintf (x_header, "%s/%s.h", u_dir_poly, u_poly);                                                                                                                                                                          
+     exec     å··cdefæ remove header file          yENV_rm                     x_header                                                                                              c_equal     '-'                                                                                                  
+     exec     å··cdefæ create header file          yENV_touch                  x_header                                                  , "root"  , "root"  , "0600"                c_equal     'r'                                                                                                  
+     file     å··cdefæ read for writing            - - - - - - - - - - - - -   [[ x_header ]]                                                                                                                                                                                                             
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_COPYRIGHT   \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"copyright (c) 2019 robert.s.heatherly at balsashrike at gmail dot com\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_LICENSE     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"the only place you could have gotten this code is my github, my website,¦\"   \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"or illegal sharing. given that, you should be aware that this is GPL licensed.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_COPYLEFT    \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"the GPL COPYLEFT REQUIREMENT means any modifications or derivative works¦\"   \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"must be released under the same GPL license, i.e, must be free and open.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_INCLUDE     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"the GPL DOCUMENTATION REQUIREMENT means that you must include the original¦\" \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"copyright notice and the full licence text with any resulting anything.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_AS_IS       \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"the GPL NO WARRANTY CLAUSE means the software is provided without any¦\"      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"warranty and the author cannot be held liable for damages.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_WARNING     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"if you knowingly violate the spirit of these ideas, i suspect a bounty¦\"     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"might be offered to any number of freedom-minded hackers who might object.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FOCUS     \"DE (development environment)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NICHE     \"ca (code analysis)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUBJECT   \"ansi-c code analysis\"                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PURPOSE   \"c language code-base navigation, research, and analysis\"       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NAMESAKE  \"polymnia-hymnos (many praises)\"                                
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRONOUNCE \"poh·lee·mih·nee·uh hihm·nohs\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HERITAGE  \"greek muse of divine hymns, poetry, dancing, geometry, grammer\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BRIEFLY   \"hymns, dancing, and geometry\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_IMAGERY   \"beautiful woman wearing a veil and looking up at the heavens\"  
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REASON    \"she is the muse of divine hymns (c is the divine language)\"    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_ONELINE   \"polymnia-hymnos (many praises) ansi-c code analysis\"           
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HOMEDIR   \"/home/system/polymnia.muse_of_coding_structure\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BASENAME  \"polymnia\"                                                      
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FULLPATH  \"/usr/local/bin/polymnia\"                                       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUFFIX    \"htags\"                                                         
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CONTENT   \"code navigation file\"                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SYSTEM    \"gnu/linux   (powerful, ubiquitous, technical, and hackable)\"   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_LANGUAGE  \"ansi-c      (wicked, limitless, universal, and everlasting)\"   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_COMPILER  \"gcc 5.3.0\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CODESIZE  \"small       (appoximately 1,000 slocl)\"                        
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPSTDC   \"stdio,stdlib,string,math\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPPOSIX  \"unistd,dirent,sys/stat\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPCORE   \"yLOG,yURG,ySTR,yENV\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPVIKEY  \"´\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPGRAPH  \"´\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPOTHER  \"ySORT,yJOBS,yEXEC,ySCORE,yAUDIT,yREGEX\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPSOLO   \"yDLST_solo\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_AUTHOR    \"heatherlyrobert\"                                               
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CREATED   \"2019-10\"                                                       
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMAJOR  \"0.--, pre-production\"                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMINOR  \"0.8-, working out final issues\"                                
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERNUM    \"0.8h\"                                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERTXT    \"file and global vars/macros working and mostly unit tested\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define     P_PRIORITY  \"direct, simple, brief, vigorous, and lucid (h.w. fowler)\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define     P_PRINCIPLE \"[grow a set] and build your wings on the way down (r. bradbury)\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define     P_REMINDER  \"there are many better options, but i *own* every byte of this one\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_DISCLAIM    \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"i am a crazy, selfish, dog-fooding c-programmer. my code tends to be¦\"         \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"experimental and constantly evolving. my point is NOT to be the best, it¦\"     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"is to challenge myself, build from scratch, and allow fast problem solving.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_BOTHER      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"i have a very large, growing, and evolving code-base. the results can¦\"        \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"be chaotic. i need to make sense of it all, identify potential troubles,¦\"     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"track inter-dependencies, and help isolate troubles very quickly.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_COVERS      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"boadly architecture management, i.e., supporting a systems architect,¦\"        \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"not a programmer, admisitrator, leader, or project manager.  this would¦\"      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"include inventories, interdependencies, and holistic code-base analysis.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_SUBDISC     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- development priorities, sequencing, and broad timelines¦\"                   \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- program and library inventories, with extensive supporting data¦\"           \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- interfacing architecture for feeds, requirements, and conversions¦          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- program technical details to assess issues and vulnerabilties¦\"             \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- overall source code audits to monitor quality and weaknesses¦\"              \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- predictive source code data gathering to identify worrying points¦\"         \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- details on all inter-connections for analysis and navigation¦\"              \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- monitoring of testing and source versioning activity¦\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_CURRENT     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"my perception is that these activities are almost always ad-hoc,¦              \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"disconnected, and typically out-of-date.  the systems are spreadsheets,¦\"      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"powerpoint, and word documents.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_VALUE       \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"having this data close at hand would make code evolution and migration¦\"       \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"not only faster, but far less contenscious and dangerouske and therefore¦\"     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"more likely to be contemplated, phased, smooth, and successful\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_FEAR        \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"my code-base is already at 500,000 lines of code over many programs¦\"          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"and shared libraries.  if i don't get a tool in place, i will become¦\"         \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"frozen in place and bogged down with maintenance work alone.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_MISSING     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"really, the answer is everything.  but, most environments have so much¦\"       \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"code in various languages and vintiges that automating it is a ludacis¦\"       \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"pipedream and viewfs as distracting from real work.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_KEEPING     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"there are reporting methods i have seen and like, but almost everything¶       \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"else is typically based on the personality of the current architect.¦\"         \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"i plan on using this tool to help further refine my standards ;).\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_PERK        \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"there are tools out there that could be bent and modded to help, but¦\"         \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"this is absolutely critical and i cant get screwed with upgrades,¦\"            \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"migrations, ownership changes, bug-fix schedules, and licensing¦\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_SCOPE       \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"the primary tool will focus on fully automated data gathering to produce¦\"     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"systems inventories, dependency diagrams, interface details, source code¦      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"analysis, and standards compliance.\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_ACCEPT      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- all data gathering will be fully automated¦\"                                \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- inventories of all programs and libraries with extensive details¦\"          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- inventories of all program/library inter-dependency details¦\"               \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- inventories of all functions and extensive statistics¦\"                     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- latest version control data and updates¦\"                                   \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- unit and string testing coverage and compliance¦\"                           \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- create all source data for code navigation within the IDE¦\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_REJECT      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- no fancy timelines or architecture diagrams¦\"                               \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- no development requests, evaluations, designs, or any such¦\"                \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- no direct automation or interaction with version control¦\"                  \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- no direct automation or interaction with unit or string testing¦\"           \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- no concern for any other potential users for this system¦\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_ASSUME      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- all applications are only written in c (nearly ansi-c)¦\"                    \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- file naming follows my standards (headers, source, and units)¦\"             \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- coding practices follow my standards (allowing deeper analysis)¦\"           \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- program headers and key information are in standard named macros¦\"          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- zero configuration required ;) written for me, by me, for only me¦\"         \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- all projects are kept in /home/system/¦\"                                    \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- project directories are formatted as <projname>.<description>¦\"             \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- all project files prefixed with <projname>_¦\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_ALWAYS      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- run on any linux box from raspberry to cray¦\"                               \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- stay focused, small, tight, reliable, and secure¦\"                          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- as always, tight and portable glibc/ansi-c code¦\"                           \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- stay away from dependency on external code libraries, like boost¦\"          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- only human-readable, 8-bit safe, ascii streams for moving data¦\"            \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- store data in regular or binary files, not dedicated databases¦\"            \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- dedicated, maintained, automated unit and string testing¦\"                  \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- integrated debugging/logging for rapid problem solving¦\"                    \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- use secure communications between systems where required¦\"                  \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- clean, clean code so i can maintain after long absences¦\"                   \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- no international, multi-lang, multi-byte support (freaking ever)¦\"          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- one-hundred percent keyboard driven and centric¦\"                           \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- all tables must be self describing with labels and queries¦\"                \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -      \"-- all data structures must include dumps, reports, and audits¦\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_SUMMARY     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"polymnia is my system architecture tool for monitoring and analyzing¦\"          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"my somewhat extensive c-language code-base and providing data to allow¦\"        \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"safe maintenance and on-going development¦\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_DANGERS     \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"-- this will be a massive program with many related but different objectives¦\"  \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"-- because its huge, if one piece breaks, everything will stop working¦\"        \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"-- polymnia requires a very specific set of macros in every program¦\"           \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"-- will be using a binary database for speed, then no one else can read¦\"
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å···defæ ... add a record            - - - - - - - - - - - - -   #define  P_GREEK       \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"polymnia-hymnos (many praises) is the muse and protector of divine hymns¦\"      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"and lyric poetry, inventor of the lyre, patron of dancing, geometry, and¦\"      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"grammar. the muses (mousai) are nine daughters of zeus and mnemosyne¦\"          \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"(titan of memory) and are the goddesses of art, literature, and science.¦\"      \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"they inspire creation, enthusiasm, and the creative impulses. polymnia¦\"        \\
+     append   å···defæ ... add a record            - - - - - - - - - - - - -     \"is usually depicted wearing a veil and looking up to the heavens.¦\"
+
+   COND       å··cdefæ inventory all files                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     å··cdefæ call review                 poly_file_inventory         x_proj                                                                                                z_greater   0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+CONFIG   -ê-  set up details for sample gyges                                     0s  gyges           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((ZZ.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   local      create working variable              - - - - - - - - - - - - -   tPROJ  *x_proj        = NULL;                                                                                                                                                                                                
+   local      create working variable              - - - - - - - - - - - - -   char    x_header      [LEN_PATH]  = "";                                                                                                                                                                                      
+
+   COND       åabcdefæ create the project                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     åabcdefæ create directory            yENV_mkdir                  u_dir_gyges                           , "root"  , "root"  , "0755"                                    c_equal     'd'                                                                                                  
+     code     åabcdefæ change directory            - - - - - - - - - - - - -   chdir (u_dir_gyges);                                                                                                                                                                                                       
+     code     å·bcdefæ clear x_proj pointer        - - - - - - - - - - - - -   x_proj = NULL;                                                                                                                                                                                                            
+     exec     å·bcdefæ add the project             poly_proj_add               u_gyges          , u_dir_gyges                        , &x_proj                                       z_equal     0                                                                                                    
+
+   COND       å··cdefæ create a header                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     å··cdefæ make header name            - - - - - - - - - - - - -   sprintf (x_header, "%s/%s.h", u_dir_gyges, u_gyges) ;                                                                                                                                                                         
+     exec     å··cdefæ remove header file          yENV_rm                     x_header                                                                                              c_equal     '-'                                                                                                  
+     exec     å··cdefæ create header file          yENV_touch                  x_header                                                  , "root"  , "root"  , "0600"                c_equal     'r'                                                                                                  
+     file     å··cdefæ read for writing            - - - - - - - - - - - - -   [[ x_header ]]                                                                                                                                                                                                             
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FOCUS     \"TO (major tools)\"                                               
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NICHE     \"ss (spreadsheet)\"                                               
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUBJECT   \"technical spreadsheet\"                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PURPOSE   \"technical, fullsome, aesthetic, and keyboard-centric spreadsheet\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NAMESAKE  \"gyges-hecatoncheires (hundred-handed)\"                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HERITAGE  \"gyges, the furious, is one of the three hecatoncheires\"         
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_IMAGERY   \"ugly, impossibly powerful, one-hundred handed, fifty headed giant\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REASON    \"gyges and spreadsheets are both impossibly scary and complex\"   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_ONELINE   \"gyges-hecatoncheires (hundred-handed) technical spreadsheet\"    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BASENAME  \"gyges\"                                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FULLPATH  \"/usr/local/bin/gyges\"                                           
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUFFIX    \"gyges\"                                                          
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CONTENT   \"spreadsheet data\"                                               
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SYSTEM    \"gnu/linux   (powerful, ubiquitous, technical, and hackable)\"    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_LANGUAGE  \"ansi-c      (wicked, limitless, universal, and everlasting)\"    
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CODESIZE  \"large       (appoximately 10,000 slocl)\"                        
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPCORE   \"none\"                                                           
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_AUTHOR    \"heatherlyrobert\"                                                
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CREATED   \"2010-09\"                                                        
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMAJOR  \"3.--, totally reworking to use yVIKEYS and yCALC\"               
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMINOR  \"3.5-, fully transition to dynamic memory usage\"                 
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERNUM    \"3.5n\"                                                           
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERTXT    \"switched over to improved yPARSE, hugely cool\"                  
+
+   COND       å··cdefæ inventory all files                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     å··cdefæ call review                 poly_file_inventory         x_proj                                                                                                z_greater   0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+CONFIG   -è-  set up details for sample arachne                                   0s  arachne         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((ZZ.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   local      create working variable              - - - - - - - - - - - - -   tPROJ  *x_proj        = NULL;                                                                                                                                                                                                
+   local      create working variable              - - - - - - - - - - - - -   char    x_header      [LEN_PATH]  = "";                                                                                                                                                                                      
+
+   COND       åabcdefæ create the project                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     åabcdefæ create directory            yENV_mkdir                  u_dir_arachne                         , "root"  , "root"  , "0755"                                    c_equal     'd'                                                                                                  
+     code     åabcdefæ change directory            - - - - - - - - - - - - -   chdir (u_dir_arachne);                                                                                                                                                                                                     
+     code     å·bcdefæ clear x_proj pointer        - - - - - - - - - - - - -   x_proj = NULL;                                                                                                                                                                                                            
+     exec     å·bcdefæ add the project             poly_proj_add               u_arachne        , u_dir_arachne                      , &x_proj                                       z_equal     0                                                                                                    
+
+   COND       å··cdefæ create a header                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     å··cdefæ make header name            - - - - - - - - - - - - -   sprintf (x_header, "%s/%s.h", u_dir_arachne, u_arachne);                                                                                                                                                                         
+     exec     å··cdefæ remove header file          yENV_rm                     x_header                                                                                              c_equal     '-'                                                                                                  
+     exec     å··cdefæ create header file          yENV_touch                  x_header                                                  , "root"  , "root"  , "0600"                c_equal     'r'                                                                                                  
+     file     å··cdefæ read for writing            - - - - - - - - - - - - -   [[ x_header ]]                                                                                                                                                                                                             
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FOCUS     \"RO (robotics)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NICHE     \"hx (hexapoda)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUBJECT   \"crazy work-spider visualization\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PURPOSE   \"wickedly accurate and useful hexapod visualization and simulation\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NAMESAKE  \"arachne-anassa (spider queen)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HERITAGE  \"prideful lydian weaver who challenged the gods and lost\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_IMAGERY   \"womans upside down head/torso attached to spider abdomen/legs\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REASON    \"queen of spiders would be the patron of spider robots\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_ONELINE   P_NAMESAKE \" \" P_SUBJECT
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BASENAME  \"arachne\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FULLPATH  \"/usr/local/bin/arachne\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUFFIX    \"arac\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CONTENT   \"spider movement script\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SYSTEM    \"gnu/linux   (powerful, ubiquitous, technical, and hackable)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_LANGUAGE  \"ansi-c      (wicked, limitless, universal, and everlasting)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CODESIZE  \"moderate    (less than 5,000 lines of code)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPENDS   \"yKINE, yFONT\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_AUTHOR    \"heatherlyrobert\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CREATED   \"2009-07\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMAJOR  \"1.--, working and advancing\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMINOR  \"1.1-, porting to latest yVIKEYS\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERNUM    \"1.2b\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERTXT    \"full display back and working\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRIORITY  \"direct, simple, brief, vigorous, and lucid (h.w. fowler)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRINCIPAL \"[grow a set] and build your wings on the way down (r. bradbury)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REMINDER  \"there are many better options, but i *own* every byte of this one\"
+
+   COND       å··cdefæ inventory all files                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     å··cdefæ call review                 poly_file_inventory         x_proj                                                                                                z_greater   0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+CONFIG   -ñ-  set up details for sample khronos                                   0s  khronos         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((ZZ.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   local      create working variable              - - - - - - - - - - - - -   tPROJ  *x_proj        = NULL;                                                                                                                                                                                                
+   local      create working variable              - - - - - - - - - - - - -   char    x_header      [LEN_PATH]  = "";                                                                                                                                                                                      
+
+   COND       åabcdefæ create the project                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     åabcdefæ create directory            yENV_mkdir                  u_dir_khronos                         , "root"  , "root"  , "0755"                                    c_equal     'd'                                                                                                  
+     code     åabcdefæ change directory            - - - - - - - - - - - - -   chdir (u_dir_khronos);                                                                                                                                                                                                     
+     code     å·bcdefæ clear x_proj pointer        - - - - - - - - - - - - -   x_proj = NULL;                                                                                                                                                                                                            
+     exec     å·bcdefæ add the project             poly_proj_add               u_khronos        , u_dir_khronos                      , &x_proj                                       z_equal     0                                                                                                    
+
+   COND       å··cdefæ create a header                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     å··cdefæ make header name            - - - - - - - - - - - - -   sprintf (x_header, "%s/%s.h", u_dir_khronos, u_khronos);                                                                                                                                                                         
+     exec     å··cdefæ remove header file          yENV_rm                     x_header                                                                                              c_equal     '-'                                                                                                  
+     exec     å··cdefæ create header file          yENV_touch                  x_header                                                  , "root"  , "root"  , "0600"                c_equal     'r'                                                                                                  
+     file     å··cdefæ read for writing            - - - - - - - - - - - - -   [[ x_header ]]                                                                                                                                                                                                             
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FOCUS     \"AU (system automation)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NICHE     \"ba (batch automation)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUBJECT   \"primary batch-automation daemon\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PURPOSE   \"reliable, trackable, and focused time-based job scheduling\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NAMESAKE  \"khronos-anileis (merciless time)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRONOUNCE \"kroh·nohs aa·nee·lays\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HERITAGE  \"incorporeal protogenoi god of creation and unyielding time\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BRIEFLY   \"creation and unyielding time\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_IMAGERY   \"winged serpent (drakon) with three heads; bull, lion, and man\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REASON    \"khronos embodies the merciless, unyielding forward march of time\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_ONELINE   P_NAMESAKE \" \" P_SUBJECT
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HOMEDIR   \"/home/system/khronos.heatherly_cron_daemon\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BASENAME  \"khronos\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FULLPATH  \"/usr/sbin/khronos\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUFFIX    \"khronos\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CONTENT   \"revised crontabs allowing enhanced controls\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SYSTEM    \"gnu/linux   (powerful, ubiquitous, technical, and hackable)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_LANGUAGE  \"ansi-c      (wicked, limitless, universal, and everlasting)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_COMPILER  \"gcc 5.3.0\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CODESIZE  \"small       (appoximately 1,000 slocl)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPENDS   \"ySTR,yPARSE,yDLST,yJOBS,yEXEC,ySCHED\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_AUTHOR    \"heatherlyrobert\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CREATED   \"2010-05\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMAJOR  \"2.--, simplify and harden code\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMINOR  \"2.2-, yJOB_maint unit testing\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERNUM    \"2.2d\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERTXT    \"YJOBS_IN, YJOBS_MAINT unit tests caught up with yJOBS standard return codes\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_TOPOFMIND \"wild ideas, big experimental code base, single maintainer\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRIORITY  \"direct, simple, brief, vigorous, and lucid (h.w. fowler)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRINCIPAL \"[grow a set] and build your wings on the way down (r. bradbury)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REMINDER  \"there are many better options, but i *own* every byte of this one\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+
+   COND       å··cdefæ inventory all files                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     å··cdefæ call review                 poly_file_inventory         x_proj                                                                                                z_greater   0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+CONFIG   -ó-  set up details for sample metis                                     0s  metis           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((ZZ.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   local      create working variable              - - - - - - - - - - - - -   tPROJ  *x_proj        = NULL;                                                                                                                                                                                                
+   local      create working variable              - - - - - - - - - - - - -   char    x_header      [LEN_PATH]  = "";                                                                                                                                                                                      
+
+   COND       åabcdefæ create the project                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     åabcdefæ create directory            yENV_mkdir                  u_dir_metis                           , "root"  , "root"  , "0755"                                    c_equal     'd'                                                                                                  
+     code     åabcdefæ change directory            - - - - - - - - - - - - -   chdir (u_dir_metis);                                                                                                                                                                                                       
+     code     å·bcdefæ clear x_proj pointer        - - - - - - - - - - - - -   x_proj = NULL;                                                                                                                                                                                                            
+     exec     å·bcdefæ add the project             poly_proj_add               u_metis          , u_dir_metis                        , &x_proj                                       z_equal     0                                                                                                    
+
+   COND       å··cdefæ create a header                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     å··cdefæ make header name            - - - - - - - - - - - - -   sprintf (x_header, "%s/%s.h", u_dir_metis, u_metis);                                                                                                                                                                         
+     exec     å··cdefæ remove header file          yENV_rm                     x_header                                                                                              c_equal     '-'                                                                                                  
+     exec     å··cdefæ create header file          yENV_touch                  x_header                                                  , "root"  , "root"  , "0600"                c_equal     'r'                                                                                                  
+     file     å··cdefæ read for writing            - - - - - - - - - - - - -   [[ x_header ]]                                                                                                                                                                                                             
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FOCUS     \"PT (productivity/time mgmt)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NICHE     \"td (todo list)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUBJECT   \"personal task visualization system\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PURPOSE   \"task consolitation, visualization, and navigation system\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NAMESAKE  \"metis-okeanides (ocean-born)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRONOUNCE \"meh·tihs oh·kah·nee·days\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HERITAGE  \"titan goddess of deep thought, wisdom, wise counsel, and cunning\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BRIEFLY   \"deep thought and wise counsel\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_IMAGERY   \"singularly graceful, stately, and regal goddess\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REASON    \"smart task management leads to better priorities and decisions\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_ONELINE   P_NAMESAKE \" \" P_SUBJECT
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HOMEDIR   \"/home/monkey/metis.task_management\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BASENAME  \"metis\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FULLPATH  \"/usr/local/bin/metis\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUFFIX    \"tasks\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CONTENT   \"scan-card task list\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SYSTEM    \"gnu/linux   (powerful, ubiquitous, technical, and hackable)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_LANGUAGE  \"ansi-c      (wicked, limitless, universal, and everlasting)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_COMPILER  \"gcc 5.3.0\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CODESIZE  \"large       (appoximately 10,000 slocl)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPENDS   \"none\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_AUTHOR    \"heatherlyrobert\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CREATED   \"2008-06\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMAJOR  \"1.--, improve for more and more use and value\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMINOR  \"1.7-, catch up to library changes\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERNUM    \"1.7j\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERTXT    \"minor changes for library updates\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_TOPOFMIND \"wild ideas, big experimental code base, single maintainer\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRIORITY  \"direct, simple, brief, vigorous, and lucid (h.w. fowler)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRINCIPAL \"[grow a set] and build your wings on the way down (r. bradbury)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REMINDER  \"there are many better options, but i *own* every byte of this one\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HEADERS   P_FOCUS, P_NICHE, P_SUBJECT, P_PURPOSE, P_NAMESAKE, P_PRONOUNCE, P_HERITAGE, P_BRIEFLY, P_IMAGERY, P_REASON, P_ONELINE, P_HOMEDIR, P_BASENAME, P_FULLPATH, P_SUFFIX, P_CONTENT, P_SYSTEM, P_LANGUAGE, P_COMPILER, P_CODESIZE, P_DEPENDS, P_AUTHOR, P_CREATED, P_VERMAJOR, P_VERMINOR, P_VERNUM, P_VERTXT
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*········· ··········· ´·····························´········································*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+
+   COND       å··cdefæ inventory all files                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     å··cdefæ call review                 poly_file_inventory         x_proj                                                                                                z_greater   0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+CONFIG   -é-  set up details for sample yjobs                                     0s  yjobs           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((ZZ.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   local      create working variable              - - - - - - - - - - - - -   tPROJ  *x_proj        = NULL;                                                                                                                                                                                                
+   local      create working variable              - - - - - - - - - - - - -   char   *x_header      = "yJOBS_priv.h";                                                                                                                                                                         
+
+   COND       åabcdefæ create the project                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     åabcdefæ create directory            yENV_mkdir                  u_dir_yjobs                           , "root"  , "root"  , "0755"                                    c_equal     'd'                                                                                                  
+     code     åabcdefæ change directory            - - - - - - - - - - - - -   chdir (u_dir_yjobs);                                                                                                                                                                                                       
+     code     å·bcdefæ clear x_proj pointer        - - - - - - - - - - - - -   x_proj = NULL;                                                                                                                                                                                                            
+     exec     å·bcdefæ add the project             poly_proj_add               u_yjobs          , u_dir_yjobs                        , &x_proj                                       z_equal     0                                                                                                    
+
+   COND       å··cdefæ create a header                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     å··cdefæ make header name            - - - - - - - - - - - - -   sprintf (x_header, "%s/%s.h", u_dir_yjobs, u_yjobs);                                                                                                                                                                         
+     exec     å··cdefæ remove header file          yENV_rm                     x_header                                                                                              c_equal     '-'                                                                                                  
+     exec     å··cdefæ create header file          yENV_touch                  x_header                                                  , "root"  , "root"  , "0600"                c_equal     'r'                                                                                                  
+     file     å··cdefæ read for writing            - - - - - - - - - - - - -   [[ x_header ]]                                                                                                                                                                                                             
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define  P_LICENSE  \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"the only place you could have gotten this code is my github, my website, \"   \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"or illegal sharing. given that, you should be aware it is all GPL licensed.\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define  P_COPYLEFT \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"the GPL COPYLEFT REQUIREMENT means any modifications or derivative works \"   \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"must be released under the same GPL license, i.e, must be free and open.\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define  P_INCLUDE  \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"the GPL DOCUMENTATION REQUIREMENT means that you must include the original \" \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"copyright notice and the full licence text with any resulting anything.\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define  P_AS_IS    \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"the GPL NO WARRANTY CLAUSE means the software is provided without any \"      \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"warranty and the author cannot be held liable for damages.\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define  P_WARNING  \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"if you knowingly violate the spirit of these ideas, i suspect you might \"    \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"find any number of freedom-minded hackers may take it quite personally ;)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FOCUS     \"PS (programming support)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NICHE     \"au (process automation)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUBJECT   \"common service daemon framework\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PURPOSE   \"standardize common daemon requests, actions, and feedback\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_NAMESAKE  \"heracles-promachus (leader in battle)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRONOUNCE \"hay·ruh·klees proh·maa·kuhs\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_HERITAGE  \"greatest human hero of all time, son of zeus, made into a demigod\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BRIEFLY   \"greece's greatest human hero\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_IMAGERY   \"massive, athletic, giant of a man wearing a lion skin and club\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REASON    \"great olympic leader in the gigantomachy and chthonic wars\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_ONELINE   P_NAMESAKE \" \" P_SUBJECT
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_BASENAME  \"yJOBS\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_FULLPATH  \"/usr/local/lib64/libyJOBS.so\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUFFIX    \"-\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CONTENT   \"-\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SYSTEM    \"gnu/linux   (powerful, ubiquitous, technical, and hackable)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_LANGUAGE  \"ansi-c      (wicked, limitless, universal, and everlasting)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_COMPILER  \"gcc 5.3.0\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CODESIZE  \"small       (appoximately 1,000 slocl)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_DEPENDS   \"ySTR\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_AUTHOR    \"heatherlyrobert\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_CREATED   \"2021-01\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMAJOR  \"1.--, integrate into eos, heracles, and khronos\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERMINOR  \"1.3-, update for myriad changes to upstream\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERNUM    \"1.3f\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_VERTXT    \"small updates to clear yJOBS_ySCORE, yJOBS_in unit tests\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRIORITY  \"direct, simple, brief, vigorous, and lucid (h.w. fowler)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_PRINCIPLE \"[grow a set] and build your wings on the way down (r. bradbury)\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_REMINDER  \"there are many better options, but i *own* every byte of this one\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define  P_DISCLAIM  \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"i am a crazy, selfish, dog-fooding c-programmer. my code tends to be \"     \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"experimental and constantly evolving. my point is NOT to be the best, it \" \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -      \"is to challenge myself, build from scratch, and allow fast problem solving.\"
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -   #define     P_SUMMARY   \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    \"yJOBS is a personal shared library created to standardize command line¦\" \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    \"arguments for service daemons, the flow of execution for the resulting¦\" \\
+     append   å··cdefæ ... add a record            - - - - - - - - - - - - -    \"actions, and the nature and verbosity of feedback.¦\"
+
+   COND       å··cdefæ inventory all files                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     å··cdefæ call review                 poly_file_inventory         x_proj                                                                                                z_greater   0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+CONFIG   -ÿ-  removing all sample projects                                        0s  remove          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ((ZZ.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       remove projects                                                    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((hh.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     return to project directory          - - - - - - - - - - - - -   chdir  (u_home);                                                                                                                                                                                                           
+     exec     create directory                     yENV_rmdir_fully            u_dir_ylog                                                                                            c_equal     '-'                                                                                                  
+     exec     create directory                     yENV_rmdir_fully            u_dir_poly                                                                                            c_equal     '-'                                                                                                  
+     exec     create directory                     yENV_rmdir_fully            u_dir_gyges                                                                                           c_equal     '-'                                                                                                  
+     exec     create directory                     yENV_rmdir_fully            u_dir_arachne                                                                                         c_equal     '-'                                                                                                  
+     exec     create directory                     yENV_rmdir_fully            u_dir_khronos                                                                                         c_equal     '-'                                                                                                  
+     exec     create directory                     yENV_rmdir_fully            u_dir_metis                                                                                           c_equal     '-'                                                                                                  
+     exec     create directory                     yENV_rmdir_fully            u_dir_yjobs                                                                                           c_equal     '-'                                                                                                  
+
 
 
 

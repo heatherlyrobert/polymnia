@@ -4,6 +4,7 @@
 
 
 static tPROJ   s_place;
+static tFILE   s_pfile;
 
 
 
@@ -18,7 +19,7 @@ const struct {
    short       h_low;
    short       h_high;                     /* high is also the reporting width */
    short       h_max;
-} static s_header [LEN_FULL] = {
+} static s_header [LEN_HUND] = {
    /*-------base------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
    { 'N' , "···"           , "proj_name"    , "project name"                    , '´' , (long) &(s_place.j_name [0])       - (long) &s_place,   1,   4,  15, LEN_TITLE         },
    { 'D' , "···"           , "proj_dir"     , "project directory"               , '´' , (long) &(s_place.j_dir [0])        - (long) &s_place,   1,   4,  70, LEN_HUND          },
@@ -73,17 +74,24 @@ const struct {
    { 't' , "P_VERTXT"      , "vertxt"       , "specific version description"    , '°' , (long) &(s_place.j_vertxt [0])     - (long) &s_place,  10,  20,  70, LEN_HUND          },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------warranty--------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , '!' , (long) &(s_place.j_license [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , '!' , (long) &(s_place.j_copyleft [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , '!' , (long) &(s_place.j_include [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , '!' , (long) &(s_place.j_as_is [0])      - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'w' , "P_WARNING"     , "warning"      , "thoughts on cheating"            , '!' , (long) &(s_place.j_warning [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   /*> { 'c' , "P_COPYRIGHT"   , "copyright"    , "identifying the owner"           , 'g' , (long) &(s_pfile.i_copyright [0])  - (long) &s_pfile,   1,   1,  70, LEN_LABEL         },   <* 
+    *> { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , 'g' , (long) &(s_pfile.i_license [0])    - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <* 
+    *> { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , 'g' , (long) &(s_pfile.i_copyleft [0])   - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <* 
+    *> { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , 'g' , (long) &(s_pfile.i_include [0])    - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <* 
+    *> { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , 'g' , (long) &(s_pfile.i_as_is [0])      - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <* 
+    *> { 'w' , "P_WARNING"     , "warning"      , "thoughts on cheating"            , 'g' , (long) &(s_pfile.i_warning [0])    - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <*/
+   { 'c' , "P_COPYRIGHT"   , "copyright"    , "identifying the owner"           , 'g' , (long) &(s_place.j_copyright [0])  - (long) &s_place,   1,   1,  70, LEN_LABEL         },
+   { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , 'g' , (long) &(s_place.j_license [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , 'g' , (long) &(s_place.j_copyleft [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , 'g' , (long) &(s_place.j_include [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , 'g' , (long) &(s_place.j_as_is [0])      - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 'w' , "P_WARNING"     , "warning"      , "thoughts on cheating"            , 'g' , (long) &(s_place.j_warning [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------extra-----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'p' , "P_PRIORITY"    , "priority"     , "programming priorities"          , '!' , (long) &(s_place.j_priority [0])   - (long) &s_place,   1,   1,  70, LEN_LABEL         },
-   { 'p' , "P_PRINCIPLE"   , "principle"    , "call to action"                  , '!' , (long) &(s_place.j_principal [0])  - (long) &s_place,   1,   1,  70, LEN_LABEL         },
-   { 'r' , "P_REMINDER"    , "reminder"     , "just so you know"                , '!' , (long) &(s_place.j_reminder [0])   - (long) &s_place,   1,   1,  70, LEN_LABEL         },
-   { 'd' , "P_DISCLAIM"    , "disclaim"     , "programming disclaimer"          , '!' , (long) &(s_place.j_disclaim [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 'p' , "P_PRIORITY"    , "priority"     , "programming priorities"          , 'p' , (long) &(s_place.j_priority [0])   - (long) &s_place,   1,   1,  70, LEN_LABEL         },
+   { 'p' , "P_PRINCIPLE"   , "principle"    , "call to action"                  , 'p' , (long) &(s_place.j_principal [0])  - (long) &s_place,   1,   1,  70, LEN_LABEL         },
+   { 'r' , "P_REMINDER"    , "reminder"     , "just so you know"                , 'p' , (long) &(s_place.j_reminder [0])   - (long) &s_place,   1,   1,  70, LEN_LABEL         },
+   { 'd' , "P_DISCLAIM"    , "disclaim"     , "programming disclaimer"          , 'p' , (long) &(s_place.j_disclaim [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------why-------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
    { 'B' , "P_BOTHER"      , "bother"       , "why do anything?"                , '-' , (long) &(s_place.j_bother [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
@@ -103,6 +111,7 @@ const struct {
    { 'A' , "P_ASSUME"      , "assume"       , "environmental assumptions"       , '-' , (long) &(s_place.j_assume [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    { 'A' , "P_ALWAYS"      , "always"       , "universal objectives"            , '-' , (long) &(s_place.j_always [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    { '*' , "P_SUMMARY"     , "summary"      , "project summary"                 , '-' , (long) &(s_place.j_summary [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'D' , "P_DANGERS"     , "dangers"      , "potential trouble with project"  , '-' , (long) &(s_place.j_dangers [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    { 'G' , "P_GREEK"       , "greek"        , "longer greek heritage"           , '-' , (long) &(s_place.j_greek [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------grade-----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
@@ -348,7 +357,7 @@ poly_header_count       (void)
    int         i           =    0;
    int         c           =    0;
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   for (i = 0; i < LEN_FULL; ++i) {
+   for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       DEBUG_INPT   yLOG_complex ("line"      , "%2d (%4d) %s", i, s_header [i].h_abbr, s_header [i].h_label);
       if (s_header [i].h_abbr == 1)               continue;
@@ -364,7 +373,7 @@ char
 poly_header_clear       (tPROJ *a_proj)
 {
    int         i           =    0;
-   for (i = 0; i < LEN_FULL; ++i) {
+   for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       if (s_header [i].h_abbr == 1) {
          a_proj->j_header [i] = 'á';
@@ -388,7 +397,7 @@ char
 poly_header_rando       (tPROJ *a_proj)
 {
    int         i           =    0;
-   for (i = 0; i < LEN_FULL; ++i) {
+   for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       if (s_header [i].h_abbr == 1) {
          a_proj->j_header [i] = 'á';
@@ -413,7 +422,7 @@ poly_header_memory      (tPROJ *a_proj)
    static char x_print     [LEN_HUND]  = "";
    strcpy (x_print, "");
    if (a_proj == NULL)  return "((null))";
-   for (i = 0; i < LEN_FULL; ++i) {
+   for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       if (s_header [i].h_abbr == 1) {
          poly_shared__spacer     (x_print);
@@ -441,7 +450,7 @@ poly_header__find       (char a_label [LEN_LABEL])
    --rce;  if (a_label     == NULL)   return rce;
    --rce;  if (a_label [0] == '\0')   return rce;
    --rce;  if (a_label [0] == ' ' )   return rce;
-   for (i = 0; i < LEN_FULL; ++i) {
+   for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       if (s_header [i].h_abbr == 1)               continue;
       if (strcmp (s_header [i].h_name, "") == 0)  continue;
@@ -463,10 +472,13 @@ char
 poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD])
 {
    char        rc          =  '?';
+   int         i           =    0;
+   char        x_actual    [LEN_RECD]  = "";
    char        x_expect    [LEN_RECD]  = "";
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   DEBUG_INPT   yLOG_complex ("a_data"    , "%3då%sæ", strlen (a_data), a_data);
+   ystrlcpy (x_actual, a_data, LEN_RECD);
+   if (strlen (x_actual) < 30)  return '?';
    /*---(principles)---------------------*/
    if      (strcmp (a_label, "P_PRIORITY" ) == 0) {
       DEBUG_INPT   yLOG_note    ("matched priority");
@@ -485,7 +497,12 @@ poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD])
       ystrlcpy (x_expect, P_DISCLAIM , LEN_RECD);
    }
    /*---(licensing)----------------------*/
-   if      (strcmp (a_label, "P_LICENSE"  ) == 0) {
+   else if (strcmp (a_label, "P_COPYRIGHT") == 0) {
+      DEBUG_INPT   yLOG_note    ("matched copyright");
+      ystrlcpy (x_expect, P_LICENSE  , LEN_RECD);
+      for (i = 14; i < 18; ++i) x_expect [i] = x_actual [i];
+   }
+   else if (strcmp (a_label, "P_LICENSE"  ) == 0) {
       DEBUG_INPT   yLOG_note    ("matched license");
       ystrlcpy (x_expect, P_LICENSE  , LEN_RECD);
    }
@@ -506,6 +523,7 @@ poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD])
       ystrlcpy (x_expect, P_WARNING  , LEN_RECD);
    }
    /*---(compare)------------------------*/
+   DEBUG_INPT   yLOG_complex ("x_actual"  , "%3då%sæ", strlen (x_actual), x_actual);
    if (strcmp (x_expect, "") != 0) {
       ystrldchg (x_expect, '¦', ' ', LEN_RECD);
       ystrltrim (x_expect, ySTR_SINGLE, LEN_RECD);
@@ -584,7 +602,7 @@ poly_header__single     (tPROJ *a_proj, cchar a_recd [LEN_RECD])
    /*---(copy to project)----------------*/
    if (strcmp (x_data, "") == 0)  strcpy (x_data, "-");
    ystrlcpy ((long) a_proj + s_header [n].h_offset, x_data, s_header [n].h_max);
-   if (s_header [n].h_type == '!') {
+   if (strchr ("gp", s_header [n].h_type) != NULL) {
       DEBUG_INPT   yLOG_note    ("processing a standard type");
       rc = poly_header__standard (x_label, x_data);
       DEBUG_INPT   yLOG_char    ("standard"  , rc);
@@ -736,7 +754,7 @@ poly_header_summarize   (tPROJ *a_proj)
    char        x_subject   [LEN_HUND]  = "";
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   for (i = 0; i < LEN_FULL; ++i) {
+   for (i = 0; i < LEN_HUND; ++i) {
       /*---(filter)----------------------*/
       if (s_header [i].h_abbr == 0)               break;
       DEBUG_INPT   yLOG_complex ("line"      , "%2d (%4d) %s", i, s_header [i].h_abbr, s_header [i].h_label);
@@ -752,7 +770,7 @@ poly_header_summarize   (tPROJ *a_proj)
          else    snprintf ((long) a_proj + s_header [i].h_offset, LEN_HUND, "%s %s", x_namesake, x_subject);
       }
       /*---(record)----------------------*/
-      if (s_header [i].h_type != '!')  {
+      if (strchr ("gp", s_header [i].h_type) == NULL)  {
          poly_header__encode (a_proj->j_header, i, s_header [i].h_abbr,
                (long) a_proj + s_header [i].h_offset,
                s_header [i].h_min, s_header [i].h_low, s_header [i].h_high, s_header [i].h_max); }
@@ -935,12 +953,12 @@ poly_header_report      (tPROJ *a_proj)
    /*---(summary)------------------------*/
    DEBUG_INPT   yLOG_note    ("summary");
    yURG_msg (' ', "##   %2d headers ·  å%sæ", poly_header_count (), a_proj->j_header);
-   yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depend··au·ver··gpl···extr·why·······what····!æ");
+   yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depend··au·ver··gpl····extr·why·······what·····!æ");
    DEBUG_INPT   yLOG_note    ("header");
    yURG_msg (' ', "##");
    yURG_msg (' ', x_sep);
    yURG_msg (' ', "##");
-   for (i = 0; i < LEN_FULL; ++i) {
+   for (i = 0; i < LEN_HUND; ++i) {
       /*---(next)------------------------*/
       if (s_header [i].h_abbr == 0)  break;
       DEBUG_INPT   yLOG_complex ("line"      , "%2d (%4d) %s", i, s_header [i].h_abbr, s_header [i].h_label);
