@@ -58,63 +58,74 @@ char
 poly_yjobs_pull         (cchar *a_data)
 {
    /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    char        rc          =    0;
    char        x_name      [LEN_LABEL] = "";
    tPROJ      *x_proj      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
    /*---(handle)-------------------------*/
    DEBUG_PROG    yLOG_note    ("read and verify current project (YJOBS_PULL)");
    yURG_msg ('>', "read and verify current project (pull)");
-   rc = poly_proj__get_name (a_data, x_name);
-   DEBUG_PROG    yLOG_value   ("getname"   , rc);
-   if (rc < 0) {
+   rc = ystrlproj (a_data, x_name);
+   DEBUG_PROG    yLOG_value   ("ystrlproj" , rc);
+   --rce;  if (rc < 0) {
       yURG_err ('f', "could not get project name from path");
       yURG_msg (' ', "");
-      return rc;
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    DEBUG_PROG    yLOG_info    ("x_name"    , x_name);
-   /*---(DEBUGGING)----------------------*/
-   /*> if (strcmp (x_name, "polymnia") == 0)  yLOGS_unmute ();                        <*/
    /*---(find target)--------------------*/
-   poly_proj_by_name  (x_name, &x_proj);
+   PROJS_by_name      (x_name, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
-   if (x_proj == NULL) {
+   --rce;  if (x_proj == NULL) {
       yURG_err ('w', "project does not exist in the database, nothing to do");
    } else {
       DEBUG_PROG   yLOG_point   ("->name"     , x_proj->j_name);
       /*---(remove existing target)---------*/
       yURG_msg ('-', "remove current project");
-      rc = poly_proj_remove (&x_proj);
+      rc = PROJS_remove     (&x_proj);
       DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
       if (rc < 0) {
          yURG_err ('f', "could not remove project from database");
          yURG_msg (' ', "");
-         return rc;
+         DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
       }
    }
    /*---(add project)--------------------*/
-   rc = poly_proj_add (x_name, a_data, &x_proj);
+   rc = PROJS_add     (x_name, a_data, &x_proj);
    DEBUG_PROG   yLOG_value   ("add"        , rc);
-   if (rc < 0) {
+   --rce;  if (rc < 0) {
       yURG_err ('f', "could not add project name to database");
       yURG_msg (' ', "");
-      return rc;
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    DEBUG_PROG   yLOG_info    ("->name"     , x_proj->j_name);
    /*---(save off)-----------------------*/
    my.g_proj = x_proj;
    x_proj->j_written = my.runtime;
+   /*---(check project only)-------------*/
+   DEBUG_PROG   yLOG_char    ("run_file"   , my.g_run_file);
+   if (my.g_run_file != 'y') {
+      DEBUG_PROG    yLOG_note    ("did not select gather below project, so done");
+      DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
    /*---(analyze project)----------------*/
    rc = poly_action__gather (x_proj);
    DEBUG_PROG   yLOG_value   ("gather"     , rc);
-   if (rc < 0) {
+   --rce;  if (rc < 0) {
       yURG_err ('f', "could not add project data to database");
       yURG_msg (' ', "");
-      return rc;
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   /*---(DEBUGGING)----------------------*/
-   /*> if (strcmp (x_name, "polymnia") == 0)  yLOGS_mute ();                          <*/
    /*---(complete)-----------------------*/
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -128,8 +139,8 @@ poly_yjobs_clear        (cchar *a_data)
    /*---(handle)-------------------------*/
    DEBUG_PROG    yLOG_note    ("read and verify current project (YJOBS_CLEAR)");
    yURG_msg ('>', "clear current project (clear)");
-   rc = poly_proj__get_name (a_data, x_name);
-   DEBUG_PROG    yLOG_value   ("getname"   , rc);
+   rc = ystrlproj (a_data, x_name);
+   DEBUG_PROG    yLOG_value   ("ystrlproj" , rc);
    if (rc < 0) {
       yURG_err ('f', "could not get project name from path");
       yURG_msg (' ', "");
@@ -137,7 +148,7 @@ poly_yjobs_clear        (cchar *a_data)
    }
    DEBUG_PROG    yLOG_info    ("x_name"    , x_name);
    /*---(find target)--------------------*/
-   poly_proj_by_name  (x_name, &x_proj);
+   PROJS_by_name      (x_name, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    if (x_proj == NULL) {
       yURG_err ('w', "project does not exist in the database, nothing to do");
@@ -152,7 +163,7 @@ poly_yjobs_clear        (cchar *a_data)
    x_proj->j_written = my.runtime;
    /*---(remove existing target)---------*/
    yURG_msg ('-', "remove current project");
-   rc = poly_proj_remove (&x_proj);
+   rc = PROJS_remove     (&x_proj);
    DEBUG_PROG   yLOG_value   ("proj_del"   , rc);
    if (rc < 0) {
       yURG_err ('f', "could not remove project from database");
@@ -314,7 +325,7 @@ poly_yjobs_callback     (cchar a_req, cchar *a_data)
 *>          return rce;                                                                 <* 
 *>       }                                                                              <* 
 *>       DEBUG_PROG    yLOG_info    ("x_name"    , x_name);                             <* 
-*>       rc = poly_proj_replace (x_name, a_data, &x_proj);                              <* 
+*>       rc = PROJS_replace     (x_name, a_data, &x_proj);                              <* 
 *>       DEBUG_PROG    yLOG_value   ("replace"   , rc);                                 <* 
 *>       if (rc < 0) {                                                                  <* 
    *>          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 

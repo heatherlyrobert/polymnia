@@ -67,16 +67,16 @@
 #define     P_DEPCORE   "yLOG,yURG,ySTR,yENV"
 #define     P_DEPVIKEY  "´"
 #define     P_DEPGRAPH  "´"
-#define     P_DEPOTHER  "ySORT,yJOBS,yEXEC,ySCORE,yAUDIT,yREGEX"
-#define     P_DEPSOLO   "yDLST_solo"
+#define     P_DEPOTHER  "ySORT,yJOBS,ySCORE,yAUDIT,yREGEX"
+#define     P_DEPSOLO   "yDLST_solo,yEXEC_solo"
 /*········· ··········· ´·····························´········································*/
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2019-01"
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.2-, switching to common testing sources"
-#define     P_VERNUM    "1.2a"
-#define     P_VERTXT    "invented seven projects and build at header data for poly_header testing (working)"
+#define     P_VERNUM    "1.2b"
+#define     P_VERTXT    "improved header and projects structure, header unit testing still golden"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -309,6 +309,7 @@
 #include    <ySORT.h>             /* heatherly sorting and searching          */
 #include    <yREGEX.h>       /* CUSTOM  heatherly regular expressions         */
 #include    <yDLST_solo.h>   /* CUSTOM  heatherly regular expressions         */
+#include    <yEXEC_solo.h>
 
 
 
@@ -504,6 +505,15 @@ struct cMY {
    char        g_rptg;                 /* reporting mode                      */
    char        g_titles;               /* use/hide report titles              */
    char        g_filter;               /* report filtering criteria           */
+   /*---(features)------------*/
+   char        g_run_proj;             /* process project, then stop          */
+   char        g_run_head;             /* plus headders  , then stop          */
+   char        g_run_file;             /* plus files     , then stop          */
+   char        g_run_func;             /* plus functions , then stop          */
+   char        g_run_code;             /* plus code      , then stop          */
+   char        g_run_extr;             /* plus externals , then stop          */
+   char        g_run_ylib;             /* plus ylibs     , then stop          */
+   char        g_run_unit;             /* plus units     , then stop          */
    /*---(filtering)-----------*/
    int         g_projno;
    char        g_projname  [LEN_LABEL];/* project name for filtering          */
@@ -1136,27 +1146,37 @@ char*       poly_cats__unit         (char *a_question, int n);
 
 
 
-/*---(support)--------------*/
+/*===[[ polymnia_prog.c ]]====================================================*/
+/*········´ ´···support···········´ ´·········································*/
+char*       PROG_version            (void);
+char        PROG_vershow            (void);
+char        PROG_usage              (void);
+/*········´ ´···reset·············´ ´·········································*/
 char        PROG_reset_yjobs        (void);
 char        PROG_reset_everything   (void);
-/*---(urgents)--------------*/
-char        PROG_urgents            (int a_argc, char *a_argv[]);
-/*---(startup)--------------*/
+/*········´ ´···debugging·········´ ´·········································*/
+char        PROG_debugging          (int a_argc, char *a_argv[]);
+/*········´ ´···startup···········´ ´·········································*/
 char        PROG__init              (int a_argc, char *a_argv[]);
 char        PROG__args              (int a_argc, char *a_argv[]);
 char        PROG__begin             (void);
 char        PROG_startup            (int a_argc, char *a_argv[]);
-/*---(main)-----------------*/
+/*········´ ´···main··············´ ´·········································*/
+char        PROG_pseudo             (int argc, char *argv[]);
 char        PROG_summarize          (tPROJ *x_proj);
-/*---(shutdown)-------------*/
+/*········´ ´···shutdown··········´ ´·········································*/
 char        PROG__end               (void);
 char        PROG_shutdown           (void);
-/*---(unittest)-------------*/
+/*········´ ´···string_vers·······´ ´·········································*/
+char        PROG__args_string       (char a_string [LEN_FULL]);
+char        PROG_startup_string     (char a_string [LEN_FULL]);
+char        PROG_pseudo_string      (char a_string [LEN_FULL]);
+/*········´ ´···unittest··········´ ´·········································*/
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
 char        PROG__unit_end          (void);
 char*       prog__unit              (char *a_question, int i);
-/*---(done)-----------------*/
+/*········´ ´·····················´ ´·········································*/
 
 
 
@@ -1223,66 +1243,66 @@ char*       poly_btree__unit        (char a_btree, char *a_question, int i);
 
 
 
-char        poly_proj_cli           (char *a_name, char a_loud);
-/*---(memory)---------------*/
-char        poly_proj__new          (tPROJ **a_new);
-char        poly_proj_force         (tPROJ **a_new);
-char        poly_proj__free         (tPROJ **a_old);
-char        poly_proj__wipe         (tPROJ *a_dst);
-char*       poly_proj__memory       (tPROJ *a_proj);
-/*---(hooking)--------------*/
-char        poly_proj__hook         (tPROJ *a_proj);
-char        poly_proj__unhook       (tPROJ *a_proj);
-/*---(existance)------------*/
-char        poly_proj__adder        (char *a_name, char *a_home, tPROJ **a_proj, char a_force);
-char        poly_proj_add           (char *a_name, char *a_home, tPROJ **a_proj);
-char        poly_proj_replace       (char *a_name, char *a_home, tPROJ **a_proj);
-char        poly_proj_remove        (tPROJ **a_proj);
-/*---(special)--------------*/
-char        poly_proj__get_home     (char *a_home);
-char        poly_proj__get_name     (cchar *a_home, char *a_name);
-char        poly_proj_identify      (char *a_name, char *a_home);
-char        poly_proj_here          (tPROJ **a_proj);
-/*---(search)---------------*/
-int         poly_proj_count         (void);
-char        poly_proj_by_name       (uchar *a_name, tPROJ **a_proj);
-char        poly_proj_by_index      (int n, tPROJ **a_proj);
-char        poly_proj_by_cursor     (char a_dir, tPROJ **a_proj);
-/*---(program)--------------*/
-char        poly_proj_init          (void);
-char        poly_proj_purge         (void);
-char        poly_proj_wrap          (void);
-/*---(system)---------------*/
-/*> char        poly_proj_system        (char *a_path);                               <*/
-char        poly_proj_git           (tPROJ *a_proj);
-char        poly_proj_footprint     (tPROJ *a_proj);
-/*---(reporting)------------*/
-char        poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
-/*---(unittest)-------------*/
-char*       poly_proj__unit         (char *a_question, int i);
+/*===[[ polymnia_projs.c ]]===================================================*/
+/*········´ ´···cli···············´ ´·········································*/
+char        PROJS_cli               (char a_name [LEN_LABEL]);
+/*········´ ´···memory············´ ´·········································*/
+char        PROJS__new              (tPROJ **r_new);
+char        PROJS_force             (tPROJ **r_new);
+char        PROJS__free             (tPROJ **b_old);
+char        PROJS__wipe             (tPROJ *a_dst);
+char*       PROJS__memory           (tPROJ *a_proj);
+/*········´ ´···hooking···········´ ´·········································*/
+char        PROJS__hook             (tPROJ *a_proj);
+char        PROJS__unhook           (tPROJ *a_proj);
+/*········´ ´···existance·········´ ´·········································*/
+char        PROJS__add_full         (char a_name [LEN_LABEL], char a_home [LEN_HUND], char c_force, tPROJ **r_proj);
+char        PROJS_add               (char a_name [LEN_LABEL], char a_home [LEN_HUND], tPROJ **r_proj);
+char        PROJS_replace           (char a_name [LEN_LABEL], char a_home [LEN_HUND], tPROJ **r_proj);
+char        PROJS_remove            (tPROJ **a_proj);
+/*········´ ´···search············´ ´·········································*/
+int         PROJS_count             (void);
+char        PROJS_by_name           (uchar *a_name, tPROJ **a_proj);
+char        PROJS_by_index          (int n, tPROJ **a_proj);
+char        PROJS_by_cursor         (char a_dir, tPROJ **a_proj);
+/*········´ ´···program···········´ ´·········································*/
+char        PROJS_init              (void);
+char        PROJS_purge             (void);
+char        PROJS_wrap              (void);
+/*········´ ´···special···········´ ´·········································*/
+char        PROJS_here              (tPROJ **a_proj);
+char        PROJS_git               (tPROJ *a_proj);
+char        PROJS_footprint         (tPROJ *a_proj);
+/*········´ ´···yjobs·············´ ´·········································*/
+char        PROJS_pull              (cchar *a_data);
+/*········´ ´···reporting·········´ ´·········································*/
+char        PROJS_line              (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
+/*········´ ´···unittest··········´ ´·········································*/
+char*       PROJS__unit             (char *a_question, int i);
+/*········´ ´···done··············´ ´·········································*/
 
 
 
 /*===[[ polymnia_header.c ]]==================================================*/
 /*········´ ´···support···········´ ´·········································*/
-short       poly_header_count       (void);
-char        poly_header_clear       (tPROJ *a_proj);
-char        poly_header_rando       (tPROJ *a_proj);
-char*       poly_header_memory      (tPROJ *a_proj);
+short       HEADER_count            (void);
+char        HEADER_clean            (tPROJ *a_proj);
+char        HEADER_rando            (tPROJ *a_proj);
+char*       HEADER__memory          (tPROJ *a_proj);
 /*········´ ´···search············´ ´·········································*/
-short       poly_header__find       (char a_label [LEN_LABEL]);
+short       HEADER__find            (char a_label [LEN_LABEL]);
 /*········´ ´···reading···········´ ´·········································*/
-char        poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD]);
-char        poly_header__single     (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
-char        poly_header__encode     (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
-char*       poly_header__macro_fix  (char a_recd [LEN_RECD]);
-char        poly_header_summarize   (tPROJ *a_proj);
-char        poly_header_read        (tFILE *a_file);
+char        HEADER__standards       (char a_label [LEN_LABEL], char a_data [LEN_RECD]);
+char        HEADER__single          (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
+char        HEADER__encode          (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
+char*       HEADER__macro_fix       (char a_recd [LEN_RECD]);
+char        HEADER_gather           (tFILE *a_file);
+char        HEADER_grading          (tPROJ *a_proj);
 /*········´ ´···reporting·········´ ´·········································*/
-char*       poly_header__report     (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL]);
-char        poly_header_report      (tPROJ *a_proj);
-char        poly_header_only        (char a_file [LEN_PATH]);
-char*       poly_header__show       (tPROJ *a_proj);
+char*       HEADER_line             (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL]);
+char        HEADER_report           (tPROJ *a_proj);
+char        HEADER_only             (char a_file [LEN_PATH]);
+char*       HEADER__show            (tPROJ *a_proj);
 /*········´ ´···done··············´ ´·········································*/
 
 

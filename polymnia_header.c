@@ -352,8 +352,9 @@ const struct {
 static void  o___SUPPORT_________o () { return; }
 
 short
-poly_header_count       (void)
+HEADER_count            (void)
 {
+   char        rce         =  -10;
    int         i           =    0;
    int         c           =    0;
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -370,9 +371,11 @@ poly_header_count       (void)
 }
 
 char
-poly_header_clear       (tPROJ *a_proj)
+HEADER_clean            (tPROJ *a_proj)
 {
+   char        rce         =  -10;
    int         i           =    0;
+   --rce;  if (a_proj == NULL)  return rce;
    for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       if (s_header [i].h_abbr == 1) {
@@ -394,9 +397,11 @@ poly_header_clear       (tPROJ *a_proj)
 }
 
 char
-poly_header_rando       (tPROJ *a_proj)
+HEADER_rando            (tPROJ *a_proj)
 {
+   char        rce         =  -10;
    int         i           =    0;
+   --rce;  if (a_proj == NULL)  return rce;
    for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       if (s_header [i].h_abbr == 1) {
@@ -416,7 +421,7 @@ poly_header_rando       (tPROJ *a_proj)
 }
 
 char*
-poly_header_memory      (tPROJ *a_proj)
+HEADER__memory          (tPROJ *a_proj)
 {
    int         i           =    0;
    static char x_print     [LEN_HUND]  = "";
@@ -443,7 +448,7 @@ poly_header_memory      (tPROJ *a_proj)
 static void  o___SEARCH__________o () { return; }
 
 short
-poly_header__find       (char a_label [LEN_LABEL])
+HEADER__find            (char a_label [LEN_LABEL])
 {
    char        rce         =  -10;
    int         i           =    0;
@@ -469,7 +474,7 @@ poly_header__find       (char a_label [LEN_LABEL])
 static void  o___READING_________o () { return; }
 
 char
-poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD])
+HEADER__standards       (char a_label [LEN_LABEL], char a_data [LEN_RECD])
 {
    char        rc          =  '?';
    int         i           =    0;
@@ -477,7 +482,10 @@ poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD])
    char        x_expect    [LEN_RECD]  = "";
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(save off actual)----------------*/
    ystrlcpy (x_actual, a_data, LEN_RECD);
+   ystrldchg (x_actual, '¦', ' ', LEN_RECD);
+   ystrltrim (x_actual, ySTR_SINGLE, LEN_RECD);
    if (strlen (x_actual) < 30)  return '?';
    /*---(principles)---------------------*/
    if      (strcmp (a_label, "P_PRIORITY" ) == 0) {
@@ -528,8 +536,8 @@ poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD])
       ystrldchg (x_expect, '¦', ' ', LEN_RECD);
       ystrltrim (x_expect, ySTR_SINGLE, LEN_RECD);
       DEBUG_INPT   yLOG_complex (a_label, "%3då%sæ", strlen (x_expect), x_expect);
-      if (strcmp (a_data, x_expect) == 0)  rc = 'y';
-      else                                 rc = '-';
+      if (strcmp (x_actual, x_expect) == 0)  rc = 'y';
+      else                                   rc = '-';
    }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
@@ -537,7 +545,7 @@ poly_header__standard   (char a_label [LEN_LABEL], char a_data [LEN_RECD])
 }
 
 char
-poly_header__single     (tPROJ *a_proj, cchar a_recd [LEN_RECD])
+HEADER__single          (tPROJ *a_proj, cchar a_recd [LEN_RECD])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -577,7 +585,7 @@ poly_header__single     (tPROJ *a_proj, cchar a_recd [LEN_RECD])
    ystrlcpy (x_label, q + 1, 13);
    ystrltrim (x_label, ySTR_BOTH, LEN_LABEL);
    DEBUG_INPT   yLOG_info    ("x_label"   , x_label);
-   n = poly_header__find (x_label);
+   n = HEADER__find (x_label);
    DEBUG_INPT   yLOG_value   ("n"         , n);
    if (n < 0) {
       yURG_err ('w', "found å%sæ which seems like a oneliner, but does not match table", x_label);
@@ -604,7 +612,7 @@ poly_header__single     (tPROJ *a_proj, cchar a_recd [LEN_RECD])
    ystrlcpy ((long) a_proj + s_header [n].h_offset, x_data, s_header [n].h_max);
    if (strchr ("gp", s_header [n].h_type) != NULL) {
       DEBUG_INPT   yLOG_note    ("processing a standard type");
-      rc = poly_header__standard (x_label, x_data);
+      rc = HEADER__standards (x_label, x_data);
       DEBUG_INPT   yLOG_char    ("standard"  , rc);
       if (rc == 'y') {
          a_proj->j_header [n] = s_header [n].h_abbr;
@@ -617,7 +625,7 @@ poly_header__single     (tPROJ *a_proj, cchar a_recd [LEN_RECD])
 }
 
 char
-poly_header__encode     (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max)
+HEADER__encode          (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max)
 {
    char        rce         =  -10;
    int         x_len       =    0;
@@ -663,7 +671,7 @@ poly_header__encode     (char *a_header, char n, char a_abbr, char *a_text, char
 }
 
 char*
-poly_header__macro_fix  (char a_recd [LEN_RECD])
+HEADER__macro_fix       (char a_recd [LEN_RECD])
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -746,7 +754,7 @@ poly_header__macro_fix  (char a_recd [LEN_RECD])
 }
 
 char
-poly_header_summarize   (tPROJ *a_proj)
+HEADER_grading          (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----------+-*/
    int         i           =    0;
@@ -771,7 +779,7 @@ poly_header_summarize   (tPROJ *a_proj)
       }
       /*---(record)----------------------*/
       if (strchr ("gp", s_header [i].h_type) == NULL)  {
-         poly_header__encode (a_proj->j_header, i, s_header [i].h_abbr,
+         HEADER__encode  (a_proj->j_header, i, s_header [i].h_abbr,
                (long) a_proj + s_header [i].h_offset,
                s_header [i].h_min, s_header [i].h_low, s_header [i].h_high, s_header [i].h_max); }
       /*---(done)------------------------*/
@@ -782,7 +790,7 @@ poly_header_summarize   (tPROJ *a_proj)
 }
 
 char
-poly_header_read        (tFILE *a_file)
+HEADER_gather           (tFILE *a_file)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -853,11 +861,11 @@ poly_header_read        (tFILE *a_file)
          DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
          if (x_suf == '\\' && x_bef != '*') continue;
          x_append = '-';
-         ystrlcpy (x_curr, poly_header__macro_fix (x_full), LEN_RECD);
+         ystrlcpy (x_curr, HEADER__macro_fix (x_full), LEN_RECD);
       }
       /*---(check headers)---------------*/
       DEBUG_INPT   yLOG_info    ("x_curr"    , x_curr);
-      rc = poly_header__single  (a_file->i_proj, x_curr);
+      rc = HEADER__single  (a_file->i_proj, x_curr);
       DEBUG_INPT   yLOG_value   ("oneliner"  , rc);
       /*---(done)------------------------*/
    }
@@ -881,7 +889,7 @@ poly_header_read        (tFILE *a_file)
 static void  o___REPORTING_______o () { return; }
 
 char*
-poly_header__report     (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL])
+HEADER_line             (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL])
 {
    /*---(locals)-----------+-----+-----+-*/
    short       n           =    0;
@@ -894,7 +902,7 @@ poly_header__report     (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL])
    /*---(default)------------------------*/
    strcpy (x_print, "");
    /*---(find)---------------------------*/
-   n = poly_header__find (a_label);
+   n = HEADER__find (a_label);
    if (n < 0)  return "((boom))";
    /*---(prepare label)------------------*/
    x_max = s_header [n].h_high;
@@ -928,7 +936,7 @@ poly_header__report     (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL])
 }
 
 char
-poly_header_report      (tPROJ *a_proj)
+HEADER_report           (tPROJ *a_proj)
 {
    int         i           =    0;
    char        s           [LEN_HUND]  = "";
@@ -952,7 +960,7 @@ poly_header_report      (tPROJ *a_proj)
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(summary)------------------------*/
    DEBUG_INPT   yLOG_note    ("summary");
-   yURG_msg (' ', "##   %2d headers ·  å%sæ", poly_header_count (), a_proj->j_header);
+   yURG_msg (' ', "##   %2d headers ·  å%sæ", HEADER_count (), a_proj->j_header);
    yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depend··au·ver··gpl····extr·why·······what·····!æ");
    DEBUG_INPT   yLOG_note    ("header");
    yURG_msg (' ', "##");
@@ -1021,7 +1029,7 @@ poly_header_report      (tPROJ *a_proj)
 }
 
 char
-poly_header_only        (char a_file [LEN_PATH])
+HEADER_only             (char a_file [LEN_PATH])
 {
    char        rce         =  -10;
    char        rc          =    0;
@@ -1051,7 +1059,7 @@ poly_header_only        (char a_file [LEN_PATH])
       exit (rce);
    }
    /*---(create fake project)------------*/
-   rc = poly_proj_add ("header_audit", "/tmp", &x_proj);
+   rc = PROJS_add     ("header_audit", "/tmp", &x_proj);
    DEBUG_INPT   yLOG_value   ("proj add"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -1066,21 +1074,21 @@ poly_header_only        (char a_file [LEN_PATH])
       exit (rce);
    }
    /*---(read file)----------------------*/
-   rc = poly_header_read (x_file);
+   rc = HEADER_gather (x_file);
    DEBUG_INPT   yLOG_value   ("read"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       exit (rce);
    }
    /*---(suppmarize)---------------------*/
-   rc = poly_header_summarize (x_proj);
+   rc = HEADER_grading (x_proj);
    DEBUG_INPT   yLOG_value   ("summarize" , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       exit (rce);
    }
    /*---(write report)-------------------*/
-   rc = poly_header_report (x_proj);
+   rc = HEADER_report  (x_proj);
    DEBUG_INPT   yLOG_value   ("report"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -1091,5 +1099,5 @@ poly_header_only        (char a_file [LEN_PATH])
    exit(1);
 }
 
-char* poly_header__show       (tPROJ *a_proj) { if (a_proj == NULL)  return "(null)"; return a_proj->j_header; }
+char* HEADER__show  (tPROJ *a_proj) { if (a_proj == NULL)  return "(null)"; return a_proj->j_header; }
 

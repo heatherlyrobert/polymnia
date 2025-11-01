@@ -629,7 +629,7 @@ poly_db_read          (void)
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    yURG_msg ('>', "read central database (read)...");
    /*---(initialize)---------------------*/
-   poly_proj_purge    ();
+   PROJS_purge        ();
    poly_db__read_zero ();
    poly_db__stats     ();
    /*---(open)---------------------------*/
@@ -645,7 +645,7 @@ poly_db_read          (void)
    /*---(walk projects)------------------*/
    for (i = 0; i < n; ++i) {
       /*---(allocate)-----------------------*/
-      poly_proj_force (&x_proj);
+      PROJS_force (&x_proj);
       DEBUG_INPT   yLOG_point   ("x_proj"    , x_proj);
       --rce;  if (x_proj == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);

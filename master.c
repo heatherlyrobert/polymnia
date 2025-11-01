@@ -5,8 +5,8 @@ PROG__unit_quiet   (void)
 {
    char        x_argc      = 1;
    char       *x_args [1]  = { "polymnia" };
-   PROG_urgents (x_argc, x_args);
-   PROG_startup (x_argc, x_args);
+   PROG_debugging (x_argc, x_args);
+   PROG_startup   (x_argc, x_args);
    return 0;
 }
 
@@ -15,11 +15,11 @@ PROG__unit_loud      (void)
 {
    char        x_argc      = 3;
    char       *x_args [3]  = { "polymnia_unit", "@@kitchen", "@@nosort" };
-   PROG_urgents (x_argc, x_args);
+   PROG_debugging (x_argc, x_args);
    /*> yURG_by_name  ("mid"          , YURG_ON);                                         <*/
-   yURG_by_name  ("kitchen"      , YURG_ON);
-   yURG_by_name  ("yexec"        , YURG_ON);
-   PROG_startup (x_argc, x_args);
+   yURG_by_name   ("kitchen"      , YURG_ON);
+   yURG_by_name   ("yexec"        , YURG_ON);
+   PROG_startup   (x_argc, x_args);
    return 0;
 }
 

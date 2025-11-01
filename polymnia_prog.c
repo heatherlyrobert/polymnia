@@ -1,5 +1,6 @@
 /*============================----beg-of-source---============================*/
 #include  "polymnia.h"
+#include  "yEXEC_uver.h"
 
 
 
@@ -19,7 +20,7 @@ char      unit_answer [LEN_RECD] = "";
 static void      o___SUPPORT____________o (void) {;}
 
 char*        /*--: return versioning information ---------[ ------ [ ------ ]-*/
-PROG_version       (void)
+PROG_version            (void)
 {
    char    t [20] = "";
 #if    __TINYC__ > 0
@@ -38,7 +39,7 @@ PROG_version       (void)
 }
 
 char
-PROG_vershow       (void)
+PROG_vershow            (void)
 {
    printf ("%s\n", PROG_version ());
    exit (0);
@@ -64,20 +65,34 @@ PROG_usage              (void)
 
 
 /*====================------------------------------------====================*/
-/*===----                       pre-initialization                     ----===*/
+/*===----                        debugging setup                       ----===*/
 /*====================------------------------------------====================*/
-static void      o___PREINIT____________o (void) {;}
-
+static void      o___DEBUGGING__________o (void) {;}
 
 char
-PROG_urgents            (int argc, char *argv[])
+PROG_debugging          (int a_argc, char *a_argv[])
 {
    /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG  yLOG_enter   (__FUNCTION__);
    /*---(initialize)---------------------*/
-   yURG_all_mute ();
-   rc = yURG_logger  (argc, argv);
-   rc = yURG_urgs    (argc, argv);
+   rc = yURG_logger  (a_argc, a_argv);
+   DEBUG_PROG  yLOG_value   ("logger"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+
+   rc = yURG_urgs    (a_argc, a_argv);
+   DEBUG_PROG  yLOG_value   ("urgs"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    return 0;
 }
 
@@ -124,6 +139,16 @@ PROG_reset_everything   (void)
    my.g_rptg      = POLY_RPTG_NONE;
    my.g_titles    = RPTG_NOTITLES;
    my.g_filter    = FILTER_NONE;
+   /*---(allow features)-----------------*/
+   DEBUG_PROG   yLOG_note    ("initialize featurn use");
+   my.g_run_proj   = 'y';
+   my.g_run_head   = 'y';
+   my.g_run_file   = 'y';
+   my.g_run_func   = 'y';
+   my.g_run_code   = 'y';
+   my.g_run_extr   = 'y';
+   my.g_run_ylib   = 'y';
+   my.g_run_unit   = 'y';
    /*---(filtering)----------------------*/
    DEBUG_PROG   yLOG_note    ("initialize global filtering");
    my.g_projno       =   -1;
@@ -162,7 +187,7 @@ PROG_reset_everything   (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = poly_proj_init    ();
+   rc = PROJS_init ();
    DEBUG_PROG  yLOG_value   ("proj"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -237,6 +262,7 @@ PROG__args              (int a_argc, char *a_argv[])
    int         x_total     = 0;
    int         x_args      = 0;
    char        x_home      [LEN_HUND]   = "";
+   char        x_name      [LEN_LABEL]  = "";
    char        t           [LEN_RECD]   = "";
    int         x_proj      =    0;
    int         x_file      =    0;
@@ -253,11 +279,16 @@ PROG__args              (int a_argc, char *a_argv[])
    }
    DEBUG_PROG  yLOG_char    ("run_as"    , my.run_as);
    /*---(get current directory)----------*/
-   rc = poly_proj_identify (NULL, x_home);
+   rc = ystrlhere (x_home, x_name);
+   DEBUG_PROG  yLOG_value   ("home"      , rc);
    ystrlcat (x_home, "/", LEN_HUND);
+   DEBUG_PROG  yLOG_info    ("x_home"    , x_home);
+   DEBUG_PROG  yLOG_info    ("x_name"    , x_name);
    /*---(process)------------------------*/
+   DEBUG_PROG  yLOG_value   ("a_argc"    , a_argc);
    for (i = 1; i < a_argc; ++i) {
       a = a_argv [i];
+      DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s", i, a);
       if (a == NULL) {
          yURG_err ('f', "arg %d is NULL", i);
          DEBUG_PROG   yLOG_note    ("FATAL, found a null argument, really bad news");
@@ -265,13 +296,19 @@ PROG__args              (int a_argc, char *a_argv[])
          return rce;
       }
       ++x_total;
-      DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s %s", i, a, b);
-      if (a[0] == '@')  continue;
-      DEBUG_ARGS  yLOG_info    ("cli arg", a);
+      if (a[0] == '@') {
+         DEBUG_PROG   yLOG_note    ("filtering urgent out");
+         continue;
+      }
       ++x_args;
       if (i < a_argc - 1) {
          b = a_argv [i + 1];
-         DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s %s", i, a, b);
+         if (strncmp (b, "--", 2) == 0) {
+            b = NULL;
+            DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s ((null))", i, a);
+         } else {
+            DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s %s", i, a, b);
+         }
       } else {
          b = NULL;
          DEBUG_ARGS  yLOG_complex ("arg"    , "%d %-20.20s ((null))", i, a);
@@ -283,40 +320,53 @@ PROG__args              (int a_argc, char *a_argv[])
          --i;
       }
       rc = yJOBS_argument (&i, a, b, &(my.run_as), &(my.run_mode), my.run_file);
+      DEBUG_PROG  yLOG_value ("yjobs"     , rc);
       if (rc < 0) {
+         DEBUG_PROG  yLOG_note  ("yjobs failed, exiting");
          DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
          return rce;
+      } else if (rc == 1) {
+         DEBUG_PROG  yLOG_note  ("yjobs handled, got to next");
+         continue;
       }
-      if (rc == 1)  continue;
-      /*> rc = poly_rptg_args (a);                                                    <*/
-      /*> if (rc == 1)   continue;                                                    <*/
+      DEBUG_PROG  yLOG_note  ("yjobs has no such argument, handle locally");
       /*---(simple)----------------------*/
-      if      (strcmp (a, "--version"   ) == 0)  PROG_vershow ();
-      else if (strcmp (a, "--quick"     ) == 0)  PROG_usage   ();
-      else if (strcmp (a, "--help"      ) == 0)  PROG_usage   ();
-      else if (strcmp (a, "--header"    ) == 0)  TWOARG  poly_header_only (b);
+      if      (strcmp  (a, "--version"      ) == 0)  PROG_vershow ();
+      else if (strcmp  (a, "--quick"        ) == 0)  PROG_usage   ();
+      else if (strcmp  (a, "--help"         ) == 0)  PROG_usage   ();
+      else if (strcmp  (a, "--loud"         ) == 0)  yURG_all_tmplive ();
+      /*---(parts)-----------------------*/
+      else if (strcmp  (a, "--run_proj"     ) == 0)  { my.g_run_proj = 'y';  my.g_run_head = my.g_run_file = my.g_run_func = my.g_run_code = my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
+      else if (strcmp  (a, "--run_head"     ) == 0)  { my.g_run_proj = my.g_run_head = 'y';  my.g_run_file = my.g_run_func = my.g_run_code = my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
+      else if (strcmp  (a, "--run_file"     ) == 0)  { my.g_run_proj = my.g_run_head = my.g_run_file = 'y';  my.g_run_func = my.g_run_code = my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
+      else if (strcmp  (a, "--run_func"     ) == 0)  { my.g_run_proj = my.g_run_head = my.g_run_file = my.g_run_func = 'y';  my.g_run_code = my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
+      else if (strcmp  (a, "--run_code"     ) == 0)  { my.g_run_proj = my.g_run_head = my.g_run_file = my.g_run_func = my.g_run_code = 'y';  my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
+      else if (strcmp  (a, "--run_extr"     ) == 0)  { my.g_run_proj = my.g_run_head = my.g_run_file = my.g_run_func = my.g_run_code = my.g_run_extr = 'y';  my.g_run_ylib = my.g_run_unit = '-'; }
+      else if (strcmp  (a, "--run_ylib"     ) == 0)  { my.g_run_proj = my.g_run_head = my.g_run_file = my.g_run_func = my.g_run_code = my.g_run_extr = my.g_run_ylib = 'y';  my.g_run_unit = '-'; }
+      else if (strcmp  (a, "--run_unit"     ) == 0)  { my.g_run_proj = my.g_run_file = my.g_run_unit = 'y'; }
+      /*> TWOARG  HEADER_only (b);                                            <*/
       /*---(complicated)-----------------*/
       /*> else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }   <*/
-      else if (strcmp (a, "--nounit"    ) == 0)   my.g_unit  = '-';
+      else if (strcmp  (a, "--nounit"       ) == 0)   my.g_unit  = '-';
       /*---(configuration)---------------*/
       /*> else if (strcmp (a, "--local"     ) == 0)  rc = poly_db_cli  ("polymnia_local.db", 'y');   <*/
-      else if (strcmp (a, "--database"  ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
+      else if (strcmp  (a, "--database"     ) == 0)  TWOARG rc = poly_db_cli      (a_argv [i], 'y');
       /*> else if (strcmp (a, "--world"     ) == 0)  TWOARG rc = poly_world_cli   (a_argv [i], 'y');   <*/
-      else if (strcmp (a, "--external"  ) == 0)  TWOARG rc = poly_extern_cli  (a_argv [i], 'y');
+      else if (strcmp  (a, "--external"     ) == 0)  TWOARG rc = poly_extern_cli  (a_argv [i], 'y');
       /*---(others)----------------------*/
-      else if (strcmp (a, "--treeview" ) == 0)  my.g_titles = RPTG_TREEVIEW;
-      else if (strcmp (a, "--debug"    ) == 0)  my.g_filter = FILTER_DEBUG;
-      else if (strcmp (a, "--param"    ) == 0)  my.g_filter = FILTER_PARAMS;
-      else if (strcmp (a, "--data"     ) == 0)  my.g_filter = FILTER_DATA;
-      else if (strcmp (a, "--linux"    ) == 0)  my.g_filter = FILTER_LINUX;
+      else if (strcmp  (a, "--treeview"     ) == 0)  my.g_titles = RPTG_TREEVIEW;
+      else if (strcmp  (a, "--debug"        ) == 0)  my.g_filter = FILTER_DEBUG;
+      else if (strcmp  (a, "--param"        ) == 0)  my.g_filter = FILTER_PARAMS;
+      else if (strcmp  (a, "--data"         ) == 0)  my.g_filter = FILTER_DATA;
+      else if (strcmp  (a, "--linux"        ) == 0)  my.g_filter = FILTER_LINUX;
       /*---(filtering)-------------------*/
-      else if (strcmp (a, "--project"   ) == 0)  TWOARG rc = poly_proj_cli    (a_argv [i], 'y');
-      else if (strcmp (a, "--function"  ) == 0)  TWOARG rc = poly_func_cli_name (a_argv [i], 'y');
-      else if (strcmp (a, "--hint"      ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
+      else if (strcmp  (a, "--project"      ) == 0)  { rc = PROJS_cli  (b);  if (rc >= 0)  ++i; }
+      else if (strcmp  (a, "--function"     ) == 0)  TWOARG rc = poly_func_cli_name (a_argv [i], 'y');
+      else if (strcmp  (a, "--hint"         ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
       /*> else if (strcmp (a, "--extern"   ) == 0)  TWOARG rc = poly_extern_name (a_argv [i], 'y');   <*/
       /*> else if (strcmp (a, "--ylib"     ) == 0)  TWOARG rc = poly_ylib_name   (a_argv [i], 'y');   <*/
       /*---(compound)--------------------*/
-      else if (strcmp (a, "--extern" ) == 0) {
+      else if (strcmp  (a, "--extern" ) == 0) {
          my.g_mode = POLY_RPTG_EXTERN;
          if (++i < a_argc)  ystrlcpy (my.g_extern, a_argv [i], LEN_TITLE);
          else {
@@ -334,30 +384,27 @@ PROG__args              (int a_argc, char *a_argv[])
             return -1;
          }
       }
-      /*---(prefixes)--------------------*/
-      /*> else if (strncmp (a, "--formula-"          , 10) == 0)  PROG_layout_set ("cli", "formula"  , a + 10);   <* 
-       *> else if (strncmp (a, "--status-"           ,  9) == 0)  PROG_layout_set ("cli", "status"   , a +  9);   <* 
-       *> else if (strncmp (a, "--command-"          , 10) == 0)  PROG_layout_set ("cli", "command"  , a + 10);   <* 
-       *> else if (strncmp (a, "--layout-"           ,  9) == 0)  PROG_layout_set ("cli", "layout"   , a +  9);   <* 
-       *> else if (strncmp (a, "--function-list"     ,  9) == 0)  CALC_func_list  ();                             <*/
       /*---(other)-----------------------*/
-      else if (a[0] != '-'                     ) {
-         c = atoi (a_argv [i]);
-         if (c > 0) {
-            if      (x_proj == 0)   my.g_projno = c - 1;
-            else if (x_file == 0)   my.g_fileno = c - 1;
-         } else {
-            if      (my.g_projname [0] == '\0')   ystrlcpy (my.g_projname, a_argv [i], LEN_LABEL);
-            else if (my.g_filename [0] == '\0')   ystrlcpy (my.g_filename, a_argv [i], LEN_LABEL);
-         }
-      }
+      /*> else if (a[0] != '-'                     ) {                                                   <* 
+       *>    c = atoi (a_argv [i]);                                                                      <* 
+       *>    if (c > 0) {                                                                                <* 
+       *>       if      (x_proj == 0)   my.g_projno = c - 1;                                             <* 
+       *>       else if (x_file == 0)   my.g_fileno = c - 1;                                             <* 
+       *>    } else {                                                                                    <* 
+       *>       if      (my.g_projname [0] == '\0')   ystrlcpy (my.g_projname, a_argv [i], LEN_LABEL);   <* 
+       *>       else if (my.g_filename [0] == '\0')   ystrlcpy (my.g_filename, a_argv [i], LEN_LABEL);   <* 
+       *>    }                                                                                           <* 
+       *> }                                                                                              <*/
       else {
          DEBUG_PROG  yLOG_note  ("argument not understood");
-         DEBUG_PROG  yLOG_exitr (__FUNCTION__, -1);
-         return -1;
+         DEBUG_PROG  yLOG_exitr (__FUNCTION__, -3);
+         return -3;
       }
-      /*> printf ("GLOBAL %c, %c, %c\n", my.g_mode, my.g_scope, my.g_rptg);           <*/
-      if (rc < 0)  break;
+      DEBUG_PROG  yLOG_value ("local"     , rc);
+      if (rc < 0) {
+         DEBUG_PROG  yLOG_exitr (__FUNCTION__, -2);
+         return -2;
+      }
    }
    DEBUG_ARGS  yLOG_value  ("entries"   , x_total);
    DEBUG_ARGS  yLOG_value  ("arguments" , x_args);
@@ -374,11 +421,14 @@ PROG__args              (int a_argc, char *a_argv[])
 char         /*-> initialize program and variables ---[ ------ [gz.741.041.07]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
 PROG__begin             (void)
 {
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG  yLOG_enter   (__FUNCTION__);
    /*---(prepare files)------------------*/
-   char        rc          =    0;
-   rc = poly_extern_load ();
+   DEBUG_PROG  yLOG_char    ("use_extern", my.g_run_extr);
+   if (my.g_run_extr == 'y') {
+      rc = poly_extern_load ();
+   }
    /*---(complete)-----------------------*/
    DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    return 0;
@@ -412,6 +462,82 @@ PROG_startup            (int argc, char *argv[])
    DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    yURG_stage_check (YURG_MID);
    return rc;
+}
+
+char
+PROG__args_string       (char a_string [LEN_FULL])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_argc      =    0;
+   char       *x_argv      [LEN_TERSE];
+   char        x_disp      [LEN_FULL]  = "";
+   /*---(header)-------------------------*/
+   DEBUG_PROG  yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_PROG    yLOG_point   ("a_string"     , a_string);
+   --rce;  if (a_string == NULL) {
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG    yLOG_info    ("a_string"     , a_string);
+   /*---(parse)--------------------------*/
+   rc = yexec_uparse (a_string, &x_argc, x_argv, x_disp);
+   DEBUG_PROG  yLOG_value   ("config"    , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG    yLOG_info    ("x_disp"       , x_disp);
+   /*---(startup)------------------------*/
+   rc = PROG__args     (x_argc, x_argv);
+   DEBUG_PROG  yLOG_value     ("startup"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
+   return 1;
+}
+
+char
+PROG_startup_string     (char a_string [LEN_FULL])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_argc      =    0;
+   char       *x_argv      [LEN_TERSE];
+   char        x_disp      [LEN_FULL]  = "";
+   /*---(header)-------------------------*/
+   DEBUG_PROG  yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_PROG    yLOG_point   ("a_string"     , a_string);
+   --rce;  if (a_string == NULL) {
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG    yLOG_info    ("a_string"     , a_string);
+   /*---(parse)--------------------------*/
+   rc = yexec_uparse (a_string, &x_argc, x_argv, x_disp);
+   DEBUG_PROG  yLOG_value   ("config"    , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG    yLOG_info    ("x_disp"       , x_disp);
+   /*---(startup)------------------------*/
+   rc = PROG_startup   (x_argc, x_argv);
+   DEBUG_PROG  yLOG_value     ("startup"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
+   return 1;
 }
 
 
@@ -462,7 +588,7 @@ PROG_summarize          (tPROJ *a_proj)
       a_proj->j_funcs += x_file->i_ccount;
       x_file = x_file->i_next;
    }
-   poly_header_summarize (a_proj);
+   HEADER_grading (a_proj);
    poly_units_by_func ();
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
@@ -475,6 +601,80 @@ PROG_summarize          (tPROJ *a_proj)
 /*===----                      action dispatching                      ----===*/
 /*====================------------------------------------====================*/
 static void      o___DISPATCH___________o (void) {;}
+
+char
+PROG_pseudo             (int argc, char *argv[])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        rc_final    =    0;
+   tPROJ      *x_proj      = NULL;
+   tFILE      *x_file      = NULL;
+   /*---(initialize)---------------------*/
+   rc = PROG_debugging (argc, argv);
+   DEBUG_PROG    yLOG_value   ("urgents"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = PROG_startup   (argc, argv);
+   DEBUG_PROG    yLOG_value   ("startup"   , rc);
+   --rce;  if (rc < 0) {
+      rc = PROG_shutdown ();
+      DEBUG_PROG    yLOG_value   ("shutdown"  , rc);
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(dispatch)-----------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   rc_final = yJOBS_driver (P_ONELINE, poly_yjobs_callback);
+   DEBUG_PROG   yLOG_value   ("driver"    , rc_final);
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   /*---(wrap-up)------------------------*/
+   rc = PROG_shutdown ();
+   DEBUG_PROG    yLOG_value   ("shutdown"  , rc);
+   /*---(complete)-----------------------*/
+   return rc;
+}
+
+char
+PROG_pseudo_string      (char a_string [LEN_FULL])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_argc      =    0;
+   char       *x_argv      [LEN_TERSE];
+   char        x_disp      [LEN_FULL]  = "";
+   /*---(header)-------------------------*/
+   DEBUG_PROG  yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_PROG    yLOG_point   ("a_string"     , a_string);
+   --rce;  if (a_string == NULL) {
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG    yLOG_info    ("a_string"     , a_string);
+   /*---(parse)--------------------------*/
+   rc = yexec_uparse (a_string, &x_argc, x_argv, x_disp);
+   DEBUG_PROG  yLOG_value   ("config"    , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_PROG  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG    yLOG_info    ("x_disp"       , x_disp);
+   /*---(startup)------------------------*/
+   rc = PROG_pseudo    (x_argc, x_argv);
+   DEBUG_PROG  yLOG_value     ("main"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
+   return rc;
+}
 
 char
 PROG__stats             (void)
@@ -861,7 +1061,7 @@ PROG__end               (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(wrap-up)------------------------*/
-   poly_proj_purge   ();
+   PROJS_purge       ();
    poly_extern_wrap  ();
    /*> poly_world_wrap   ();                                                          <*/
    /*---(remove global files)------------*/
@@ -930,6 +1130,9 @@ prog__unit              (char *a_question, int i)
       ystrlcpy (s, yJOBS_iam  (), LEN_TITLE);
       ystrlcpy (t, yJOBS_mode (), LEN_TITLE);
       snprintf (unit_answer, LEN_RECD, "PROG mode        : iam (%c) %-18.18s, run (%c) %-18.18s, å%sæ", my.run_as, s, my.run_mode, t, my.run_file);
+   }
+   else if (strcmp (a_question, "run"     )        == 0) {
+      snprintf (unit_answer, LEN_RECD, "PROG run         : proj %c,  head %c,  file %c,  func %c,  code %c,  extr %c,  ylib %c,  unit %c", my.g_run_proj, my.g_run_head, my.g_run_file, my.g_run_func, my.g_run_code, my.g_run_extr, my.g_run_ylib, my.g_run_unit);
    }
    /*---(complete)-----------------------*/
    return unit_answer;

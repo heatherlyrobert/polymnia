@@ -640,7 +640,7 @@ poly_code_driver        (tFILE *a_file, int a_beg, int a_end, char a_act)
       /*---(check headers)---------------*/
       if (a_file->i_type == 'h') {
          DEBUG_INPT   yLOG_note    ("header file (h) line");
-         rc = poly_header__single  (a_file->i_proj, x_curr);
+         rc = HEADER__single  (a_file->i_proj, x_curr);
          DEBUG_INPT   yLOG_value   ("oneliners" , rc);
          rc = poly_code__current (a_file, 0     , NULL  , x_curr, x_prev);
          DEBUG_INPT   yLOG_value   ("current"   , rc);

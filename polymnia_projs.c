@@ -15,7 +15,7 @@ static char s_print     [LEN_RECD] = "";
 static void  o___SUPPORT_________o () { return; }
 
 char
-poly_proj_cli           (char *a_name, char a_loud)
+PROJS_cli               (char a_name [LEN_LABEL])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -29,7 +29,7 @@ poly_proj_cli           (char *a_name, char a_loud)
    /*---(defense)------------------------*/
    DEBUG_ARGS  yLOG_point   ("a_name"    , a_name);
    --rce;  if (a_name == NULL) {
-      if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be null");
+      yURG_err (YURG_FATAL, "requested project name can not be NULL");
       DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
@@ -38,19 +38,19 @@ poly_proj_cli           (char *a_name, char a_loud)
    l = strlen (a_name);
    DEBUG_ARGS  yLOG_value   ("l"         , l);
    --rce;  if (l <= 0) {
-      if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be blank/empty");
+      yURG_err (YURG_FATAL, "requested project name can not be blank/empty");
       DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    --rce;  if (l >= LEN_LABEL) {
-      if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not be longer than %d chars", LEN_LABEL);
+      yURG_err (YURG_FATAL, "requested project name %då%sæ can not be longer than %d characters", l, a_name, LEN_LABEL - 1);
       DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
       return rce;
    }
    /*---(check characters)---------------*/
    --rce;  for (i = 0; i < l; ++i) {
       if (strchr (x_valid, a_name [i]) != NULL)  continue;
-      if (a_loud == 'y')  yURG_err (YURG_FATAL, "project <name>, name can not have a <%c> at character %d", a_name [i], i);
+      yURG_err (YURG_FATAL, "requested project name %då%sæ can not have a (%c/%3d) at character (%d)", l, a_name, ychrvisible (a_name [i]), (uchar) a_name [i], i);
       DEBUG_PROG  yLOG_char  ("bad char"  , a_name [i]);
       DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);
       return rce;
@@ -64,7 +64,7 @@ poly_proj_cli           (char *a_name, char a_loud)
 }
 
 char
-poly_proj__wipe    (tPROJ *a_dst)
+PROJS__wipe        (tPROJ *a_dst)
 {
    if (a_dst == NULL)  return -1;
    /*---(overall)-----------*/
@@ -72,7 +72,7 @@ poly_proj__wipe    (tPROJ *a_dst)
    a_dst->j_dir       [0] = '\0';
    a_dst->j_written       =    0;
    /*---(header entries)----*/
-   poly_header_clear (a_dst);
+   HEADER_clean (a_dst);
    /*---(manuals)-----------*/
    ystrlcpy (a_dst->j_manual, "········", LEN_LABEL);
    a_dst->j_git       = '·';
@@ -90,7 +90,7 @@ poly_proj__wipe    (tPROJ *a_dst)
 }
 
 char*
-poly_proj__memory       (tPROJ *a_proj)
+PROJS__memory           (tPROJ *a_proj)
 {
    /*---(overall)------------------------*/
    ystrlcpy (s_print, "å"  , LEN_RECD);
@@ -169,7 +169,7 @@ poly_proj__memory       (tPROJ *a_proj)
 static void  o___PROGRAM_________o () { return; }
 
 char
-poly_proj_init          (void)
+PROJS_init              (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -189,7 +189,7 @@ poly_proj_init          (void)
 }
 
 char
-poly_proj_purge         (void)
+PROJS_purge             (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -207,7 +207,7 @@ poly_proj_purge         (void)
       DEBUG_PROG   yLOG_point   ("x_next"    , x_next);
       DEBUG_DATA   yLOG_point   ("x_proj"    , x_proj);
       DEBUG_DATA   yLOG_info    ("->j_name"  , x_proj->j_name);
-      rc = poly_proj_remove (&x_proj);
+      rc = PROJS_remove     (&x_proj);
       x_proj = x_next;
    }
    /*---(check)--------------------------*/
@@ -222,7 +222,7 @@ poly_proj_purge         (void)
 }
 
 char
-poly_proj_wrap          (void)
+PROJS_wrap              (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -248,9 +248,9 @@ poly_proj_wrap          (void)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char poly_proj__new  (tPROJ **a_new) { return poly_shared_new  ("proj", sizeof (tPROJ), a_new, NULL, '-', poly_proj__wipe); }
-char poly_proj_force (tPROJ **a_new) { return poly_shared_new  ("proj", sizeof (tPROJ), a_new, NULL, 'y', poly_proj__wipe); }
-char poly_proj__free (tPROJ **a_old) { return poly_shared_free ("proj", a_old, NULL); }
+char PROJS__new  (tPROJ **r_new) { return poly_shared_new  ("proj", sizeof (tPROJ), r_new, NULL, '-', PROJS__wipe); }
+char PROJS_force (tPROJ **r_new) { return poly_shared_new  ("proj", sizeof (tPROJ), r_new, NULL, 'y', PROJS__wipe); }
+char PROJS__free (tPROJ **b_old) { return poly_shared_free ("proj", b_old, NULL); }
 
 
 
@@ -260,7 +260,7 @@ char poly_proj__free (tPROJ **a_old) { return poly_shared_free ("proj", a_old, N
 static void  o___HOOKING_________o () { return; }
 
 char
-poly_proj__hook         (tPROJ *a_proj)
+PROJS__hook             (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -293,7 +293,7 @@ poly_proj__hook         (tPROJ *a_proj)
 }
 
 char
-poly_proj__unhook       (tPROJ *a_proj)
+PROJS__unhook           (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -328,7 +328,7 @@ poly_proj__unhook       (tPROJ *a_proj)
 static void  o___EXISTANCE_______o () { return; }
 
 char
-poly_proj__adder         (char *a_name, char *a_home, tPROJ **a_proj, char a_force)
+PROJS__add_full         (char a_name [LEN_LABEL], char a_home [LEN_HUND], char c_force, tPROJ **r_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -338,52 +338,58 @@ poly_proj__adder         (char *a_name, char *a_home, tPROJ **a_proj, char a_for
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_point   ("a_name"    , a_name);
-   --rce;  if (a_name == NULL) {
+   --rce;  if (a_name == NULL || a_name [0] == '\0') {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_DATA   yLOG_info    ("a_name"    , a_name);
    DEBUG_DATA   yLOG_point   ("a_home"    , a_home);
-   --rce;  if (a_home == NULL) {
+   --rce;  if (a_home == NULL || a_home [0] == '\0') {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_DATA   yLOG_info    ("a_home"    , a_home);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_point   ("a_proj"    , a_proj);
-   DEBUG_DATA   yLOG_point   ("*a_proj"   , *a_proj);
-   --rce;  if (a_proj != NULL) {
-      if (*a_proj != NULL) {
-         DEBUG_DATA   yLOG_note    ("already set to a particular project");
+   DEBUG_DATA   yLOG_point   ("r_proj"    , r_proj);
+   --rce;  if (r_proj == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_point   ("*r_proj"   , *r_proj);
+   DEBUG_DATA   yLOG_char    ("c_force"   , c_force);
+   --rce;  if (*r_proj != NULL) {
+      if (c_force != 'y') {
+         DEBUG_DATA   yLOG_note    ("already set to a particular project (not forced)");
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+      *r_proj = NULL;
    }
    /*---(check for existing)-------------*/
-   poly_proj_by_name (a_name, &x_new);
-   DEBUG_DATA   yLOG_point   ("check"     , x_new);
-   --rce;  if (x_new != NULL) {
-      if (a_force != 'y') {
-         DEBUG_DATA   yLOG_note    ("project already exists");
+   rc = PROJS_by_name     (a_name, &x_new);
+   DEBUG_DATA   yLOG_complex ("by_name"   , "rc=%4d, x_new=%p", rc, x_new);
+   --rce;  if (rc >= 0 || x_new != NULL) {
+      if (c_force != 'y') {
+         DEBUG_DATA   yLOG_note    ("project already exists (not forced), nothing to do");
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      yURG_msg ('-', "project exists, clear all current data");
-      rc = poly_proj_remove (&x_new);
-      DEBUG_DATA   yLOG_value   ("remove"    , rc);
-      DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
-      if (x_new != NULL) {
+      rc = PROJS_remove     (&x_new);
+      DEBUG_DATA   yLOG_complex ("remove"    , "rc=%4d, x_new=%p", rc, x_new);
+      if (rc < 0 || x_new != NULL) {
+         yURG_err ('f', "could not remove project from database");
+         yURG_msg (' ', "");
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+      yURG_msg ('-', "project existed, clear all current data and removed");
    } else {
-      yURG_msg ('-', "project does not already exist, creating");
+      yURG_msg ('-', "project does not already exist");
    }
    /*---(create project)-----------------*/
-   if (a_force == 'y')   poly_proj_force (&x_new);
-   else                  poly_proj__new  (&x_new);
-   DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
-   --rce;  if (x_new == NULL) {
+   if (c_force == 'y')   rc = PROJS_force (&x_new);
+   else                  rc = PROJS__new  (&x_new);
+   DEBUG_DATA   yLOG_complex ("add"       , "rc=%4d, x_new=%p", rc, x_new);
+   --rce;  if (rc < 0 || x_new == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -392,14 +398,14 @@ poly_proj__adder         (char *a_name, char *a_home, tPROJ **a_proj, char a_for
    ystrlcpy (x_new->j_name    , a_name, LEN_TITLE);
    ystrlcpy (x_new->j_dir     , a_home, LEN_HUND);
    /*---(into btree)---------------------*/
-   rc = poly_proj__hook (x_new);
+   rc = PROJS__hook (x_new);
    DEBUG_DATA   yLOG_value   ("hook"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(save back)----------------------*/
-   if (a_proj != NULL)  *a_proj = x_new;
+   if (r_proj != NULL)  *r_proj = x_new;
    /*---(update)-------------------------*/
    rc = ySORT_prepare (B_PROJ);
    if (rc < 0) {
@@ -412,19 +418,19 @@ poly_proj__adder         (char *a_name, char *a_home, tPROJ **a_proj, char a_for
 }
 
 char
-poly_proj_add            (char *a_name, char *a_home, tPROJ **a_proj)
+PROJS_add               (char a_name [LEN_LABEL], char a_home [LEN_HUND], tPROJ **r_proj)
 {
-   return poly_proj__adder (a_name, a_home, a_proj, '-');
+   return PROJS__add_full (a_name, a_home, '-', r_proj);
 }
 
 char
-poly_proj_replace        (char *a_name, char *a_home, tPROJ **a_proj)
+PROJS_replace           (char a_name [LEN_LABEL], char a_home [LEN_HUND], tPROJ **r_proj)
 {
-   return poly_proj__adder (a_name, a_home, a_proj, 'y');
+   return PROJS__add_full (a_name, a_home, 'y', r_proj);
 }
 
 char
-poly_proj_remove        (tPROJ **a_proj)
+PROJS_remove            (tPROJ **a_proj)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -451,14 +457,14 @@ poly_proj_remove        (tPROJ **a_proj)
       return rce;
    }
    /*---(unhook)-------------------------*/
-   rc = poly_proj__unhook (*a_proj);
+   rc = PROJS__unhook (*a_proj);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(free)---------------------------*/
-   rc = poly_proj__free   (a_proj);
+   rc = PROJS__free   (a_proj);
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -483,173 +489,82 @@ poly_proj_remove        (tPROJ **a_proj)
 static void  o___SPECIAL_________o () { return; }
 
 char
-poly_proj__get_home     (char *a_home)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        x_home      [LEN_HUND]  = "";
-   char       *p           = NULL;
-   int         x_len       =    0;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_home);
-   --rce;  if (a_home == NULL) {
-      yURG_err ('f', "home pointer was null");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(default)------------------------*/
-   ystrlcpy (a_home, ""    , LEN_HUND);
-   /*---(get the home)-------------------*/
-   p = getcwd (x_home, LEN_HUND);
-   DEBUG_DATA   yLOG_spoint  (p);
-   --rce;  if (p == NULL) {
-      yURG_err ('f', "linux can not provide current working directory");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_snote   (x_home);
-   x_len = strlen (x_home);
-   DEBUG_DATA   yLOG_sint    (x_len);
-   /*> yURG_msg ('-', "current working directory %2då%sæ", x_len, x_home);            <*/
-   /*---(check valid areas)--------------*/
-   --rce; if (x_len > 16 && strncmp ("/home/system/"         , x_home, 13) == 0) {
-      /*> yURG_msg ('-', "sub-directory of å/home/system/æ is allowed");              <*/
-      DEBUG_DATA   yLOG_snote   ("system");
-      ;;
-   } else if (x_len > 16 && strncmp ("/home/monkey/"         , x_home, 13) == 0) {
-      /*> yURG_msg ('-', "sub-directory of å/home/monkey/æ is allowed");              <*/
-      DEBUG_DATA   yLOG_snote   ("monkey");
-      ;;
-   } else if (x_len > 25 && strncmp ("/home/member/p_gvskav/", x_home, 22) == 0) {
-      /*> yURG_msg ('-', "sub-directory of å/home/member/p_gvskav/æ is allowed");     <*/
-      DEBUG_DATA   yLOG_snote   ("member");
-      ;;
-   } else if (x_len > 20 && strncmp ("/tmp/polymnia_test/"   , x_home, 19) == 0) {
-      /*> yURG_msg ('-', "sub-directory of å/tmp/polymnia_test/æ is allowed");        <*/
-      DEBUG_DATA   yLOG_snote   ("unittest");
-      ;;
-   } else if (x_len >  8 && strncmp ("/tmp/"                 , x_home,  5) == 0) {
-      /*> yURG_msg ('-', "sub-directory of å/tmp/æ is allowed");                      <*/
-      DEBUG_DATA   yLOG_snote   ("unittest");
-      ;;
-   } else {
-      yURG_err ('f', "not one of polymnia's allowed directory prefixes");
-      DEBUG_DATA   yLOG_snote   ("not allowed");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(save back)----------------------*/
-   ystrlcpy (a_home, x_home, LEN_HUND);
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_proj__get_name     (cchar *a_home, char *a_name)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        x_home      [LEN_HUND]  = "";
-   char       *p           = NULL;
-   char       *q           = NULL;
-   int         x_len       =    0;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_name);
-   --rce;  if (a_name == NULL) {
-      yURG_err ('f', "name pointer was null");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   ystrlcpy (a_name, ""    , LEN_TITLE);
-   DEBUG_DATA   yLOG_spoint  (a_home);
-   --rce;  if (a_home == NULL) {
-      yURG_err ('f', "home directory string was null");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   x_len = strlen (a_home);
-   DEBUG_DATA   yLOG_sint    (x_len);
-   --rce;  if (x_len <= 0) {
-      yURG_err ('f', "home directory string empty");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(prepare)------------------------*/
-   /*> yURG_msg ('-', "current project path %2då%sæ", strlen (a_home), a_home);       <*/
-   ystrlcpy (x_home, a_home, LEN_HUND);
-   if (x_home [x_len - 1] == '/') x_home [--x_len] = '\0';
-   DEBUG_DATA   yLOG_snote   (x_home);
-   /*---(get the name)-------------------*/
-   p = strrchr (x_home, '/');
-   DEBUG_DATA   yLOG_spoint  (p);
-   --rce;  if (p == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   --rce;  if (x_home + x_len == p) {
-      DEBUG_DATA   yLOG_snote   ("at end");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   ++p;
-   q = strchr  (p, '.');
-   DEBUG_DATA   yLOG_spoint  (q);
-   if (q == NULL)  x_len = LEN_TITLE;
-   else            x_len = q - p + 1;
-   if (x_len > LEN_TITLE)  x_len = LEN_TITLE;
-   DEBUG_DATA   yLOG_sint    (x_len);
-   /*---(save back)----------------------*/
-   ystrlcpy (a_name, p, x_len);
-   /*> yURG_msg ('-', "current project name %2då%sæ", strlen (a_name), a_name);       <*/
-   DEBUG_DATA   yLOG_snote   (a_name);
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-poly_proj_identify       (char *a_name, char *a_home)
+PROJS_pull              (cchar *a_data)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   char        x_home      [LEN_HUND]  = "";
-   char        x_name      [LEN_TITLE] = "";
+   char        x_name      [LEN_LABEL] = "";
+   tPROJ      *x_proj      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(defaults)-----------------------*/
-   if (a_name != NULL)    ystrlcpy (a_name, "", LEN_TITLE);
-   if (a_home != NULL)    ystrlcpy (a_home, "", LEN_TITLE);
-   /*---(get directory)------------------*/
-   rc = poly_proj__get_home (x_home);
-   DEBUG_DATA   yLOG_value   ("get_home"   , rc);
+   DEBUG_PROG    yLOG_enter   (__FUNCTION__);
+   /*---(handle)-------------------------*/
+   DEBUG_PROG    yLOG_note    ("read and verify current project (YJOBS_PULL)");
+   yURG_msg ('>', "read and verify current project (pull)");
+   rc = ystrlproj (a_data, x_name);
+   DEBUG_PROG    yLOG_value   ("ystrlproj" , rc);
    --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      yURG_err ('f', "could not get project name from path");
+      yURG_msg (' ', "");
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(get name)-----------------------*/
-   rc = poly_proj__get_name (x_home, x_name);
-   DEBUG_DATA   yLOG_value   ("get_name"   , rc);
+   DEBUG_PROG    yLOG_info    ("x_name"    , x_name);
+   /*---(find target)--------------------*/
+   /*> PROJS_by_name      (x_name, &x_proj);                                          <* 
+    *> DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);                             <* 
+    *> --rce;  if (x_proj == NULL) {                                                  <* 
+    *>    yURG_err ('w', "project does not exist in the database, nothing to do");    <* 
+    *> } else {                                                                       <* 
+    *>    DEBUG_PROG   yLOG_point   ("->name"     , x_proj->j_name);                  <* 
+    *>    /+---(remove existing target)---------+/                                    <* 
+    *>    yURG_msg ('-', "remove current project");                                   <* 
+    *>    rc = PROJS_remove     (&x_proj);                                            <* 
+    *>    DEBUG_PROG   yLOG_value   ("proj_del"   , rc);                              <* 
+    *>    if (rc < 0) {                                                               <* 
+    *>       yURG_err ('f', "could not remove project from database");                <* 
+    *>       yURG_msg (' ', "");                                                      <* 
+    *>       DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);                          <* 
+    *>       return rce;                                                              <* 
+    *>    }                                                                           <* 
+    *> }                                                                              <*/
+   /*---(add project)--------------------*/
+   rc = PROJS_add     (x_name, a_data, &x_proj);
+   DEBUG_PROG   yLOG_value   ("add"        , rc);
    --rce;  if (rc < 0) {
-      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      yURG_err ('f', "could not add project name to database");
+      yURG_msg (' ', "");
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> yURG_msg ('-', "current project name %2då%sæ", strlen (x_name), x_name);       <*/
-   /*---(save results)-------------------*/
-   ystrlcpy (a_name, x_name, LEN_TITLE);
-   ystrlcpy (a_home, x_home, LEN_HUND);
+   DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
+   DEBUG_PROG   yLOG_info    ("->name"     , x_proj->j_name);
+   /*---(save off)-----------------------*/
+   my.g_proj = x_proj;
+   x_proj->j_written = my.runtime;
+   /*---(CHECK PROJECT ONLY)-------------*/
+   DEBUG_PROG   yLOG_char    ("run_file"   , my.g_run_file);
+   if (my.g_run_file != 'y') {
+      DEBUG_PROG    yLOG_note    ("did not select gather below project, so done");
+      DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(analyze project)----------------*/
+   rc = poly_action__gather (x_proj);
+   DEBUG_PROG   yLOG_value   ("gather"     , rc);
+   --rce;  if (rc < 0) {
+      yURG_err ('f', "could not add project data to database");
+      yURG_msg (' ', "");
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   DEBUG_PROG    yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-poly_proj_here           (tPROJ **a_proj)
+PROJS_here               (tPROJ **a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -661,14 +576,14 @@ poly_proj_here           (tPROJ **a_proj)
    IF_VERIFY   yURG_msg ('>', "verify current directory");
    /*---(get directory)------------------*/
    yURG_msg ('-', "gathering information about current location");
-   rc = poly_proj_identify  (x_name, x_home);
+   rc = ystrlhere (x_home, x_name);
    DEBUG_DATA   yLOG_value   ("idenfity"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(add normally)-------------------*/
-   rc = poly_proj_replace (x_name, x_home, a_proj);
+   rc = PROJS_replace     (x_name, x_home, a_proj);
    DEBUG_DATA   yLOG_value   ("add"        , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -686,10 +601,10 @@ poly_proj_here           (tPROJ **a_proj)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_proj_count         (void)                          { return ySORT_count     (B_PROJ); }
-char poly_proj_by_name       (uchar *a_name, tPROJ **r_proj) { return ySORT_by_name   (B_PROJ, a_name, r_proj); }
-char poly_proj_by_index      (int n, tPROJ **r_proj)         { return ySORT_by_index  (B_PROJ, n, r_proj); }
-char poly_proj_by_cursor     (char a_dir, tPROJ **r_proj)    { return ySORT_by_cursor (B_PROJ, a_dir, r_proj); }
+int  PROJS_count             (void)                          { return ySORT_count     (B_PROJ); }
+char PROJS_by_name           (uchar *a_name, tPROJ **r_proj) { return ySORT_by_name   (B_PROJ, a_name, r_proj); }
+char PROJS_by_index          (int n, tPROJ **r_proj)         { return ySORT_by_index  (B_PROJ, n, r_proj); }
+char PROJS_by_cursor         (char a_dir, tPROJ **r_proj)    { return ySORT_by_cursor (B_PROJ, a_dir, r_proj); }
 
 
 
@@ -769,31 +684,31 @@ static void  o___SYSTEM__________o () { return; }
  *>       }                                                                                     <* 
  *>       /+---(clean up)--------------------+/                                                 <* 
  *>       /+> rc = ySORT_purge_all ();                                               <*         <* 
- *>        *> DEBUG_INPT   yLOG_value   ("purge"     , rc);                               <*    <* 
- *>        *> if (rc < 0) {                                                               <*    <* 
- *>        *>    DEBUG_INPT   yLOG_note    ("could not purge btree");                     <*    <* 
- *>        *> }                                                                           <+/   <* 
- *>       /+---(done)------------------------+/                                                 <* 
- *>    }                                                                                        <* 
- *>    /+---(close dir)----------------------+/                                                 <* 
- *>    DEBUG_INPT   yLOG_note    ("closing directory");                                         <* 
- *>    rc = closedir (x_dir);                                                                   <* 
- *>    DEBUG_INPT   yLOG_value   ("close_rc"  , rc);                                            <* 
- *>    /+---(complete)------------------------------+/                                          <* 
- *>    DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                                <* 
- *>    return 0;                                                                                <* 
- *> }                                                                                           <*/
+*>        *> DEBUG_INPT   yLOG_value   ("purge"     , rc);                               <*    <* 
+*>        *> if (rc < 0) {                                                               <*    <* 
+   *>        *>    DEBUG_INPT   yLOG_note    ("could not purge btree");                     <*    <* 
+      *>        *> }                                                                           <+/   <* 
+      *>       /+---(done)------------------------+/                                                 <* 
+      *>    }                                                                                        <* 
+      *>    /+---(close dir)----------------------+/                                                 <* 
+      *>    DEBUG_INPT   yLOG_note    ("closing directory");                                         <* 
+      *>    rc = closedir (x_dir);                                                                   <* 
+      *>    DEBUG_INPT   yLOG_value   ("close_rc"  , rc);                                            <* 
+      *>    /+---(complete)------------------------------+/                                          <* 
+      *>    DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                                <* 
+      *>    return 0;                                                                                <* 
+      *> }                                                                                           <*/
 
 
 
-/*====================------------------------------------====================*/
-/*===----                       reporting support                      ----===*/
-/*====================------------------------------------====================*/
-static void  o___REPORTING_______o () { return; }
+      /*====================------------------------------------====================*/
+      /*===----                       reporting support                      ----===*/
+      /*====================------------------------------------====================*/
+      static void  o___REPORTING_______o () { return; }
 
 
 char
-poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print)
+PROJS_line              (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print)
 {
    /*  n  name     , just the name
     *  s  stats    , short count, name, plus statistics
@@ -1071,7 +986,7 @@ poly_proj_line          (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
 }
 
 char
-poly_proj_git          (tPROJ *a_proj)
+PROJS_git              (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -1136,7 +1051,7 @@ poly_proj_git          (tPROJ *a_proj)
 }
 
 char
-poly_proj_footprint    (tPROJ *a_proj)
+PROJS_footprint        (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -1278,7 +1193,7 @@ poly_proj_footprint    (tPROJ *a_proj)
 static void  o___UNITTEST________o () { return; }
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_proj__unit     (char *a_question, int i)
+PROJS__unit         (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
    char        t           [LEN_RECD]  = "[]";
@@ -1308,7 +1223,7 @@ poly_proj__unit     (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "PROJ unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "stats"     )     == 0) {
-      poly_proj_by_index (i, &u);
+      PROJS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->j_name);
          snprintf (unit_answer, LEN_RECD, "PROJ stats  (%2d) : %-22.22s   %3d %3d %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FILES, u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
@@ -1317,7 +1232,7 @@ poly_proj__unit     (char *a_question, int i)
       }
    }
    else if (strcmp (a_question, "files"     )     == 0) {
-      poly_proj_by_index (i, &u);
+      PROJS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->j_name);
          if (u->j_ihead != NULL) {
@@ -1332,7 +1247,7 @@ poly_proj__unit     (char *a_question, int i)
       }
    }
    else if (strcmp (a_question, "header"    )     == 0) {
-      poly_proj_by_index (i, &u);
+      PROJS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->j_name);
          snprintf (unit_answer, LEN_RECD, "PROJ head   (%2d) : %-22.22s   å%sæ", i, t, u->j_header);

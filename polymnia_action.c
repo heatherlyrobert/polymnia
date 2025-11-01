@@ -25,7 +25,7 @@ poly_action__read       (void)
       return rce;
    }
    /*---(check results)------------------*/
-   c = poly_proj_count ();
+   c = PROJS_count     ();
    DEBUG_PROG   yLOG_point   ("c"          , c);
    --rce;  if (c <= 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -46,7 +46,7 @@ poly_action__read       (void)
  *>    /+---(header)-------------------------+/                                       <* 
  *>    DEBUG_PROG   yLOG_enter   (__FUNCTION__);                                      <* 
  *>    /+---(check results)------------------+/                                       <* 
- *>    c = poly_proj_count ();                                                        <* 
+ *>    c = PROJS_count     ();                                                        <* 
  *>    DEBUG_PROG   yLOG_point   ("c"          , c);                                  <* 
  *>    --rce;  if (c <= 0) {                                                          <* 
  *>       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
@@ -94,7 +94,7 @@ poly_action__gather     (tPROJ *a_proj)
    /*---(check for empty result)---------*/
    --rce;  if (a_proj->j_icount == 0) {
       yURG_msg ('f', "no files, so removing project");
-      rc = poly_proj_remove (&a_proj);
+      rc = PROJS_remove     (&a_proj);
       DEBUG_PROG   yLOG_value   ("remove"     , rc);
       if (rc < 0) {
          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -127,9 +127,9 @@ poly_action__gather     (tPROJ *a_proj)
       DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
    }
    /*---(git status)---------------------*/
-   rc = poly_proj_git (a_proj);
+   rc = PROJS_git     (a_proj);
    /*---(executable)---------------------*/
-   rc = poly_proj_footprint (a_proj);
+   rc = PROJS_footprint     (a_proj);
    /*---(prepare for use)----------------*/
    DEBUG_PROG   yLOG_note    ("prepare for use");
    rc = poly_btree_prepare_all ();
@@ -184,7 +184,7 @@ poly_action__here       (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(setup project)------------------*/
-   rc  = poly_proj_here    (&x_proj);
+   rc  = PROJS_here        (&x_proj);
    DEBUG_PROG   yLOG_value   ("proj_here"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -221,7 +221,7 @@ poly_action_whoami      (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(setup project)------------------*/
-   rc  = poly_proj_here    (&x_proj);
+   rc  = PROJS_here        (&x_proj);
    DEBUG_PROG   yLOG_value   ("proj_here"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -527,7 +527,7 @@ poly_action_search      (void)
  *>       return rce;                                                                                    <* 
  *>    }                                                                                                 <* 
  *>    /+---(find target)--------------------+/                                                          <* 
- *>    poly_proj_by_name  (my.g_projname, &x_proj);                                                      <* 
+ *>    PROJS_by_name      (my.g_projname, &x_proj);                                                      <* 
  *>    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);                                                <* 
  *>    --rce;  if (x_proj == NULL) {                                                                     <* 
  *>       DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                                      <* 
@@ -629,7 +629,7 @@ poly_action_search      (void)
  *>       yURG_msg ('-', "%d files, %d functions, %d ylibs", my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS);   <* 
  *>    }                                                                                                        <* 
  *>    /+---(find target)--------------------+/                                                                 <* 
- *>    poly_proj_by_name  (my.g_projname, &x_proj);                                                             <* 
+ *>    PROJS_by_name      (my.g_projname, &x_proj);                                                             <* 
  *>    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);                                                       <* 
  *>    --rce;  if (x_proj == NULL) {                                                                            <* 
  *>       yURG_err ('w', "project does not exist in the database, nothing to do");                              <* 
@@ -641,7 +641,7 @@ poly_action_search      (void)
  *>    DEBUG_PROG   yLOG_point   ("->name"     , x_proj->j_name);                                                 <* 
  *>    /+---(remove existing target)---------+/                                                                 <* 
  *>    yURG_msg ('-', "remove current project");                                                                <* 
- *>    rc = poly_proj_remove (&x_proj);                                                                         <* 
+ *>    rc = PROJS_remove     (&x_proj);                                                                         <* 
  *>    DEBUG_PROG   yLOG_value   ("proj_del"   , rc);                                                           <* 
  *>    --rce;  if (rc < 0) {                                                                                    <* 
  *>       yURG_err ('f', "could not remove project from database");                                             <* 
@@ -834,7 +834,7 @@ poly_action_detail      (void)
    /*---(find project)-------------------*/
    printf ("project  [%s]\n", my.g_projname);
    printf ("hint     [%s]\n", my.g_hint);
-   poly_proj_by_name  (my.g_projname, &x_proj);
+   PROJS_by_name      (my.g_projname, &x_proj);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
