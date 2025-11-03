@@ -491,7 +491,7 @@ poly_db__read_file      (tPROJ *a_proj, int n)
    DEBUG_INPT   yLOG_value   ("files"     , n);
    for (i = 0; i < n; ++i) {
       /*---(allocate)-----------------------*/
-      poly_file_force (&x_file);
+      FILES_force     (&x_file);
       DEBUG_INPT   yLOG_point   ("x_file"    , x_file);
       --rce;  if (x_file == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -510,7 +510,7 @@ poly_db__read_file      (tPROJ *a_proj, int n)
       x_file->i_btree = NULL;
       /*---(add to project)-----------------*/
       DEBUG_INPT   yLOG_note    ("prepare for hook");
-      rc = poly_file_hook (a_proj, x_file);
+      rc = FILES__hook    (a_proj, x_file);
       DEBUG_INPT   yLOG_value   ("hook"      , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -719,6 +719,92 @@ poly_db_read          (void)
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
+
+char
+DATA__unit_format       (char a_proj [LEN_LABEL], char a_ftype, char a_file [LEN_TITLE], char a_func [LEN_TITLE], int a_projs, int a_files, int a_funcs, int a_ylibs, int a_lines, int a_empty, int a_docs, int a_debug, int a_code, int a_slocl, int a_count, int a_fore, int a_back, char a_head [LEN_TITLE], char a_tail [LEN_TITLE], int a_proto, int a_defn, int a_beg, int a_end)
+{
+   char        x_ftype     [LEN_SHORT] = "";
+
+   strcpy   (unit_answer, "");
+   sprintf (x_ftype, "%c", ychrvisible (a_ftype));
+
+   ystrlcat (unit_answer, ystrlpadquick  (a_proj, '<', '.', 20), LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+   ystrlcat (unit_answer, x_ftype, LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+   ystrlcat (unit_answer, ystrlpadquick  (a_file, '<', '.', 30), LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+   ystrlcat (unit_answer, ystrlpadquick  (a_func, '<', '.', 30), LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+
+   ystrlcat (unit_answer, ystrl4quick ((double) a_projs, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+   ystrlcat (unit_answer, " ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_files, '>', ',', 0, '-', '.', '´', '-',  5), LEN_RECD);
+   ystrlcat (unit_answer, " ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_funcs, '>', ',', 0, '-', '.', '´', '-',  6), LEN_RECD);
+   ystrlcat (unit_answer, " ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_ylibs, '>', ',', 0, '-', '.', '´', '-',  6), LEN_RECD);
+
+   ystrlcat (unit_answer, " / ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_lines, '>', ',', 0, '-', '.', '´', '-',  7), LEN_RECD);
+   ystrlcat (unit_answer, " ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_empty, '>', ',', 0, '-', '.', '´', '-',  7), LEN_RECD);
+   ystrlcat (unit_answer, " ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_docs , '>', ',', 0, '-', '.', '´', '-',  7), LEN_RECD);
+   ystrlcat (unit_answer, " ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_debug, '>', ',', 0, '-', '.', '´', '-',  7), LEN_RECD);
+   ystrlcat (unit_answer, " ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_code , '>', ',', 0, '-', '.', '´', '-',  7), LEN_RECD);
+   ystrlcat (unit_answer, " ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_slocl, '>', ',', 0, '-', '.', '´', '-',  7), LEN_RECD);
+
+   ystrlcat (unit_answer, "  Ï  ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_count, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+   ystrlcat (unit_answer, "c ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_fore , '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+   ystrlcat (unit_answer, "f ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_back , '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+   ystrlcat (unit_answer, "b  ", LEN_RECD);
+
+   ystrlcat (unit_answer, "h=", LEN_RECD);
+   ystrlcat (unit_answer, ystrlpadquick  (a_head, '<', '.', 30), LEN_RECD);
+   ystrlcat (unit_answer, "  t=", LEN_RECD);
+   ystrlcat (unit_answer, ystrlpadquick  (a_tail, '<', '.', 30), LEN_RECD);
+
+   ystrlcat (unit_answer, "  Ï  ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_proto, '>', ',', 0, '-', '.', '´', '-',  4), LEN_RECD);
+   ystrlcat (unit_answer, "p ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_defn , '>', ',', 0, '-', '.', '´', '-',  4), LEN_RECD);
+   ystrlcat (unit_answer, "d ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_beg  , '>', ',', 0, '-', '.', '´', '-',  4), LEN_RECD);
+   ystrlcat (unit_answer, "b ", LEN_RECD);
+   ystrlcat (unit_answer, ystrl4quick ((double) a_end  , '>', ',', 0, '-', '.', '´', '-',  4), LEN_RECD);
+   ystrlcat (unit_answer, "e  Ï", LEN_RECD);
+
+   return 0;
+}
+
+char*
+DATA__unit_entry        (void)
+{
+   tPROJ      *u           = NULL;
+   int         c           =    0;
+   char        s           [LEN_DESC]  = "(null)";
+   char        r           [LEN_DESC]  = "(null)";
+   c = PROJS_count ();
+   if (c > 0) {
+      PROJS_by_cursor ('[', &u);
+      ystrlcpy (s, u->j_name, LEN_TITLE);
+      PROJS_by_cursor (']', &u);
+      ystrlcpy (r, u->j_name, LEN_TITLE);
+   }
+   DATA__unit_format (
+         /* master */  "TOTAL", '-', "´", "´", 
+         /* counts */  my.COUNT_PROJS, my.COUNT_FILES, my.COUNT_FUNCS, my.COUNT_YLIBS, my.COUNT_LINES, my.COUNT_EMPTY, my.COUNT_DOCS , my.COUNT_DEBUG, my.COUNT_CODE , my.COUNT_SLOCL,
+         /* projs  */  c, c, c, s, r,
+         /* lines  */  -1, -1, -1, -1);
+   return unit_answer;
+}
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 poly_db__unit           (char *a_question)

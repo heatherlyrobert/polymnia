@@ -74,18 +74,12 @@ const struct {
    { 't' , "P_VERTXT"      , "vertxt"       , "specific version description"    , '°' , (long) &(s_place.j_vertxt [0])     - (long) &s_place,  10,  20,  70, LEN_HUND          },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------warranty--------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   /*> { 'c' , "P_COPYRIGHT"   , "copyright"    , "identifying the owner"           , 'g' , (long) &(s_pfile.i_copyright [0])  - (long) &s_pfile,   1,   1,  70, LEN_LABEL         },   <* 
-    *> { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , 'g' , (long) &(s_pfile.i_license [0])    - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <* 
-    *> { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , 'g' , (long) &(s_pfile.i_copyleft [0])   - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <* 
-    *> { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , 'g' , (long) &(s_pfile.i_include [0])    - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <* 
-    *> { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , 'g' , (long) &(s_pfile.i_as_is [0])      - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <* 
-    *> { 'w' , "P_WARNING"     , "warning"      , "thoughts on cheating"            , 'g' , (long) &(s_pfile.i_warning [0])    - (long) &s_pfile,   1,   1, 250, LEN_LABEL         },   <*/
    { 'c' , "P_COPYRIGHT"   , "copyright"    , "identifying the owner"           , 'g' , (long) &(s_place.j_copyright [0])  - (long) &s_place,   1,   1,  70, LEN_LABEL         },
    { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , 'g' , (long) &(s_place.j_license [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
    { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , 'g' , (long) &(s_place.j_copyleft [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
    { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , 'g' , (long) &(s_place.j_include [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
    { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , 'g' , (long) &(s_place.j_as_is [0])      - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'w' , "P_WARNING"     , "warning"      , "thoughts on cheating"            , 'g' , (long) &(s_place.j_warning [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 't' , "P_THEFT"       , "theft"        , "thoughts on cheating"            , 'g' , (long) &(s_place.j_theft [0])      - (long) &s_place,   1,   1, 250, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
    /*-------extra-----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
    { 'p' , "P_PRIORITY"    , "priority"     , "programming priorities"          , 'p' , (long) &(s_place.j_priority [0])   - (long) &s_place,   1,   1,  70, LEN_LABEL         },
@@ -371,7 +365,7 @@ HEADER_count            (void)
 }
 
 char
-HEADER_clean            (tPROJ *a_proj)
+HEADER_wipe             (tPROJ *a_proj)
 {
    char        rce         =  -10;
    int         i           =    0;
@@ -507,7 +501,7 @@ HEADER__standards       (char a_label [LEN_LABEL], char a_data [LEN_RECD])
    /*---(licensing)----------------------*/
    else if (strcmp (a_label, "P_COPYRIGHT") == 0) {
       DEBUG_INPT   yLOG_note    ("matched copyright");
-      ystrlcpy (x_expect, P_LICENSE  , LEN_RECD);
+      ystrlcpy (x_expect, P_COPYRIGHT, LEN_RECD);
       for (i = 14; i < 18; ++i) x_expect [i] = x_actual [i];
    }
    else if (strcmp (a_label, "P_LICENSE"  ) == 0) {
@@ -526,9 +520,9 @@ HEADER__standards       (char a_label [LEN_LABEL], char a_data [LEN_RECD])
       DEBUG_INPT   yLOG_note    ("matched as_is");
       ystrlcpy (x_expect, P_AS_IS    , LEN_RECD);
    }
-   else if (strcmp (a_label, "P_WARNING"  ) == 0) {
-      DEBUG_INPT   yLOG_note    ("matched warning");
-      ystrlcpy (x_expect, P_WARNING  , LEN_RECD);
+   else if (strcmp (a_label, "P_THEFT"    ) == 0) {
+      DEBUG_INPT   yLOG_note    ("matched theft");
+      ystrlcpy (x_expect, P_THEFT    , LEN_RECD);
    }
    /*---(compare)------------------------*/
    DEBUG_INPT   yLOG_complex ("x_actual"  , "%3då%sæ", strlen (x_actual), x_actual);
@@ -855,7 +849,7 @@ HEADER_gather           (tFILE *a_file)
       }
       if (x_append == 'y') {
          DEBUG_INPT   yLOG_note    ("handle continuing line of multi-line #define");
-         x_curr [l - 1] = '\0';
+         if (x_suf == '\\')  x_curr [l - 1] = '\0';
          ystrlcat (x_full, x_curr, LEN_RECD);
          ystrlcat (x_full, "   ", LEN_RECD);
          DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
@@ -1067,7 +1061,7 @@ HEADER_only             (char a_file [LEN_PATH])
    }
    DEBUG_INPT   yLOG_point   ("x_proj"    , x_proj);
    /*---(create file)--------------------*/
-   rc = poly_file_add (x_proj, a_file, 'h', &x_file);
+   rc = FILES_add     (x_proj, a_file, 'h', &x_file);
    DEBUG_INPT   yLOG_value   ("file add"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);

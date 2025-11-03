@@ -746,7 +746,7 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, 
    }
    *r_ext = NULL;
    /*---(idenfify file)---------------*/
-   poly_file_by_name (a_file, &x_file);
+   FILES_by_name     (a_file, &x_file);
    DEBUG_INPT   yLOG_point   ("x_file"    , x_file);
    --rce;  if (x_file == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);

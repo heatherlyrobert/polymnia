@@ -25,7 +25,7 @@
    "the GPL NO WARRANTY CLAUSE means the software is provided without any "      \
    "warranty and the author cannot be held liable for damages."
 
-#define  P_WARNING  \
+#define  P_THEFT    \
    "if you knowingly violate the spirit of these ideas, i suspect you might "    \
    "find any number of freedom-minded hackers may take it quite personally ;)"
 

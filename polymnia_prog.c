@@ -193,7 +193,7 @@ PROG_reset_everything   (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = poly_file_init    ();
+   rc = FILES_init ();
    DEBUG_PROG  yLOG_value   ("file"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

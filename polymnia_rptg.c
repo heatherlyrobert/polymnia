@@ -421,8 +421,8 @@ poly_rptg_files         (void)
    /*---(report header)------------------*/
    if (s_opt == POLY_REPORT) {
       poly_rptg__header    ();
-      poly_file_line (NULL, s_options [1], 'p', '>', 0, 0, 'y');
-      poly_file_line (NULL, s_options [1], 't', '>', 0, 0, 'y');
+      FILES_line     (NULL, s_options [1], 'p', '>', 0, 0, 'y');
+      FILES_line     (NULL, s_options [1], 't', '>', 0, 0, 'y');
    }
    /*---(prepare)------------------------*/
    poly_rptg__prep ();
@@ -431,7 +431,7 @@ poly_rptg_files         (void)
       PROJS_line     (my.g_proj, s_options [0], 'd', '#', my.g_projno, 'y');
    }
    /*---(walk projects)------------------*/
-   rc = poly_file_by_proj_index (my.g_proj, c, &x_file);
+   rc = FILES_by_proj_index     (my.g_proj, c, &x_file);
    DEBUG_OUTP   yLOG_point   ("proj"      , x_file);
    while (rc >= 0 && x_file != NULL) {
       /*---(prepare)---------------------*/
@@ -439,19 +439,19 @@ poly_rptg_files         (void)
       DEBUG_OUTP   yLOG_value   ("files"     , x_file->i_ccount);
       if (s_opt != POLY_DUMP) {
          if (c %  5 == 0)  printf ("\n");
-         if (c % 25 == 0)  { poly_file_line (NULL, s_options [1], 'h', '>', 0, 0, 'y'); printf ("\n"); }
+         if (c % 25 == 0)  { FILES_line     (NULL, s_options [1], 'h', '>', 0, 0, 'y'); printf ("\n"); }
       }
-      poly_file_line (x_file, s_options [1], 'd', '>', my.g_projno, c, 'y');
+      FILES_line     (x_file, s_options [1], 'd', '>', my.g_projno, c, 'y');
       poly_rptg__file_inc  (x_file);
       /*---(next)------------------------*/
       ++c;
-      rc = poly_file_by_proj_index (my.g_proj, c, &x_file);
+      rc = FILES_by_proj_index     (my.g_proj, c, &x_file);
       DEBUG_OUTP   yLOG_point   ("proj"      , x_file);
       /*---(done)------------------------*/
    }
    if (s_opt != POLY_DUMP) {
       printf ("\n");
-      if (c % 45 > 5)  poly_file_line (NULL, s_options [1], 'h', '>', 0, 0, 'y');
+      if (c % 45 > 5)  FILES_line     (NULL, s_options [1], 'h', '>', 0, 0, 'y');
    }
    if (s_opt == POLY_REPORT)   poly_rptg__total ('f');
    return 0;
@@ -484,8 +484,8 @@ poly_rptg_ylibs         (void)
    x_file = my.g_proj->j_ihead;
    while (x_file != NULL) {
       if (x_file->COUNT_YLIBS > 0) {
-         /*> poly_file_line (x_file, s_options [1], 'h', '>', my.g_projno, c, 'y');   <*/
-         /*> poly_file_line (x_file, s_options [1], 'd', '>', my.g_projno, c, 'y');   <*/
+         /*> FILES_line     (x_file, s_options [1], 'h', '>', my.g_projno, c, 'y');   <*/
+         /*> FILES_line     (x_file, s_options [1], 'd', '>', my.g_projno, c, 'y');   <*/
          x_func = x_file->i_chead;
          while (x_func != NULL) {
             if (x_func->COUNT_YLIBS > 0) {
@@ -1093,7 +1093,7 @@ poly_rptg_dispatch      (void)
    DEBUG_OUTP   yLOG_value   ("g_fileno"  , my.g_fileno);
    if (my.g_fileno >= 0) {
       DEBUG_OUTP   yLOG_note    ("handle a specific file");
-      rc     = poly_file_by_proj_index (my.g_proj, my.g_fileno, &(my.g_file));
+      rc     = FILES_by_proj_index     (my.g_proj, my.g_fileno, &(my.g_file));
       ystrlcpy (my.g_filename, my.g_file->i_name, LEN_LABEL);
       /*> printf ("file    %2d, %p, %s\n", my.g_fileno, my.g_proj, my.g_projname);   <*/
    }

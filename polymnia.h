@@ -26,9 +26,9 @@
    "the GPL NO WARRANTY CLAUSE means the software is provided without any¦"      \
    "warranty and the author cannot be held liable for damages."
 
-#define  P_WARNING     \
-   "if you knowingly violate the spirit of these ideas, i suspect a bounty¦"     \
-   "might be offered to any number of freedom-minded hackers who might object."
+#define  P_THEFT    \
+   "if you knowingly violate the spirit of these ideas, i suspect you might "    \
+   "find any number of freedom-minded hackers may take it quite personally ;)"
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
@@ -75,8 +75,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.2-, switching to common testing sources"
-#define     P_VERNUM    "1.2b"
-#define     P_VERTXT    "improved header and projects structure, header unit testing still golden"
+#define     P_VERNUM    "1.2c"
+#define     P_VERTXT    "create seven shared sample projects with files, then stress tested polymnia_files"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -613,7 +613,7 @@ struct cPROJ {
    char        j_copyleft    [LEN_LABEL];
    char        j_include     [LEN_LABEL];
    char        j_as_is       [LEN_LABEL];
-   char        j_warning     [LEN_LABEL];
+   char        j_theft       [LEN_LABEL];
    /*---(extra)-------------*/
    char        j_priority    [LEN_LABEL];
    char        j_principal   [LEN_LABEL];
@@ -1062,37 +1062,145 @@ extern char      unit_answer [LEN_RECD];
 #define     CODE_VAR_F       'f'
 
 
+
+/*===[[ polymnia_prog.c ]]====================================================*/
+/*········´ ´·············support·´ ´·········································*/
+char*       PROG_version            (void);
+char        PROG_vershow            (void);
+char        PROG_usage              (void);
+/*········´ ´···············reset·´ ´·········································*/
+char        PROG_reset_yjobs        (void);
+char        PROG_reset_everything   (void);
+/*········´ ´···········debugging·´ ´·········································*/
+char        PROG_debugging          (int a_argc, char *a_argv[]);
+/*········´ ´·············startup·´ ´·········································*/
+char        PROG__init              (int a_argc, char *a_argv[]);
+char        PROG__args              (int a_argc, char *a_argv[]);
+char        PROG__begin             (void);
+char        PROG_startup            (int a_argc, char *a_argv[]);
+/*········´ ´················main·´ ´·········································*/
+char        PROG_pseudo             (int argc, char *argv[]);
+char        PROG_summarize          (tPROJ *x_proj);
+/*········´ ´············shutdown·´ ´·········································*/
+char        PROG__end               (void);
+char        PROG_shutdown           (void);
+/*········´ ´·········string_vers·´ ´·········································*/
+char        PROG__args_string       (char a_string [LEN_FULL]);
+char        PROG_startup_string     (char a_string [LEN_FULL]);
+char        PROG_pseudo_string      (char a_string [LEN_FULL]);
+/*········´ ´············unittest·´ ´·········································*/
+char        PROG__unit_quiet        (void);
+char        PROG__unit_loud         (void);
+char        PROG__unit_end          (void);
+char*       prog__unit              (char *a_question, int i);
+/*········´ ´················DONE·´ ´·········································*/
+
+
+
+/*===[[ polymnia_projs.c ]]===================================================*/
+/*········´ ´··············memory·´ ´·········································*/
+char        PROJS__new              (tPROJ **r_new);
+char        PROJS_force             (tPROJ **r_new);
+char        PROJS__free             (tPROJ **b_old);
+char        PROJS__wipe             (tPROJ *a_dst);
+char*       PROJS__memory           (tPROJ *a_proj);
+/*········´ ´·············hooking·´ ´·········································*/
+char        PROJS__hook             (tPROJ *a_proj);
+char        PROJS__unhook           (tPROJ *a_proj);
+/*········´ ´···········existance·´ ´·········································*/
+char        PROJS__add_full         (char a_name [LEN_LABEL], char a_home [LEN_HUND], char c_force, tPROJ **r_proj);
+char        PROJS_add               (char a_name [LEN_LABEL], char a_home [LEN_HUND], tPROJ **r_proj);
+char        PROJS_replace           (char a_name [LEN_LABEL], char a_home [LEN_HUND], tPROJ **r_proj);
+char        PROJS_remove            (tPROJ **a_proj);
+/*········´ ´··············search·´ ´·········································*/
+int         PROJS_count             (void);
+char        PROJS_by_name           (uchar *a_name, tPROJ **a_proj);
+char        PROJS_by_index          (int n, tPROJ **a_proj);
+char        PROJS_by_cursor         (char a_dir, tPROJ **a_proj);
+/*········´ ´·············program·´ ´·········································*/
+char        PROJS_init              (void);
+char        PROJS_purge             (void);
+char        PROJS_wrap              (void);
+/*········´ ´·············special·´ ´·········································*/
+char        PROJS_cli               (char a_name [LEN_LABEL]);
+char        PROJS_here              (tPROJ **a_proj);
+char        PROJS_git               (tPROJ *a_proj);
+char        PROJS_footprint         (tPROJ *a_proj);
+/*········´ ´···············yjobs·´ ´·········································*/
+char        PROJS_gather            (cchar *a_data);
+/*········´ ´···········reporting·´ ´·········································*/
+char        PROJS_line              (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
+/*········´ ´············unittest·´ ´·········································*/
+char*       PROJS__unit_entry       (tPROJ *a_proj);
+char*       PROJS__unit             (char *a_question, int i);
+/*········´ ´················DONE·´ ´·········································*/
+
+
+
+/*===[[ polymnia_header.c ]]==================================================*/
+/*········´ ´·············support·´ ´·········································*/
+short       HEADER_count            (void);
+char        HEADER_wipe             (tPROJ *a_proj);
+char        HEADER_rando            (tPROJ *a_proj);
+char*       HEADER__memory          (tPROJ *a_proj);
+/*········´ ´··············search·´ ´·········································*/
+short       HEADER__find            (char a_label [LEN_LABEL]);
+/*········´ ´·············reading·´ ´·········································*/
+char        HEADER__standards       (char a_label [LEN_LABEL], char a_data [LEN_RECD]);
+char        HEADER__single          (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
+char        HEADER__encode          (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
+char*       HEADER__macro_fix       (char a_recd [LEN_RECD]);
+char        HEADER_gather           (tFILE *a_file);
+char        HEADER_grading          (tPROJ *a_proj);
+/*········´ ´···········reporting·´ ´·········································*/
+char*       HEADER_line             (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL]);
+char        HEADER_report           (tPROJ *a_proj);
+char        HEADER_only             (char a_file [LEN_PATH]);
+char*       HEADER__show            (tPROJ *a_proj);
+/*········´ ´················DONE·´ ´·········································*/
+
+
+
+
+
+
+
+
+
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
-char        poly_file_init          (void);
-char        poly_file_wrap          (void);
+char        FILES_init              (void);
+char        FILES_wrap              (void);
 /*---(memory)---------------*/
-char        poly_file__new          (tFILE **a_new);
-char        poly_file_force         (tFILE **a_new);
-char        poly_file__free         (tFILE **a_old);
-char        poly_file__wipe         (tFILE *a_dst);
-char*       poly_file__unit_memory  (tFILE *a_file);
+char        FILES__new              (tFILE **a_new);
+char        FILES_force             (tFILE **a_new);
+char        FILES__free             (tFILE **a_old);
+char        FILES_wipe              (tFILE *a_dst);
+char*       FILES__memory           (tFILE *a_file);
 /*---(hooking)--------------*/
-char        poly_file_hook          (tPROJ *a_proj, tFILE *a_file);
-char        poly_file__unhook       (tFILE *a_file);
+char        FILES__hook             (tPROJ *a_proj, tFILE *a_file);
+char        FILES__unhook           (tFILE *a_file);
 /*---(existance)------------*/
-char        poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file);
-char        poly_file_remove        (tFILE **a_old);
-char        poly_file_purge         (tPROJ *a_proj, char a_update);
+char        FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file);
+char        FILES_remove            (tFILE **a_old);
+char        FILES_purge             (tPROJ *a_proj, char a_update);
 /*---(inventory)------------*/
-char        poly_file__filter       (char a_name [LEN_TITLE], char a_units, char *r_type, char r_mans [LEN_LABEL]);
-char        poly_file__sorting      (tPROJ *a_proj);
-char        poly_file_inventory     (tPROJ *a_proj);
+char        FILES__filter           (char a_name [LEN_TITLE], char a_units, char *r_type, char r_mans [LEN_LABEL]);
+char        FILES__sorting          (tPROJ *a_proj);
+char        FILES_gather            (tPROJ *a_proj);
 /*---(searching)------------*/
-char        poly_file_by_name       (uchar *a_name, tFILE **a_file);
-char        poly_file_by_index      (int n, tFILE **a_file);
-char        poly_file_by_proj_index (tPROJ *a_proj, int n, tFILE **a_file);
-char        poly_file_by_cursor     (char a_dir, tFILE **a_file);
+int         FILES_count             (void);
+char        FILES_by_name           (uchar *a_name, tFILE **a_file);
+char        FILES_by_index          (int n, tFILE **a_file);
+char        FILES_by_cursor         (char a_dir, tFILE **a_file);
+char        FILES_by_proj_cursor    (tPROJ *a_proj, char a_dir, tFILE **r_file);
+char        FILES_by_proj_index     (tPROJ *a_proj, int n, tFILE **a_file);
 /*---(reporting)------------*/
-char        poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, int a, int b, char a_print);
+char        FILES_line              (tFILE *a_file, char a_style, char a_use, char a_pre, int a, int b, char a_print);
 /*---(footprint)------------*/
-char        poly_file_footprint    (tFILE *a_file);
+char        FILES_footprint        (tFILE *a_file);
 /*---(unittest)-------------*/
-char*       poly_file__unit         (char *a_question, int n);
+char*       FILES__unit_by_proj     (tPROJ *a_proj, char a_dir);
+char*       FILES__unit             (char *a_question, int n);
 /*---(done)-----------------*/
 
 
@@ -1143,40 +1251,6 @@ char        poly_cats_by_index      (tFUNC *a_func, char n, char *a_grp, char *a
 /*---(unittest)-------------*/
 char*       poly_cats__unit         (char *a_question, int n);
 /*---(done)-----------------*/
-
-
-
-/*===[[ polymnia_prog.c ]]====================================================*/
-/*········´ ´···support···········´ ´·········································*/
-char*       PROG_version            (void);
-char        PROG_vershow            (void);
-char        PROG_usage              (void);
-/*········´ ´···reset·············´ ´·········································*/
-char        PROG_reset_yjobs        (void);
-char        PROG_reset_everything   (void);
-/*········´ ´···debugging·········´ ´·········································*/
-char        PROG_debugging          (int a_argc, char *a_argv[]);
-/*········´ ´···startup···········´ ´·········································*/
-char        PROG__init              (int a_argc, char *a_argv[]);
-char        PROG__args              (int a_argc, char *a_argv[]);
-char        PROG__begin             (void);
-char        PROG_startup            (int a_argc, char *a_argv[]);
-/*········´ ´···main··············´ ´·········································*/
-char        PROG_pseudo             (int argc, char *argv[]);
-char        PROG_summarize          (tPROJ *x_proj);
-/*········´ ´···shutdown··········´ ´·········································*/
-char        PROG__end               (void);
-char        PROG_shutdown           (void);
-/*········´ ´···string_vers·······´ ´·········································*/
-char        PROG__args_string       (char a_string [LEN_FULL]);
-char        PROG_startup_string     (char a_string [LEN_FULL]);
-char        PROG_pseudo_string      (char a_string [LEN_FULL]);
-/*········´ ´···unittest··········´ ´·········································*/
-char        PROG__unit_quiet        (void);
-char        PROG__unit_loud         (void);
-char        PROG__unit_end          (void);
-char*       prog__unit              (char *a_question, int i);
-/*········´ ´·····················´ ´·········································*/
 
 
 
@@ -1243,76 +1317,14 @@ char*       poly_btree__unit        (char a_btree, char *a_question, int i);
 
 
 
-/*===[[ polymnia_projs.c ]]===================================================*/
-/*········´ ´···cli···············´ ´·········································*/
-char        PROJS_cli               (char a_name [LEN_LABEL]);
-/*········´ ´···memory············´ ´·········································*/
-char        PROJS__new              (tPROJ **r_new);
-char        PROJS_force             (tPROJ **r_new);
-char        PROJS__free             (tPROJ **b_old);
-char        PROJS__wipe             (tPROJ *a_dst);
-char*       PROJS__memory           (tPROJ *a_proj);
-/*········´ ´···hooking···········´ ´·········································*/
-char        PROJS__hook             (tPROJ *a_proj);
-char        PROJS__unhook           (tPROJ *a_proj);
-/*········´ ´···existance·········´ ´·········································*/
-char        PROJS__add_full         (char a_name [LEN_LABEL], char a_home [LEN_HUND], char c_force, tPROJ **r_proj);
-char        PROJS_add               (char a_name [LEN_LABEL], char a_home [LEN_HUND], tPROJ **r_proj);
-char        PROJS_replace           (char a_name [LEN_LABEL], char a_home [LEN_HUND], tPROJ **r_proj);
-char        PROJS_remove            (tPROJ **a_proj);
-/*········´ ´···search············´ ´·········································*/
-int         PROJS_count             (void);
-char        PROJS_by_name           (uchar *a_name, tPROJ **a_proj);
-char        PROJS_by_index          (int n, tPROJ **a_proj);
-char        PROJS_by_cursor         (char a_dir, tPROJ **a_proj);
-/*········´ ´···program···········´ ´·········································*/
-char        PROJS_init              (void);
-char        PROJS_purge             (void);
-char        PROJS_wrap              (void);
-/*········´ ´···special···········´ ´·········································*/
-char        PROJS_here              (tPROJ **a_proj);
-char        PROJS_git               (tPROJ *a_proj);
-char        PROJS_footprint         (tPROJ *a_proj);
-/*········´ ´···yjobs·············´ ´·········································*/
-char        PROJS_pull              (cchar *a_data);
-/*········´ ´···reporting·········´ ´·········································*/
-char        PROJS_line              (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
-/*········´ ´···unittest··········´ ´·········································*/
-char*       PROJS__unit             (char *a_question, int i);
-/*········´ ´···done··············´ ´·········································*/
-
-
-
-/*===[[ polymnia_header.c ]]==================================================*/
-/*········´ ´···support···········´ ´·········································*/
-short       HEADER_count            (void);
-char        HEADER_clean            (tPROJ *a_proj);
-char        HEADER_rando            (tPROJ *a_proj);
-char*       HEADER__memory          (tPROJ *a_proj);
-/*········´ ´···search············´ ´·········································*/
-short       HEADER__find            (char a_label [LEN_LABEL]);
-/*········´ ´···reading···········´ ´·········································*/
-char        HEADER__standards       (char a_label [LEN_LABEL], char a_data [LEN_RECD]);
-char        HEADER__single          (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
-char        HEADER__encode          (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
-char*       HEADER__macro_fix       (char a_recd [LEN_RECD]);
-char        HEADER_gather           (tFILE *a_file);
-char        HEADER_grading          (tPROJ *a_proj);
-/*········´ ´···reporting·········´ ´·········································*/
-char*       HEADER_line             (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL]);
-char        HEADER_report           (tPROJ *a_proj);
-char        HEADER_only             (char a_file [LEN_PATH]);
-char*       HEADER__show            (tPROJ *a_proj);
-/*········´ ´···done··············´ ´·········································*/
-
-
-
 char        poly_db_cli             (char *a_name, char a_loud);
 char        poly_db_init            (void);
 char        poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, int *a_nfunc, int *a_nylib);
 char        poly_db__close          (void);
 char        poly_db_write           (void);
 char        poly_db_read            (void);
+char        DATA__unit_format       (char a_proj [LEN_LABEL], char a_ftype, char a_file [LEN_TITLE], char a_func [LEN_TITLE], int a_projs, int a_files, int a_funcs, int a_ylibs, int a_lines, int a_empty, int a_docs, int a_debug, int a_code, int a_slocl, int a_count, int a_fore, int a_back, char a_head [LEN_TITLE], char a_tail [LEN_TITLE], int a_proto, int a_defn, int a_beg, int a_end);
+char*       DATA__unit_entry        (void);
 char*       poly_db__unit           (char *a_question);
 
 char        poly_rptg_lookup        (char *a_option);

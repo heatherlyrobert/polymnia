@@ -13,7 +13,7 @@ static char s_print     [LEN_RECD] = "";
 static void  o___SUPPORT_________o () { return; }
 
 char
-poly_file__wipe    (tFILE *a_dst)
+FILES_wipe         (tFILE *a_dst)
 {
    if (a_dst == NULL)  return -1;
    DEBUG_DATA   yLOG_snote   ("wipe");
@@ -36,7 +36,7 @@ poly_file__wipe    (tFILE *a_dst)
 }
 
 char*
-poly_file__unit_memory  (tFILE *a_file)
+FILES__memory           (tFILE *a_file)
 {
    /*---(master)-------------------------*/
    ystrlcpy (s_print, "["  , LEN_RECD);
@@ -68,9 +68,9 @@ poly_file__unit_memory  (tFILE *a_file)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char poly_file__new  (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, '-', poly_file__wipe); }
-char poly_file_force (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, 'y', poly_file__wipe); }
-char poly_file__free (tFILE **a_old) { return poly_shared_free ("file", a_old, NULL); }
+char FILES__new  (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, '-', FILES_wipe); }
+char FILES_force (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, 'y', FILES_wipe); }
+char FILES__free (tFILE **a_old) { return poly_shared_free ("file", a_old, NULL); }
 
 
 
@@ -80,7 +80,7 @@ char poly_file__free (tFILE **a_old) { return poly_shared_free ("file", a_old, N
 static void  o___HOOKING_________o () { return; }
 
 char
-poly_file_hook          (tPROJ *a_proj, tFILE *a_file)
+FILES__hook             (tPROJ *a_proj, tFILE *a_file)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -129,7 +129,7 @@ poly_file_hook          (tPROJ *a_proj, tFILE *a_file)
 }
 
 char
-poly_file__unhook       (tFILE *a_file)
+FILES__unhook           (tFILE *a_file)
 {
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
@@ -176,7 +176,7 @@ poly_file__unhook       (tFILE *a_file)
 static void  o___EXISTANCE_______o () { return; }
 
 char
-poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file)
+FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -211,7 +211,7 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
       }
    }
    /*---(create file)--------------------*/
-   poly_file__new (&x_new);
+   FILES__new (&x_new);
    DEBUG_DATA   yLOG_point   ("x_new"     , x_new);
    --rce;  if (x_new == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -244,7 +244,7 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    /*---(into temp btree)----------------*/
    sprintf (x_new->i_sort, "%c%c%s", x_prefix, x_type, x_new->i_name);
    DEBUG_DATA   yLOG_info    ("sort"      , x_new->i_sort);
-   rc = poly_file_hook (a_proj, x_new);
+   rc = FILES__hook    (a_proj, x_new);
    DEBUG_DATA   yLOG_value   ("addfile"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -282,7 +282,7 @@ poly_file_add           (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
 }
 
 char
-poly_file_remove        (tFILE **a_file)
+FILES_remove            (tFILE **a_file)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -328,7 +328,7 @@ poly_file_remove        (tFILE **a_file)
    /*---(out of linked list)-------------*/
    DEBUG_DATA   yLOG_point   ("->proj"    , x_file->i_proj);
    if (x_file->i_proj != NULL) {
-      rc = poly_file__unhook (x_file);
+      rc = FILES__unhook (x_file);
       DEBUG_DATA   yLOG_value   ("unhook"    , rc);
       --rce;  if (rc < 0) {
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -360,7 +360,7 @@ poly_file_remove        (tFILE **a_file)
 static void  o___PROGRAM_________o () { return; }
 
 char
-poly_file_init          (void)
+FILES_init              (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -386,7 +386,7 @@ poly_file_init          (void)
 }
 
 char
-poly_file_purge         (tPROJ *a_proj, char a_update)
+FILES_purge             (tPROJ *a_proj, char a_update)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -408,7 +408,7 @@ poly_file_purge         (tPROJ *a_proj, char a_update)
       x_next = x_file->i_next;
       DEBUG_DATA   yLOG_point   ("x_file"    , x_file);
       DEBUG_DATA   yLOG_info    ("->i_name"    , x_file->i_name);
-      rc = poly_file_remove  (&x_file);
+      rc = FILES_remove      (&x_file);
       x_file = x_next;
    }
    /*---(check)--------------------------*/
@@ -436,7 +436,7 @@ poly_file_purge         (tPROJ *a_proj, char a_update)
 }
 
 char
-poly_file_wrap          (void)
+FILES_wrap              (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -466,7 +466,7 @@ static  s_comps      = 0;
 static  s_teles      = 0;
 
 char
-poly_file__swap        (tFILE *a_one, tFILE *a_two)
+FILES__gnome_swap      (tFILE *a_one, tFILE *a_two)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -506,7 +506,7 @@ poly_file__swap        (tFILE *a_one, tFILE *a_two)
 }
 
 char
-poly_file__dgnome       (tPROJ *x_proj)
+FILES__gnome            (tPROJ *x_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -536,7 +536,7 @@ poly_file__dgnome       (tPROJ *x_proj)
       }
       /*---(swap)------------------------*/
       DEBUG_SORT   yLOG_note    ("swap and move back");
-      poly_file__swap (o->i_prev, o);
+      FILES__gnome_swap (o->i_prev, o);
       /*---(next)------------------------*/
    }
    /*---(complete)-----------------------*/
@@ -545,7 +545,7 @@ poly_file__dgnome       (tPROJ *x_proj)
 }
 
 char
-poly_file__filter       (char a_name [LEN_TITLE], char a_units, char *r_type, char r_mans [LEN_LABEL])
+FILES__filter           (char a_name [LEN_TITLE], char a_units, char *r_type, char r_mans [LEN_LABEL])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -651,7 +651,7 @@ poly_file__filter       (char a_name [LEN_TITLE], char a_units, char *r_type, ch
 }
 
 char
-poly_file__sorting      (tPROJ *a_proj)
+FILES__sorting          (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;          /* return code for errors         */
@@ -678,12 +678,12 @@ poly_file__sorting      (tPROJ *a_proj)
     *>    DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
     *>    return  rce;                                                                <* 
     *> }                                                                              <*/
-   rc = poly_file__dgnome (a_proj);
+   rc = FILES__gnome (a_proj);
    DEBUG_INPT   yLOG_value   ("dgnome"    , rc);
    /*---(add to project)------------------------*/
    /*> x_curr = ySORT_by_cursor (B_TEMP , YDLST_HEAD, &x_curr);                       <* 
     *> while (x_curr != NULL) {                                                       <* 
-    *>    rc = poly_file_hook (a_proj, x_curr);                                       <* 
+    *>    rc = FILES__hook    (a_proj, x_curr);                                       <* 
     *>    DEBUG_DATA   yLOG_value   ("hook"      , rc);                               <* 
     *>    --rce;  if (rc < 0) {                                                       <* 
     *>       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                           <* 
@@ -704,7 +704,7 @@ poly_file__sorting      (tPROJ *a_proj)
 }
 
 char         /*--> make a list of input files --------------------------------*/
-poly_file_inventory     (tPROJ *a_proj)
+FILES_gather            (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         rc          =    0;          /* generic return code            */
@@ -754,12 +754,12 @@ poly_file_inventory     (tPROJ *a_proj)
       /*---(filter by name)--------------*/
       ystrlcpy (x_name, x_file->d_name, LEN_TITLE);
       DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
-      rc = poly_file__filter (x_name, my.g_unit, &x_type, a_proj->j_manual);
+      rc = FILES__filter     (x_name, my.g_unit, &x_type, a_proj->j_manual);
       DEBUG_INPT   yLOG_value   ("filter"    , rc);
       if (rc <= 0)   continue;
       /*---(save)------------------------*/
       x_curr = NULL;
-      poly_file_add (a_proj, x_name, x_type, &x_curr);
+      FILES_add     (a_proj, x_name, x_type, &x_curr);
       ++x_good;
       DEBUG_INPT   yLOG_note    ("added to inventory");
       /*---(check globals)---------------*/
@@ -773,7 +773,7 @@ poly_file_inventory     (tPROJ *a_proj)
    rc = closedir (x_dir);
    DEBUG_INPT   yLOG_value   ("close_rc"  , rc);
    /*---(prepare for use)----------------*/
-   rc = poly_file__sorting   (a_proj);
+   rc = FILES__sorting       (a_proj);
    DEBUG_SORT   yLOG_value   ("sorting"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
@@ -792,13 +792,38 @@ poly_file_inventory     (tPROJ *a_proj)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_file_count         (void)                          { return ySORT_count     (B_FILES); }
-char poly_file_by_name       (uchar *a_name, tFILE **r_file) { return ySORT_by_name   (B_FILES, a_name, r_file); }
-char poly_file_by_index      (int n, tFILE **r_file)         { return ySORT_by_index  (B_FILES, n, r_file); }
-char poly_file_by_cursor     (char a_dir, tFILE **r_file)    { return ySORT_by_cursor (B_FILES, a_dir, r_file); }
+int  FILES_count             (void)                          { return ySORT_count     (B_FILES); }
+char FILES_by_name           (uchar *a_name, tFILE **r_file) { return ySORT_by_name   (B_FILES, a_name, r_file); }
+char FILES_by_index          (int n, tFILE **r_file)         { return ySORT_by_index  (B_FILES, n, r_file); }
+char FILES_by_cursor         (char a_dir, tFILE **r_file)    { return ySORT_by_cursor (B_FILES, a_dir, r_file); }
 
 char
-poly_file_by_proj_index (tPROJ *a_proj, int n, tFILE **r_file)
+FILES_by_proj_cursor    (tPROJ *a_proj, char a_dir, tFILE **r_file)
+{
+   char        rce         =  -10;
+   char        rc          =    0;
+   --rce;  if (a_proj == NULL)   return --rce;
+   --rce;  if (r_file == NULL)   return --rce;
+   if (r_file != NULL)  *r_file = NULL;
+   rc = FILES_by_cursor (a_dir, r_file);
+   --rce;  while (*r_file != NULL || (*r_file)->i_proj != a_proj) {
+      switch (a_dir) {
+      case YDLST_HEAD  : case YDLST_NEXT  : case YDLST_CURR  :
+         rc = FILES_by_cursor (YDLST_NEXT, r_file);
+         break;
+      case YDLST_TAIL  : case YDLST_PREV  :
+         rc = FILES_by_cursor (YDLST_PREV, r_file);
+         break;
+      default :
+         return rce;
+      }
+   }
+   if (r_file != NULL) return 1;
+   return rce;
+}
+
+char
+FILES_by_proj_index     (tPROJ *a_proj, int n, tFILE **r_file)
 {
    char        rce         =  -10;
    tFILE      *x_file      = NULL;
@@ -826,7 +851,7 @@ poly_file_by_proj_index (tPROJ *a_proj, int n, tFILE **r_file)
 static void  o___FOOTPRINT_______o () { return; }
 
 char
-poly_file_footprint    (tFILE *a_file)
+FILES_footprint        (tFILE *a_file)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -939,8 +964,116 @@ poly_file_footprint    (tFILE *a_file)
 /*====================------------------------------------====================*/
 static void  o___REPORTING_______o () { return; }
 
+
+/*> snprintf (unit_answer, LEN_RECD, "123456789-123456789-  ·  123456789-123456789-123456789-  123456789-123456789-123456789-    ´   -   -     ´   -   -   -   -   -  Ï    ·c   ·f   ·b  h=···                            t=···                             Ï     ·p    ·b    ·e  Ï");   <*/
+/*>                                                                                                                                                                                                                                                                                    <* 
+ *> char*                                                                                                                                                                                                                                                                              <* 
+ *> FILES__unit_cursor      (tPROJ *a_proj, char a_dir)                                                                                                                                                                                                                                <* 
+ *> {                                                                                                                                                                                                                                                                                  <* 
+ *>    tFILE      *v           = NULL;                                                                                                                                                                                                                                                 <* 
+ *>    int         x_fore      =    0;                                                                                                                                                                                                                                                 <* 
+ *>    int         x_back      =    0;                                                                                                                                                                                                                                                 <* 
+ *>    char        t           [LEN_RECD]  = "åæ";                                                                                                                                                                                                                                     <* 
+ *>    char        s           [LEN_RECD]  = "åæ";                                                                                                                                                                                                                                     <* 
+ *>    char        r           [LEN_RECD]  = "åæ";                                                                                                                                                                                                                                     <* 
+ *>    if (a_proj == NULL) {                                                                                                                                                                                                                                                           <* 
+ *>       snprintf (unit_answer, LEN_RECD, "(n/a)                 -  ´···                            ´···                              ´   -   -     ´   -   -   -   -   -    ´   -   -   Ï    ·c   ·f   ·b  h=···                            t=···                             Ï");   <* 
+ *>    } else {                                                                                                                                                                                                                                                                        <* 
+ *>       sprintf  (t, "å%.20sæ", a_proj->j_name);                                                                                                                                                                                                                                     <* 
+ *>       if (a_proj->j_ihead != NULL) {                                                                                                                                                                                                                                               <* 
+ *>          sprintf  (s, "å%.15sæ", a_proj->j_ihead->i_name);                                                                                                                                                                                                                         <* 
+ *>          sprintf  (r, "å%.15sæ", a_proj->j_itail->i_name);                                                                                                                                                                                                                         <* 
+ *>          v = a_proj->j_ihead; while (v != NULL) { ++x_fore; v = v->i_next; }                                                                                                                                                                                                       <* 
+ *>          v = a_proj->j_itail; while (v != NULL) { ++x_back; v = v->i_prev; }                                                                                                                                                                                                       <* 
+ *>       }                                                                                                                                                                                                                                                                            <* 
+ *>       snprintf (unit_answer, LEN_RECD, "PROJ files       : %-22.22s   %3dc %3df %3db   %-17.17s %s", t, a_proj->j_icount, x_fore, x_back, s, r);                                                                                                                                   <* 
+ *>    }                                                                                                                                                                                                                                                                               <* 
+ *>    return unit_answer;                                                                                                                                                                                                                                                             <* 
+ *> }                                                                                                                                                                                                                                                                                  <*/
+
+
+char*
+FILES__unit_by_proj     (tPROJ *a_proj, char a_dir)
+{
+   char        rce         =    0;
+   char        rc          =    0;
+   int         x_fore      =    0;
+   int         x_back      =    0;
+   tFILE      *u           = NULL;
+   tFUNC      *v           = NULL;
+   char        s           [LEN_RECD]  = "···";
+   char        r           [LEN_RECD]  = "···";
+   if (a_proj == NULL)  return "((a_proj null))";
+   rc = FILES_by_proj_cursor (a_proj, a_dir, &u);
+   if (u == NULL) {
+      snprintf (unit_answer, LEN_RECD, "%-20.20s  -  (n/a)                           ´·····························    ´   -   -     ´   -   -   -   -   -  Ï    ·c   ·f   ·b  h=······························  t=······························  Ï     ´p    ·b    ·e  Ï", a_proj->j_name);
+   } else {
+      if (u->i_chead != NULL) {
+         sprintf  (s, "%.30s", u->i_chead->c_name);
+         sprintf  (r, "%.30s", u->i_ctail->c_name);
+         v = u->i_chead; while (v != NULL) { ++x_fore; v = v->c_next; }
+         v = u->i_ctail; while (v != NULL) { ++x_back; v = v->c_prev; }
+      }
+      /*> snprintf (unit_answer, LEN_RECD, "%-20.20s  %c  %-30.30s  ´·····························    - %3d %3d  %3d %3d %3d %3d %3d %3d  Ï  %3dc %3dc %3db  h=%-30.30s  t=%-30.30s  Ï     ´p    ·b    ·e  Ï",   <* 
+       *>       a_proj->j_name, u->i_type, u->i_name,                                                                                                                                                            <* 
+       *>       u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL,                                                                    <* 
+       *>       u->i_ccount, x_fore, x_back, s, r);                                                                                                                                                              <*/
+   }
+   return unit_answer;
+}
+
+
+
+
+
+
+/*> tFILE      *v           = NULL;                                                                                                                                                     <* 
+ *> int         x_fore      =    0;                                                                                                                                                     <* 
+ *> int         x_back      =    0;                                                                                                                                                     <* 
+ *> char        t           [LEN_RECD]  = "åæ";                                                                                                                                         <* 
+ *> char        s           [LEN_RECD]  = "åæ";                                                                                                                                         <* 
+ *> char        r           [LEN_RECD]  = "åæ";                                                                                                                                         <* 
+ *> if (a_proj == NULL) {                                                                                                                                                               <* 
+ *>    snprintf (unit_answer, LEN_RECD, "PROJ files       : åæ                         ·c   ·f   ·b   åæ                åæ");                                                           <* 
+ *> } else {                                                                                                                                                                            <* 
+ *>    sprintf  (t, "å%.20sæ", a_proj->j_name);                                                                                                                                         <* 
+ *>    if (a_proj->j_ihead != NULL) {                                                                                                                                                   <* 
+ *>       sprintf  (s, "å%.15sæ", a_proj->j_ihead->i_name);                                                                                                                             <* 
+ *>       sprintf  (r, "å%.15sæ", a_proj->j_itail->i_name);                                                                                                                             <* 
+ *>       v = a_proj->j_ihead; while (v != NULL) { ++x_fore; v = v->i_next; }                                                                                                           <* 
+ *>       v = a_proj->j_itail; while (v != NULL) { ++x_back; v = v->i_prev; }                                                                                                           <* 
+ *>    }                                                                                                                                                                                <* 
+ *>    snprintf (unit_answer, LEN_RECD, "PROJ files       : %-22.22s  %3d %3d %3d  %3d %3d %3d %3d %3d %3d  %3dc %3df %3db  %-17.17s %s", t, a_proj->j_icount, x_fore, x_back, s, r);   <* 
+ *> }                                                                                                                                                                                   <* 
+ *> return unit_answer;                                                                                                                                                                 <* 
+ *> }                                                                                                                                                                                   <*/
+
+/*> char        rce         =    0;                                                                                                                                                             <* 
+ *> char        rc          =    0;                                                                                                                                                             <* 
+ *> int         x_fore      =    0;                                                                                                                                                             <* 
+ *> int         x_back      =    0;                                                                                                                                                             <* 
+ *> tFILE      *x_file      = NULL;                                                                                                                                                             <* 
+ *> tFUNC      *v           = NULL;                                                                                                                                                             <* 
+ *> char        s           [LEN_RECD]  = "···";                                                                                                                                                <* 
+ *> char        r           [LEN_RECD]  = "···";                                                                                                                                                <* 
+ *> if (a_proj == NULL)  return "((a_proj null))";                                                                                                                                              <* 
+ *> rc = FILES_by_proj_cursor (a_proj, a_dir, &x_file);                                                                                                                                         <* 
+ *> if (x_file == NULL) {                                                                                                                                                                       <* 
+ *>    snprintf (unit_answer, LEN_RECD, "(n/a)                 ·  ···                              ·c   ·f   ·b  h ···                               t ···                               Ï");   <* 
+ *> } else {                                                                                                                                                                                    <* 
+ *>    if (x_file->i_chead != NULL) {                                                                                                                                                           <* 
+ *>       sprintf  (s, "%.30s", a_proj->i_chead->c_name);                                                                                                                                       <* 
+ *>       sprintf  (r, "%.30s", a_proj->i_ctail->c_name);                                                                                                                                       <* 
+ *>       v = a_proj->i_chead; while (v != NULL) { ++x_fore; v = v->c_next; }                                                                                                                   <* 
+ *>       v = a_proj->i_ctail; while (v != NULL) { ++x_back; v = v->c_prev; }                                                                                                                   <* 
+ *>    }                                                                                                                                                                                        <* 
+ *>    snprintf (unit_answer, LEN_RECD, "%-20.20s  %c  %-30.30s   ·c   ·f   ·b  h %-30.30s  t %-30.30s  Ï",                                                                                     <*/
+/*> a_proj->j_name, x_file->i_type, x_file->i_name, x_file->i_ccount, x_fore, x_back, s, r);   <*/
+
+
+
 char
-poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, int a, int b, char a_print)
+FILES_line              (tFILE *a_file, char a_style, char a_use, char a_pre, int a, int b, char a_print)
 {
    /*  n  name     , just the name
     *  s  stats    , short count, name, plus statistics
@@ -1073,7 +1206,7 @@ poly_file_line          (tFILE *a_file, char a_style, char a_use, char a_pre, in
 static void  o___UNITTEST________o () { return; }
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_file__unit         (char *a_question, int i)
+FILES__unit             (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
    char        t           [LEN_RECD] = "[]";
@@ -1099,7 +1232,7 @@ poly_file__unit         (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "FILE unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "stats"     )     == 0) {
-      poly_file_by_index (i, &u);
+      FILES_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->i_name);
          snprintf (unit_answer, LEN_RECD, "FILE stats  (%2d) : %-22.22s     · %3d %3d   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);
@@ -1108,7 +1241,7 @@ poly_file__unit         (char *a_question, int i)
       }
    }
    else if (strcmp (a_question, "funcs"     )     == 0) {
-      poly_file_by_index (i, &u);
+      FILES_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->i_name);
          if (u->i_chead != NULL) {
@@ -1123,7 +1256,7 @@ poly_file__unit         (char *a_question, int i)
       }
    }
    else if (strcmp (a_question, "footprint" )     == 0) {
-      poly_file_by_index (i, &u);
+      FILES_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->i_name);
          snprintf (unit_answer, LEN_RECD, "FILE foot   (%2d) : %-22.22s   %7d text, %7d data, %7d bss", i, t, u->COUNT_TEXT, u->COUNT_DATA, u->COUNT_BSS);
