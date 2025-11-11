@@ -2,7 +2,7 @@
 #include  "polymnia.h"
 
 
-static char   s_print        [LEN_RECD] = "";
+char   s_print        [LEN_RECD] = "";
 
 /*
  *
@@ -1345,7 +1345,7 @@ poly_cats_func          (tFUNC *a_func)
    uchar       x_ch        =  ' ';
    uchar       x_stat      =  ' ';
    char        x_terse     [LEN_TERSE] = "";
-   if (a_func == NULL)  poly_func_by_index (10, &x_func);
+   if (a_func == NULL)  FUNCS_by_index     (10, &x_func);
    else                 x_func = a_func;
    if (x_func == NULL)  return 0;
    printf ("%s\n\n", x_func->c_name);
@@ -1431,7 +1431,7 @@ poly_cats__unit      (char *a_question, int n)
    snprintf (unit_answer, LEN_RECD, "CATS unit        : tag number unknown");
    if (n <  0)       return unit_answer;
    /*---(prepare)------------------------*/
-   poly_func_by_index (n, &u);
+   FUNCS_by_index     (n, &u);
    if (u != NULL)  sprintf  (t, "[%.20s]", u->c_name);
    /*---(simple)-------------------------*/
    if        (strcmp (a_question, "complex"   )     == 0) {

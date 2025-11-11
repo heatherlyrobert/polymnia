@@ -13,7 +13,7 @@ static char s_print     [LEN_RECD] = "";
 static void  o___SUPPORT_________o () { return; }
 
 char
-FILES_wipe         (tFILE *a_dst)
+FILES__wipe        (tFILE *a_dst)
 {
    if (a_dst == NULL)  return -1;
    DEBUG_DATA   yLOG_snote   ("wipe");
@@ -23,13 +23,23 @@ FILES_wipe         (tFILE *a_dst)
    a_dst->i_sort [0] = '\0';
    /*---(stats)-------------*/
    poly_cats_counts_clear (a_dst->counts);
+   /*---(gpl)---------------*/
+   a_dst->i_copyright [0] = '\0';
+   a_dst->i_license   [0] = '\0';
+   a_dst->i_copyleft  [0] = '\0';
+   a_dst->i_include   [0] = '\0';
+   a_dst->i_as_is     [0] = '\0';
+   a_dst->i_warning   [0] = '\0';
    /*---(tags)--------------*/
    a_dst->i_proj     = NULL;
+   /*---(tags)--------------*/
    a_dst->i_prev     = NULL;
    a_dst->i_next     = NULL;
+   /*---(tags)--------------*/
    a_dst->i_chead    = NULL;
    a_dst->i_ctail    = NULL;
    a_dst->i_ccount   = 0;
+   /*---(tags)--------------*/
    a_dst->i_btree    = NULL;
    /*---(tags)--------------*/
    return 1;
@@ -38,14 +48,26 @@ FILES_wipe         (tFILE *a_dst)
 char*
 FILES__memory           (tFILE *a_file)
 {
+   char        rce         =  -10;
+   --rce;  if (a_file == NULL)  return "(null file)";
    /*---(master)-------------------------*/
    ystrlcpy (s_print, "["  , LEN_RECD);
    poly_shared__check_char (s_print, a_file->i_type);
    poly_shared__check_str  (s_print, a_file->i_name);
    poly_shared__check_str  (s_print, a_file->i_sort);
    poly_shared__spacer     (s_print);
-   /*---(project/file)-------------------*/
+   /*---(gpl licensing)------------------*/
+   poly_shared__check_str  (s_print, a_file->i_copyright);
+   poly_shared__check_str  (s_print, a_file->i_license);
+   poly_shared__check_str  (s_print, a_file->i_copyleft);
+   poly_shared__check_str  (s_print, a_file->i_include);
+   poly_shared__check_str  (s_print, a_file->i_as_is);
+   poly_shared__check_str  (s_print, a_file->i_warning);
+   poly_shared__spacer     (s_print);
+   /*---(project)------------------------*/
    poly_shared__check_ptr  (s_print, a_file->i_proj);
+   poly_shared__spacer     (s_print);
+   /*---(file list)----------------------*/
    poly_shared__check_ptr  (s_print, a_file->i_prev);
    poly_shared__check_ptr  (s_print, a_file->i_next);
    poly_shared__spacer     (s_print);
@@ -61,6 +83,30 @@ FILES__memory           (tFILE *a_file)
    return s_print;
 }
 
+char
+FILES_rando             (tFILE *a_file)
+{
+   char        rce         =  -10;
+   --rce;  if (a_file == NULL)  return rce;
+   a_file->i_type   = 'Z';
+   strcpy (a_file->i_name, "name");
+   strcpy (a_file->i_sort, "sort");
+   strcpy (a_file->i_copyright, "copyright");
+   strcpy (a_file->i_license  , "license");
+   strcpy (a_file->i_copyleft , "copyleft");
+   strcpy (a_file->i_include  , "include");
+   strcpy (a_file->i_as_is    , "as_is");
+   strcpy (a_file->i_warning  , "warning");
+   a_file->i_proj   = 0x01;
+   a_file->i_prev   = 0x02;
+   a_file->i_next   = 0x03;
+   a_file->i_chead  = 0x04;
+   a_file->i_ctail  = 0x05;
+   a_file->i_ccount = 6;
+   a_file->i_btree  = 0x07;
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -68,8 +114,8 @@ FILES__memory           (tFILE *a_file)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char FILES__new  (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, '-', FILES_wipe); }
-char FILES_force (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, 'y', FILES_wipe); }
+char FILES__new  (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, '-', FILES__wipe); }
+char FILES_force (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, 'y', FILES__wipe); }
 char FILES__free (tFILE **a_old) { return poly_shared_free ("file", a_old, NULL); }
 
 
@@ -176,6 +222,100 @@ FILES__unhook           (tFILE *a_file)
 static void  o___EXISTANCE_______o () { return; }
 
 char
+FILES__presort          (char a_pname [LEN_LABEL], char a_type, char a_fname [LEN_TITLE], char *r_one, char *r_two)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         l           =    0;
+   char        x_one       =  '~';     /* P=project, U=unit test, Z=string test, ~=other    */
+   char        x_two       =  '~';     /* H=header , M=munit    , S=source     , Z=special    , ~=other    */
+   char        s           [LEN_LABEL] = "";
+   char        u           [LEN_LABEL] = "";
+   /*---(begin)--------------------------*/
+   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (r_one != NULL)  *r_one = x_one;
+   if (r_two != NULL)  *r_two = x_two;
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_point   ("a_pname"   , a_pname);
+   --rce;  if (a_pname == NULL || a_pname [0] == '\0') {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_info    ("a_pname"   , a_pname);
+   DEBUG_DATA   yLOG_point   ("a_fname"   , a_fname);
+   --rce;  if (a_fname == NULL || a_fname [0] == '\0') {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_info    ("a_fname"   , a_fname);
+   /*---(prepare)------------------------*/
+   l = strlen (a_fname);
+   DEBUG_DATA   yLOG_value   ("l"         , l);
+   ystrlcpy (u, a_fname + l - 5, LEN_LABEL);
+   DEBUG_DATA   yLOG_info    ("unit"      , u);
+   ystrlcpy (s,a_fname + l - 6, LEN_LABEL);
+   DEBUG_DATA   yLOG_info    ("string"    , s);
+   /*---(update one)---------------------*/
+   if (strncmp (a_fname, a_pname, strlen (a_pname)) == 0) {
+      DEBUG_DATA   yLOG_note    ("matches project prefix");
+      x_one = 'P';
+   } else {
+      x_one = 'p';
+   }
+   /*---(update two)---------------------*/
+   if (a_type == 'h') {
+      DEBUG_DATA   yLOG_note    ("header file");
+      x_two = 'H';
+   }
+   if (a_type == 'c') {
+      DEBUG_DATA   yLOG_note    ("c-language file");
+      x_two = 'S';
+   }
+   /*---(update both)--------------------*/
+   if (l >= 6 && strcmp (u, ".unit")   == 0) {
+      DEBUG_DATA   yLOG_note    ("unit test file");
+      if (x_one == 'P')  x_one = 'U';
+      else               x_one = 'u';
+      x_two = 'S';
+   }
+   if (l >= 7 && strcmp (s, ".sunit")  == 0) {
+      DEBUG_DATA   yLOG_note    ("string test file");
+      if (x_one == 'P')  x_one = 'U';
+      else               x_one = 'u';
+      x_two = 'Y';
+   }
+   if (l >= 7 && strcmp (s, ".munit")  == 0) {
+      DEBUG_DATA   yLOG_note    ("pre-yunit unit test file");
+      if (x_one == 'P')  x_one = 'U';
+      else               x_one = 'u';
+      x_two = 'M';
+   }
+   if (strcmp (a_fname, "master.unit") == 0) {
+      DEBUG_DATA   yLOG_note    ("unit test header");
+      x_one = 'U';
+      x_two = 'H';
+   }
+   if (strcmp (a_fname, "master_data.unit") == 0) {
+      DEBUG_DATA   yLOG_note    ("unit test shared data");
+      x_one = 'U';
+      x_two = 'H';
+   }
+   if (strcmp (a_fname, "master.c") == 0) {
+      DEBUG_DATA   yLOG_note    ("unit test c-source support");
+      x_one = 'U';
+      x_two = 'Z';
+   }
+   DEBUG_DATA   yLOG_complex ("sorting"   , "%c %c", x_one, x_two);
+   /*---(save-back)----------------------*/
+   if (r_one != NULL)  *r_one = x_one;
+   if (r_two != NULL)  *r_two = x_two;
+   /*---(complete)-----------------------*/
+   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -184,8 +324,8 @@ FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    tFILE      *x_new       = NULL;
    int         x_tries     =    0;
    int         x_len       =    0;
-   char        x_type      =  'c';
-   char        x_prefix    =  'n';
+   char        x_one       =  'n';
+   char        x_two       =  'c';
    /*---(begin)--------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -222,27 +362,11 @@ FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
    ystrlcpy (x_new->i_name, a_name, LEN_TITLE);
    x_new->i_type   = a_type;
    /*---(standard names to front)--------*/
-   if (strncmp (a_name, a_proj->j_name, strlen (a_proj->j_name)) == 0) {
-      DEBUG_DATA   yLOG_note    ("matches project prefix");
-      x_prefix = 'Y';
-   }
-   /*---(headers to front)---------------*/
-   if (x_new->i_type == 'h') {
-      DEBUG_DATA   yLOG_note    ("header type");
-      x_type = 'H';
-   }
-   /*---(units come last)----------------*/
-   if (strstr (x_new->i_name, ".unit")       != NULL) {
-      DEBUG_DATA   yLOG_note    ("unit test file");
-      x_prefix = 'Z';
-   }
-   /*---(master to top of units)---------*/
-   if (strcmp (x_new->i_name, "master.unit") == 0) {
-      DEBUG_DATA   yLOG_note    ("master unit test file");
-      x_type   = 'H';
-   }
+   FILES__presort (a_proj->j_name, x_new->i_type, x_new->i_name, &x_one, &x_two);
+   DEBUG_DATA   yLOG_char    ("x_one"     , x_one);
+   DEBUG_DATA   yLOG_char    ("x_two"     , x_two);
    /*---(into temp btree)----------------*/
-   sprintf (x_new->i_sort, "%c%c%s", x_prefix, x_type, x_new->i_name);
+   sprintf (x_new->i_sort, "%c%c%s", x_one, x_two, x_new->i_name);
    DEBUG_DATA   yLOG_info    ("sort"      , x_new->i_sort);
    rc = FILES__hook    (a_proj, x_new);
    DEBUG_DATA   yLOG_value   ("addfile"   , rc);
@@ -250,31 +374,23 @@ FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_fil
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> rc = ySORT_hook (B_TEMP , x_new, x_new->i_sort, &x_new->btree);                  <* 
-    *> DEBUG_DATA   yLOG_value   ("temp"      , rc);                                  <* 
-    *> --rce;  if (rc < 0) {                                                          <* 
-    *>    DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                              <* 
-    *>    return rce;                                                                 <* 
-    *> }                                                                              <*/
    /*---(into btree)---------------------*/
-   rc = ySORT_hook (B_FILES, x_new, x_new->i_name, &x_new->i_btree);
+   rc = ySORT_hook (B_FILES, x_new, x_new->i_name, &(x_new->i_btree));
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(create hint)--------------------*/
-   /*> rc = ystrlhint (ySORT_count (B_FUNCS) - 1 + ySORT_count (B_FILES) - 1, "uA", x_new->c_hint);   <* 
-    *> DEBUG_DATA   yLOG_value   ("hint"      , rc);                                                         <* 
-    *> --rce;  if (rc < 0) {                                                                                 <* 
-    *>    DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);                                                     <* 
-    *>    return rce;                                                                                        <* 
-    *> }                                                                                                     <* 
-    *> DEBUG_DATA   yLOG_info    ("hint"      , x_new->c_hint);                                                <*/
    /*---(save)---------------------------*/
    if (a_file != NULL) {
       *a_file = x_new;
       DEBUG_DATA   yLOG_point   ("*a_file"   , *a_file);
+   }
+   /*---(update)-------------------------*/
+   rc = ySORT_prepare (B_FILES);
+   if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
@@ -318,7 +434,7 @@ FILES_remove            (tFILE **a_file)
    /*---(purge assigned tags)------------*/
    DEBUG_DATA   yLOG_point   ("->proj"    , x_file->i_proj);
    if (x_file->i_proj != NULL) {
-      rc = poly_func_purge (x_file, '-');
+      rc = FUNCS_purge     (x_file, '-');
       DEBUG_DATA   yLOG_value   ("purge"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -336,7 +452,7 @@ FILES_remove            (tFILE **a_file)
       }
    }
    /*---(unhook from btree)--------------*/
-   rc = ySORT_unhook (&x_file->i_btree);
+   rc = ySORT_unhook (&(x_file->i_btree));
    DEBUG_DATA   yLOG_value   ("btree"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -374,12 +490,12 @@ FILES_init              (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = ySORT_btree (B_TEMP , "temp" );
-   DEBUG_PROG   yLOG_value   ("btree"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = ySORT_btree (B_TEMP , "temp" );                                           <* 
+    *> DEBUG_PROG   yLOG_value   ("btree"     , rc);                                  <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -545,18 +661,18 @@ FILES__gnome            (tPROJ *x_proj)
 }
 
 char
-FILES__filter           (char a_name [LEN_TITLE], char a_units, char *r_type, char r_mans [LEN_LABEL])
+FILES__single_char      (char a_name [LEN_TITLE], char *r_type, char r_mans [LEN_LABEL])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    int         x_len       =    0;
    char        x_point     =  '-';
-   char        x_point2    =  '-';
+   char        x_ext       =  '-';
    char        x_type      =  '-';
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
-   if (r_type  != NULL)  *r_type = '-';
+   if (r_type  != NULL)  *r_type = x_type;
    /*---(defense)------------------------*/
    DEBUG_INPT   yLOG_point   ("a_name"     , a_name);
    --rce;  if (a_name == NULL) {
@@ -572,74 +688,44 @@ FILES__filter           (char a_name [LEN_TITLE], char a_units, char *r_type, ch
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   /*---(cut too long)----------------*/
-   if (x_len > 50) {
-      DEBUG_INPT   yLOG_note    ("crazy long name, SKIP");
-      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
-   /*---(hidden)-------------------------*/
-   if (a_name [0] == '.')  {
-      DEBUG_INPT   yLOG_note    ("hidden, SKIP");
-      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
-   /*---(one character suffixes)------*/
+   /*---(prepare)---------------------*/
    x_point = a_name [x_len - 2];
-   DEBUG_INPT   yLOG_char    ("x_point"   , x_point);
-   if (x_point == '.') {
-      x_type = a_name [x_len - 1];
-      DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
-      if (strchr ("12345678", x_type) != NULL) {
-         DEBUG_INPT   yLOG_note    ("manual/documentation file");
-         if (r_mans != NULL)  r_mans [x_type - '1'] = x_type;
-         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-         return 0;
-      }
-      if (strchr ("ch", x_type) == NULL) {
-         DEBUG_INPT   yLOG_note    ("not a c or h file, SKIP");
-         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-         return 0;
-      }
-      if (x_len > 7 && strcmp ("_unit.c", a_name + x_len - 7) == 0) {
-         DEBUG_INPT   yLOG_note    ("cut the unit testing code files, SKIP");
-         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-         return 0;
-      }
+   DEBUG_INPT   yLOG_char    ("one-char"  , ychrvisible (x_point));
+   if (x_point != '.') {
+      DEBUG_INPT   yLOG_note    ("not a one character extension");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(prepare)---------------------*/
+   x_ext  = a_name [x_len - 1];
+   DEBUG_INPT   yLOG_char    ("x_ext"     , x_ext);
+   /*---(manuals)---------------------*/
+   switch (x_ext) {
+   case '1' : case '2' : case '3' : case '4' :
+   case '5' : case '6' : case '7' : case '8' :
+      DEBUG_INPT   yLOG_note    ("manual/documentation file");
+      if (r_mans != NULL)  r_mans [x_ext - '1'] = x_ext;
+      break;
+   case 'h' :
+      DEBUG_INPT   yLOG_note    ("found a header file");
       if (strcmp ("master.h", a_name) == 0) {
          DEBUG_INPT   yLOG_note    ("never look at testing header");
          DEBUG_INPT   yLOG_exit    (__FUNCTION__);
          return 0;
       }
-   }
-   /*---(unit tests)------------------*/
-   else if (x_len >= 6) {
-      x_point  = a_name [x_len - 5];
-      x_point2 = a_name [x_len - 6];
-      DEBUG_INPT   yLOG_complex ("x_point"   , "%c %c", x_point, x_point2);
-      if (x_point != '.' && x_point2 != '.') {
-         DEBUG_INPT   yLOG_note    ("not the right length suffix, SKIP");
+      x_type = POLY_HEAD;
+      break;
+   case 'c' :
+      DEBUG_INPT   yLOG_note    ("found a c-source file");
+      if (x_len > 7 && strcmp ("_unit.c", a_name + x_len - 7) == 0) {
+         DEBUG_INPT   yLOG_note    ("cut the unit testing code files, SKIP");
          DEBUG_INPT   yLOG_exit    (__FUNCTION__);
          return 0;
       }
-      if (strcmp ("unit" , a_name + x_len - 4) != 0 &&
-            strcmp ("sunit", a_name + x_len - 5) != 0) {
-         DEBUG_INPT   yLOG_note    ("not a unit suffix, SKIP");
-         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-         return 0;
-      }
-      /*---(quick calloff)------------------*/
-      DEBUG_INPT   yLOG_char    ("g_unit"    , a_units);
-      if (a_units != 'y') {
-         DEBUG_INPT   yLOG_note    ("called with --nounit");
-         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-         return 0;
-      }
-      x_type = POLY_UNIT;
-   }
-   /*---(all else)--------------------*/
-   else {
-      DEBUG_INPT   yLOG_note    ("bad suffix, SKIP");
+      x_type = POLY_CODE;
+      break;
+   default  :
+      DEBUG_INPT   yLOG_note    ("ignored extension");
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
@@ -648,6 +734,141 @@ FILES__filter           (char a_name [LEN_TITLE], char a_units, char *r_type, ch
    /*---(complete)------------------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 1;
+}
+
+char
+FILES__multi_char       (char a_name [LEN_TITLE], char c_units, char *r_type)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         x_len       =    0;
+   char        x_point5    =  '-';
+   char        x_point6    =  '-';
+   char        x_ext       [LEN_TERSE] = "";
+   char        x_type      =  '-';
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (r_type  != NULL)  *r_type = x_type;
+   /*---(quick-out)----------------------*/
+   DEBUG_INPT   yLOG_char    ("c_unit"    , c_units);
+   if (c_units != 'y') {
+      DEBUG_INPT   yLOG_note    ("called with --nounit");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_name"     , a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   DEBUG_INPT   yLOG_info    ("a_name"     , a_name);
+   /*---(cut too short)---------------*/
+   x_len = strlen (a_name);
+   DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
+   if (x_len <  6)  {
+      DEBUG_INPT   yLOG_note    ("name too short, SKIP");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(prepare)---------------------*/
+   x_point5 = a_name [x_len - 5];
+   x_point6 = a_name [x_len - 6];
+   DEBUG_INPT   yLOG_complex ("multi-char", "5=%c 6=%c", ychrvisible (x_point5), ychrvisible (x_point6));
+   /*---(check unit)------------------*/
+   if (x_point5 == '.') {
+      DEBUG_INPT   yLOG_note    ("found four-char extension");
+      ystrlcpy (x_ext, a_name + x_len - 5, LEN_TERSE);
+      DEBUG_INPT   yLOG_info    ("x_ext"      , x_ext);
+      if (strcmp (x_ext, ".unit") == 0) {
+         DEBUG_INPT   yLOG_note    ("found unit-test file");
+         x_type = POLY_UNIT;
+      } else {
+         DEBUG_INPT   yLOG_note    ("not a unit test suffix, SKIP");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+   }
+   /*---(check munit/sunit)-----------*/
+   else if (x_point6 == '.') {
+      DEBUG_INPT   yLOG_note    ("found five-char extension");
+      ystrlcpy (x_ext, a_name + x_len - 6, LEN_TERSE);
+      DEBUG_INPT   yLOG_info    ("x_ext"      , x_ext);
+      if        (strcmp (x_ext, ".munit") == 0) {
+         DEBUG_INPT   yLOG_note    ("found pre-koios unit-test file");
+         x_type = POLY_MUNIT;
+      } else if (strcmp (x_ext, ".sunit") == 0) {
+         DEBUG_INPT   yLOG_note    ("found string-test file");
+         x_type = POLY_SUNIT;
+      } else {
+         DEBUG_INPT   yLOG_note    ("not a munit or sunit suffix, SKIP");
+         DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+   }
+   /*---(check munit/sunit)-----------*/
+   else {
+      DEBUG_INPT   yLOG_note    ("did not match any suffix, SKIP");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(save-back)-----------------------------*/
+   if (r_type  != NULL)  *r_type = x_type;
+   /*---(complete)------------------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+char
+FILES__filter           (char a_name [LEN_TITLE], char c_units, char *r_type, char r_mans [LEN_LABEL])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_type      =  '-';
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (r_type  != NULL)  *r_type = x_type;
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_name"     , a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   DEBUG_INPT   yLOG_info    ("a_name"     , a_name);
+   /*---(hidden)-------------------------*/
+   if (a_name [0] == '.') {
+      DEBUG_INPT   yLOG_note    ("ignore hiddle files");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(check single)-------------------*/
+   rc = FILES__single_char (a_name, &x_type, r_mans);
+   DEBUG_INPT   yLOG_value   ("single"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(check multi)--------------------*/
+   --rce;  if (x_type == '-') {
+      rc = FILES__multi_char (a_name, c_units, &x_type);
+      DEBUG_INPT   yLOG_value   ("single"     , rc);
+      if (rc < 0) {
+         DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+         return  rce;
+      }
+   }
+   /*---(handle)-------------------------*/
+   if (x_type == '-')  rc = 0;
+   else                rc = 1;
+   DEBUG_INPT   yLOG_value   ("rc"         , rc);
+   /*---(save-back)----------------------*/
+   if (r_type  != NULL)  *r_type = x_type;
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return rc;
 }
 
 char
@@ -692,15 +913,74 @@ FILES__sorting          (tPROJ *a_proj)
     *>    x_curr = ySORT_by_cursor (B_TEMP , YDLST_NEXT, &x_curr);                    <* 
     *> }                                                                              <*/
    /*---(prepare temp)-------------------*/
-   rc = ySORT_purge     (B_TEMP );
-   DEBUG_SORT   yLOG_value   ("temp"       , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = ySORT_purge     (B_TEMP );                                                <* 
+    *> DEBUG_SORT   yLOG_value   ("temp"       , rc);                                 <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(complete)------------------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+char
+FILES_analysis          (char a_type, tFILE *a_file)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         rci         =    0;
+   char       *x_valid     = "fldp";
+   char        x_base      [LEN_HUND]  = "";
+   char        x_source    [LEN_TITLE] = "";
+   char        x_output    [LEN_TITLE] = "";
+   char        x_cmd       [LEN_FULL]  = "";
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   ystrlcpy (x_source, a_file->i_name, LEN_TITLE);
+   DEBUG_INPT   yLOG_info    ("x_source"  , x_source);
+   /*---(pre-check)----------------------*/
+   rc = yENV_exists (x_source);
+   DEBUG_INPT   yLOG_value   ("exists"     , rc);
+   --rce;  if (rc != 'r') {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(get file base name)-------------*/
+   rc = ystrlbase (x_source, NULL, x_base, NULL, NULL);
+   DEBUG_INPT   yLOG_value   ("ystrlcbase", rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_info    ("x_base"    , x_base);
+   /*---(assign name)--------------------*/
+   DEBUG_INPT   yLOG_char    ("a_type"    , a_type);
+   DEBUG_INPT   yLOG_info    ("x_valid"   , x_valid);
+   --rce;  if (a_type == 0 || strchr (x_valid, a_type) == NULL) {
+      DEBUG_INPT   yLOG_note    ("type unknown");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   sprintf (x_cmd, "ctags  --language-force=c -x --sort=no --extras=+F --c-kinds=%c   %s > %s  2> /dev/null", a_type, x_source, x_output);
+   /*---(handle)-------------------------*/
+   DEBUG_INPT   yLOG_info    ("x_cmd"     , x_cmd);
+   rci = system (x_cmd);
+   DEBUG_INPT   yLOG_value   ("system"    , rci);
+   --rce;  if (rci < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 1;
 }
 
 char         /*--> make a list of input files --------------------------------*/
@@ -729,12 +1009,12 @@ FILES_gather            (tPROJ *a_proj)
    }
    DEBUG_INPT   yLOG_info    ("a_proj"     , a_proj->j_name);
    /*---(prepare temp)-------------------*/
-   rc = ySORT_purge     (B_TEMP );
-   DEBUG_SORT   yLOG_value   ("temp"       , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = ySORT_purge     (B_TEMP );                                                <* 
+    *> DEBUG_SORT   yLOG_value   ("temp"       , rc);                                 <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(open dir)-----------------------*/
    x_dir = opendir(".");
    DEBUG_INPT   yLOG_point   ("x_dir"      , x_dir);
@@ -779,7 +1059,6 @@ FILES_gather            (tPROJ *a_proj)
       DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> poly_extern_list ();                                                           <*/
    /*---(complete)------------------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return x_good;
@@ -792,55 +1071,194 @@ FILES_gather            (tPROJ *a_proj)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  FILES_count             (void)                          { return ySORT_count     (B_FILES); }
-char FILES_by_name           (uchar *a_name, tFILE **r_file) { return ySORT_by_name   (B_FILES, a_name, r_file); }
-char FILES_by_index          (int n, tFILE **r_file)         { return ySORT_by_index  (B_FILES, n, r_file); }
-char FILES_by_cursor         (char a_dir, tFILE **r_file)    { return ySORT_by_cursor (B_FILES, a_dir, r_file); }
+static tFILE *s_found = NULL;
 
-char
-FILES_by_proj_cursor    (tPROJ *a_proj, char a_dir, tFILE **r_file)
+int  FILES_count             (void)   { return ySORT_count     (B_FILES); }
+char FILES_by_name           (char a_name [LEN_TITLE], tFILE **r_file)    { return ySORT_by_name   (B_FILES, a_name , r_file, NULL); }
+char FILES_by_index          (int  a_index           , tFILE **r_file)    { return ySORT_by_index  (B_FILES, a_index, r_file, NULL); }
+char FILES_by_cursor         (char a_dir             , tFILE **r_file)    { return ySORT_by_cursor (B_FILES, a_dir  , r_file, NULL); }
+char FILES_by_tree           (char a_name [LEN_TITLE], tFILE **r_file)    { return ySORT_by_tree   (B_FILES, a_name , r_file, NULL); }
+
+int
+FILES_in_proj_count     (tPROJ *a_proj)
 {
    char        rce         =  -10;
-   char        rc          =    0;
-   --rce;  if (a_proj == NULL)   return --rce;
-   --rce;  if (r_file == NULL)   return --rce;
-   if (r_file != NULL)  *r_file = NULL;
-   rc = FILES_by_cursor (a_dir, r_file);
-   --rce;  while (*r_file != NULL || (*r_file)->i_proj != a_proj) {
-      switch (a_dir) {
-      case YDLST_HEAD  : case YDLST_NEXT  : case YDLST_CURR  :
-         rc = FILES_by_cursor (YDLST_NEXT, r_file);
-         break;
-      case YDLST_TAIL  : case YDLST_PREV  :
-         rc = FILES_by_cursor (YDLST_PREV, r_file);
-         break;
-      default :
-         return rce;
-      }
-   }
-   if (r_file != NULL) return 1;
-   return rce;
+   if (a_proj == NULL)  return rce;
+   return a_proj->j_icount;
 }
 
 char
-FILES_by_proj_index     (tPROJ *a_proj, int n, tFILE **r_file)
+FILES_in_proj_by_name   (tPROJ *a_proj, char a_name [LEN_TITLE], tFILE **r_file)
 {
    char        rce         =  -10;
-   tFILE      *x_file      = NULL;
-   int         c           =    0;
-   --rce;  if (a_proj == NULL)   return rce;
-   --rce;  if (r_file == NULL)   return rce;
-   *r_file = NULL;
-   x_file = a_proj->j_ihead;
-   while (x_file != NULL) {
-      if (c == n) {
-         *r_file = x_file;
-         return 0;
+   tPROJ      *u           = NULL;
+   tFILE      *v           = NULL;
+   if (r_file != NULL)  *r_file = NULL;
+   --rce;  if (a_proj     == NULL)   return --rce;
+   --rce;  if (a_name     == NULL)   return --rce;
+   --rce;  if (a_name [0] == '\0')   return --rce;
+   if (r_file != NULL)  *r_file = NULL;
+   if (s_found != NULL && a_proj != s_found->i_proj)   s_found = NULL;
+   u = a_proj;
+   v = u->j_ihead;
+   --rce;  if (v == NULL) return rce;
+   while (v != NULL) {
+      if (strcmp (v->i_name, a_name) == 0) {
+         s_found = v;
+         if (r_file != NULL)  *r_file = v;
+         return 1;
       }
-      x_file = x_file->i_next;
+      v = v->i_next;
+   }
+   return 0;
+}
+
+char
+FILES_in_proj_by_index  (tPROJ *a_proj, int a_index, tFILE **r_file)
+{
+   char        rce         =  -10;
+   tPROJ      *u           = NULL;
+   tFILE      *v           = NULL;
+   int         c           =    0;
+   if (r_file != NULL)  *r_file = NULL;
+   --rce;  if (a_proj  == NULL)   return --rce;
+   --rce;  if (a_index <  0)      return --rce;
+   if (r_file != NULL)  *r_file = NULL;
+   if (s_found != NULL && a_proj != s_found->i_proj)   s_found = NULL;
+   u = a_proj;
+   v = u->j_ihead;
+   --rce;  if (v == NULL) return rce;
+   c = u->j_icount;
+   --rce;  if (a_index >= c)      return --rce;
+   c = 0;
+   while (v != NULL) {
+      if (c == a_index) {
+         s_found = v;
+         if (r_file != NULL)  *r_file = v;
+         return 1;
+      }
+      ++c;
+      v = v->i_next;
+   }
+   return 0;
+}
+
+char
+FILES_in_proj_by_cursor (tPROJ *a_proj, char a_dir, tFILE **r_file)
+{
+   char        rce         =  -10;
+   tPROJ      *u           = NULL;
+   tFILE      *v           = NULL;
+   if (r_file != NULL)  *r_file = NULL;
+   --rce;  if (a_proj == NULL)   return --rce;
+   if (r_file != NULL)  *r_file = NULL;
+   if (s_found != NULL && a_proj != s_found->i_proj)   s_found = NULL;
+   u = a_proj;
+   v = s_found;
+   --rce;  switch (a_dir) {
+   case YDLST_HEAD  :
+      v = u->j_ihead;
+      break;
+   case YDLST_NEXT  :
+      if (v != NULL)  v = v->i_next;
+      break;
+   case YDLST_CURR  :
+      break;
+   case YDLST_PREV  :
+      if (v != NULL)  v = v->i_prev;
+      break;
+   case YDLST_TAIL  :
+      v = u->j_itail;
+      break;
+   default          :
+      return rce;
+   }
+   --rce;  if (v == NULL) return rce;
+   s_found = v;
+   if (r_file != NULL)  *r_file = v;
+   return 1;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                      data exposure                           ----===*/
+/*====================------------------------------------====================*/
+static void  o___EXPOSURE________o () { return; }
+
+char*
+FILES_in_proj_list      (tPROJ *a_proj)
+{
+   tPROJ      *u           = NULL;
+   tFILE      *v           = NULL;
+   int         c           =    0;
+   char        t           [LEN_LABEL] = "";
+   char        x_save      =  '·';
+   char        x_type      =  '·';
+   strcpy (unit_answer, "");
+   if (a_proj == NULL) return "(null proj)";
+   ystrlcat (unit_answer, ystrlpadquick  (a_proj->j_name, '<', '.', 20), LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+   u = a_proj;
+   v = u->j_ihead;
+   c = u->j_icount;
+   if (v      == NULL) {
+      ystrlcat (unit_answer, "(no files)", LEN_RECD);
+      return unit_answer;
+   }
+   ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+   c = 0;
+   while (v != NULL) {
+      x_type = v->i_type;
+      if (x_save != '·' && x_type != x_save) ystrlcat (unit_answer, "  ´", LEN_RECD);
+      ystrlcat (unit_answer, "  ", LEN_RECD);
+      ystrlcat (unit_answer, v->i_name, LEN_RECD);
+      v = v->i_next;
+      x_save = x_type;
       ++c;
    }
-   --rce;  return rce;
+   if (c > 0) {
+      ystrlcat (unit_answer, "  [", LEN_RECD);
+      ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+      ystrlcat (unit_answer, "]  Ï", LEN_RECD);
+   }
+   return unit_answer;
+}
+
+char*
+FILES_entry             (tFILE *a_file)
+{
+   tFILE      *u           = NULL;
+   tFUNC      *v           = NULL;
+   int         c           =    0;
+   int         x_fore      =    0;
+   int         x_back      =    0;
+   char        t           [LEN_DESC]  = "(n/a)";
+   char        s           [LEN_DESC]  = "(null)";
+   char        r           [LEN_DESC]  = "(null)";
+   if (a_file == NULL) {
+      DATA__unit_format (
+            /* master */  "(n/a)", '-', "´", "´",
+            /* counts */  -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            /* files  */  0, 0, 0, "´", "´",
+            /* lines  */  -1, -1, -1, -1);
+      return unit_answer;
+   }
+   u = a_file;
+   ystrlcpy (t, u->i_name, LEN_LABEL);
+   c = u->i_ccount;
+   if (u->i_chead != NULL) {
+      ystrlcpy (s, u->i_chead->c_name, LEN_TITLE);
+      ystrlcpy (r, u->i_ctail->c_name, LEN_TITLE);
+      v = u->i_chead; while (v != NULL) { ++x_fore; v = v->c_next; }
+      v = u->i_ctail; while (v != NULL) { ++x_back; v = v->c_prev; }
+   }
+   DATA__unit_format (
+         /* master */  u->i_proj->j_name, u->i_type, u->i_name, "´", 
+         /* counts */  -1, -1, u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL,
+         /* files  */  c, x_fore, x_back, s, r,
+         /* lines  */  -1, -1, -1, -1);
+   return unit_answer;
 }
 
 
@@ -1004,7 +1422,7 @@ FILES__unit_by_proj     (tPROJ *a_proj, char a_dir)
    char        s           [LEN_RECD]  = "···";
    char        r           [LEN_RECD]  = "···";
    if (a_proj == NULL)  return "((a_proj null))";
-   rc = FILES_by_proj_cursor (a_proj, a_dir, &u);
+   rc = FILES_in_proj_by_cursor (a_proj, a_dir, &u);
    if (u == NULL) {
       snprintf (unit_answer, LEN_RECD, "%-20.20s  -  (n/a)                           ´·····························    ´   -   -     ´   -   -   -   -   -  Ï    ·c   ·f   ·b  h=······························  t=······························  Ï     ´p    ·b    ·e  Ï", a_proj->j_name);
    } else {
@@ -1204,6 +1622,30 @@ FILES_line              (tFILE *a_file, char a_style, char a_use, char a_pre, in
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
+
+char*
+FILES__unit_funcs       (tFILE *a_file)
+{
+   tFILE      *u           = NULL;
+   tFUNC      *v           = NULL;
+   int         c           =    0;
+   char        t           [LEN_LABEL] = "";
+   strcpy (unit_answer, "");
+   if (a_file == NULL) return "(null file)";
+   u = a_file;
+   v = u->i_chead;
+   c = u->i_ccount;
+   if (v      == NULL) return "(no funcs)";
+   ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  2), LEN_RECD);
+   while (v != NULL) {
+      ystrlcat (unit_answer, "  ", LEN_RECD);
+      ystrlcat (unit_answer, v->c_name, LEN_RECD);
+      v = v->c_next;
+      ++c;
+   }
+   if (c > 0) ystrlcat (unit_answer, "  Ï", LEN_RECD);
+   return unit_answer;
+}
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 FILES__unit             (char *a_question, int i)

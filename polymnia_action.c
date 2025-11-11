@@ -495,7 +495,7 @@ poly_action_search      (void)
       return rce;
    }
    /*---(get first project)--------------*/
-   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj, NULL);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
@@ -736,13 +736,13 @@ poly_action_libuse      (void)
       return rce;
    }
    /*---(find targets)-------------------*/
-   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &x_extern);
+   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &x_extern, NULL);
    DEBUG_PROG   yLOG_point   ("x_extern"   , x_extern);
    while (x_extern != NULL) {
       if (strcmp (x_extern->elib->name, my.g_libuse) == 0) {
          rc = poly_rptg_extern (x_extern);
       }
-      rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &x_extern);
+      rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &x_extern, NULL);
       DEBUG_PROG   yLOG_point   ("x_extern"   , x_extern);
    }
    /*---(complete)-----------------------*/
@@ -770,14 +770,14 @@ poly_action_vars        (void)
       return rce;
    }
    /*---(get project)--------------------*/
-   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj, NULL);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    --rce;  if (x_proj == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(get function)-------------------*/
-   rc = poly_func_by_hint (x_proj, my.g_hint, &x_func);
+   rc = FUNCS_by_proj_hint (x_proj, my.g_hint, &x_func);
    DEBUG_PROG   yLOG_value   ("find"       , rc);
    DEBUG_PROG   yLOG_point   ("x_func"     , x_func);
    --rce;  if (rc < 0 || x_func == NULL) {
@@ -843,7 +843,7 @@ poly_action_detail      (void)
    DEBUG_PROG   yLOG_point   ("->name"     , x_proj->c_name);
    printf ("name     [%s]\n", x_proj->c_name);
    /*---(find hint)----------------------*/
-   rc = poly_func_by_hint (x_proj, my.g_hint, &x_func);
+   rc = FUNCS_by_proj_hint (x_proj, my.g_hint, &x_func);
    DEBUG_PROG   yLOG_point   ("x_func"     , x_func);
    if (x_func == NULL) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

@@ -19,6 +19,7 @@ PROG__unit_loud      (void)
    /*> yURG_by_name  ("mid"          , YURG_ON);                                         <*/
    yURG_by_name   ("kitchen"      , YURG_ON);
    yURG_by_name   ("yexec"        , YURG_ON);
+   yURG_by_name   ("YSORT"        , YURG_ON);
    PROG_startup   (x_argc, x_args);
    return 0;
 }

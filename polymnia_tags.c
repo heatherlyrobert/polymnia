@@ -97,7 +97,7 @@ poly_tags__handler      (tFILE *a_file, char *a_recd)
       return rce;
    }
    /*---(done)---------------------------*/
-   rc = poly_func_add (a_file, x_name, x_type, x_line, NULL);
+   rc = FUNCS_add     (a_file, x_name, x_type, x_line, NULL);
    DEBUG_INPT   yLOG_value   ("function"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -173,7 +173,7 @@ poly_tags_inventory     (tFILE *a_file)
          DEBUG_INPT   yLOG_note    ("found a function header");
          if (strncmp ("o___", x_name, 4) == 0)   x_type = '_';
          DEBUG_INPT   yLOG_char    ("type"      , x_type);
-         rc = poly_func_add (a_file, x_name, x_type, x_line, NULL);
+         rc = FUNCS_add     (a_file, x_name, x_type, x_line, NULL);
          ++c;
       }
       /*---(done)------------------------*/
@@ -187,7 +187,7 @@ poly_tags_inventory     (tFILE *a_file)
    }
    /*---(summary)------------------------*/
    DEBUG_INPT   yLOG_value   ("c"         , c);
-   DEBUG_INPT   yLOG_value   ("count"     , poly_func_count ());
+   DEBUG_INPT   yLOG_value   ("count"     , FUNCS_count     ());
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return c;
@@ -210,7 +210,7 @@ poly_tags__unit      (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "TAGS unit        : tags number unknown");
    /*---(simple)-------------------------*/
    if  (strcmp (a_question, "count"     )     == 0) {
-      snprintf (unit_answer, LEN_RECD, "TAGS count       : %3d", poly_func_count ());
+      snprintf (unit_answer, LEN_RECD, "TAGS count       : %3d", FUNCS_count     ());
       return unit_answer;
    }
    if (strncmp (unit_answer, "TAGS unit        :", 18) != 0)  return unit_answer;
@@ -218,7 +218,7 @@ poly_tags__unit      (char *a_question, int i)
    snprintf (unit_answer, LEN_RECD, "TAGS unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "entry"     )     == 0) {
-      poly_func_by_index (i, &u);
+      FUNCS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->c_name);
          if (u->c_work != NULL)  snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s %3d  %c  work   %3d  %3d", i, t, u->c_line, u->c_type, u->WORK_BEG, u->WORK_END);
@@ -226,7 +226,7 @@ poly_tags__unit      (char *a_question, int i)
       } else                     snprintf (unit_answer, LEN_RECD, "TAGS entry  (%2d) : %-22.22s   -  -  -        -    -" , i, t);
    }
    else if (strcmp (a_question, "stats"     )     == 0) {
-      poly_func_by_index (i, &u);
+      FUNCS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->c_name);
          snprintf (unit_answer, LEN_RECD, "TAGS stats  (%2d) : %-22.22s     ·   ·   %3d %3d %3d %3d %3d %3d", i, t, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL);

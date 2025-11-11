@@ -8,6 +8,8 @@ tPROJ      *g_tail      = NULL;
 int         g_count     =    0;;
 static char s_print     [LEN_RECD] = "";
 
+char        g_print     [LEN_RECD] = "";
+
 
 
 /*====================------------------------------------====================*/
@@ -41,6 +43,31 @@ PROJS__wipe        (tPROJ *a_dst)
    return 1;
 }
 
+char
+PROJS_rando             (tPROJ *a_dst)
+{
+   if (a_dst == NULL)  return -1;
+   /*---(overall)-----------*/
+   strcpy (a_dst->j_name, "name");
+   strcpy (a_dst->j_dir , "directory");
+   a_dst->j_written       = 123456789;
+   /*---(header entries)----*/
+   HEADER_rando (a_dst);
+   /*---(manuals)-----------*/
+   ystrlcpy (a_dst->j_manual, "12345678", LEN_LABEL);
+   a_dst->j_git       = 'y';
+   /*---(stats)-------------*/
+   a_dst->j_funcs     = 6;
+   /*---(files)-------------*/
+   a_dst->j_ihead     = 0x1;
+   a_dst->j_itail     = 0x2;
+   a_dst->j_icount    = 3;
+   /*---(btree)-------------*/
+   a_dst->j_btree     = 0x4;
+   /*---(tags)--------------*/
+   return 1;
+}
+
 char*
 PROJS__memory           (tPROJ *a_proj)
 {
@@ -50,53 +77,7 @@ PROJS__memory           (tPROJ *a_proj)
    poly_shared__check_str  (s_print, a_proj->j_header);
    poly_shared__spacer     (s_print);
    /*---(master)-------------------------*/
-   poly_shared__check_str  (s_print, a_proj->j_focus);
-   poly_shared__check_str  (s_print, a_proj->j_niche);
-   poly_shared__check_str  (s_print, a_proj->j_subject);
-   poly_shared__check_str  (s_print, a_proj->j_purpose);
-   poly_shared__spacer     (s_print);
-   /*---(greek)--------------------------*/
-   poly_shared__check_str  (s_print, a_proj->j_namesake);
-   poly_shared__check_str  (s_print, a_proj->j_pronounce);
-   poly_shared__check_str  (s_print, a_proj->j_heritage);
-   poly_shared__check_str  (s_print, a_proj->j_briefly);
-   poly_shared__check_str  (s_print, a_proj->j_imagery);
-   poly_shared__check_str  (s_print, a_proj->j_reason);
-   poly_shared__spacer     (s_print);
-   /*---(onelinne)-----------------------*/
-   poly_shared__check_str  (s_print, a_proj->j_oneline);
-   poly_shared__spacer     (s_print);
-   /*---(location)-----------------------*/
-   poly_shared__check_str  (s_print, a_proj->j_homedir);
-   poly_shared__check_str  (s_print, a_proj->j_progname);
-   poly_shared__check_str  (s_print, a_proj->j_fullpath);
-   poly_shared__check_str  (s_print, a_proj->j_suffix);
-   poly_shared__check_str  (s_print, a_proj->j_content);
-   poly_shared__spacer     (s_print);
-   /*---(system)-------------------------*/
-   poly_shared__check_str  (s_print, a_proj->j_systems);
-   poly_shared__check_str  (s_print, a_proj->j_language);
-   poly_shared__check_str  (s_print, a_proj->j_compiler);
-   poly_shared__check_str  (s_print, a_proj->j_codesize);
-   poly_shared__spacer     (s_print);
-   /*---(depends)------------------------*/
-   poly_shared__check_str  (s_print, a_proj->j_dep_cstd);
-   poly_shared__check_str  (s_print, a_proj->j_dep_posix);
-   poly_shared__check_str  (s_print, a_proj->j_dep_core);
-   poly_shared__check_str  (s_print, a_proj->j_dep_vikey);
-   poly_shared__check_str  (s_print, a_proj->j_dep_other);
-   poly_shared__check_str  (s_print, a_proj->j_dep_graph);
-   poly_shared__check_str  (s_print, a_proj->j_dep_solo);
-   poly_shared__spacer     (s_print);
-   /*---(author)-------------------------*/
-   poly_shared__check_str  (s_print, a_proj->j_author);
-   poly_shared__check_str  (s_print, a_proj->j_created);
-   poly_shared__spacer     (s_print);
-   /*---(versioning)---------------------*/
-   poly_shared__check_str  (s_print, a_proj->j_vermajor);
-   poly_shared__check_str  (s_print, a_proj->j_verminor);
-   poly_shared__check_str  (s_print, a_proj->j_vernum);
-   poly_shared__check_str  (s_print, a_proj->j_vertxt);
+   ystrlcat (s_print, HEADER__memory (a_proj), LEN_RECD);
    poly_shared__spacer     (s_print);
    /*---(stats)--------------------------*/
    poly_shared__check_num  (s_print, a_proj->j_funcs);
@@ -152,10 +133,10 @@ PROJS_purge             (void)
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(walk-through)-------------------*/
    DEBUG_DATA   yLOG_value   ("count"     , ySORT_count (B_PROJ));
-   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj, NULL);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    while (x_proj != NULL) {
-      rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_next);
+      rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_next, NULL);
       DEBUG_PROG   yLOG_point   ("x_next"    , x_next);
       DEBUG_DATA   yLOG_point   ("x_proj"    , x_proj);
       DEBUG_DATA   yLOG_info    ("->j_name"  , x_proj->j_name);
@@ -440,10 +421,95 @@ PROJS_remove            (tPROJ **a_proj)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  PROJS_count             (void)                          { return ySORT_count     (B_PROJ); }
-char PROJS_by_name           (uchar *a_name, tPROJ **r_proj) { return ySORT_by_name   (B_PROJ, a_name, r_proj); }
-char PROJS_by_index          (int n, tPROJ **r_proj)         { return ySORT_by_index  (B_PROJ, n, r_proj); }
-char PROJS_by_cursor         (char a_dir, tPROJ **r_proj)    { return ySORT_by_cursor (B_PROJ, a_dir, r_proj); }
+int  PROJS_count             (void)  { return ySORT_count     (B_PROJ); }
+char PROJS_by_name           (uchar a_name [LEN_LABEL], tPROJ **r_proj)  { return ySORT_by_name   (B_PROJ, a_name , r_proj, NULL); }
+char PROJS_by_index          (int   a_index           , tPROJ **r_proj)  { return ySORT_by_index  (B_PROJ, a_index, r_proj, NULL); }
+char PROJS_by_cursor         (char  a_dir             , tPROJ **r_proj)  { return ySORT_by_cursor (B_PROJ, a_dir  , r_proj, NULL); }
+char PROJS_by_tree           (uchar a_name [LEN_LABEL], tPROJ **r_proj)  { return ySORT_by_tree   (B_PROJ, a_name , r_proj, NULL); }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                      data exposure                           ----===*/
+/*====================------------------------------------====================*/
+static void  o___EXPOSURE________o () { return; }
+
+char*
+PROJS_list              (void)
+{
+   int         c           =    0;
+   char        rc          =    0;
+   tPROJ      *v           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   strcpy (unit_answer, "");
+   DEBUG_PROG   yLOG_info    ("answer"    , unit_answer);
+   /*---(defense)------------------------*/
+   c = PROJS_count ();
+   DEBUG_PROG   yLOG_value   ("c"         , c);
+   if (c <= 0) {
+      strcpy (unit_answer, "(no projects)");
+      DEBUG_PROG   yLOG_info    ("answer"    , unit_answer);
+      return unit_answer;
+   }
+   ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+   DEBUG_PROG   yLOG_info    ("answer"    , unit_answer);
+   c = 0;
+   rc = PROJS_by_cursor ('[', &v);
+   while (v != NULL) {
+      ystrlcat (unit_answer, "  "     , LEN_RECD);
+      ystrlcat (unit_answer, v->j_name, LEN_RECD);
+      DEBUG_PROG   yLOG_complex ("answer"    , "%3d, %s", c, unit_answer);
+      ++c;
+      rc = PROJS_by_cursor ('>', &v);
+   }
+   DEBUG_PROG   yLOG_value   ("c"         , c);
+   if (c > 0) {
+      ystrlcat (unit_answer, "  [", LEN_RECD);
+      ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+      ystrlcat (unit_answer, "]  Ï", LEN_RECD);
+      DEBUG_PROG   yLOG_info    ("answer"    , unit_answer);
+   }
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return unit_answer;
+}
+
+char*
+PROJS_entry             (tPROJ *a_proj)
+{
+   tPROJ      *u           = NULL;
+   tFILE      *v           = NULL;
+   int         c           =    0;
+   int         x_fore      =    0;
+   int         x_back      =    0;
+   char        t           [LEN_DESC]  = "(n/a)";
+   char        s           [LEN_DESC]  = "(null)";
+   char        r           [LEN_DESC]  = "(null)";
+   if (a_proj == NULL) {
+      DATA__unit_format (
+            /* master */  "(n/a)", '-', "´", "´",
+            /* counts */  -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            /* files  */  0, 0, 0, "´", "´",
+            /* lines  */  -1, -1, -1, -1);
+      return unit_answer;
+   }
+   u = a_proj;
+   ystrlcpy (t, a_proj->j_name, LEN_LABEL);
+   c = u->j_icount;
+   if (u->j_ihead != NULL) {
+      ystrlcpy (s, u->j_ihead->i_name, LEN_TITLE);
+      ystrlcpy (r, u->j_itail->i_name, LEN_TITLE);
+      v = u->j_ihead; while (v != NULL) { ++x_fore; v = v->i_next; }
+      v = u->j_itail; while (v != NULL) { ++x_back; v = v->i_prev; }
+   }
+   DATA__unit_format (
+         /* master */  t, '-', "´", "´", 
+         /* counts */  -1, u->COUNT_FILES, u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL,
+         /* files  */  c, x_fore, x_back, s, r,
+         /* lines  */  -1, -1, -1, -1);
+   return unit_answer;
+}
 
 
 
@@ -1105,42 +1171,6 @@ PROJS_line              (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
-
-char*
-PROJS__unit_entry       (tPROJ *a_proj)
-{
-   tPROJ      *u           = NULL;
-   tFILE      *v           = NULL;
-   int         c           =    0;
-   int         x_fore      =    0;
-   int         x_back      =    0;
-   char        t           [LEN_DESC]  = "(n/a)";
-   char        s           [LEN_DESC]  = "(null)";
-   char        r           [LEN_DESC]  = "(null)";
-   if (a_proj == NULL) {
-      DATA__unit_format (
-            "(n/a)", '-', "´", "´",
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, "´", "´",
-            -1, -1, -1, -1);
-      return unit_answer;
-   }
-   u = a_proj;
-   ystrlcpy (t, a_proj->j_name, LEN_LABEL);
-   c = u->j_icount;
-   if (u->j_ihead != NULL) {
-      ystrlcpy (s, u->j_ihead->i_name, LEN_TITLE);
-      ystrlcpy (r, u->j_itail->i_name, LEN_TITLE);
-      v = u->j_ihead; while (v != NULL) { ++x_fore; v = v->i_next; }
-      v = u->j_itail; while (v != NULL) { ++x_back; v = v->i_prev; }
-   }
-   DATA__unit_format (
-         /* master */  t, '-', "´", "´", 
-         /* counts */  -1, u->COUNT_FILES, u->COUNT_FUNCS, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL,
-         /* files  */  c, x_fore, x_back, s, r,
-         /* lines  */  -1, -1, -1, -1);
-   return unit_answer;
-}
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 PROJS__unit         (char *a_question, int i)

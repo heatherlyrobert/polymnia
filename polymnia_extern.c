@@ -379,7 +379,7 @@ poly_extern_add         (char *a_lib, char *a_name, int a_line, char a_type)
    }
    DEBUG_DATA   yLOG_info    ("a_lib"     , a_lib);
    /*---(find lib)-----------------------*/
-   ySORT_by_name (B_ELIB, a_lib, &x_lib);
+   ySORT_by_tree (B_ELIB, a_lib, &x_lib, NULL);
    --rce;  if (x_lib == NULL) {
       poly_extern__lnew (&x_lib);
       DEBUG_DATA   yLOG_point   ("x_lib"     , x_lib);
@@ -572,7 +572,7 @@ poly_extern__purge      (void)
    /*---(prepare)------------------------*/
    DEBUG_PROG   yLOG_value   ("count"     , poly_extern_count ());
    /*---(walk through list)--------------*/
-   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u);
+   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u, NULL);
    DEBUG_PROG   yLOG_point   ("u"          , u);
    while (u != NULL) {
       DEBUG_PROG   yLOG_value   ("extern"    , u->name);
@@ -582,7 +582,7 @@ poly_extern__purge      (void)
          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
          return rc;
       }
-      rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u);
+      rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u, NULL);
    }
    /*---(check)--------------------------*/
    DEBUG_PROG   yLOG_value   ("count"     , poly_extern_count ());
@@ -603,12 +603,12 @@ poly_extern_clear_uses  (void)
    /*---(prepare)------------------------*/
    DEBUG_PROG   yLOG_value   ("count"     , poly_extern_count ());
    /*---(walk through list)--------------*/
-   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u);
+   rc = ySORT_by_cursor (B_EXTERN, YDLST_HEAD, &u, NULL);
    DEBUG_PROG   yLOG_point   ("u"          , u);
    while (u != NULL) {
       DEBUG_PROG   yLOG_value   ("extern"    , u->name);
       u->wuse = 0;
-      rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &u);
+      rc = ySORT_by_cursor (B_EXTERN, YDLST_NEXT, &u, NULL);
    }
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
@@ -651,11 +651,12 @@ poly_extern_wrap        (void)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_extern_count       (void)                           { return ySORT_count     (B_EXTERN); }
-char poly_extern_by_name     (uchar *a_name, tEXTERN **a_ext) { return ySORT_by_name   (B_EXTERN, a_name, a_ext); }
-char poly_extern_by_index    (int n, tEXTERN **a_ext)         { return ySORT_by_index  (B_EXTERN, n, a_ext); }
-char poly_extern_by_cursor   (char a_dir, tEXTERN **a_ext)    { return ySORT_by_cursor (B_EXTERN, a_dir, a_ext); }
-char poly_extern_list        (void)                           { return ySORT_list      (B_EXTERN); }
+int  poly_extern_count       (void)  { return ySORT_count     (B_EXTERN); }
+char poly_extern_by_name     (uchar a_name [LEN_TITLE], tEXTERN **a_ext)  { return ySORT_by_name   (B_EXTERN, a_name , a_ext, NULL); }
+char poly_extern_by_index    (int   a_index           , tEXTERN **a_ext)  { return ySORT_by_index  (B_EXTERN, a_index, a_ext, NULL); }
+char poly_extern_by_cursor   (char  a_dir             , tEXTERN **a_ext)  { return ySORT_by_cursor (B_EXTERN, a_dir  , a_ext, NULL); }
+char poly_extern_by_tree     (uchar a_name [LEN_TITLE], tEXTERN **a_ext)  { return ySORT_by_tree   (B_EXTERN, a_name , a_ext, NULL); }
+char poly_extern_list        (void)  { return ySORT_list      (B_EXTERN); }
 
 /*> struct      cELIB {                                                                <* 
  *>    /+---(info)--------------+/                                                     <* 
@@ -746,7 +747,7 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, 
    }
    *r_ext = NULL;
    /*---(idenfify file)---------------*/
-   FILES_by_name     (a_file, &x_file);
+   /*> FILES_by_name     (a_file, &x_file);                                           <*/
    DEBUG_INPT   yLOG_point   ("x_file"    , x_file);
    --rce;  if (x_file == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -754,7 +755,7 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, 
    }
    DEBUG_INPT   yLOG_info    ("file name" , x_file->i_name);
    /*---(get source tag)--------------*/
-   rc = poly_func_by_line (x_file, a_line, r_src);
+   rc = FUNCS_by_file_line (x_file, a_line, r_src);
    DEBUG_INPT   yLOG_point   ("*a_scr"    , *r_src);
    --rce;  if (*r_src == NULL) {
       DEBUG_INPT   yLOG_note    ("function not found");
@@ -772,7 +773,7 @@ poly_extern__pointers   (char *a_func, char *a_file, int a_line, tFUNC **r_src, 
       }
    }
    /*---(get destination tag)---------*/
-   poly_func_by_name (a_func, r_dst);
+   FUNCS_by_name     (a_func, r_dst);
    DEBUG_INPT   yLOG_point   ("*r_dst"    , *r_dst);
    if (*r_dst != NULL) {
       DEBUG_INPT   yLOG_info    ("->name"    , (*r_dst)->c_name);
@@ -1234,7 +1235,7 @@ poly_extern__unit       (char *a_question, int i)
       snprintf (unit_answer, LEN_RECD, "EXTERN entry(%2d) : %s", i, t);
    }
    else if   (strcmp (a_question, "work"      )     == 0) {
-      poly_func_by_index (i, &v);
+      FUNCS_by_index     (i, &v);
       if (v != NULL) {
          sprintf  (s, "[%.13s]", v->c_name);
          sprintf  (unit_answer, "EXTERN work (%2d) : %-15.15s", i, s);

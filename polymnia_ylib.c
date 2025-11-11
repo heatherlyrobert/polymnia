@@ -452,10 +452,11 @@ poly_ylib_purge         (tFUNC *a_func, char a_update)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-int  poly_ylib_count         (void)                          { return ySORT_count     (B_FILES); }
-char poly_ylib_by_name       (uchar *a_name, tYLIB **a_ylib) { return ySORT_by_name   (B_FILES, a_name, a_ylib); }
-char poly_ylib_by_index      (int n, tYLIB **a_ylib)         { return ySORT_by_index  (B_FILES, n, a_ylib); }
-char poly_ylib_by_cursor     (char a_dir, tYLIB **a_ylib)    { return ySORT_by_cursor (B_FILES, a_dir, a_ylib); }
+int  poly_ylib_count         (void)     { return ySORT_count     (B_FILES); }
+char poly_ylib_by_name       (uchar a_name [LEN_TITLE], tYLIB **a_ylib)  { return ySORT_by_name   (B_FILES, a_name , a_ylib, NULL); }
+char poly_ylib_by_index      (int   a_index           , tYLIB **a_ylib)  { return ySORT_by_index  (B_FILES, a_index, a_ylib, NULL); }
+char poly_ylib_by_cursor     (char  a_dir             , tYLIB **a_ylib)  { return ySORT_by_cursor (B_FILES, a_dir  , a_ylib, NULL); }
+char poly_ylib_by_tree       (uchar a_name [LEN_TITLE], tYLIB **a_ylib)  { return ySORT_by_tree   (B_FILES, a_name , a_ylib, NULL); }
 
 char
 poly_ylib_by_func_index (tFUNC *a_func, int n, tYLIB **r_ylib)
@@ -526,7 +527,7 @@ poly_ylib__unit         (char *a_question, char *a_name)
    snprintf (unit_answer, LEN_RECD, "FILE unit        : question unknown");
    /*---(complex)------------------------*/
    if (strcmp (a_question, "func"      )     == 0) {
-      poly_func_by_name  (a_name, &x_func);
+      FUNCS_by_name      (a_name, &x_func);
       if (x_func == NULL)  snprintf (unit_answer, LEN_RECD, "YLIB func        : function not found    -c   -f   -b   []                     []");
       else {
          sprintf  (t, "[%.15s]", x_func->c_name);

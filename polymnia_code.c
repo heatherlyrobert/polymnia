@@ -176,7 +176,7 @@ static void  o___SOURCES_________o () { return; }
  *>    }                                                                              <* 
  *>    DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);                              <* 
  *>    /+---(check inside)-------------------+/                                       <* 
- *>    x_inside = poly_func_inside (a_func);                                          <* 
+ *>    x_inside = FUNCS_inside     (a_func);                                          <* 
  *>    if (x_inside != 0) {                                                           <* 
  *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
  *>       return rce;                                                                 <* 
@@ -216,7 +216,7 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
          DEBUG_DATA   yLOG_value  ("WORK_END"  , a_func->WORK_END);
       }
    }
-   x_inside = poly_func_inside (a_func);
+   x_inside = FUNCS_inside     (a_func);
    if (x_inside == 0)    DEBUG_DATA   yLOG_note   ("inside a function");
    /*---(line counts)--------------------*/
    ++my.COUNT_LINES;
@@ -269,7 +269,7 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
  *>    poly_code__counts (a_file, a_func, a_recd);                                            <* 
  *>    DEBUG_INPT   yLOG_note    ("after counts");                                            <* 
  *>    /+---(check inside)-------------------+/                                               <* 
- *>    x_inside = poly_func_inside (a_func);                                                  <* 
+ *>    x_inside = FUNCS_inside     (a_func);                                                  <* 
  *>    DEBUG_INPT   yLOG_value   ("x_inside"  , x_inside);                                    <* 
  *>    if (x_inside != 0) {                                                                   <* 
  *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                      <* 
@@ -469,7 +469,7 @@ poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr
    if (*a_func != NULL) {
       if ((*a_func)->STATS_SINGLE == 'y') {
          DEBUG_DATA   yLOG_note    ("single liner entry");
-         poly_func_enter (*a_func, a_line);
+         FUNCS_enter     (*a_func, a_line);
       }
    }
    /*---(complete)-----------------------*/
@@ -514,7 +514,7 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    } else {
       DEBUG_INPT   yLOG_complex ("CURR"      , "%4d] %-20.20s %4d %c %4d %4d -- %4d %4d", a_line, a_func->c_name, a_func->c_line, a_func->STATS_SINGLE, a_func->c_beg, a_func->c_end, a_func->WORK_BEG, a_func->WORK_END);
    }
-   x_inside = poly_func_inside (a_func);
+   x_inside = FUNCS_inside     (a_func);
    DEBUG_INPT   yLOG_value   ("x_inside"  , x_inside);
    /*---(outside)---------------------*/
    if (x_inside != 1) {
@@ -579,14 +579,14 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
    /*---(single line exit)------------*/
    if (a_func->STATS_SINGLE == 'y') {
       DEBUG_DATA   yLOG_note    ("single liner exit");
-      poly_func_exit  (a_func, a_line);
+      FUNCS_exit      (a_func, a_line);
       /*> poly_vars_summary (a_func, '-');                                            <*/
    }
    /*---(normal enter)----------------*/
    else if (a_func->WORK_BEG <  0) {
       if (a_curr [0] == '{') {
          DEBUG_INPT   yLOG_note    ("multi-line beg brace");
-         rc = poly_func_enter (a_func, a_line);
+         rc = FUNCS_enter     (a_func, a_line);
          DEBUG_INPT   yLOG_value   ("enter"     , rc);
       }
    }
@@ -594,7 +594,7 @@ poly_code__after        (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr)
    else if (a_func->WORK_END <  0) {
       if (a_curr [0] == '}') {
          DEBUG_INPT   yLOG_note    ("multi-line end brace");
-         rc = poly_func_exit (a_func, a_line);
+         rc = FUNCS_exit     (a_func, a_line);
          DEBUG_INPT   yLOG_value   ("exit"      , rc);
          /*> poly_vars_summary (a_func, '-');                                         <*/
          --a_func->COUNT_LINES;
@@ -655,7 +655,7 @@ poly_code_driver        (tFILE *a_file, int a_beg, int a_end, char a_act)
       }
       /*---(specialty)-------------------*/
       else if (x_line > a_beg && x_line < a_end) {
-         if (x_func == NULL)  poly_func_by_line (a_file, x_line, &x_func);
+         if (x_func == NULL)  FUNCS_by_file_line  (a_file, x_line, &x_func);
          if (x_func == NULL)  rc = poly_vars_find (x_func, x_line, x_curr, a_act);
       }
       /*---(done)------------------------*/
@@ -692,7 +692,7 @@ poly_code__unit         (char *a_question, int i)
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "CODE unit        : function number unknown");
    if (strcmp (a_question, "work"      )     == 0) {
-      poly_func_by_index (i, &u);
+      FUNCS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->c_name);
          if (u->WORK_CHOICE > 0)  sprintf (s, " %3dc", u->WORK_CHOICE);

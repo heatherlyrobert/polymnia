@@ -317,7 +317,7 @@ poly_db_write         (void)
       return rce;
    }
    /*---(prepare)------------------------*/
-   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj);
+   rc = ySORT_by_cursor (B_PROJ, YDLST_HEAD, &x_proj, NULL);
    DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    /*---(walk projects)------------------*/
    while (x_proj != NULL) {
@@ -331,7 +331,7 @@ poly_db_write         (void)
          return rc;
       }
       /*---(next)------------------------*/
-      rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_proj);
+      rc = ySORT_by_cursor (B_PROJ, YDLST_NEXT, &x_proj, NULL);
       DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);
    }
    /*---(close)--------------------------*/
@@ -430,7 +430,7 @@ poly_db__read_func      (tFILE *a_file, int n)
    DEBUG_INPT   yLOG_value   ("n"         , n);
    for (i = 0; i < n; ++i) {
       /*---(allocate)-----------------------*/
-      rc = poly_func_force (&x_func);
+      rc = FUNCS_force     (&x_func);
       DEBUG_INPT   yLOG_point   ("x_func"   , x_func);
       --rce;  if (rc < 0 || x_func == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -449,7 +449,7 @@ poly_db__read_func      (tFILE *a_file, int n)
       x_func->c_work    = NULL;
       x_func->c_btree   = NULL;
       /*---(add to project)-----------------*/
-      rc = poly_func_hook (a_file, x_func);
+      rc = FUNCS__hook    (a_file, x_func);
       DEBUG_INPT   yLOG_value   ("hook"      , rc);
       --rce;  if (rc < 0) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);

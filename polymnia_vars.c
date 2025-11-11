@@ -816,7 +816,7 @@ poly_vars__unit         (char *a_question, int i)
       snprintf (unit_answer, LEN_RECD, "VARS vhide       : %2dn  -- %3d[%-.60s]", s_vnhide,  strlen (s_vhide), s_vhide);
    }
    else if (strcmp (a_question, "hide"      )     == 0) {
-      poly_func_by_index (i, &u);
+      FUNCS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->c_name);
          sprintf  (s, "%3dv %3dm %3df %3ds  [%-.35s]",
@@ -833,7 +833,7 @@ poly_vars__unit         (char *a_question, int i)
       snprintf (unit_answer, LEN_RECD, "VARS entry  (%2d) : %-17.17s   %c %c   %2d%s", i, t, s_vars [i].scope, s_vars [i].type, strlen (s_vars [i].name), s);
    }
    else if (strcmp (a_question, "func"      )     == 0) {
-      poly_func_by_index (i, &u);
+      FUNCS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->c_name);
          sprintf  (s, "%3dn %3df %3dg      %3dp %3df %3dg %3dm %3dy %3do",

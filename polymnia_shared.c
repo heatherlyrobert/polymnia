@@ -2,14 +2,16 @@
 #include  "polymnia.h"
 
 
+/*---(func gathering)-------*/
+#define     TAGS_FUNC_ONLY  "ctags  --language-force=c -x --sort=no --extras=+F --c-kinds=f  %s > %s  2> /dev/null"
 
-#define     NEW_CFLOW     "cflow  -x $(ls -1 *.c 2> /dev/null | grep -vx unit) > %s  2> /dev/null"
-#define     DEL_ANY       "rm -f %s  2> /dev/null"
-#define     NEW_CTAGS     "ctags  --language-force=c -x --sort=no --file-scope=yes  --c-kinds=pfl  %s > %s  2> /dev/null"
-#define     NEW_VARS      "ctags  --language-force=c -x --sort=no                   --c-kinds=vxd  %s > %s  2> /dev/null"
-#define     NEW_UNITS     "grep   --no-filename -E --regexp=\"^(PREP|SCRP| [ ]*exec| [ ]*get)\"  *.unit  > %s  2> /dev/null"
+#define     NEW_CFLOW       "cflow  -x $(ls -1 *.c 2> /dev/null | grep -vx unit) > %s  2> /dev/null"
+#define     DEL_ANY         "rm -f %s  2> /dev/null"
+#define     NEW_CTAGS       "ctags  --language-force=c -x --sort=no --file-scope=yes  --c-kinds=pfl  %s > %s  2> /dev/null"
+#define     NEW_VARS        "ctags  --language-force=c -x --sort=no                   --c-kinds=vxd  %s > %s  2> /dev/null"
+#define     NEW_UNITS       "grep   --no-filename -E --regexp=\"^(PREP|SCRP| [ ]*exec| [ ]*get)\"  *.unit  > %s  2> /dev/null"
 
-static      char       *s_valid       = "ftmcxveuswW";
+static      char       *s_valid       = "fFtmcxveuswW";
 static      char        s_ctags       [LEN_RECD] = "";
 static      char        s_code        [LEN_RECD] = "";
 static      char        s_scrp        [LEN_RECD] = "";
@@ -166,6 +168,7 @@ poly_shared__pointer    (char a_type, FILE ***a_file)
    case 'f' :  /* cflow */
       *a_file  = &(my.f_cflow);
       break;
+   case 'F' :  /* ctags */
    case 't' :  /* ctags */
       *a_file  = &(my.f_ctags);
       break;
@@ -262,11 +265,12 @@ poly_shared_open        (char a_type, char *a_focus)
       return rce;
    }
    DEBUG_INPT   yLOG_point   ("a_focus"   , a_focus);
-   --rce;  if (strchr ("tc", a_type) != NULL && a_focus == NULL) {
+   --rce;  if (strchr ("Ftc", a_type) != NULL && a_focus == NULL) {
       DEBUG_INPT   yLOG_note    ("need a focus name");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_INPT   yLOG_info    ("a_focus"   , a_focus);
    rc = poly_shared__pointer (a_type, &x_file);
    DEBUG_INPT   yLOG_value   ("file"      , rc);
    --rce;  if (rc < 0) {
@@ -277,10 +281,12 @@ poly_shared_open        (char a_type, char *a_focus)
    /*---(assign name)--------------------*/
    --rce;  switch (a_type) {
    case 'f' :  /* cflow */
+      DEBUG_INPT   yLOG_note    ("cflow type");
       ystrlcpy (x_use   , F_CFLOW    , LEN_RECD);
       ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
-   case 't' :  /* ctags */
+   case 'F' : case 't' :  /* ctags */
+      DEBUG_INPT   yLOG_note    ("ctags type");
       ystrlcpy (x_source, a_focus    , LEN_RECD);
       ystrlcpy (x_use   , F_CTAGS    , LEN_RECD);
       ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
@@ -290,6 +296,7 @@ poly_shared_open        (char a_type, char *a_focus)
       ystrlcpy (x_mode  , "wt"       , LEN_TERSE);
       break;
    case 'c' :  /* c source files */
+      DEBUG_INPT   yLOG_note    ("c-language source code");
       ystrlcpy (x_source, a_focus    , LEN_RECD);
       ystrlcpy (x_use   , a_focus    , LEN_RECD);
       ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
@@ -304,6 +311,7 @@ poly_shared_open        (char a_type, char *a_focus)
       ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
    case 'u' :  /* units    */
+      DEBUG_INPT   yLOG_note    ("unit test source");
       ystrlcpy (x_use   , F_UNITS    , LEN_RECD);
       ystrlcpy (x_mode  , "rt"       , LEN_TERSE);
       break;
@@ -343,6 +351,9 @@ poly_shared_open        (char a_type, char *a_focus)
    }
    /*---(pre-handle)---------------------*/
    switch (a_type) {
+   case  'F' :
+      sprintf (x_cmd, TAGS_FUNC_ONLY, x_source, x_use);
+      break;
    case  'f' :
       sprintf (x_cmd, NEW_CFLOW , x_use);
       break;
@@ -430,6 +441,7 @@ poly_shared_close       (char a_type)
    case 'f' :  /* cflow */
       ystrlcpy (x_used , F_CFLOW , LEN_RECD);
       break;
+   case 'F' :  /* ctags */
    case 't' :  /* ctags */
       ystrlcpy (x_used , s_ctags , LEN_RECD);
       break;
@@ -967,6 +979,7 @@ char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/
 poly_shared__unit       (char *a_question)
 {
    /*---(locals)-----------+-----------+-*/
+   char        p           [LEN_TITLE] = " - - - - - - - - -";
    char        t           [LEN_TITLE] = " - - - - - - - - -";
    char        s           [LEN_TITLE] = " - - - - - - - - -";
    char        r           [LEN_TITLE] = " - - - - - - - - -";
@@ -978,9 +991,10 @@ poly_shared__unit       (char *a_question)
    /*---(simple)-------------------------*/
    if      (strcmp (a_question, "code"      )     == 0) {
       c = poly_shared__unit_recd (s_code, 0, x_recd);
+      sprintf (p, "%.14p", my.f_code);
       sprintf (s, "%2d[%.14s]", strlen (s_code) , s_code);
       sprintf (r, "%2d[%.14s]", strlen (x_recd) , x_recd);
-      snprintf (unit_answer, LEN_RECD, "SHARED code      : %c  %-10p  %-18.18s  %-18.18s  %2d  %s", (my.f_code   == NULL) ? '-' : 'y', my.f_code  , t, s, c, r);
+      snprintf (unit_answer, LEN_RECD, "SHARED code      : %c  %-14.14s  %-18.18s  %-18.18s  %2d  %s", (my.f_code   == NULL) ? '-' : 'y', p, t, s, c, r);
       return unit_answer;
    }
    else if (strcmp (a_question, "ctags"     )     == 0) {

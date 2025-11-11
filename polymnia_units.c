@@ -65,7 +65,7 @@ poly_units_by_func      (void)
          continue;
       }
       /*---(idenfify function)-----------*/
-      rc = poly_func_by_name (x_name, &x_func);
+      rc = FUNCS_by_name     (x_name, &x_func);
       DEBUG_INPT   yLOG_point   ("x_func"    , x_func);
       if (x_func == NULL) {
          DEBUG_INPT   yLOG_note    ("could not find function");
@@ -77,7 +77,7 @@ poly_units_by_func      (void)
       /*---(verify the right project)-------*/
       while (x_func->c_file->i_proj != my.g_proj) {
          DEBUG_INPT   yLOG_note    ("project does not match, next function");
-         rc = poly_func_cursor ('>', &x_func);
+         rc = FUNCS_by_cursor  ('>', &x_func);
          DEBUG_INPT   yLOG_point   ("x_func"    , x_func);
          if (rc < 0)                              break;
          if (x_func == NULL)                     { rc = -1;  break; }
@@ -158,7 +158,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    if (a_line <= 1)  c = d = e = 1;
    /*---(func-like)-------------------*/
    if      (strncmp (a_recd, "PREP ", 5) == 0) {
-      rc = poly_func_add (a_file, "___prep___", 's', a_line, &x_curr);
+      rc = FUNCS_add     (a_file, "___prep___", 's', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {
          *a_func = x_curr;
@@ -171,7 +171,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    }
    else if (strncmp (a_recd, "SECT ", 5) == 0) {
       sprintf (t, "o___%02d___o", e++);
-      rc = poly_func_add (a_file, t, '_', a_line, &x_curr);
+      rc = FUNCS_add     (a_file, t, '_', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {
          *a_func = x_curr;
@@ -200,7 +200,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
          t [14] = a_recd [ 7];
          t [15] = a_recd [ 8];
       }
-      rc = poly_func_add (a_file, t, 's', a_line, &x_curr);
+      rc = FUNCS_add     (a_file, t, 's', a_line, &x_curr);
       /* add purpose from description */
       if (x_curr != NULL) {
          *a_func = x_curr;
@@ -224,7 +224,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
          /*> sprintf  (t, "··%c_%s", 'a' - 1 + d++, s);                               <*/
          sprintf  (t, "(%c_%s)", x_ref, s);
       } else sprintf (t, "(%c_shared)", x_ref);
-      rc = poly_func_add (a_file, t, 'S', a_line, &x_curr);
+      rc = FUNCS_add     (a_file, t, 'S', a_line, &x_curr);
       /* add purpose from description */
       /* change name to be single char lettes identifier in unit test */
       if (x_curr != NULL) {
@@ -239,7 +239,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    }
    else if (strncmp (a_recd, "WAVE "  , 5) == 0) {
       sprintf (t, "o___wave_%c___o", (uchar) 'è' - 1 + c++);
-      rc = poly_func_add (a_file, t, '_', a_line, &x_curr);
+      rc = FUNCS_add     (a_file, t, '_', a_line, &x_curr);
       /* add purpose from description */
       /* change name to be single char lettes identifier in unit test */
       if (x_curr != NULL) {
@@ -253,7 +253,7 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
    }
    else if (strncmp (a_recd, "stage " , 6) == 0) {
       sprintf (t, "stage_%02d", d++);
-      rc = poly_func_add (a_file, t, '_', a_line, &x_curr);
+      rc = FUNCS_add     (a_file, t, '_', a_line, &x_curr);
       /* add purpose from description */
       /* change name to be single char lettes identifier in unit test */
       if (x_curr != NULL) {
@@ -417,7 +417,7 @@ poly_units_inventory    (tFILE *a_file)
       return  rce;
    }
    /*---(summary)------------------------*/
-   DEBUG_INPT   yLOG_value   ("count"     , poly_func_count ());
+   DEBUG_INPT   yLOG_value   ("count"     , FUNCS_count     ());
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;

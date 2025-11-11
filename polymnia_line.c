@@ -1177,7 +1177,7 @@ poly_debug__unit        (char *a_question, int i)
    /*---(defense)------------------------*/
    snprintf (unit_answer, LEN_RECD, "DEBUG unit       : function number unknown");
    if (strcmp (a_question, "work"      )     == 0) {
-      poly_func_by_index (i, &u);
+      FUNCS_by_index     (i, &u);
       if (u != NULL) {
          sprintf  (t, "[%.20s]", u->c_name);
          if (u->WORK_DCOUNT > 0)  sprintf (s, " %3dc", u->WORK_DCOUNT);

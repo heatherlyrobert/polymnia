@@ -75,8 +75,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.2-, switching to common testing sources"
-#define     P_VERNUM    "1.2d"
-#define     P_VERTXT    "unit test data added ySTR and yCALC for later integration testing"
+#define     P_VERNUM    "1.2e"
+#define     P_VERTXT    "unit tested files INCLUDING _in_proj search variants ;)"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -351,6 +351,8 @@ typedef     struct      cEXTERN     tEXTERN;
 #define     POLY_CODE           'c'
 #define     POLY_HEAD           'h'
 #define     POLY_UNIT           'u'
+#define     POLY_MUNIT          'm'
+#define     POLY_SUNIT          's'
 
 
 
@@ -553,6 +555,7 @@ struct cMY {
 };
 extern      tMY         my;
 
+extern char   g_print        [LEN_RECD];
 
 
 /*
@@ -663,7 +666,7 @@ struct cPROJ {
  */
 struct cFILE {
    /*---(master)------------*/
-   char        i_type;
+   char        i_type;                      /* c=c-lang, h=header, u=unit/string */
    char        i_name        [LEN_TITLE];
    char        i_sort        [LEN_TITLE];
    /*---(warranty)----------*/
@@ -1103,6 +1106,7 @@ char        PROJS__new              (tPROJ **r_new);
 char        PROJS_force             (tPROJ **r_new);
 char        PROJS__free             (tPROJ **b_old);
 char        PROJS__wipe             (tPROJ *a_dst);
+char        PROJS_rando             (tPROJ *a_dst);
 char*       PROJS__memory           (tPROJ *a_proj);
 /*········´ ´·············hooking·´ ´·········································*/
 char        PROJS__hook             (tPROJ *a_proj);
@@ -1114,9 +1118,13 @@ char        PROJS_replace           (char a_name [LEN_LABEL], char a_home [LEN_H
 char        PROJS_remove            (tPROJ **a_proj);
 /*········´ ´··············search·´ ´·········································*/
 int         PROJS_count             (void);
-char        PROJS_by_name           (uchar *a_name, tPROJ **a_proj);
-char        PROJS_by_index          (int n, tPROJ **a_proj);
-char        PROJS_by_cursor         (char a_dir, tPROJ **a_proj);
+char        PROJS_by_name           (uchar a_name [LEN_LABEL], tPROJ **r_proj);
+char        PROJS_by_index          (int   a_index           , tPROJ **r_proj);
+char        PROJS_by_cursor         (char  a_dir             , tPROJ **r_proj);
+char        PROJS_by_tree           (uchar a_name [LEN_LABEL], tPROJ **r_proj);
+/*········´ ´············exposure·´ ´·········································*/
+char*       PROJS_list              (void);
+char*       PROJS_entry             (tPROJ *a_proj);
 /*········´ ´·············program·´ ´·········································*/
 char        PROJS_init              (void);
 char        PROJS_purge             (void);
@@ -1131,7 +1139,6 @@ char        PROJS_gather            (cchar *a_data);
 /*········´ ´···········reporting·´ ´·········································*/
 char        PROJS_line              (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
 /*········´ ´············unittest·´ ´·········································*/
-char*       PROJS__unit_entry       (tPROJ *a_proj);
 char*       PROJS__unit             (char *a_question, int i);
 /*········´ ´················DONE·´ ´·········································*/
 
@@ -1161,47 +1168,112 @@ char*       HEADER__show            (tPROJ *a_proj);
 
 
 
-
-
-
-
-
-
-/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
-char        FILES_init              (void);
-char        FILES_wrap              (void);
-/*---(memory)---------------*/
+/*===[[ polymnia_files.c ]]===================================================*/
+/*········´ ´··············memory·´ ´·········································*/
 char        FILES__new              (tFILE **a_new);
 char        FILES_force             (tFILE **a_new);
 char        FILES__free             (tFILE **a_old);
-char        FILES_wipe              (tFILE *a_dst);
+char        FIlES__wipe             (tFILE *a_dst);
 char*       FILES__memory           (tFILE *a_file);
-/*---(hooking)--------------*/
+char        FILES_rando             (tFILE *a_file);
+/*········´ ´·············hooking·´ ´·········································*/
 char        FILES__hook             (tPROJ *a_proj, tFILE *a_file);
 char        FILES__unhook           (tFILE *a_file);
-/*---(existance)------------*/
+/*········´ ´···········existance·´ ´·········································*/
+char        FILES__presort          (char a_pname [LEN_LABEL], char a_type, char a_fname [LEN_TITLE], char *r_one, char *r_two);
 char        FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file);
 char        FILES_remove            (tFILE **a_old);
+/*········´ ´··············search·´ ´·········································*/
+int         FILES_count             (void);
+char        FILES_by_name           (char a_name [LEN_TITLE], tFILE **r_file);
+char        FILES_by_index          (int  a_index           , tFILE **a_file);
+char        FILES_by_cursor         (char a_dir             , tFILE **a_file);
+char        FILES_by_tree           (char a_name [LEN_TITLE], tFILE **r_file);
+/*········´ ´··············search·´ ´·········································*/
+int         FILES_in_proj_count     (tPROJ *a_proj);
+char        FILES_in_proj_by_name   (tPROJ *a_proj, char a_file [LEN_TITLE], tFILE **r_file);
+char        FILES_in_proj_by_index  (tPROJ *a_proj, int  a_index           , tFILE **r_file);
+char        FILES_in_proj_by_cursor (tPROJ *a_proj, char a_dir             , tFILE **r_file);
+/*········´ ´············exposure·´ ´·········································*/
+char*       FILES_in_proj_list      (tPROJ *a_proj);
+char*       FILES_entry             (tFILE *a_file);
+/*········´ ´·············program·´ ´·········································*/
+char        FILES_init              (void);
 char        FILES_purge             (tPROJ *a_proj, char a_update);
-/*---(inventory)------------*/
-char        FILES__filter           (char a_name [LEN_TITLE], char a_units, char *r_type, char r_mans [LEN_LABEL]);
+char        FILES_wrap              (void);
+/*········´ ´·············special·´ ´·········································*/
+char        FILES_git              (tFILE *a_file);
+char        FILES_footprint        (tFILE *a_file);
+/*········´ ´···············yjobs·´ ´·········································*/
+char        FILES__single_char      (char a_name [LEN_TITLE], char *r_type, char r_mans [LEN_LABEL]);
+char        FILES__multi_char       (char a_name [LEN_TITLE], char c_units, char *r_type);
+char        FILES__filter           (char a_name [LEN_TITLE], char c_units, char *r_type, char r_mans [LEN_LABEL]);
 char        FILES__sorting          (tPROJ *a_proj);
 char        FILES_gather            (tPROJ *a_proj);
-/*---(searching)------------*/
-int         FILES_count             (void);
-char        FILES_by_name           (uchar *a_name, tFILE **a_file);
-char        FILES_by_index          (int n, tFILE **a_file);
-char        FILES_by_cursor         (char a_dir, tFILE **a_file);
-char        FILES_by_proj_cursor    (tPROJ *a_proj, char a_dir, tFILE **r_file);
-char        FILES_by_proj_index     (tPROJ *a_proj, int n, tFILE **a_file);
-/*---(reporting)------------*/
+/*········´ ´···········reporting·´ ´·········································*/
 char        FILES_line              (tFILE *a_file, char a_style, char a_use, char a_pre, int a, int b, char a_print);
-/*---(footprint)------------*/
-char        FILES_footprint        (tFILE *a_file);
-/*---(unittest)-------------*/
+/*········´ ´············unittest·´ ´·········································*/
 char*       FILES__unit_by_proj     (tPROJ *a_proj, char a_dir);
+char*       FILES__unit_funcs       (tFILE *a_file);
 char*       FILES__unit             (char *a_question, int n);
-/*---(done)-----------------*/
+/*········´ ´················DONE·´ ´·········································*/
+
+
+
+/*===[[ polymnia_funcs.c ]]===================================================*/
+/*········´ ´··············memory·´ ´·········································*/
+char        FUNCS__new              (tFUNC **r_new);
+char        FUNCS_force             (tFUNC **r_new);
+char        FUNCS__free             (tFUNC **b_old);
+char        FUNCS__wipe             (tFUNC *a_func);
+char*       FUNCS__memory           (tFUNC *a_func);
+char        FUNCS_rando             (tFUNC *a_func);
+/*········´ ´··············memory·´ ´·········································*/
+char        WORK__new               (tWORK **r_new);
+char        WORK_force              (tWORK **r_new);
+char        WORK__free              (tWORK **b_old);
+char        WORK__wipe              (tWORK *a_work);
+char*       WORK__memory            (tWORK *a_work);
+/*········´ ´·············hooking·´ ´·········································*/
+char        FUNCS__hook             (tFILE *a_file, tFUNC *a_tag);
+char        FUNCS__unhook           (tFUNC *a_tag);
+/*········´ ´···········existance·´ ´·········································*/
+char        FUNCS_add               (tFILE *a_file, char *a_name, char a_type, int a_line, tFUNC **a_func);
+char        FUNCS_remove            (tFUNC **a_tag);
+/*········´ ´··············search·´ ´·········································*/
+int         FUNCS_count             (void);
+char        FUNCS_by_name           (uchar a_name [LEN_TITLE], tFUNC **a_func);
+char        FUNCS_by_index          (int   a_index           , tFUNC **a_func);
+char        FUNCS_by_cursor         (char  a_dir             , tFUNC **a_func);
+char        FUNCS_by_tree           (uchar a_name [LEN_TITLE], tFUNC **a_func);
+char        FUNCS_by_regex          (uchar *a_regex, tFUNC **a_func);
+/*········´ ´··············search·´ ´·········································*/
+char        FUNCS_by_proj_hint      (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func);
+char        FUNCS_by_proj_cursor    (tPROJ *a_proj, uchar a_mode, tFUNC **a_func);
+/*········´ ´··············search·´ ´·········································*/
+char        FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func);
+/*········´ ´·············program·´ ´·········································*/
+char        FUNCS_init              (void);
+char        FUNCS_purge             (tFILE *a_file, char a_update);
+char        FUNCS_wrap              (void);
+/*········´ ´·············special·´ ´·········································*/
+char        FUNCS_cli_by_hint       (char a_hint [LEN_SHORT], char a_loud);
+char        FUNCS_cli_by_name       (char a_name [LEN_TITLE], char a_loud);
+/*········´ ´···············yjobs·´ ´·········································*/
+char        FUNCS_gather            (tFILE *a_file);
+/*········´ ´···············lines·´ ´·········································*/
+char        FUNCS_enter             (tFUNC *a_func, int a_line);
+char        FUNCS_exit              (tFUNC *a_func, int a_line);
+char        FUNCS_inside            (tFUNC *a_func);
+/*········´ ´···········reporting·´ ´·········································*/
+char*       FUNCS__prefix           (tFUNC *a_func, char a_spec, int a, int b, int c);
+char*       FUNCS__core             (tFUNC *a_func, char a_spec, int c);
+char*       FUNCS__suffix           (tFUNC *a_func, char a_spec);
+char*       FUNCS_line              (tFUNC *a_func, char a_style, int a, int b, int c, char a_print);
+/*········´ ´············unittest·´ ´·········································*/
+char*       FUNCS__unit             (char *a_question, int i);
+
+
 
 
 
@@ -1277,9 +1349,10 @@ char        poly_extern_review      (void);
 char        poly_extern_list        (void);
 int         poly_extern_count       (void);
 /*---(search)---------------*/
-char        poly_extern_by_name     (uchar *a_name, tEXTERN **a_func);
-char        poly_extern_by_index    (int n, tEXTERN **a_ext);
-char        poly_extern_by_cursor   (char a_dir, tEXTERN **a_ext);
+char        poly_extern_by_name     (uchar a_name [LEN_TITLE], tEXTERN **a_func);
+char        poly_extern_by_index    (int   a_index           , tEXTERN **a_ext);
+char        poly_extern_by_cursor   (char  a_dir             , tEXTERN **a_ext);
+char        poly_extern_by_tree     (uchar a_name [LEN_TITLE], tEXTERN **a_func);
 char        poly_extern_dump        (void);
 /*---(unittest)-------------*/
 char*       poly_extern__unit       (char *a_question, int n);
@@ -1366,9 +1439,10 @@ char        poly_ylib_remove        (tYLIB **a_ylib);
 char        poly_ylib_purge         (tFUNC *a_func, char a_update);
 /*---(search)---------------*/
 int         poly_ylib_count         (void);
-char        poly_ylib_by_name       (uchar *a_name, tYLIB **a_ylib);
-char        poly_ylib_by_index      (int n, tYLIB **a_ylib);
-char        poly_ylib_by_cursor     (char a_dir, tYLIB **a_ylib);
+char        poly_ylib_by_name       (uchar a_name [LEN_TITLE], tYLIB **a_ylib);
+char        poly_ylib_by_index      (int   a_index           , tYLIB **a_ylib);
+char        poly_ylib_by_cursor     (char  a_dir             , tYLIB **a_ylib);
+char        poly_ylib_by_tree       (uchar a_name [LEN_TITLE], tYLIB **a_ylib);
 char        poly_ylib_by_func_index (tFUNC *a_func, int n, tYLIB **r_ylib);
 char        poly_ylib_use_by_index  (char *a_name, int n, tYLIB **r_ylib);
 /*---(unittest)-------------*/
@@ -1408,52 +1482,6 @@ char        poly_debug__fake        (int a_return, int a_intern, int a_ylib, tFU
 char*       poly_debug__unit        (char *a_question, int i);
 
 
-
-/*---(support)--------------*/
-char        poly_func__wipe         (tFUNC *c_func);
-char*       poly_func__memory       (tFUNC *a_func);
-char        poly_work__wipe         (tWORK *c_work);
-char*       poly_work__memory       (tWORK *a_work);
-char        poly_func_cli           (char *a_hint, char a_loud);
-char        poly_func_cli_name      (char *a_name, char a_loud);
-/*---(memory)---------------*/
-char        poly_func__new          (tFUNC **a_func);
-char        poly_func_force         (tFUNC **a_func);
-char        poly_func__free         (tFUNC **a_func);
-char        poly_work__new          (tWORK **a_work);
-char        poly_work_force         (tWORK **a_work);
-char        poly_work__free         (tWORK **a_work);
-/*---(hooking)--------------*/
-char        poly_func_hook          (tFILE *a_file, tFUNC *a_tag);
-char        poly_func_unhook        (tFUNC *a_tag);
-char        poly_func_in_file       (tFILE *a_file);
-/*---(existance)------------*/
-char        poly_func_add           (tFILE *a_file, char *a_name, char a_type, int a_line, tFUNC **a_func);
-char        poly_func_remove        (tFUNC **a_tag);
-/*---(position)-------------*/
-char        poly_func_enter         (tFUNC *a_func, int a_line);
-char        poly_func_exit          (tFUNC *a_func, int a_line);
-char        poly_func_inside        (tFUNC *a_func);
-/*---(search)---------------*/
-int         poly_func_count         (void);
-char        poly_func_by_name       (uchar *a_name, tFUNC **a_func);
-char        poly_func_by_index      (int n, tFUNC **a_func);
-char        poly_func_cursor        (char a_dir, tFUNC **a_func);
-char        poly_func_by_line       (tFILE *a_file, int a_line, tFUNC **a_func);
-char        poly_func_by_hint       (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func);
-char        poly_func_by_cursor     (tPROJ *a_proj, uchar a_mode, tFUNC **a_func);
-char        poly_func_by_regex      (uchar *a_regex, tFUNC **a_func);
-/*---(program)--------------*/
-char        poly_func_init          (void);
-char        poly_func_purge         (tFILE *a_file, char a_update);
-char        poly_func_wrap          (void);
-/*---(reporting)------------*/
-char*       poly_func__prefix       (tFUNC *a_func, char a_spec, int a, int b, int c);
-char*       poly_func__core         (tFUNC *a_func, char a_spec, int c);
-char*       poly_func__suffix       (tFUNC *a_func, char a_spec);
-char*       poly_func_line          (tFUNC *a_func, char a_style, int a, int b, int c, char a_print);
-/*---(unittest)-------------*/
-char*       poly_func__unit         (char *a_question, int i);
 
 
 

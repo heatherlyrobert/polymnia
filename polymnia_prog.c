@@ -199,18 +199,18 @@ PROG_reset_everything   (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = poly_func_init    ();
+   rc = FUNCS_init ();
    DEBUG_PROG  yLOG_value   ("func"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = poly_extern_init  ();
-   DEBUG_PROG  yLOG_value   ("extern"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = poly_extern_init  ();                                                     <* 
+    *> DEBUG_PROG  yLOG_value   ("extern"    , rc);                                   <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    rc = poly_vars_init    ();
    DEBUG_PROG  yLOG_value   ("vars"      , rc);
    --rce;  if (rc < 0) {
@@ -361,8 +361,8 @@ PROG__args              (int a_argc, char *a_argv[])
       else if (strcmp  (a, "--linux"        ) == 0)  my.g_filter = FILTER_LINUX;
       /*---(filtering)-------------------*/
       else if (strcmp  (a, "--project"      ) == 0)  { rc = PROJS_cli  (b);  if (rc >= 0)  ++i; }
-      else if (strcmp  (a, "--function"     ) == 0)  TWOARG rc = poly_func_cli_name (a_argv [i], 'y');
-      else if (strcmp  (a, "--hint"         ) == 0)  TWOARG rc = poly_func_cli    (a_argv [i], 'y');
+      else if (strcmp  (a, "--function"     ) == 0)  TWOARG rc = FUNCS_cli_by_name  (a_argv [i], 'y');
+      else if (strcmp  (a, "--hint"         ) == 0)  TWOARG rc = FUNCS_cli_by_hint  (a_argv [i], 'y');
       /*> else if (strcmp (a, "--extern"   ) == 0)  TWOARG rc = poly_extern_name (a_argv [i], 'y');   <*/
       /*> else if (strcmp (a, "--ylib"     ) == 0)  TWOARG rc = poly_ylib_name   (a_argv [i], 'y');   <*/
       /*---(compound)--------------------*/
@@ -426,9 +426,9 @@ PROG__begin             (void)
    DEBUG_PROG  yLOG_enter   (__FUNCTION__);
    /*---(prepare files)------------------*/
    DEBUG_PROG  yLOG_char    ("use_extern", my.g_run_extr);
-   if (my.g_run_extr == 'y') {
-      rc = poly_extern_load ();
-   }
+   /*> if (my.g_run_extr == 'y') {                                                    <* 
+    *>    rc = poly_extern_load ();                                                   <* 
+    *> }                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    return 0;

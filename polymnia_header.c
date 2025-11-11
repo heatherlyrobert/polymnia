@@ -404,7 +404,7 @@ HEADER_rando            (tPROJ *a_proj)
       }
       a_proj->j_header [i] = '·';
       if (strcmp (s_header [i].h_name, "") == 0) {
-         if (strcmp (s_header [i].h_label, "GRADE") == 0)  a_proj->j_header [i] = ' ';
+         if (strcmp (s_header [i].h_label, "GRADE") == 0)  a_proj->j_header [i] = '°';
          continue;
       }
       a_proj->j_header [i] = s_header [i].h_abbr;
