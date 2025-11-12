@@ -75,8 +75,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.2-, switching to common testing sources"
-#define     P_VERNUM    "1.2e"
-#define     P_VERTXT    "unit tested files INCLUDING _in_proj search variants ;)"
+#define     P_VERNUM    "1.2f"
+#define     P_VERTXT    "unit tested ctags pulls for all major file sub-actions"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -1202,6 +1202,7 @@ char        FILES_init              (void);
 char        FILES_purge             (tPROJ *a_proj, char a_update);
 char        FILES_wrap              (void);
 /*········´ ´·············special·´ ´·········································*/
+char        FILES_ctags             (char a_type, tFILE *a_file);
 char        FILES_git              (tFILE *a_file);
 char        FILES_footprint        (tFILE *a_file);
 /*········´ ´···············yjobs·´ ´·········································*/

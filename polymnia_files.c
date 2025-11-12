@@ -924,14 +924,29 @@ FILES__sorting          (tPROJ *a_proj)
    return 0;
 }
 
+/*
+ *  f = function definitions
+ *  l = local variables
+ *  v = file/static variables
+ *  x = extern variable definitions
+ *  d = macro definitions
+ *
+ *  h = included header files
+ *  s = structure names
+ *  m = structure members
+ *  t = typedefs
+ *
+ *
+ */
+
 char
-FILES_analysis          (char a_type, tFILE *a_file)
+FILES_ctags             (char a_type, tFILE *a_file)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    int         rci         =    0;
-   char       *x_valid     = "fldp";
+   char       *x_valid     = "fvlxdpsm";
    char        x_base      [LEN_HUND]  = "";
    char        x_source    [LEN_TITLE] = "";
    char        x_output    [LEN_TITLE] = "";
@@ -954,13 +969,16 @@ FILES_analysis          (char a_type, tFILE *a_file)
       return rce;
    }
    /*---(get file base name)-------------*/
-   rc = ystrlbase (x_source, NULL, x_base, NULL, NULL);
+   rc = yENV_name_detail (x_source, NULL, NULL, NULL, NULL, x_base, NULL, NULL, NULL);
    DEBUG_INPT   yLOG_value   ("ystrlcbase", rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_INPT   yLOG_info    ("x_base"    , x_base);
+   /*---(create output name)-------------*/
+   sprintf (x_output, "%s.ctags", x_base);
+   DEBUG_INPT   yLOG_info    ("x_output"  , x_output);
    /*---(assign name)--------------------*/
    DEBUG_INPT   yLOG_char    ("a_type"    , a_type);
    DEBUG_INPT   yLOG_info    ("x_valid"   , x_valid);
