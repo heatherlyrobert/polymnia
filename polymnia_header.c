@@ -414,23 +414,21 @@ HEADER_rando            (tPROJ *a_proj)
    return 0;
 }
 
-char*
+char
 HEADER__memory          (tPROJ *a_proj)
 {
    int         i           =    0;
-   static char x_print     [LEN_HUND]  = "";
-   strcpy (x_print, "");
    if (a_proj == NULL)  return "((null))";
    for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       if (s_header [i].h_abbr == 1) {
-         poly_shared__spacer     (x_print);
+         yENV_check_spacer ();
          continue;
       }
-      poly_shared__check_str  (x_print, (long) a_proj + s_header [i].h_offset);
+      yENV_check_str  ((long) a_proj + s_header [i].h_offset);
    }
    /*---(complete)-----------------------*/
-   return x_print;
+   return 1;
 }
 
 

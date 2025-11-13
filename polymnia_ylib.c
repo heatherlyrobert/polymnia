@@ -35,20 +35,20 @@ char*
 poly_ylib__memory       (tYLIB *a_ylib)
 {
    /*---(master)-------------------------*/
-   ystrlcpy (s_print, "["  , LEN_RECD);
-   poly_shared__check_str  (s_print, a_ylib->name);
-   poly_shared__check_num  (s_print, a_ylib->line);
-   poly_shared__spacer     (s_print);
-   poly_shared__check_ptr  (s_print, a_ylib->func);
-   poly_shared__check_ptr  (s_print, a_ylib->f_prev);
-   poly_shared__check_ptr  (s_print, a_ylib->f_next);
-   poly_shared__spacer     (s_print);
-   poly_shared__check_ptr  (s_print, a_ylib->ylib);
-   poly_shared__check_ptr  (s_print, a_ylib->e_prev);
-   poly_shared__check_ptr  (s_print, a_ylib->e_next);
-   ystrlcat (s_print, "]" , LEN_RECD);
+   yENV_check_beg    ();
+   yENV_check_str    (a_ylib->name);
+   yENV_check_num    (a_ylib->line);
+   yENV_check_spacer ();
+   yENV_check_ptr    (a_ylib->func);
+   yENV_check_ptr    (a_ylib->f_prev);
+   yENV_check_ptr    (a_ylib->f_next);
+   yENV_check_spacer ();
+   yENV_check_ptr    (a_ylib->ylib);
+   yENV_check_ptr    (a_ylib->e_prev);
+   yENV_check_ptr    (a_ylib->e_next);
+   yENV_check_end    ();
    /*---(complete)-----------------------*/
-   return s_print;
+   return  yENV_check ();
 }
 
 
@@ -58,9 +58,9 @@ poly_ylib__memory       (tYLIB *a_ylib)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char poly_ylib__new  (tYLIB **a_new) { return poly_shared_new  ("ylib", sizeof (tYLIB), a_new, &g_nylib, '-', poly_ylib__wipe); }
-char poly_ylib_force (tYLIB **a_new) { return poly_shared_new  ("ylib", sizeof (tYLIB), a_new, &g_nylib, 'y', poly_ylib__wipe); }
-char poly_ylib__free (tYLIB **a_old) { return poly_shared_free ("ylib", a_old, &g_nylib); }
+char poly_ylib__new  (tYLIB **a_new) { return yENV_new  ("ylib", sizeof (tYLIB), a_new, &g_nylib, '-', poly_ylib__wipe); }
+char poly_ylib_force (tYLIB **a_new) { return yENV_new  ("ylib", sizeof (tYLIB), a_new, &g_nylib, 'y', poly_ylib__wipe); }
+char poly_ylib__free (tYLIB **a_old) { return yENV_free ("ylib", a_old, &g_nylib); }
 
 
 

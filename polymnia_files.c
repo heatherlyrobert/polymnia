@@ -51,36 +51,36 @@ FILES__memory           (tFILE *a_file)
    char        rce         =  -10;
    --rce;  if (a_file == NULL)  return "(null file)";
    /*---(master)-------------------------*/
-   ystrlcpy (s_print, "["  , LEN_RECD);
-   poly_shared__check_char (s_print, a_file->i_type);
-   poly_shared__check_str  (s_print, a_file->i_name);
-   poly_shared__check_str  (s_print, a_file->i_sort);
-   poly_shared__spacer     (s_print);
+   yENV_check_beg    ();
+   yENV_check_char   (a_file->i_type);
+   yENV_check_str    (a_file->i_name);
+   yENV_check_str    (a_file->i_sort);
+   yENV_check_spacer ();
    /*---(gpl licensing)------------------*/
-   poly_shared__check_str  (s_print, a_file->i_copyright);
-   poly_shared__check_str  (s_print, a_file->i_license);
-   poly_shared__check_str  (s_print, a_file->i_copyleft);
-   poly_shared__check_str  (s_print, a_file->i_include);
-   poly_shared__check_str  (s_print, a_file->i_as_is);
-   poly_shared__check_str  (s_print, a_file->i_warning);
-   poly_shared__spacer     (s_print);
+   yENV_check_str    (a_file->i_copyright);
+   yENV_check_str    (a_file->i_license);
+   yENV_check_str    (a_file->i_copyleft);
+   yENV_check_str    (a_file->i_include);
+   yENV_check_str    (a_file->i_as_is);
+   yENV_check_str    (a_file->i_warning);
+   yENV_check_spacer ();
    /*---(project)------------------------*/
-   poly_shared__check_ptr  (s_print, a_file->i_proj);
-   poly_shared__spacer     (s_print);
+   yENV_check_ptr    (a_file->i_proj);
+   yENV_check_spacer ();
    /*---(file list)----------------------*/
-   poly_shared__check_ptr  (s_print, a_file->i_prev);
-   poly_shared__check_ptr  (s_print, a_file->i_next);
-   poly_shared__spacer     (s_print);
+   yENV_check_ptr    (a_file->i_prev);
+   yENV_check_ptr    (a_file->i_next);
+   yENV_check_spacer ();
    /*---(functions)----------------------*/
-   poly_shared__check_ptr  (s_print, a_file->i_chead);
-   poly_shared__check_ptr  (s_print, a_file->i_ctail);
-   poly_shared__check_num  (s_print, a_file->i_ccount);
-   poly_shared__spacer     (s_print);
+   yENV_check_ptr    (a_file->i_chead);
+   yENV_check_ptr    (a_file->i_ctail);
+   yENV_check_num    (a_file->i_ccount);
+   yENV_check_spacer ();
    /*---(btree)--------------------------*/
-   poly_shared__check_ptr  (s_print, a_file->i_btree);
-   ystrlcat (s_print, "]" , LEN_RECD);
+   yENV_check_ptr    (a_file->i_btree);
+   yENV_check_end    ();
    /*---(complete)-----------------------*/
-   return s_print;
+   return yENV_check ();
 }
 
 char
@@ -114,9 +114,9 @@ FILES_rando             (tFILE *a_file)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char FILES__new  (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, '-', FILES__wipe); }
-char FILES_force (tFILE **a_new) { return poly_shared_new  ("file", sizeof (tFILE), a_new, NULL, 'y', FILES__wipe); }
-char FILES__free (tFILE **a_old) { return poly_shared_free ("file", a_old, NULL); }
+char FILES__new  (tFILE **a_new) { return yENV_new  ("file", sizeof (tFILE), a_new, NULL, '-', FILES__wipe); }
+char FILES_force (tFILE **a_new) { return yENV_new  ("file", sizeof (tFILE), a_new, NULL, 'y', FILES__wipe); }
+char FILES__free (tFILE **a_old) { return yENV_free ("file", a_old, NULL); }
 
 
 
@@ -940,19 +940,24 @@ FILES__sorting          (tPROJ *a_proj)
  */
 
 char
-FILES_ctags             (char a_type, tFILE *a_file)
+FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_TITLE])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    int         rci         =    0;
    char       *x_valid     = "fvlxdpsm";
+   char       *p           = NULL;
+   char        x_kind      [LEN_TERSE] = "";
+   char        x_ext       [LEN_TERSE][LEN_TERSE] = { "funcs", "vars", "locals", "externs", "macros", "protos", "structs", "typedefs" };
    char        x_base      [LEN_HUND]  = "";
    char        x_source    [LEN_TITLE] = "";
    char        x_output    [LEN_TITLE] = "";
    char        x_cmd       [LEN_FULL]  = "";
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (r_output != NULL)  strcpy (r_output, "");
    /*---(defense)------------------------*/
    DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
    --rce;  if (a_file == NULL) {
@@ -976,23 +981,195 @@ FILES_ctags             (char a_type, tFILE *a_file)
       return rce;
    }
    DEBUG_INPT   yLOG_info    ("x_base"    , x_base);
-   /*---(create output name)-------------*/
-   sprintf (x_output, "%s.ctags", x_base);
-   DEBUG_INPT   yLOG_info    ("x_output"  , x_output);
-   /*---(assign name)--------------------*/
+   /*---(handle kind)--------------------*/
    DEBUG_INPT   yLOG_char    ("a_type"    , a_type);
-   DEBUG_INPT   yLOG_info    ("x_valid"   , x_valid);
-   --rce;  if (a_type == 0 || strchr (x_valid, a_type) == NULL) {
-      DEBUG_INPT   yLOG_note    ("type unknown");
+   --rce;  if (a_type == 0) {
+      DEBUG_INPT   yLOG_note    ("type null/zero");
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   sprintf (x_cmd, "ctags  --language-force=c -x --sort=no --extras=+F --c-kinds=%c   %s > %s  2> /dev/null", a_type, x_source, x_output);
+   DEBUG_INPT   yLOG_info    ("x_valid"   , x_valid);
+   p = strchr (x_valid, a_type);
+   DEBUG_INPT   yLOG_point   ("p"         , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_note    ("type not allowed");
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   if (a_type != 'm')  sprintf (x_kind, "%c", a_type);
+   else                strcpy  (x_kind, "sm");
+   /*---(create output name)-------------*/
+   sprintf (x_output, "%s.%s", x_base, x_ext [p - x_valid]);
+   DEBUG_INPT   yLOG_info    ("x_output"  , x_output);
    /*---(handle)-------------------------*/
+   sprintf (x_cmd, "ctags  --language-force=c -x --sort=no --extras=+F --c-kinds=%s   %s > %s  2> /dev/null", x_kind, x_source, x_output);
    DEBUG_INPT   yLOG_info    ("x_cmd"     , x_cmd);
    rci = system (x_cmd);
    DEBUG_INPT   yLOG_value   ("system"    , rci);
    --rce;  if (rci < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(save-back)----------------------*/
+   if (r_output != NULL)  ystrlcpy (r_output, x_output, LEN_TITLE);
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+char
+FILES__ctags_parse      (char a_recd [LEN_RECD], char r_name [LEN_TITLE], char r_type [LEN_TERSE], int *r_line, char r_file [LEN_TITLE])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_recd      [LEN_RECD]  = "";
+   char        x_name      [LEN_TITLE] = "";
+   char        x_type      [LEN_TERSE] = "";
+   int         x_line      =    0;
+   char        x_file      [LEN_TITLE] = "";
+   char       *p           = NULL;
+   char       *q           =  " ";
+   char       *s           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (r_name != NULL)  ystrlcpy (r_name, "", LEN_TITLE);
+   if (r_type != NULL)  ystrlcpy (r_type, "", LEN_TERSE);
+   if (r_line != NULL)  *r_line = -1;
+   if (r_file != NULL)  ystrlcpy (r_file, "", LEN_TITLE);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);
+   --rce;  if (a_recd == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare)---------------------*/
+   ystrlcpy (x_recd, a_recd, LEN_RECD);
+   /*---(get function)-------------------*/
+   p = strtok_r (x_recd, q, &s);
+   DEBUG_INPT   yLOG_point   ("p (name)"  , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   ystrlcpy (x_name, p, LEN_TITLE);
+   DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
+   /*---(get type)-----------------------*/
+   p = strtok_r (NULL  , q, &s);
+   DEBUG_INPT   yLOG_point   ("p (type)"  , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   ystrlcpy (x_type, p, LEN_TERSE);
+   DEBUG_INPT   yLOG_info    ("x_type"    , x_type);
+   /*---(line)---------------------------*/
+   p = strtok_r (NULL  , q, &s);
+   DEBUG_INPT   yLOG_point   ("p (line)"  , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   x_line = atoi (p);
+   DEBUG_INPT   yLOG_value   ("x_line"    , x_line);
+   --rce;  if (x_line <= 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get file)-----------------------*/
+   p = strtok_r (NULL  , q, &s);
+   DEBUG_INPT   yLOG_point   ("p (file)"  , p);
+   --rce;  if (p == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   yENV_name_split (p, NULL, NULL, x_file);
+   DEBUG_INPT   yLOG_info    ("x_file"    , x_file);
+   /*---(save-back)----------------------*/
+   if (r_name != NULL)  ystrlcpy (r_name, x_name, LEN_TITLE);
+   if (r_type != NULL)  ystrlcpy (r_type, x_type, LEN_TERSE);
+   if (r_line != NULL)  *r_line = x_line;
+   if (r_file != NULL)  ystrlcpy (r_file, x_file, LEN_TITLE);
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+char
+FILES_ctags             (tFILE *a_file, char a_type, void *f_handler ())
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         rc          =    0;
+   char        rce         =  -10;
+   char        x_output    [LEN_TITLE] = "";
+   FILE       *f           = NULL;
+   char        x_recd      [LEN_RECD]  = "";
+   int         x_read      =    0;
+   char        x_name      [LEN_TITLE] = "";
+   char        x_type      [LEN_TERSE] = "";
+   int         x_line      =    0;
+   char        x_file      [LEN_TITLE] = "";
+   char      (*x_handler)   (char a_name [LEN_TITLE], char a_type [LEN_TERSE], int a_line, char a_file [LEN_TITLE]);
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(generate ctags)-----------------*/
+   rc = FILES__ctags_generate (a_type, a_file, x_output);
+   DEBUG_INPT   yLOG_value   ("ctags"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   DEBUG_INPT   yLOG_info    ("x_output"   , x_output);
+   /*---(open ctags file)----------------*/
+   rc = yENV_open ("", x_output, 'r', &f);
+   DEBUG_INPT   yLOG_value   ("open"       , rc);
+   DEBUG_INPT   yLOG_point   ("f"          , f);
+   --rce;  if (rc < 0 || f == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(prepare)------------------------*/
+   x_handler = f_handler;
+   DEBUG_INPT   yLOG_point   ("x_handler"  , x_handler);
+   /*---(process file)-------------------*/
+   --rce;  while (1) {
+      /*---(read record)-----------------*/
+      rc = yENV_read (f, 'y', '-', &x_read, NULL, x_recd, NULL);
+      DEBUG_INPT   yLOG_value   ("read"       , rc);
+      if (rc < 0) {
+         rc = yENV_close (&f);
+         DEBUG_INPT   yLOG_value   ("close"      , rc);
+         DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+         return  rce;
+      }
+      if (rc == 0) {
+         DEBUG_INPT   yLOG_note    ("hit end-of-file");
+         break;
+      }
+      /*---(parse record)----------------*/
+      rc = FILES__ctags_parse (x_recd, x_name, x_type, &x_line, x_file);
+      DEBUG_INPT   yLOG_value   ("parse"      , rc);
+      if (rc < 0) {
+         rc = yENV_close (&f);
+         DEBUG_INPT   yLOG_value   ("close"      , rc);
+         DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+         return  rce;
+      }
+      /*---(handle ctag)-----------------*/
+      if (x_handler != NULL) {
+         rc = x_handler (x_name, x_type, x_line, x_file);
+         DEBUG_INPT   yLOG_value   ("handle"     , rc);
+      } else {
+         DEBUG_INPT   yLOG_note    ("no handler assigned");
+      }
+      /*---(done)------------------------*/
+   }
+   /*---(close ctags file)---------------*/
+   rc = yENV_close (&f);
+   DEBUG_INPT   yLOG_value   ("close"      , rc);
+   DEBUG_INPT   yLOG_point   ("f"          , f);
+   --rce;  if (rc < 0 || f != NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
@@ -1005,8 +1182,8 @@ char         /*--> make a list of input files --------------------------------*/
 FILES_gather            (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
-   int         rc          =    0;          /* generic return code            */
-   char        rce         =  -10;          /* return code for errors         */
+   int         rc          =    0;
+   char        rce         =  -10;
    DIR        *x_dir       = NULL;          /* directory pointer              */
    tDIRENT    *x_file      = NULL;          /* directory entry pointer        */
    char        x_name      [LEN_TITLE];      /* file name                      */

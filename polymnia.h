@@ -75,8 +75,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.2-, switching to common testing sources"
-#define     P_VERNUM    "1.2f"
-#define     P_VERTXT    "unit tested ctags pulls for all major file sub-actions"
+#define     P_VERNUM    "1.2g"
+#define     P_VERTXT    "moved open, close, and read to yENV, and unit tested ctags parsing"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -1149,7 +1149,7 @@ char*       PROJS__unit             (char *a_question, int i);
 short       HEADER_count            (void);
 char        HEADER_wipe             (tPROJ *a_proj);
 char        HEADER_rando            (tPROJ *a_proj);
-char*       HEADER__memory          (tPROJ *a_proj);
+char        HEADER__memory          (tPROJ *a_proj);
 /*········´ ´··············search·´ ´·········································*/
 short       HEADER__find            (char a_label [LEN_LABEL]);
 /*········´ ´·············reading·´ ´·········································*/
@@ -1201,10 +1201,10 @@ char*       FILES_entry             (tFILE *a_file);
 char        FILES_init              (void);
 char        FILES_purge             (tPROJ *a_proj, char a_update);
 char        FILES_wrap              (void);
-/*········´ ´·············special·´ ´·········································*/
-char        FILES_ctags             (char a_type, tFILE *a_file);
-char        FILES_git              (tFILE *a_file);
-char        FILES_footprint        (tFILE *a_file);
+/*········´ ´···············ctags·´ ´·········································*/
+char        FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_TITLE]);
+char        FILES__ctags_parse      (char a_recd [LEN_RECD], char r_name [LEN_TITLE], char r_type [LEN_TERSE], int *r_line, char r_file [LEN_TITLE]);
+char        FILES_ctags             (tFILE *a_file, char a_type, void *f_handler ());
 /*········´ ´···············yjobs·´ ´·········································*/
 char        FILES__single_char      (char a_name [LEN_TITLE], char *r_type, char r_mans [LEN_LABEL]);
 char        FILES__multi_char       (char a_name [LEN_TITLE], char c_units, char *r_type);
@@ -1218,6 +1218,11 @@ char*       FILES__unit_by_proj     (tPROJ *a_proj, char a_dir);
 char*       FILES__unit_funcs       (tFILE *a_file);
 char*       FILES__unit             (char *a_question, int n);
 /*········´ ´················DONE·´ ´·········································*/
+
+
+
+char        FILES_git              (tFILE *a_file);
+char        FILES_footprint        (tFILE *a_file);
 
 
 
@@ -1504,20 +1509,11 @@ char        poly_tags__cleanup      (void);
 char        poly_tags__handler      (tFILE *a_file, char *a_recd);
 
 
-/*---(memory)---------------*/
-char        poly_shared_new         (char *a_terse, int a_size, void **a_new, int *a_count, char a_force, char *a_wiper (void *));
-char        poly_shared_free        (char *a_terse, void **a_old, int *a_count);
-char        poly_shared__unit_wiper (void *a_void);
-char        poly_shared__check_char (char *a_out, char a_char);
-char        poly_shared__check_str  (char *a_out, char *a_str);
-char        poly_shared__check_ptr  (char *a_out, void *a_ptr);
-char        poly_shared__check_num  (char *a_out, int a_num);
-char        poly_shared__spacer     (char *a_out);
 /*---(hooking)--------------*/
 /*> char        poly_shared_hook        (char *a_terse, char *a_name, void *a_here, void *a_parent, void *a_owner, void *a_head, void *a_tail, void *a_prev, void *a_tnext, int *a_count, int *a_counta, int *a_countb, int *a_countc);   <*/
 /*> char        poly_shared_unhook      (char *a_terse, char *a_name, void *a_here, void *a_owner, void *a_head, void *a_tail, void *a_prev, void *a_pnext, void *a_next, void *a_nprev, int *a_count, int *a_counta, int *a_countb, int *a_countc);   <*/
 /*---(other)----------------*/
-char        poly_shared_verify      (char a_type, uchar *a_name);
+/*> char        poly_shared_verify      (char a_type, uchar *a_name);                 <*/
 char        poly_shared_open        (char a_type, char *a_focus);
 char        poly_shared_close       (char a_type);
 char        poly_shared_read        (char a_type, int *a_line, char *a_curr, char *a_prev);

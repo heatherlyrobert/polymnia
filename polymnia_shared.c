@@ -20,138 +20,6 @@ static      char        s_vars        [LEN_RECD] = "";
 
 
 /*====================------------------------------------====================*/
-/*===----                       memory allccation                      ----===*/
-/*====================------------------------------------====================*/
-static void  o___MEMORY__________o () { return; }
-
-char
-poly_shared_new          (char *a_terse, int a_size, void **a_new, int *a_count, char a_force, char *a_wiper (void *))
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   void       *x_new       = NULL;
-   int         x_tries     =    0;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   if (a_terse != NULL)  DEBUG_DATA   yLOG_snote   (a_terse);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_new);
-   --rce;  if (a_new == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_spoint  (*a_new);
-   --rce;  if (a_force != 'y' && *a_new != NULL) {
-      DEBUG_DATA   yLOG_snote   ("already set");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(default)------------------------*/
-   *a_new = NULL;
-   /*---(check size)---------------------*/
-   DEBUG_DATA   yLOG_sint    (a_size);
-   --rce;  if (a_size <= 0 || a_size > 15000) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(allocate)-----------------------*/
-   while (x_new == NULL) {
-      ++x_tries;
-      x_new = malloc (a_size);
-      if (x_tries > 3)   break;
-   }
-   DEBUG_DATA   yLOG_sint    (x_tries);
-   DEBUG_DATA   yLOG_spoint  (x_new);
-   --rce;  if (x_new == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(wipe)---------------------------*/
-   rc = 0;
-   if (a_wiper != NULL)  rc = a_wiper (x_new);
-   /*---(update counter)-----------------*/
-   if (a_count != NULL)  ++(*a_count);
-   /*---(save return)--------------------*/
-   *a_new = x_new;
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return rc;
-}
-
-char
-poly_shared_free        (char *a_terse, void **a_old, int *a_count)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_senter  (__FUNCTION__);
-   if (a_terse != NULL)  DEBUG_DATA   yLOG_snote   (a_terse);
-   /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_spoint  (a_old);
-   --rce;  if (a_old == NULL) {
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_spoint  (*a_old);
-   --rce;  if (*a_old == NULL) {
-      DEBUG_DATA   yLOG_snote   ("never set");
-      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(clear and return)---------------*/
-   free (*a_old);
-   *a_old = NULL;
-   /*---(update counter)-----------------*/
-   if (a_count != NULL)  --(*a_count);
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char poly_shared__unit_wiper  (void *a_void) { return 1; }
-
-char
-poly_shared__check_char (char *a_out, char a_char)
-{
-   if      (a_char == '£')       ystrlcat (a_out, "_", LEN_HUND);
-   else if (a_char == '-')        ystrlcat (a_out, "_", LEN_HUND);
-   else if (a_char == '?')        ystrlcat (a_out, "_", LEN_HUND);
-   else                           ystrlcat (a_out, "X", LEN_HUND);
-}
-
-char
-poly_shared__check_str  (char *a_out, char *a_str)
-{
-   if      (a_str == NULL)        ystrlcat (a_out, "_", LEN_HUND);
-   else if (strlen (a_str) == 0)  ystrlcat (a_out, "_", LEN_HUND);
-   else                           ystrlcat (a_out, "X", LEN_HUND);
-}
-
-char
-poly_shared__check_ptr  (char *a_out, void *a_ptr)
-{
-   if      (a_ptr == NULL)        ystrlcat (a_out, "_", LEN_HUND);
-   else                           ystrlcat (a_out, "X", LEN_HUND);
-}
-
-char
-poly_shared__check_num  (char *a_out, int a_num)
-{
-   if      (a_num == 0)           ystrlcat (a_out, "_", LEN_HUND);
-   else if (a_num == -1)          ystrlcat (a_out, "_", LEN_HUND);
-   else                           ystrlcat (a_out, "X", LEN_HUND);
-}
-
-char
-poly_shared__spacer     (char *a_out)
-{
-   ystrlcat (a_out, ".", LEN_HUND);
-}
-
-
-
-/*====================------------------------------------====================*/
 /*===----                       support function                       ----===*/
 /*====================------------------------------------====================*/
 static void  o___SUPPORT_________o () { return; }
@@ -202,38 +70,6 @@ poly_shared__pointer    (char a_type, FILE ***a_file)
    DEBUG_INPT   yLOG_point   ("*a_file"   , *a_file);
    /*---(complete)-----------------------*/
    return 0;
-}
-
-char
-poly_shared_verify      (char a_type, uchar *a_name)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   int         rci         =    0;
-   tSTAT       st;
-   /*---(defense)------------------------*/
-   if (a_name == NULL)                   return 0;
-   if (strcmp (a_name, "") == 0)         return 0;
-   /*---(check for existance)------------*/
-   rci = lstat (a_name, &st);
-   DEBUG_FILE   yLOG_value   ("lstat"     , rci);
-   --rce; if (rci < 0) {
-      DEBUG_FILE   yLOG_note    ("file does not exist, can not read");
-      return rce;
-   }
-   /*---(check for regular file)---------*/
-   --rce;  if (a_type == 's' && S_ISLNK (st.st_mode)) {
-      DEBUG_FILE   yLOG_note    ("unit tests can be links");
-      return 1;
-   }
-   --rce;  if (!S_ISREG (st.st_mode)) {
-      DEBUG_FILE   yLOG_note    ("not a regular file, rejected");
-      return rce;
-   }
-   /*---(output)-------------------------*/
-   DEBUG_FILE   yLOG_note    ("confirmed as existing and is a regular file");
-   /*---(complete)-----------------------*/
-   return 1;
 }
 
 
@@ -343,9 +179,9 @@ poly_shared_open        (char a_type, char *a_focus)
       return rce;
    }
    /*---(pre-check)----------------------*/
-   rc = poly_shared_verify (a_type, x_source);
+   rc = yENV_exists (x_source);
    DEBUG_INPT   yLOG_value   ("verify"     , rc);
-   --rce;  if (rc < 0) {
+   --rce;  if (rc == '-') {
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return rce;
    }

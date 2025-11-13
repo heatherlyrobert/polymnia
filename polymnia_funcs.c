@@ -213,43 +213,42 @@ char*
 FUNCS__memory           (tFUNC *a_func)
 {
    /*---(header)-------------------------*/
-   ystrlcpy (s_print, "["  , LEN_RECD);
+   yENV_check_beg    ();
    /*---(master)-------------------------*/
-   poly_shared__check_char (s_print, a_func->c_type);
-   poly_shared__check_str  (s_print, a_func->c_name);
-   poly_shared__check_num  (s_print, a_func->c_line);
-   poly_shared__check_str  (s_print, a_func->c_hint);
-   poly_shared__check_str  (s_print, a_func->c_purpose);
-   poly_shared__spacer     (s_print);
+   yENV_check_char   (a_func->c_type);
+   yENV_check_str    (a_func->c_name);
+   yENV_check_num    (a_func->c_line);
+   yENV_check_str    (a_func->c_hint);
+   yENV_check_str    (a_func->c_purpose);
+   yENV_check_spacer ();
    /*---(position)-----------------------*/
-   poly_shared__check_num  (s_print, a_func->c_line);
-   poly_shared__check_num  (s_print, a_func->c_beg);
-   poly_shared__check_num  (s_print, a_func->c_end);
-   poly_shared__check_char (s_print, a_func->c_ready);
-   poly_shared__spacer     (s_print);
+   yENV_check_num    (a_func->c_line);
+   yENV_check_num    (a_func->c_beg);
+   yENV_check_num    (a_func->c_end);
+   yENV_check_char   (a_func->c_ready);
+   yENV_check_spacer ();
    /*---(characterization)---------------*/
-   poly_shared__check_str  (s_print, a_func->c_anatomy);
-   poly_shared__check_str  (s_print, a_func->c_match);
-   poly_shared__spacer     (s_print);
+   yENV_check_str    (a_func->c_anatomy);
+   yENV_check_str    (a_func->c_match);
+   yENV_check_spacer ();
    /*---(file)---------------------------*/
-   poly_shared__check_ptr  (s_print, a_func->c_file);
-   poly_shared__spacer     (s_print);
+   yENV_check_ptr    (a_func->c_file);
+   yENV_check_spacer ();
    /*---(functions)----------------------*/
-   poly_shared__check_ptr  (s_print, a_func->c_prev);
-   poly_shared__check_ptr  (s_print, a_func->c_next);
-   poly_shared__check_ptr  (s_print, a_func->c_work);
-   poly_shared__spacer     (s_print);
+   yENV_check_ptr    (a_func->c_prev);
+   yENV_check_ptr    (a_func->c_next);
+   yENV_check_ptr    (a_func->c_work);
+   yENV_check_spacer ();
    /*---(ylib)---------------------------*/
-   poly_shared__check_ptr  (s_print, a_func->c_yhead);
-   poly_shared__check_ptr  (s_print, a_func->c_ytail);
-   poly_shared__check_num  (s_print, a_func->c_ycount);
-   poly_shared__spacer     (s_print);
+   yENV_check_ptr    (a_func->c_yhead);
+   yENV_check_ptr    (a_func->c_ytail);
+   yENV_check_num    (a_func->c_ycount);
+   yENV_check_spacer ();
    /*---(btree)--------------------------*/
-   poly_shared__check_ptr  (s_print, a_func->c_btree);
-   /*---(footer)-------------------------*/
-   ystrlcat (s_print, "]" , LEN_RECD);
+   yENV_check_ptr    (a_func->c_btree);
+   yENV_check_end    ();
    /*---(complete)-----------------------*/
-   return s_print;
+   return yENV_check ();
 }
 
 char
@@ -308,14 +307,14 @@ char*
 WORK__memory            (tWORK *a_work)
 {
    /*---(master)-------------------------*/
-   ystrlcpy (s_print, "["  , LEN_RECD);
-   poly_shared__check_num  (s_print, a_work->beg);
-   poly_shared__check_num  (s_print, a_work->end);
-   poly_shared__check_num  (s_print, a_work->temp [0]);
-   poly_shared__check_str  (s_print, a_work->locals);
-   ystrlcat (s_print, "]" , LEN_RECD);
+   yENV_check_beg    ();
+   yENV_check_num    (a_work->beg);
+   yENV_check_num    (a_work->end);
+   yENV_check_num    (a_work->temp [0]);
+   yENV_check_str    (a_work->locals);
+   yENV_check_end    ();
    /*---(complete)-----------------------*/
-   return s_print;
+   return yENV_check ();
 }
 
 
@@ -325,13 +324,13 @@ WORK__memory            (tWORK *a_work)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char FUNCS__new   (tFUNC **r_new) { return poly_shared_new  ("func", sizeof (tFUNC), r_new, NULL, '-', FUNCS__wipe); }
-char FUNCS_force  (tFUNC **r_new) { return poly_shared_new  ("func", sizeof (tFUNC), r_new, NULL, 'y', FUNCS__wipe); }
-char FUNCS__free  (tFUNC **b_old) { return poly_shared_free ("func", b_old, NULL); }
+char FUNCS__new   (tFUNC **r_new) { return yENV_new  ("func", sizeof (tFUNC), r_new, NULL, '-', FUNCS__wipe); }
+char FUNCS_force  (tFUNC **r_new) { return yENV_new  ("func", sizeof (tFUNC), r_new, NULL, 'y', FUNCS__wipe); }
+char FUNCS__free  (tFUNC **b_old) { return yENV_free ("func", b_old, NULL); }
 
-char WORK__new    (tWORK **r_new) { return poly_shared_new  ("work", sizeof (tWORK), r_new, NULL, '-', WORK__wipe); }
-char WORK_force   (tWORK **r_new) { return poly_shared_new  ("work", sizeof (tWORK), r_new, NULL, 'y', WORK__wipe); }
-char WORK__free   (tWORK **b_old) { return poly_shared_free ("work", b_old, NULL); }
+char WORK__new    (tWORK **r_new) { return yENV_new  ("work", sizeof (tWORK), r_new, NULL, '-', WORK__wipe); }
+char WORK_force   (tWORK **r_new) { return yENV_new  ("work", sizeof (tWORK), r_new, NULL, 'y', WORK__wipe); }
+char WORK__free   (tWORK **b_old) { return yENV_free ("work", b_old, NULL); }
 
 
 

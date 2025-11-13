@@ -204,23 +204,23 @@ char*
 poly_extern__memory     (tEXTERN *a_ext)
 {
    /*---(master)-------------------------*/
-   ystrlcpy (s_print, "["  , LEN_RECD);
-   poly_shared__check_ptr  (s_print, a_ext->elib);
-   poly_shared__check_str  (s_print, a_ext->name);
-   poly_shared__check_num  (s_print, a_ext->line);
-   poly_shared__check_char (s_print, a_ext->type);
-   poly_shared__check_char (s_print, a_ext->cat);
-   poly_shared__check_char (s_print, a_ext->sub);
-   poly_shared__check_num  (s_print, a_ext->wuse);
-   poly_shared__spacer     (s_print);
-   poly_shared__check_ptr  (s_print, a_ext->y_head);
-   poly_shared__check_ptr  (s_print, a_ext->y_tail);
-   poly_shared__check_num  (s_print, a_ext->y_count);
-   poly_shared__spacer     (s_print);
-   poly_shared__check_ptr  (s_print, a_ext->btree);
-   ystrlcat (s_print, "]" , LEN_RECD);
+   yENV_check_beg    ();
+   yENV_check_ptr    (a_ext->elib);
+   yENV_check_str    (a_ext->name);
+   yENV_check_num    (a_ext->line);
+   yENV_check_char   (a_ext->type);
+   yENV_check_char   (a_ext->cat);
+   yENV_check_char   (a_ext->sub);
+   yENV_check_num    (a_ext->wuse);
+   yENV_check_spacer ();
+   yENV_check_ptr    (a_ext->y_head);
+   yENV_check_ptr    (a_ext->y_tail);
+   yENV_check_num    (a_ext->y_count);
+   yENV_check_spacer ();
+   yENV_check_ptr    (a_ext->btree);
+   yENV_check_end    ();
    /*---(complete)-----------------------*/
-   return s_print;
+   return yENV_check ();
 }
 
 
@@ -230,12 +230,12 @@ poly_extern__memory     (tEXTERN *a_ext)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char poly_extern__new   (tEXTERN **r_new) { return poly_shared_new  ("ext" , sizeof (tEXTERN), r_new, NULL, '-', poly_extern__wipe); }
-char poly_extern_force  (tEXTERN **r_new) { return poly_shared_new  ("ext" , sizeof (tEXTERN), r_new, NULL, 'y', poly_extern__wipe); }
-char poly_extern__free  (tEXTERN **r_old) { return poly_shared_free ("ext" , r_old, NULL); }
+char poly_extern__new   (tEXTERN **r_new) { return yENV_new  ("ext" , sizeof (tEXTERN), r_new, NULL, '-', poly_extern__wipe); }
+char poly_extern_force  (tEXTERN **r_new) { return yENV_new  ("ext" , sizeof (tEXTERN), r_new, NULL, 'y', poly_extern__wipe); }
+char poly_extern__free  (tEXTERN **r_old) { return yENV_free ("ext" , r_old, NULL); }
 
-char poly_extern__lnew  (tEXTERN **r_new) { return poly_shared_new  ("elib", sizeof (tELIB), r_new, NULL, '-', poly_elib__wipe); }
-char poly_extern__lfree (tEXTERN **r_old) { return poly_shared_free ("elib", r_old, NULL); }
+char poly_extern__lnew  (tEXTERN **r_new) { return yENV_new  ("elib", sizeof (tELIB), r_new, NULL, '-', poly_elib__wipe); }
+char poly_extern__lfree (tEXTERN **r_old) { return yENV_free ("elib", r_old, NULL); }
 
 
 
@@ -1214,9 +1214,9 @@ poly_extern__unit       (char *a_question, int i)
    poly_extern_by_index (i, &u);
    /*---(simple)-------------------------*/
    if      (strcmp (a_question, "file"      )     == 0) {
-      rc = poly_shared_verify ('-', my.n_extern);
-      if      (rc >  0)  x_exist = 'y';
-      else if (rc <= 0)  x_exist = '-';
+      rc = yENV_exists (my.n_extern);
+      if      (rc == 'r')  x_exist = 'y';
+      else                 x_exist = '-';
       snprintf (unit_answer, LEN_RECD, "EXTERN file      : %c  %-10p  %c  %2d[%s]",
             (my.f_extern == NULL) ? '-' : 'y', my.f_extern,
             x_exist, strlen (my.n_extern), my.n_extern);

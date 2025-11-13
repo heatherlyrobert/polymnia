@@ -72,26 +72,26 @@ char*
 PROJS__memory           (tPROJ *a_proj)
 {
    /*---(overall)------------------------*/
-   ystrlcpy (s_print, "å"  , LEN_RECD);
-   poly_shared__check_str  (s_print, a_proj->j_name);
-   poly_shared__check_str  (s_print, a_proj->j_header);
-   poly_shared__spacer     (s_print);
+   yENV_check_beg    ();
+   yENV_check_str    (a_proj->j_name);
+   yENV_check_str    (a_proj->j_header);
+   yENV_check_spacer ();
    /*---(master)-------------------------*/
-   ystrlcat (s_print, HEADER__memory (a_proj), LEN_RECD);
-   poly_shared__spacer     (s_print);
+   HEADER__memory    (a_proj);
+   yENV_check_spacer ();
    /*---(stats)--------------------------*/
-   poly_shared__check_num  (s_print, a_proj->j_funcs);
-   poly_shared__spacer     (s_print);
+   yENV_check_num    (a_proj->j_funcs);
+   yENV_check_spacer ();
    /*---(files)--------------------------*/
-   poly_shared__check_ptr  (s_print, a_proj->j_ihead);
-   poly_shared__check_ptr  (s_print, a_proj->j_itail);
-   poly_shared__check_num  (s_print, a_proj->j_icount);
-   poly_shared__spacer     (s_print);
+   yENV_check_ptr    (a_proj->j_ihead);
+   yENV_check_ptr    (a_proj->j_itail);
+   yENV_check_num    (a_proj->j_icount);
+   yENV_check_spacer ();
    /*---(btree)--------------------------*/
-   poly_shared__check_ptr  (s_print, a_proj->j_btree);
-   ystrlcat (s_print, "æ"  , LEN_RECD);
+   yENV_check_ptr    (a_proj->j_btree);
+   yENV_check_end    ();
    /*---(complete)-----------------------*/
-   return s_print;
+   return yENV_check ();
 }
 
 
@@ -181,9 +181,9 @@ PROJS_wrap              (void)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char PROJS__new  (tPROJ **r_new) { return poly_shared_new  ("proj", sizeof (tPROJ), r_new, NULL, '-', PROJS__wipe); }
-char PROJS_force (tPROJ **r_new) { return poly_shared_new  ("proj", sizeof (tPROJ), r_new, NULL, 'y', PROJS__wipe); }
-char PROJS__free (tPROJ **b_old) { return poly_shared_free ("proj", b_old, NULL); }
+char PROJS__new  (tPROJ **r_new) { return yENV_new  ("proj", sizeof (tPROJ), r_new, NULL, '-', PROJS__wipe); }
+char PROJS_force (tPROJ **r_new) { return yENV_new  ("proj", sizeof (tPROJ), r_new, NULL, 'y', PROJS__wipe); }
+char PROJS__free (tPROJ **b_old) { return yENV_free ("proj", b_old, NULL); }
 
 
 
