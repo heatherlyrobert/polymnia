@@ -75,8 +75,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.2-, switching to common testing sources"
-#define     P_VERNUM    "1.2g"
-#define     P_VERTXT    "moved open, close, and read to yENV, and unit tested ctags parsing"
+#define     P_VERNUM    "1.2h"
+#define     P_VERTXT    "unit testing back and improved with new koios/yUNIT structure"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -847,12 +847,12 @@ struct      cFUNC {
  */
 struct cYLIB {
    /*---(main)--------------*/
-   uchar       name       [LEN_TITLE];
-   int         line;
+   char        y_name       [LEN_TITLE];
+   int         y_line;
    /*---(function)----------*/
-   tFUNC      *func;
-   tYLIB      *f_prev;
-   tYLIB      *f_next;
+   tFUNC      *y_func;
+   tYLIB      *y_prev;
+   tYLIB      *y_next;
    /*---(extern)------------*/
    tEXTERN    *ylib;
    tYLIB      *e_prev;
@@ -1092,9 +1092,6 @@ char        PROG__args_string       (char a_string [LEN_FULL]);
 char        PROG_startup_string     (char a_string [LEN_FULL]);
 char        PROG_pseudo_string      (char a_string [LEN_FULL]);
 /*········´ ´············unittest·´ ´·········································*/
-char        PROG__unit_quiet        (void);
-char        PROG__unit_loud         (void);
-char        PROG__unit_end          (void);
 char*       prog__unit              (char *a_question, int i);
 /*········´ ´················DONE·´ ´·········································*/
 
@@ -1241,10 +1238,10 @@ char        WORK__free              (tWORK **b_old);
 char        WORK__wipe              (tWORK *a_work);
 char*       WORK__memory            (tWORK *a_work);
 /*········´ ´·············hooking·´ ´·········································*/
-char        FUNCS__hook             (tFILE *a_file, tFUNC *a_tag);
-char        FUNCS__unhook           (tFUNC *a_tag);
+char        FUNCS__hook             (tFILE *a_file, tFUNC *a_func);
+char        FUNCS__unhook           (tFUNC *a_func);
 /*········´ ´···········existance·´ ´·········································*/
-char        FUNCS_add               (tFILE *a_file, char *a_name, char a_type, int a_line, tFUNC **a_func);
+char        FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, int a_line, tFUNC **r_func);
 char        FUNCS_remove            (tFUNC **a_tag);
 /*········´ ´··············search·´ ´·········································*/
 int         FUNCS_count             (void);
@@ -1254,10 +1251,14 @@ char        FUNCS_by_cursor         (char  a_dir             , tFUNC **a_func);
 char        FUNCS_by_tree           (uchar a_name [LEN_TITLE], tFUNC **a_func);
 char        FUNCS_by_regex          (uchar *a_regex, tFUNC **a_func);
 /*········´ ´··············search·´ ´·········································*/
-char        FUNCS_by_proj_hint      (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func);
-char        FUNCS_by_proj_cursor    (tPROJ *a_proj, uchar a_mode, tFUNC **a_func);
+char        FUNCS_by_proj_hint      (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func);
+char        FUNCS_by_proj_index     (tPROJ *a_proj, char a_index           , tFUNC **a_func);
+char        FUNCS_by_proj_cursor    (tPROJ *a_proj, char a_dir             , tFUNC **a_func);
 /*········´ ´··············search·´ ´·········································*/
 char        FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func);
+/*········´ ´············exposure·´ ´·········································*/
+char*       FUNCS_in_file_list      (tFILE *a_file);
+char*       FUNCS_entry             (tFUNC *a_func);
 /*········´ ´·············program·´ ´·········································*/
 char        FUNCS_init              (void);
 char        FUNCS_purge             (tFILE *a_file, char a_update);

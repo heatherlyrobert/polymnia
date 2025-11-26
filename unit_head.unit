@@ -1,0 +1,45 @@
+#!/usr/local/bin/koios
+#   koios-polos (axis of heaven) unit testing meta-language
+#>  data structure waves è to ì
+#>
+#> prepared seven sample projects in the config area
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+PREP          include the prototype headers                                      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   incl       include public header                polymnia.h                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   incl       include yENV header                  yCOLOR_solo.h               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   global     create working variable              - - - - - - - - - - - - -   char    u_home         [LEN_FULL]  = "";
+   global     create working variable              - - - - - - - - - - - - -   char    u_error        [LEN_FULL]  = "";
+   global     create working variable              - - - - - - - - - - - - -   char    u_ylog         [LEN_HUND]  = "yLOG";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_ylog     [LEN_HUND]  = "/tmp/yLOG.execution_logger";
+   global     create working variable              - - - - - - - - - - - - -   char    u_poly         [LEN_HUND]  = "polymnia";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_poly     [LEN_HUND]  = "/tmp/polymnia.muse_of_coding_structure";
+   global     create working variable              - - - - - - - - - - - - -   char    u_gyges        [LEN_HUND]  = "gyges";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_gyges    [LEN_HUND]  = "/tmp/gyges.technical_spreadsheet";
+   global     create working variable              - - - - - - - - - - - - -   char    u_arachne      [LEN_HUND]  = "arachne";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_arachne  [LEN_HUND]  = "/tmp/arachne.spider_visualization";
+   global     create working variable              - - - - - - - - - - - - -   char    u_khronos      [LEN_HUND]  = "khronos";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_khronos  [LEN_HUND]  = "/tmp/khronos.heatherly_cron_daemon";
+   global     create working variable              - - - - - - - - - - - - -   char    u_metis        [LEN_HUND]  = "metis";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_metis    [LEN_HUND]  = "/tmp/metis.task_management";
+   global     create working variable              - - - - - - - - - - - - -   char    u_yjobs        [LEN_HUND]  = "yJOBS";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_yjobs    [LEN_HUND]  = "/tmp/yJOBS.job_control_environment";
+   global     create working variable              - - - - - - - - - - - - -   char    u_ystr         [LEN_HUND]  = "ySTR";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_ystr     [LEN_HUND]  = "/tmp/ySTR.string_handling";
+   global     create working variable              - - - - - - - - - - - - -   char    u_ycalc        [LEN_HUND]  = "yCALC";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_ycalc    [LEN_HUND]  = "/tmp/yCALC.calculation_engine";
+   global     create working variable              - - - - - - - - - - - - -   char    u_little       [LEN_HUND]  = "little";
+   global     create working variable              - - - - - - - - - - - - -   char    u_dir_little   [LEN_HUND]  = "/tmp/little.small_sample_project";
+
+
+
+
+#===========  =================================================================  ID   TOP======glob====shar====scrp   MID======cond====ditto=and=usage=======local-reuse-and-list============global-reuse-and-list===========skip   BOT======real====vars====void====skip===DITTO====real====void====skip   
+RETSAM        final master file statistics ------------------------------------   -     0     0     0     0     0     0     0  ··········     0  ·                        0  ·                        0     0     0     0     0     0     0     0     0     0   
+
+
+
+# end-of-file.  done, finito, completare, whimper [Ï´···

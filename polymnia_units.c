@@ -213,7 +213,8 @@ poly_units__scripts     (tFILE *a_file, int a_line, char *a_recd, tFUNC **a_func
       rc = 1;
    }
    else if (strncmp (a_recd, "SHARED ", 7) == 0 ||
-         strncmp (a_recd, "GLOBAL ", 7) == 0) {
+         strncmp (a_recd, "GLOBAL ", 7) == 0 ||
+         strncmp (a_recd, "CONFIG ", 7) == 0) {
       x_field = ystrldcnt (a_recd, '', LEN_RECD);
       x_ref   = a_recd [10];
       if (x_ref == 0 || strchr (YSTR_UPLOW, x_ref) == NULL)  x_ref = '?';

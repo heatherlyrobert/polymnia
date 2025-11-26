@@ -503,9 +503,9 @@ poly_rptg_ylibs         (void)
                         n, my.g_proj->j_name, my.g_proj->COUNT_YLIBS,
                         x_file->i_name, x_file->COUNT_YLIBS,
                         x_func->c_name, x_func->COUNT_YLIBS, x_func->c_line, x_func->c_beg, x_func->c_end,
-                        c, x_ylib->line, x_ylib->name,
+                        c, x_ylib->y_line, x_ylib->y_name,
                         x_ylib->ylib->elib->name, x_ylib->ylib->line, x_ylib->ylib->type, x_ylib->ylib->cat, x_ylib->ylib->sub, x_count);
-                  x_ylib = x_ylib->f_next;
+                  x_ylib = x_ylib->y_next;
                }
             }
             x_func = x_func->c_next;
@@ -872,7 +872,7 @@ poly_rptg_extern        (tEXTERN *a_extern)
    DEBUG_OUTP   yLOG_point   ("x_ylib"    , x_ylib);
    while (x_ylib != NULL) {
       /*---(project filtering)-----------*/
-      if (my.g_proj != NULL && x_ylib->func->c_file->i_proj != my.g_proj) {
+      if (my.g_proj != NULL && x_ylib->y_func->c_file->i_proj != my.g_proj) {
          x_ylib = x_ylib->e_next;
          DEBUG_OUTP   yLOG_point   ("x_ylib"    , x_ylib);
          continue;
@@ -880,31 +880,31 @@ poly_rptg_extern        (tEXTERN *a_extern)
       /*---(headers)---------------------*/
       if (my.g_titles == RPTG_TITLES && c % 25 == 0)  printf ("\n##---project-------------  ---source-file-----------  line  ---source-function-------\n");
       if (my.g_titles == RPTG_TITLES && c %  5 == 0)  printf ("\n");
-      DEBUG_OUTP   yLOG_info    ("->name"    , x_ylib->name);
+      DEBUG_OUTP   yLOG_info    ("->name"    , x_ylib->y_name);
       /*---(tree view)-------------------*/
       if (my.g_titles == RPTG_TREEVIEW) {
-         if (x_ylib->func->c_file->i_proj != x_proj) {
+         if (x_ylib->y_func->c_file->i_proj != x_proj) {
             x_file = NULL;
             printf ("\n");
-            printf ("%-25.25s\n", x_ylib->func->c_file->i_proj->j_name);
+            printf ("%-25.25s\n", x_ylib->y_func->c_file->i_proj->j_name);
          }
-         if (x_ylib->func->c_file != x_file) {
+         if (x_ylib->y_func->c_file != x_file) {
             x_func  = NULL;
             if (x_file != NULL)  printf ("\n");
-            printf ("   %-25.25s\n", x_ylib->func->c_file->i_name);
+            printf ("   %-25.25s\n", x_ylib->y_func->c_file->i_name);
          } 
-         if (x_ylib->func != x_func) {
+         if (x_ylib->y_func != x_func) {
             if (x_func != NULL)  printf ("\n");
-            printf ("      %-25.25s", x_ylib->func->c_name);
+            printf ("      %-25.25s", x_ylib->y_func->c_name);
          } 
-         printf ("%4d,", x_ylib->line);
-         x_proj = x_ylib->func->c_file->i_proj;
-         x_file = x_ylib->func->c_file;
-         x_func = x_ylib->func;
+         printf ("%4d,", x_ylib->y_line);
+         x_proj = x_ylib->y_func->c_file->i_proj;
+         x_file = x_ylib->y_func->c_file;
+         x_func = x_ylib->y_func;
       }
       /*---(normal view)-----------------*/
       else {
-         printf ("%-25.25s  %-25.25s  %-25.25s  %4d  %-25.25s\n", a_extern->name, x_ylib->func->c_file->i_proj->j_name, x_ylib->func->c_file->i_name, x_ylib->line, x_ylib->func->c_name);
+         printf ("%-25.25s  %-25.25s  %-25.25s  %4d  %-25.25s\n", a_extern->name, x_ylib->y_func->c_file->i_proj->j_name, x_ylib->y_func->c_file->i_name, x_ylib->y_line, x_ylib->y_func->c_name);
       }
       /*---(next)------------------------*/
       ++c;

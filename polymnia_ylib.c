@@ -18,15 +18,15 @@ poly_ylib__wipe         (tYLIB *a_ylib)
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_snote   (__FUNCTION__);
    /*---(call)---------------------------*/
-   a_ylib->name [0] = '\0';
-   a_ylib->line     = -1;
+   a_ylib->y_name [0] = '\0';
+   a_ylib->y_line     = -1;
    /*---(pointers)-----------------------*/
-   a_ylib->func     = NULL;
-   a_ylib->f_prev   = NULL;
-   a_ylib->f_next   = NULL;
-   a_ylib->ylib     = NULL;
-   a_ylib->e_prev   = NULL;
-   a_ylib->e_next   = NULL;
+   a_ylib->y_func     = NULL;
+   a_ylib->y_prev     = NULL;
+   a_ylib->y_next     = NULL;
+   a_ylib->ylib       = NULL;
+   a_ylib->e_prev     = NULL;
+   a_ylib->e_next     = NULL;
    /*---(complete)-----------------------*/
    return 1;
 }
@@ -36,12 +36,12 @@ poly_ylib__memory       (tYLIB *a_ylib)
 {
    /*---(master)-------------------------*/
    yENV_check_beg    ();
-   yENV_check_str    (a_ylib->name);
-   yENV_check_num    (a_ylib->line);
+   yENV_check_str    (a_ylib->y_name);
+   yENV_check_num    (a_ylib->y_line);
    yENV_check_spacer ();
-   yENV_check_ptr    (a_ylib->func);
-   yENV_check_ptr    (a_ylib->f_prev);
-   yENV_check_ptr    (a_ylib->f_next);
+   yENV_check_ptr    (a_ylib->y_func);
+   yENV_check_ptr    (a_ylib->y_prev);
+   yENV_check_ptr    (a_ylib->y_next);
    yENV_check_spacer ();
    yENV_check_ptr    (a_ylib->ylib);
    yENV_check_ptr    (a_ylib->e_prev);
@@ -69,24 +69,24 @@ char poly_ylib__free (tYLIB **a_old) { return yENV_free ("ylib", a_old, &g_nylib
 /*====================------------------------------------====================*/
 static void  o___HOOKING_________o () { return; }
 
-#define    S_NAME      a_ylib->name
+#define    S_NAME      a_ylib->y_name
 #define    S_PARENT    a_func
-#define    S_OWNER     a_ylib->func
-#define    S_HEAD      a_ylib->func->c_yhead
-#define    S_TAIL      a_ylib->func->c_ytail
-#define    S_TNEXT     a_ylib->func->c_ytail->f_next
-#define    S_PREV      a_ylib->f_prev
-#define    S_PNEXT     (a_ylib->f_prev == NULL) ? NULL : a_ylib->f_prev->f_next
-#define    S_NEXT      a_ylib->f_next
-#define    S_NPREV     (a_ylib->f_next == NULL) ? NULL : a_ylib->f_next->f_prev
-#define    S_COUNT     &(a_ylib->func->c_ycount)
-#define    S_COUNTA    &(a_ylib->func->file->i_proj->COUNT_YLIBS)
-#define    S_COUNTB    &(a_ylib->func->file->COUNT_YLIBS)
-#define    S_COUNTC    &(a_ylib->func->COUNT_YLIBS)
+#define    S_OWNER     a_ylib->y_func
+#define    S_HEAD      a_ylib->y_func->c_yhead
+#define    S_TAIL      a_ylib->y_func->c_ytail
+#define    S_TNEXT     a_ylib->y_func->c_ytail->y_next
+#define    S_PREV      a_ylib->y_prev
+#define    S_PNEXT     (a_ylib->y_prev == NULL) ? NULL : a_ylib->y_prev->y_next
+#define    S_NEXT      a_ylib->y_next
+#define    S_NPREV     (a_ylib->y_next == NULL) ? NULL : a_ylib->y_next->y_prev
+#define    S_COUNT     &(a_ylib->y_func->c_ycount)
+#define    S_COUNTA    &(a_ylib->y_func->file->i_proj->COUNT_YLIBS)
+#define    S_COUNTB    &(a_ylib->y_func->file->COUNT_YLIBS)
+#define    S_COUNTC    &(a_ylib->y_func->COUNT_YLIBS)
 
 /*> poly_shared_hook        (char *a_terse, char *a_name, void *a_here, void *a_parent, void *a_owner, void *a_head, void *a_tail, void *a_prev, void *a_tnext, int *a_count, int *a_counta, int *a_countb, int *a_countc)   <*/
 
-/*> char poly_ylib__fhook   (tFUNC *a_func, tYLIB *a_ylib) { a_ylib->func = a_func;  return poly_shared_hook   ("ylib", S_NAME, a_ylib, S_PARENT, S_OWNER, S_HEAD, S_TAIL, S_PREV, S_TNEXT, S_COUNT, S_COUNTA, S_COUNTB, S_COUNTC); }   <* 
+/*> char poly_ylib__fhook   (tFUNC *a_func, tYLIB *a_ylib) { a_ylib->y_func = a_func;  return poly_shared_hook   ("ylib", S_NAME, a_ylib, S_PARENT, S_OWNER, S_HEAD, S_TAIL, S_PREV, S_TNEXT, S_COUNT, S_COUNTA, S_COUNTB, S_COUNTC); }   <* 
  *> char poly_ylib__funhook (tYLIB *a_ylib) { return poly_shared_unhook ("ylib", S_NAME, a_ylib, S_OWNER, S_HEAD, S_TAIL, S_PREV, S_PNEXT, S_NEXT, S_NPREV, S_COUNT, S_COUNTA, S_COUNTB, S_COUNTC); }                                   <*/
 
 
@@ -108,8 +108,8 @@ poly_ylib__fhook        (tFUNC *a_func, tYLIB *a_ylib)
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_spoint  (a_ylib->func);
-   --rce;  if (a_ylib->func != NULL) {
+   DEBUG_DATA   yLOG_spoint  (a_ylib->y_func);
+   --rce;  if (a_ylib->y_func != NULL) {
       DEBUG_DATA   yLOG_snote   ("already hooked");
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
@@ -124,12 +124,12 @@ poly_ylib__fhook        (tFUNC *a_func, tYLIB *a_ylib)
       a_func->c_yhead  = a_func->c_ytail  = a_ylib;
    } else {
       DEBUG_DATA   yLOG_snote   ("append");
-      a_ylib->f_prev         = a_func->c_ytail;
-      a_func->c_ytail->f_next = a_ylib;
+      a_ylib->y_prev         = a_func->c_ytail;
+      a_func->c_ytail->y_next = a_ylib;
       a_func->c_ytail         = a_ylib;
    }
    /*---(parent pointer)-----------------*/
-   a_ylib->func  = a_func;
+   a_ylib->y_func  = a_func;
    /*---(function counts)----------------*/
    ++(a_func->c_ycount);
    DEBUG_DATA   yLOG_sint    (a_func->c_ycount);
@@ -157,22 +157,22 @@ poly_ylib__funhook      (tYLIB *a_ylib)
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_spoint  (a_ylib->func);
-   --rce;  if (a_ylib->func == NULL) {
+   DEBUG_DATA   yLOG_spoint  (a_ylib->y_func);
+   --rce;  if (a_ylib->y_func == NULL) {
       DEBUG_DATA   yLOG_snote   ("not presently hooked");
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   x_func = a_ylib->func;
+   x_func = a_ylib->y_func;
    DEBUG_DATA   yLOG_snote   (x_func->c_name);
    /*---(out of linked list)-------------*/
    DEBUG_DATA   yLOG_sint    (x_func->c_ycount);
    DEBUG_DATA   yLOG_spoint  (x_func->c_yhead);
    DEBUG_DATA   yLOG_spoint  (x_func->c_ytail);
-   if (a_ylib->f_next != NULL)  a_ylib->f_next->f_prev = a_ylib->f_prev;
-   else                         x_func->c_ytail         = a_ylib->f_prev;
-   if (a_ylib->f_prev != NULL)  a_ylib->f_prev->f_next = a_ylib->f_next;
-   else                         x_func->c_yhead        = a_ylib->f_next;
+   if (a_ylib->y_next != NULL)  a_ylib->y_next->y_prev = a_ylib->y_prev;
+   else                         x_func->c_ytail        = a_ylib->y_prev;
+   if (a_ylib->y_prev != NULL)  a_ylib->y_prev->y_next = a_ylib->y_next;
+   else                         x_func->c_yhead        = a_ylib->y_next;
    /*---(function counts)----------------*/
    --(x_func->c_ycount);
    DEBUG_DATA   yLOG_sint    (x_func->c_ycount);
@@ -182,7 +182,7 @@ poly_ylib__funhook      (tYLIB *a_ylib)
    --(x_func->c_file->COUNT_YLIBS);
    --(x_func->COUNT_YLIBS);
    /*---(ground function)----------------*/
-   a_ylib->func = NULL;
+   a_ylib->y_func = NULL;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -333,8 +333,8 @@ poly_ylib_add           (tFUNC *a_func, tEXTERN *a_extern, int a_line, tYLIB **a
    }
    /*---(populate)-----------------------*/
    DEBUG_DATA   yLOG_note    ("populate");
-   ystrlcpy (x_new->name, a_extern->name, LEN_TITLE);
-   x_new->line   = a_line;
+   ystrlcpy (x_new->y_name, a_extern->name, LEN_TITLE);
+   x_new->y_line   = a_line;
    /*---(into function list)-------------*/
    DEBUG_DATA   yLOG_note    ("hook");
    rc = poly_ylib__fhook (a_func, x_new);
@@ -428,9 +428,9 @@ poly_ylib_purge         (tFUNC *a_func, char a_update)
    DEBUG_DATA   yLOG_value   ("->count"   , a_func->c_ycount);
    x_ylib = a_func->c_yhead;
    while (x_ylib != NULL) {
-      x_next = x_ylib->f_next;
+      x_next = x_ylib->y_next;
       DEBUG_DATA   yLOG_point   ("x_ylib"    , x_ylib);
-      DEBUG_DATA   yLOG_info    ("->name"    , x_ylib->name);
+      DEBUG_DATA   yLOG_info    ("->y_name"  , x_ylib->y_name);
       rc = poly_ylib_remove (&x_ylib);
       x_ylib = x_next;
    }
@@ -473,7 +473,7 @@ poly_ylib_by_func_index (tFUNC *a_func, int n, tYLIB **r_ylib)
          *r_ylib = x_ylib;
          return 0;
       }
-      x_ylib = x_ylib->f_next;
+      x_ylib = x_ylib->y_next;
       ++c;
    }
    --rce;  return rce;
@@ -532,11 +532,11 @@ poly_ylib__unit         (char *a_question, char *a_name)
       else {
          sprintf  (t, "[%.15s]", x_func->c_name);
          if (x_func->c_yhead != NULL) {
-            sprintf  (s, "[%02d:%.15s]", x_func->c_yhead->line, x_func->c_yhead->name);
-            sprintf  (r, "[%02d:%.15s]", x_func->c_ytail->line, x_func->c_ytail->name);
+            sprintf  (s, "[%02d:%.15s]", x_func->c_yhead->y_line, x_func->c_yhead->y_name);
+            sprintf  (r, "[%02d:%.15s]", x_func->c_ytail->y_line, x_func->c_ytail->y_name);
             c = x_func->c_ycount;
-            o = x_func->c_yhead; while (o != NULL) { ++x_fore; o = o->f_next; }
-            o = x_func->c_ytail; while (o != NULL) { ++x_back; o = o->f_prev; }
+            o = x_func->c_yhead; while (o != NULL) { ++x_fore; o = o->y_next; }
+            o = x_func->c_ytail; while (o != NULL) { ++x_back; o = o->y_prev; }
          }
          snprintf (unit_answer, LEN_RECD, "YLIB func        : %-17.17s   %3dc %3df %3db   %-20.20s   %s",
                t, c, x_fore, x_back, s, r);
@@ -548,8 +548,8 @@ poly_ylib__unit         (char *a_question, char *a_name)
       else {
          sprintf  (t, "[%.15s]", x_ext->name);
          if (x_ext->y_head != NULL) {
-            sprintf  (s, "[%02d:%.15s]", x_ext->y_head->line, x_ext->y_head->func->c_name);
-            sprintf  (r, "[%02d:%.15s]", x_ext->y_tail->line, x_ext->y_tail->func->c_name);
+            sprintf  (s, "[%02d:%.15s]", x_ext->y_head->y_line, x_ext->y_head->y_func->c_name);
+            sprintf  (r, "[%02d:%.15s]", x_ext->y_tail->y_line, x_ext->y_tail->y_func->c_name);
             c = x_ext->y_count;
             o = x_ext->y_head; while (o != NULL) { ++x_fore; o = o->e_next; }
             o = x_ext->y_tail; while (o != NULL) { ++x_back; o = o->e_prev; }

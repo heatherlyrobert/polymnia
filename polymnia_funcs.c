@@ -6,15 +6,14 @@
 static char s_print     [LEN_RECD] = "";
 
 
+/*===[[ cFUNC data dictionary ]]==============================================*/
 /*
- * function types (expanded on ctags)
- *    p prototype                (ctags)
- *    f function definition      (ctags)
- *    _ sub-title break
- *    s unit testing script
- *    S unit testing shared script
- *
- *
+ *  c_type (char)  == function types
+ *     f   normal function      FUNCS_add
+ *     _   separator            o___SAMPLE__________o
+ *     s   unit test script     SCRP   [0a/·]
+ *     S   unit test share      SHARED [0a/·], GLOBAL [0a/·], CONFIG [0a/·]
+ *     p   prototype            char FUNCS_add      (void);
  */
 
 
@@ -376,8 +375,11 @@ FUNCS__hook             (tFILE *a_file, tFUNC *a_func)
    DEBUG_DATA   yLOG_note    ("increment counts");
    ++(a_file->i_ccount);
    ++(a_file->i_proj->j_funcs);
-   DEBUG_DATA   yLOG_value   ("count"     , a_file->i_ccount);
+   DEBUG_DATA   yLOG_value   ("ccount"    , a_file->i_ccount);
+   DEBUG_DATA   yLOG_value   ("j_funcs"   , a_file->i_proj->j_funcs);
+   DEBUG_DATA   yLOG_char    ("c_type"    , a_func->c_type);
    if (strchr ("fsS", a_func->c_type) != NULL)  {
+      DEBUG_DATA   yLOG_note    ("real function");
       ++(a_file->COUNT_FUNCS);
       ++(a_file->i_proj->COUNT_FUNCS);
       ++(my.COUNT_FUNCS);
@@ -411,7 +413,10 @@ FUNCS__unhook           (tFUNC *a_func)
    --(a_func->c_file->i_ccount);
    --(a_func->c_file->i_proj->j_funcs);
    DEBUG_DATA   yLOG_sint    (a_func->c_file->i_ccount);
+   DEBUG_DATA   yLOG_sint    (a_func->c_file->i_proj->j_funcs);
+   DEBUG_DATA   yLOG_schar   (a_func->c_type);
    if (strchr ("fsS", a_func->c_type) != NULL)  {
+      DEBUG_DATA   yLOG_snote   ("real function");
       --(a_func->c_file->COUNT_FUNCS);
       --(a_func->c_file->i_proj->COUNT_FUNCS);
       --(my.COUNT_FUNCS);
@@ -432,7 +437,7 @@ FUNCS__unhook           (tFUNC *a_func)
 static void  o___EXISTANCE_______o () { return; }
 
 char
-FUNCS_add               (tFILE *a_file, char *a_name, char a_type, int a_line, tFUNC **r_func)
+FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, int a_line, tFUNC **r_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -508,7 +513,6 @@ FUNCS_add               (tFILE *a_file, char *a_name, char a_type, int a_line, t
       return rce;
    }
    /*---(create hint)--------------------*/
-   /*> rc = poly_func__hint (ySORT_count (B_FUNCS) - 1, x_new->hint);            <*/
    rc = ystrlhint (ySORT_count (B_FUNCS) - 1, "lA", x_new->c_hint);
    DEBUG_DATA   yLOG_value   ("hint"      , rc);
    --rce;  if (rc < 0) {
@@ -723,7 +727,7 @@ FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func)
 }
 
 char
-FUNCS_by_proj_hint      (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func)
+FUNCS_by_proj_hint      (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -760,7 +764,7 @@ FUNCS_by_proj_hint      (tPROJ *a_proj, uchar *a_hint, tFUNC **a_func)
 }
 
 char         /*-[ cursor from provided position ------------[----------------]*/
-FUNCS_by_proj_cursor    (tPROJ *a_proj, uchar a_mode, tFUNC **a_func)
+FUNCS_by_proj_cursor    (tPROJ *a_proj, char a_dir, tFUNC **a_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -776,7 +780,7 @@ FUNCS_by_proj_cursor    (tPROJ *a_proj, uchar a_mode, tFUNC **a_func)
    x_file = x_func->c_file;
    --rce;  if (x_file   == NULL)   return rce;
    /*---(select)-------------------------*/
-   switch (a_mode) {
+   switch (a_dir) {
    case '['  :
       x_func = a_proj->j_ihead->i_chead;
       break;
@@ -985,6 +989,88 @@ FUNCS_gather            (tFILE *a_file)
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return c;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                      data exposure                           ----===*/
+/*====================------------------------------------====================*/
+static void  o___EXPOSURE________o () { return; }
+
+char*
+FUNCS_in_file_list      (tFILE *a_file)
+{
+   /*> tPROJ      *u           = NULL;                                                                       <* 
+    *> tFILE      *v           = NULL;                                                                       <* 
+    *> int         c           =    0;                                                                       <* 
+    *> char        t           [LEN_LABEL] = "";                                                             <* 
+    *> char        x_save      =  '·';                                                                       <* 
+    *> char        x_type      =  '·';                                                                       <* 
+    *> strcpy (unit_answer, "");                                                                             <* 
+    *> if (a_proj == NULL) return "(null proj)";                                                             <* 
+    *> ystrlcat (unit_answer, ystrlpadquick  (a_proj->j_name, '<', '.', 20), LEN_RECD);                      <* 
+    *> ystrlcat (unit_answer, "  ", LEN_RECD);                                                               <* 
+    *> u = a_proj;                                                                                           <* 
+    *> v = u->j_ihead;                                                                                       <* 
+    *> c = u->j_icount;                                                                                      <* 
+    *> if (v      == NULL) {                                                                                 <* 
+    *>    ystrlcat (unit_answer, "(no files)", LEN_RECD);                                                    <* 
+    *>    return unit_answer;                                                                                <* 
+    *> }                                                                                                     <* 
+    *> ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);      <* 
+    *> c = 0;                                                                                                <* 
+    *> while (v != NULL) {                                                                                   <* 
+    *>    x_type = v->i_type;                                                                                <* 
+    *>    if (x_save != '·' && x_type != x_save) ystrlcat (unit_answer, "  ´", LEN_RECD);                    <* 
+    *>    ystrlcat (unit_answer, "  ", LEN_RECD);                                                            <* 
+    *>    ystrlcat (unit_answer, v->i_name, LEN_RECD);                                                       <* 
+    *>    v = v->i_next;                                                                                     <* 
+    *>    x_save = x_type;                                                                                   <* 
+    *>    ++c;                                                                                               <* 
+    *> }                                                                                                     <* 
+    *> if (c > 0) {                                                                                          <* 
+    *>    ystrlcat (unit_answer, "  [", LEN_RECD);                                                           <* 
+    *>    ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);   <* 
+    *>    ystrlcat (unit_answer, "]  Ï", LEN_RECD);                                                          <* 
+    *> }                                                                                                     <* 
+    *> return unit_answer;                                                                                   <*/
+}
+
+char*
+FUNCS_entry             (tFUNC *a_func)
+{
+   tFUNC      *u           = NULL;
+   tYLIB      *v           = NULL;
+   int         c           =    0;
+   int         x_fore      =    0;
+   int         x_back      =    0;
+   char        t           [LEN_DESC]  = "(n/a)";
+   char        s           [LEN_DESC]  = "(null)";
+   char        r           [LEN_DESC]  = "(null)";
+   if (a_func == NULL) {
+      DATA__unit_format (
+            /* master */  "(n/a)", '-', "´", "´",
+            /* counts */  -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            /* files  */  0, 0, 0, "´", "´",
+            /* lines  */  -1, -1, -1, -1);
+      return unit_answer;
+   }
+   u = a_func;
+   ystrlcpy (t, u->c_name, LEN_LABEL);
+   c = u->c_ycount;
+   if (u->c_yhead != NULL) {
+      ystrlcpy (s, u->c_yhead->y_name, LEN_TITLE);
+      ystrlcpy (r, u->c_ytail->y_name, LEN_TITLE);
+      v = u->c_yhead; while (v != NULL) { ++x_fore; v = v->y_next; }
+      v = u->c_ytail; while (v != NULL) { ++x_back; v = v->y_prev; }
+   }
+   DATA__unit_format (
+         /* master */  u->c_file->i_proj->j_name, u->c_file->i_type, u->c_file->i_name, "´", 
+         /* counts */  -1, -1, -1, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL,
+         /* files  */  c, x_fore, x_back, s, r,
+         /* lines  */  -1, -1, -1, -1);
+   return unit_answer;
 }
 
 

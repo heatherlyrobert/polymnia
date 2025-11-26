@@ -222,10 +222,10 @@ poly_db__write_ylib     (tFUNC *a_func)
    /*---(walk projects)------------------*/
    while (x_ylib != NULL) {
       /*---(write)-----------------------*/
-      DEBUG_OUTP   yLOG_info    ("func"      , x_ylib->name);
+      DEBUG_OUTP   yLOG_info    ("func"      , x_ylib->y_name);
       fwrite (x_ylib  , sizeof (tYLIB), 1, my.f_db);
       /*---(next)------------------------*/
-      x_ylib = x_ylib->f_next;
+      x_ylib = x_ylib->y_next;
       DEBUG_OUTP   yLOG_point   ("x_ylib"     , x_ylib);
    }
    /*---(complete)-----------------------*/
@@ -381,10 +381,10 @@ poly_db__read_ylib      (tFUNC *a_func, int n)
       }
       /*---(read)---------------------------*/
       fread  (x_new, sizeof (tYLIB), 1, my.f_db);
-      DEBUG_INPT   yLOG_info    ("ylib"      , x_new->name);
+      DEBUG_INPT   yLOG_info    ("ylib"      , x_new->y_name);
       /*---(clear the pointers)-------------*/
-      x_new->func   = NULL;
-      x_new->f_next = x_new->f_prev = NULL;
+      x_new->y_func = NULL;
+      x_new->y_next = x_new->y_prev = NULL;
       x_new->ylib   = NULL;
       x_new->e_next = x_new->e_prev = NULL;
       /*---(into function list)-------------*/
@@ -395,7 +395,7 @@ poly_db__read_ylib      (tFUNC *a_func, int n)
          return rce;
       }
       /*---(find extern)--------------------*/
-      poly_extern_by_name (x_new->name, &x_ext);
+      poly_extern_by_name (x_new->y_name, &x_ext);
       DEBUG_INPT   yLOG_point   ("x_ext"     , x_ext);
       --rce;  if (x_ext == NULL) {
          DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
