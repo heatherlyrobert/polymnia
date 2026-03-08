@@ -3,6 +3,37 @@
 
 
 
+/*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+
+#define  P_COPYRIGHT   \
+   "copyright (c) 2019 robert.s.heatherly at balsashrike at gmail dot com"
+
+#define  P_LICENSE     \
+   "the only place you could have gotten this code is my github, my website,¦"   \
+   "or illegal sharing. given that, you should be aware that this is GPL licensed."
+
+#define  P_COPYLEFT    \
+   "the GPL COPYLEFT REQUIREMENT means any modifications or derivative works¦"   \
+   "must be released under the same GPL license, i.e, must be free and open."
+
+#define  P_INCLUDE     \
+   "the GPL DOCUMENTATION REQUIREMENT means that you must include the original¦" \
+   "copyright notice and the full licence text with any resulting anything."
+
+#define  P_AS_IS       \
+   "the GPL NO WARRANTY CLAUSE means the software is provided without any¦"      \
+   "warranty and the author cannot be held liable for damages."
+
+#define  P_THEFT    \
+   "if you knowingly violate the spirit of these ideas, i suspect you might¦"    \
+   "find any number of freedom-minded hackers may take it quite personally ;)"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+/*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+
+
+
 static char s_print     [LEN_RECD] = "";
 
 
@@ -940,7 +971,7 @@ FILES__sorting          (tPROJ *a_proj)
  */
 
 char
-FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_TITLE])
+FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_PATH])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -951,8 +982,8 @@ FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_TITLE])
    char        x_kind      [LEN_TERSE] = "";
    char        x_ext       [LEN_TERSE][LEN_TERSE] = { "funcs", "vars", "locals", "externs", "macros", "protos", "structs", "typedefs" };
    char        x_base      [LEN_HUND]  = "";
-   char        x_source    [LEN_TITLE] = "";
-   char        x_output    [LEN_TITLE] = "";
+   char        x_source    [LEN_PATH]  = "";
+   char        x_output    [LEN_PATH]  = "";
    char        x_cmd       [LEN_FULL]  = "";
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -964,11 +995,11 @@ FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_TITLE])
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   ystrlcpy (x_source, a_file->i_name, LEN_TITLE);
+   sprintf (x_source, "%s/%s", a_file->i_proj->j_dir, a_file->i_name);
    DEBUG_INPT   yLOG_info    ("x_source"  , x_source);
    /*---(pre-check)----------------------*/
    rc = yENV_exists (x_source);
-   DEBUG_INPT   yLOG_value   ("exists"     , rc);
+   DEBUG_INPT   yLOG_char    ("exists"     , rc);
    --rce;  if (rc != 'r') {
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -999,7 +1030,7 @@ FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_TITLE])
    if (a_type != 'm')  sprintf (x_kind, "%c", a_type);
    else                strcpy  (x_kind, "sm");
    /*---(create output name)-------------*/
-   sprintf (x_output, "%s.%s", x_base, x_ext [p - x_valid]);
+   sprintf (x_output, "%s/%s.%s", a_file->i_proj->j_dir, x_base, x_ext [p - x_valid]);
    DEBUG_INPT   yLOG_info    ("x_output"  , x_output);
    /*---(handle)-------------------------*/
    sprintf (x_cmd, "ctags  --language-force=c -x --sort=no --extras=+F --c-kinds=%s   %s > %s  2> /dev/null", x_kind, x_source, x_output);
@@ -1011,7 +1042,7 @@ FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_TITLE])
       return  rce;
    }
    /*---(save-back)----------------------*/
-   if (r_output != NULL)  ystrlcpy (r_output, x_output, LEN_TITLE);
+   if (r_output != NULL)  ystrlcpy (r_output, x_output, LEN_PATH);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -1102,15 +1133,16 @@ FILES_ctags             (tFILE *a_file, char a_type, void *f_handler ())
    /*---(locals)-----------+-----+-----+-*/
    int         rc          =    0;
    char        rce         =  -10;
-   char        x_output    [LEN_TITLE] = "";
+   char        x_output    [LEN_PATH]  = "";
    FILE       *f           = NULL;
    char        x_recd      [LEN_RECD]  = "";
    int         x_read      =    0;
    char        x_name      [LEN_TITLE] = "";
    char        x_type      [LEN_TERSE] = "";
    int         x_line      =    0;
-   char        x_file      [LEN_TITLE] = "";
-   char      (*x_handler)   (char a_name [LEN_TITLE], char a_type [LEN_TERSE], int a_line, char a_file [LEN_TITLE]);
+   char        x_fname     [LEN_TITLE] = "";
+   char      (*x_handler)   (tFILE *a_file, char a_name [LEN_TITLE], char a_type [LEN_TERSE], int a_line, char a_fname [LEN_TITLE]);
+   int         c           =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(generate ctags)-----------------*/
@@ -1148,7 +1180,7 @@ FILES_ctags             (tFILE *a_file, char a_type, void *f_handler ())
          break;
       }
       /*---(parse record)----------------*/
-      rc = FILES__ctags_parse (x_recd, x_name, x_type, &x_line, x_file);
+      rc = FILES__ctags_parse (x_recd, x_name, x_type, &x_line, x_fname);
       DEBUG_INPT   yLOG_value   ("parse"      , rc);
       if (rc < 0) {
          rc = yENV_close (&f);
@@ -1158,8 +1190,9 @@ FILES_ctags             (tFILE *a_file, char a_type, void *f_handler ())
       }
       /*---(handle ctag)-----------------*/
       if (x_handler != NULL) {
-         rc = x_handler (x_name, x_type, x_line, x_file);
+         rc = x_handler (a_file, x_name, x_type, x_line, x_fname);
          DEBUG_INPT   yLOG_value   ("handle"     , rc);
+         ++c;
       } else {
          DEBUG_INPT   yLOG_note    ("no handler assigned");
       }
@@ -1175,7 +1208,7 @@ FILES_ctags             (tFILE *a_file, char a_type, void *f_handler ())
    }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 1;
+   return c;
 }
 
 char         /*--> make a list of input files --------------------------------*/
@@ -1237,6 +1270,20 @@ FILES_gather            (tPROJ *a_proj)
       FILES_add     (a_proj, x_name, x_type, &x_curr);
       ++x_good;
       DEBUG_INPT   yLOG_note    ("added to inventory");
+      /*---(CHECK FILE ONLY)----------------*/
+      DEBUG_PROG   yLOG_char    ("run_func"   , my.g_run_func);
+      if (my.g_run_file != 'y') {
+         DEBUG_PROG    yLOG_note    ("did not select gather below file, so continue");
+         continue;
+      }
+      /*---(analyze file)-------------------*/
+      rc  = FUNCS_gather        (x_curr);
+      DEBUG_PROG   yLOG_value   ("funcs"      , rc);
+      --rce;  if (rc < 0) {
+         yURG_err ('f', "could not review file");
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
       /*---(check globals)---------------*/
       /*> if (x_type == 'h')  poly_vars_inventory (x_curr);                           <*/
       /*---(done)------------------------*/
@@ -1346,7 +1393,6 @@ FILES_in_proj_by_cursor (tPROJ *a_proj, char a_dir, tFILE **r_file)
    tFILE      *v           = NULL;
    if (r_file != NULL)  *r_file = NULL;
    --rce;  if (a_proj == NULL)   return --rce;
-   if (r_file != NULL)  *r_file = NULL;
    if (s_found != NULL && a_proj != s_found->i_proj)   s_found = NULL;
    u = a_proj;
    v = s_found;

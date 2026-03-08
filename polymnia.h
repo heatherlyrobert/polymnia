@@ -27,7 +27,7 @@
    "warranty and the author cannot be held liable for damages."
 
 #define  P_THEFT    \
-   "if you knowingly violate the spirit of these ideas, i suspect you might "    \
+   "if you knowingly violate the spirit of these ideas, i suspect you might¦"    \
    "find any number of freedom-minded hackers may take it quite personally ;)"
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
@@ -74,9 +74,9 @@
 #define     P_CREATED   "2019-01"
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
-#define     P_VERMINOR  "1.2-, switching to common testing sources"
-#define     P_VERNUM    "1.2h"
-#define     P_VERTXT    "unit testing back and improved with new koios/yUNIT structure"
+#define     P_VERMINOR  "1.3-, another hard run at updates"
+#define     P_VERNUM    "1.3a"
+#define     P_VERTXT    "updated based on support library improvements and unit testing advancements"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -100,7 +100,7 @@
 
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 #define  P_COVERS      \
-   "boadly architecture management, i.e., supporting a systems architect,¦"        \
+   "broadly architecture management, i.e., supporting a systems architect,¦"       \
    "not a programmer, admisitrator, leader, or project manager.  this would¦"      \
    "include inventories, interdependencies, and holistic code-base analysis."
 
@@ -309,7 +309,6 @@
 #include    <ySORT.h>             /* heatherly sorting and searching          */
 #include    <yREGEX.h>       /* CUSTOM  heatherly regular expressions         */
 #include    <yDLST_solo.h>   /* CUSTOM  heatherly regular expressions         */
-#include    <yEXEC_solo.h>
 
 
 
@@ -1087,10 +1086,6 @@ char        PROG_summarize          (tPROJ *x_proj);
 /*········´ ´············shutdown·´ ´·········································*/
 char        PROG__end               (void);
 char        PROG_shutdown           (void);
-/*········´ ´·········string_vers·´ ´·········································*/
-char        PROG__args_string       (char a_string [LEN_FULL]);
-char        PROG_startup_string     (char a_string [LEN_FULL]);
-char        PROG_pseudo_string      (char a_string [LEN_FULL]);
 /*········´ ´············unittest·´ ´·········································*/
 char*       prog__unit              (char *a_question, int i);
 /*········´ ´················DONE·´ ´·········································*/
@@ -1199,7 +1194,7 @@ char        FILES_init              (void);
 char        FILES_purge             (tPROJ *a_proj, char a_update);
 char        FILES_wrap              (void);
 /*········´ ´···············ctags·´ ´·········································*/
-char        FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_TITLE]);
+char        FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_PATH]);
 char        FILES__ctags_parse      (char a_recd [LEN_RECD], char r_name [LEN_TITLE], char r_type [LEN_TERSE], int *r_line, char r_file [LEN_TITLE]);
 char        FILES_ctags             (tFILE *a_file, char a_type, void *f_handler ());
 /*········´ ´···············yjobs·´ ´·········································*/
@@ -1251,9 +1246,12 @@ char        FUNCS_by_cursor         (char  a_dir             , tFUNC **a_func);
 char        FUNCS_by_tree           (uchar a_name [LEN_TITLE], tFUNC **a_func);
 char        FUNCS_by_regex          (uchar *a_regex, tFUNC **a_func);
 /*········´ ´··············search·´ ´·········································*/
-char        FUNCS_by_proj_hint      (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func);
-char        FUNCS_by_proj_index     (tPROJ *a_proj, char a_index           , tFUNC **a_func);
-char        FUNCS_by_proj_cursor    (tPROJ *a_proj, char a_dir             , tFUNC **a_func);
+int         FUNCS_in_file_count     (tFILE *a_file);
+char        FUNCS_in_file_by_name   (tFILE *a_file, char a_name [LEN_TITLE], tFUNC **r_func);
+char        FUNCS_in_file_by_index  (tFILE *a_file, int a_index, tFUNC **r_func);
+char        FUNCS_in_file_by_cursor (tFILE *a_file, char a_dir, tFUNC **r_func);
+/*········´ ´··············search·´ ´·········································*/
+char        FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func);
 /*········´ ´··············search·´ ´·········································*/
 char        FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func);
 /*········´ ´············exposure·´ ´·········································*/

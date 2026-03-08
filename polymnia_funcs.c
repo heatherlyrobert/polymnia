@@ -3,6 +3,37 @@
 
 
 
+/*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+
+#define  P_COPYRIGHT   \
+   "copyright (c) 2019 robert.s.heatherly at balsashrike at gmail dot com"
+
+#define  P_LICENSE     \
+   "the only place you could have gotten this code is my github, my website,¦"   \
+   "or illegal sharing. given that, you should be aware that this is GPL licensed."
+
+#define  P_COPYLEFT    \
+   "the GPL COPYLEFT REQUIREMENT means any modifications or derivative works¦"   \
+   "must be released under the same GPL license, i.e, must be free and open."
+
+#define  P_INCLUDE     \
+   "the GPL DOCUMENTATION REQUIREMENT means that you must include the original¦" \
+   "copyright notice and the full licence text with any resulting anything."
+
+#define  P_AS_IS       \
+   "the GPL NO WARRANTY CLAUSE means the software is provided without any¦"      \
+   "warranty and the author cannot be held liable for damages."
+
+#define  P_THEFT    \
+   "if you knowingly violate the spirit of these ideas, i suspect you might¦"    \
+   "find any number of freedom-minded hackers may take it quite personally ;)"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+/*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+
+
+
 static char s_print     [LEN_RECD] = "";
 
 
@@ -86,7 +117,7 @@ FUNCS_cli_by_hint       (char a_hint [LEN_SHORT], char a_loud)
     *>    DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);                                           <* 
     *>    return rce;                                                                           <* 
     *> }                                                                                        <* 
-    *> FUNCS_by_proj_hint (my.g_proj, x_recd, &x_found);                                         <* 
+    *> FUNCS_in_proj_by_hint (my.g_proj, x_recd, &x_found);                                         <* 
     *> DEBUG_ARGS  yLOG_point   ("x_found"   , x_found);                                        <* 
     *> --rce;  if (x_found == NULL) {                                                           <* 
     *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name not found in project");   <* 
@@ -145,7 +176,7 @@ FUNCS_cli_by_name       (char *a_name, char a_loud)
     *>    DEBUG_PROG  yLOG_exitr (__FUNCTION__, rce);                                           <* 
     *>    return rce;                                                                           <* 
     *> }                                                                                        <* 
-    *> FUNCS_by_proj_hint (my.g_proj, x_recd, &x_found);                                         <* 
+    *> FUNCS_in_proj_by_hint (my.g_proj, x_recd, &x_found);                                         <* 
     *> DEBUG_ARGS  yLOG_point   ("x_found"   , x_found);                                        <* 
     *> --rce;  if (x_found == NULL) {                                                           <* 
     *>    if (a_loud == 'y')  yURG_err (YURG_FATAL, "hint <name>, name not found in project");   <* 
@@ -512,6 +543,12 @@ FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, in
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(update btree)-------------------*/
+   rc = ySORT_prepare (B_FUNCS);
+   if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(create hint)--------------------*/
    rc = ystrlhint (ySORT_count (B_FUNCS) - 1, "lA", x_new->c_hint);
    DEBUG_DATA   yLOG_value   ("hint"      , rc);
@@ -675,11 +712,134 @@ FUNCS_inside            (tFUNC *a_func)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
+static tFUNC *s_found = NULL;
+
 int  FUNCS_count             (void)   { return ySORT_count     (B_FUNCS); }
 char FUNCS_by_name           (uchar a_name [LEN_TITLE], tFUNC **r_func)  { return ySORT_by_name   (B_FUNCS, a_name , r_func, NULL); }
 char FUNCS_by_index          (int   a_index           , tFUNC **r_func)  { return ySORT_by_index  (B_FUNCS, a_index, r_func, NULL); }
 char FUNCS_by_cursor         (char  a_dir             , tFUNC **r_func)  { return ySORT_by_cursor (B_FUNCS, a_dir  , r_func, NULL); }
 char FUNCS_by_tree           (uchar a_name [LEN_TITLE], tFUNC **r_func)  { return ySORT_by_tree   (B_FUNCS, a_name , r_func, NULL); }
+
+int
+FUNCS_in_file_count     (tFILE *a_file)
+{
+   char        rce         =  -10;
+   if (a_file == NULL)  return rce;
+   return a_file->i_ccount;
+}
+
+char
+FUNCS_in_file_by_name   (tFILE *a_file, char a_name [LEN_TITLE], tFUNC **r_func)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tFILE      *u           = NULL;
+   tFUNC      *v           = NULL;
+   /*---(default)------------------------*/
+   if (r_func != NULL)  *r_func = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_file == NULL)       return rce;
+   --rce;  if (a_name == NULL)       return rce;
+   --rce;  if (a_name [0] == '\0')   return rce;
+   /*---(reset)--------------------------*/
+   s_found = NULL;
+   /*---(prepare)------------------------*/
+   u = a_file;
+   v = u->i_chead;
+   --rce;  if (v == NULL)            return rce;
+   /*---(walk)---------------------------*/
+   while (v != NULL) {
+      if (strcmp (v->c_name, a_name) == 0) {
+         s_found = v;
+         if (r_func != NULL)  *r_func = v;
+         return 1;
+      }
+      v = v->c_next;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+FUNCS_in_file_by_index  (tFILE *a_file, int a_index, tFUNC **r_func)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tFILE      *u           = NULL;
+   tFUNC      *v           = NULL;
+   int         c           =    0;
+   /*---(default)------------------------*/
+   if (r_func != NULL)  *r_func = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_file == NULL)       return rce;
+   --rce;  if (a_index <  0)         return rce;
+   /*---(reset)--------------------------*/
+   s_found = NULL;
+   /*---(prepare)------------------------*/
+   u = a_file;
+   v = u->i_chead;
+   --rce;  if (v == NULL)            return rce;
+   /*---(test-too-far)-------------------*/
+   c = u->i_ccount;
+   --rce;  if (a_index >= c)         return rce;
+   /*---(walk)---------------------------*/
+   c = 0;
+   while (v != NULL) {
+      if (c == a_index) {
+         s_found = v;
+         if (r_func != NULL)  *r_func = v;
+         return 1;
+      }
+      ++c;
+      v = v->c_next;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+FUNCS_in_file_by_cursor (tFILE *a_file, char a_dir, tFUNC **r_func)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tFILE      *u           = NULL;
+   tFUNC      *v           = NULL;
+   /*---(default)------------------------*/
+   if (r_func != NULL)  *r_func = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_file == NULL)   return rce;
+   /*---(reset)--------------------------*/
+   if (s_found != NULL && a_file != s_found->c_file)   s_found = NULL;
+   /*---(prepare)------------------------*/
+   u = a_file;
+   v = s_found;
+   /*---(cursor)-------------------------*/
+   --rce;  switch (a_dir) {
+   case YDLST_HEAD  :
+      v = u->i_chead;
+      break;
+   case YDLST_NEXT  :
+      if (v != NULL)  v = v->c_next;
+      break;
+   case YDLST_CURR  :
+      break;
+   case YDLST_PREV  :
+      if (v != NULL)  v = v->c_prev;
+      break;
+   case YDLST_TAIL  :
+      v = u->i_ctail;
+      break;
+   default          :
+      return rce;
+   }
+   /*---(verify)-------------------------*/
+   --rce;  if (v == NULL) return rce;
+   s_found = v;
+   /*---(save-back)----------------------*/
+   if (r_func != NULL)  *r_func = v;
+   /*---(complete)-----------------------*/
+   return 1;
+}
 
 char
 FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func)
@@ -727,7 +887,7 @@ FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func)
 }
 
 char
-FUNCS_by_proj_hint      (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func)
+FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -761,62 +921,6 @@ FUNCS_by_proj_hint      (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func)
    }
    /*---(complete)-----------------------*/
    --rce;  return rce;
-}
-
-char         /*-[ cursor from provided position ------------[----------------]*/
-FUNCS_by_proj_cursor    (tPROJ *a_proj, char a_dir, tFUNC **a_func)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tFILE      *x_file      = NULL;
-   tFUNC      *x_func      = NULL;
-   /*---(defense)------------------------*/
-   --rce;  if (a_proj   == NULL)   return rce;
-   --rce;  if (a_func   == NULL)   return rce;
-   /*---(prepare)------------------------*/
-   x_func = *a_func;
-   if (x_func == NULL)  x_func = a_proj->j_ihead->i_chead;
-   --rce;  if (x_func   == NULL)   return rce;
-   x_file = x_func->c_file;
-   --rce;  if (x_file   == NULL)   return rce;
-   /*---(select)-------------------------*/
-   switch (a_dir) {
-   case '['  :
-      x_func = a_proj->j_ihead->i_chead;
-      break;
-   case '<'  :
-      x_func = x_func->c_prev;
-      if (x_func == NULL || x_func == *a_func) {
-         if (x_file->i_prev != NULL) {
-            x_func = x_file->i_prev->i_ctail;
-         }
-      }
-      break;
-   case '.'  :
-      ;;
-      break;
-   case '>'  :
-      x_func = x_func->c_next;
-      if (x_func == NULL || x_func == *a_func) {
-         if (x_file->i_next != NULL) {
-            x_func = x_file->i_next->i_chead;
-         }
-      }
-      break;
-   case ']'  :
-      x_func = a_proj->j_itail->i_ctail;
-      break;
-   default   :
-      --rce;
-      return rce;
-      break;
-   }
-   /*---(check update)-------------------*/
-   --rce;  if (x_func == NULL)  return rce;
-   /*---(save)---------------------------*/
-   *a_func = x_func;
-   /*---(complete)-----------------------*/
-   return 0;
 }
 
 
@@ -919,8 +1023,9 @@ FUNCS_wrap              (void)
 static void  o___YJOB____________o () { return; }
 
 char         /*--> read and parse crontab lines ----------[ ------ [ ------ ]-*/
-FUNCS_gather            (tFILE *a_file)
-{  /*---(locals)-----------+-----+-----+-*/
+FUNCS_gather_OLD        (tFILE *a_file)
+{
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
    int         rc          =    0;           /* generic return code            */
    char        x_recd      [LEN_RECD];      /* input record                   */
@@ -991,6 +1096,37 @@ FUNCS_gather            (tFILE *a_file)
    return c;
 }
 
+char
+FUNCS__handler          (tFILE *a_file, char a_name [LEN_TITLE], char a_type [LEN_TERSE], int a_line, char a_fname [LEN_TITLE])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;           /* return code for errors         */
+   int         rc          =    0;           /* generic return code            */
+   char        x_type      =  '-';
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(identify type)------------------*/
+   x_type = a_type [0];
+   if (strncmp ("o___", a_name, 4) == 0)   x_type = '_';
+   DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
+   --rce;  if (x_type == 0 || strchr ("f_", x_type) == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(add function)-------------------*/
+   rc = FUNCS_add  (a_file, a_name, x_type, a_line, NULL);
+   DEBUG_INPT   yLOG_value   ("add"       , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+char  FUNCS_gather   (tFILE *a_file) { return FILES_ctags (a_file, 'f', FUNCS__handler); }
+
 
 
 /*====================------------------------------------====================*/
@@ -1001,40 +1137,43 @@ static void  o___EXPOSURE________o () { return; }
 char*
 FUNCS_in_file_list      (tFILE *a_file)
 {
-   /*> tPROJ      *u           = NULL;                                                                       <* 
-    *> tFILE      *v           = NULL;                                                                       <* 
-    *> int         c           =    0;                                                                       <* 
-    *> char        t           [LEN_LABEL] = "";                                                             <* 
-    *> char        x_save      =  '·';                                                                       <* 
-    *> char        x_type      =  '·';                                                                       <* 
-    *> strcpy (unit_answer, "");                                                                             <* 
-    *> if (a_proj == NULL) return "(null proj)";                                                             <* 
-    *> ystrlcat (unit_answer, ystrlpadquick  (a_proj->j_name, '<', '.', 20), LEN_RECD);                      <* 
-    *> ystrlcat (unit_answer, "  ", LEN_RECD);                                                               <* 
-    *> u = a_proj;                                                                                           <* 
-    *> v = u->j_ihead;                                                                                       <* 
-    *> c = u->j_icount;                                                                                      <* 
-    *> if (v      == NULL) {                                                                                 <* 
-    *>    ystrlcat (unit_answer, "(no files)", LEN_RECD);                                                    <* 
-    *>    return unit_answer;                                                                                <* 
-    *> }                                                                                                     <* 
-    *> ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);      <* 
-    *> c = 0;                                                                                                <* 
-    *> while (v != NULL) {                                                                                   <* 
-    *>    x_type = v->i_type;                                                                                <* 
-    *>    if (x_save != '·' && x_type != x_save) ystrlcat (unit_answer, "  ´", LEN_RECD);                    <* 
-    *>    ystrlcat (unit_answer, "  ", LEN_RECD);                                                            <* 
-    *>    ystrlcat (unit_answer, v->i_name, LEN_RECD);                                                       <* 
-    *>    v = v->i_next;                                                                                     <* 
-    *>    x_save = x_type;                                                                                   <* 
-    *>    ++c;                                                                                               <* 
-    *> }                                                                                                     <* 
-    *> if (c > 0) {                                                                                          <* 
-    *>    ystrlcat (unit_answer, "  [", LEN_RECD);                                                           <* 
-    *>    ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);   <* 
-    *>    ystrlcat (unit_answer, "]  Ï", LEN_RECD);                                                          <* 
-    *> }                                                                                                     <* 
-    *> return unit_answer;                                                                                   <*/
+   tFILE      *u           = NULL;
+   tFUNC      *v           = NULL;
+   int         c           =    0;
+   char        t           [LEN_LABEL] = "";
+   /*---(default)------------------------*/
+   strcpy (unit_answer, "");
+   /*---(defense)------------------------*/
+   if (a_file == NULL) return "(null file)";
+   /*---(leader)-------------------------*/
+   ystrlcat (unit_answer, ystrlpadquick  (a_file->i_name, '<', '.', 30), LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+   /*---(prepare)------------------------*/
+   u = a_file;
+   v = u->i_chead;
+   if (v      == NULL) {
+      ystrlcat (unit_answer, "(no funcs)", LEN_RECD);
+      return unit_answer;
+   }
+   /*---(count)--------------------------*/
+   c = u->i_ccount;
+   ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+   c = 0;
+   /*---(walk)---------------------------*/
+   while (v != NULL) {
+      ystrlcat (unit_answer, "  ", LEN_RECD);
+      ystrlcat (unit_answer, v->c_name, LEN_RECD);
+      v = v->c_next;
+      ++c;
+   }
+   /*---(trailer)------------------------*/
+   if (c > 0) {
+      ystrlcat (unit_answer, "  [", LEN_RECD);
+      ystrlcat (unit_answer, ystrl4quick ((double) c, '>', ',', 0, '-', '.', '´', '-',  3), LEN_RECD);
+      ystrlcat (unit_answer, "]  Ï", LEN_RECD);
+   }
+   /*---(complete)-----------------------*/
+   return unit_answer;
 }
 
 char*

@@ -3,6 +3,37 @@
 
 
 
+/*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+
+#define  P_COPYRIGHT   \
+   "copyright (c) 2019 robert.s.heatherly at balsashrike at gmail dot com"
+
+#define  P_LICENSE     \
+   "the only place you could have gotten this code is my github, my website,¦"   \
+   "or illegal sharing. given that, you should be aware that this is GPL licensed."
+
+#define  P_COPYLEFT    \
+   "the GPL COPYLEFT REQUIREMENT means any modifications or derivative works¦"   \
+   "must be released under the same GPL license, i.e, must be free and open."
+
+#define  P_INCLUDE     \
+   "the GPL DOCUMENTATION REQUIREMENT means that you must include the original¦" \
+   "copyright notice and the full licence text with any resulting anything."
+
+#define  P_AS_IS       \
+   "the GPL NO WARRANTY CLAUSE means the software is provided without any¦"      \
+   "warranty and the author cannot be held liable for damages."
+
+#define  P_THEFT    \
+   "if you knowingly violate the spirit of these ideas, i suspect you might¦"    \
+   "find any number of freedom-minded hackers may take it quite personally ;)"
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+/*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
+
+
+
 tPROJ      *g_head      = NULL;
 tPROJ      *g_tail      = NULL;
 int         g_count     =    0;;
@@ -867,12 +898,11 @@ PROJS_gather            (cchar *a_data)
       return 0;
    }
    /*---(analyze project)----------------*/
-   rc = poly_action__gather (x_proj);
-   DEBUG_PROG   yLOG_value   ("gather"     , rc);
+   rc  = FILES_gather        (x_proj);
+   DEBUG_PROG   yLOG_value   ("review"     , rc);
    --rce;  if (rc < 0) {
-      yURG_err ('f', "could not add project data to database");
-      yURG_msg (' ', "");
-      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      yURG_err ('f', "could not review directory");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(complete)-----------------------*/
@@ -1112,7 +1142,7 @@ PROJS_line              (tPROJ *a_proj, char a_style, char a_use, char a_pre, in
    if (strchr ("p"  , a_style) != NULL) {
       x_age = 0;
       if (a_proj != NULL)  x_age = my.runtime - a_proj->j_written;
-      ystrlage (x_age, 'U', x_aged);
+      /*> ystrlage (x_age, 'U', x_aged);                                              <*/
       switch (x_type) {
       case 'h' : sprintf (t, "age  vers  g  ---codesize---  ");  break;
       case 'p' : sprintf (t, "Ï--··Ï---··Ï··Ï-------------··");  break;
