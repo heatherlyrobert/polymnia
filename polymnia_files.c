@@ -995,7 +995,8 @@ FILES__ctags_generate   (char a_type, tFILE *a_file, char r_output [LEN_PATH])
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   sprintf (x_source, "%s/%s", a_file->i_proj->j_dir, a_file->i_name);
+   /*> sprintf (x_source, "%s/%s", a_file->i_proj->j_dir, a_file->i_name);            <*/
+   sprintf (x_source, "%s", a_file->i_name);
    DEBUG_INPT   yLOG_info    ("x_source"  , x_source);
    /*---(pre-check)----------------------*/
    rc = yENV_exists (x_source);
