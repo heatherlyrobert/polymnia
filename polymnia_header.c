@@ -52,97 +52,98 @@ const struct {
    short       h_max;
 } static s_header [LEN_HUND] = {
    /*-------base------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'N' , "···"           , "proj_name"    , "project name"                    , '´' , (long) &(s_place.j_name [0])       - (long) &s_place,   1,   4,  15, LEN_TITLE         },
-   { 'D' , "···"           , "proj_dir"     , "project directory"               , '´' , (long) &(s_place.j_dir [0])        - (long) &s_place,   1,   4,  70, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'N' , "···"           , "proj_name"    , "project name"                    , '´' , (long) &(s_place.j_name      [0]) - (long) &s_place,   1,   4,  15, LEN_TITLE         },
+   { 'D' , "···"           , "proj_dir"     , "project directory"               , '´' , (long) &(s_place.j_dir       [0]) - (long) &s_place,   1,   4,  70, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------master----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'f' , "P_FOCUS"       , "focus"        , "functional focus"                , '°' , (long) &(s_place.j_focus [0])      - (long) &s_place,   5,  10,  30, LEN_DESC          },
-   { 'n' , "P_NICHE"       , "niche"        , "niche within focus"              , '°' , (long) &(s_place.j_niche [0])      - (long) &s_place,   5,  10,  30, LEN_DESC          },
-   { 's' , "P_SUBJECT"     , "subject"      , "short purpose statement"         , '°' , (long) &(s_place.j_subject [0])    - (long) &s_place,  10,  20,  30, LEN_DESC          },
-   { 'p' , "P_PURPOSE"     , "purpose"      , "longer purpose statement"        , '°' , (long) &(s_place.j_purpose [0])    - (long) &s_place,  30,  50,  70, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'f' , "P_FOCUS"       , "focus"        , "functional focus"                , '°' , (long) &(s_place.j_focus     [0]) - (long) &s_place,   5,  10,  30, LEN_DESC          },
+   { 'n' , "P_NICHE"       , "niche"        , "niche within focus"              , '°' , (long) &(s_place.j_niche     [0]) - (long) &s_place,   5,  10,  30, LEN_DESC          },
+   { 's' , "P_SUBJECT"     , "subject"      , "short purpose statement"         , '°' , (long) &(s_place.j_subject   [0]) - (long) &s_place,  10,  20,  30, LEN_DESC          },
+   { 'p' , "P_PURPOSE"     , "purpose"      , "longer purpose statement"        , '°' , (long) &(s_place.j_purpose   [0]) - (long) &s_place,  30,  50,  70, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------greek-----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'ê' , "P_NAMESAKE"    , "namesake"     , "greek pantheon sponsor"          , '°' , (long) &(s_place.j_namesake [0])   - (long) &s_place,  10,  20,  40, LEN_HUND          },
-   { '÷' , "P_PRONOUNCE"   , "pronounce"    , "arapabet namesake guide"         , '°' , (long) &(s_place.j_pronounce [0])  - (long) &s_place,   0,   5,  30, LEN_TITLE         },
-   { 'î' , "P_HERITAGE"    , "heritage"     , "longer description of god"       , '°' , (long) &(s_place.j_heritage [0])   - (long) &s_place,  40,  40,  70, LEN_HUND          },
-   { 'é' , "P_BRIEFLY"     , "briefly"      , "short description of god"        , '°' , (long) &(s_place.j_briefly [0])    - (long) &s_place,   0,  20,  30, LEN_TITLE         },
-   { 'ð' , "P_IMAGERY"     , "imagery"      , "description of the god"          , '°' , (long) &(s_place.j_imagery [0])    - (long) &s_place,  40,  40,  70, LEN_HUND          },
-   { 'ø' , "P_REASON"      , "reason"       , "reason patronage makes sense"    , '°' , (long) &(s_place.j_reason [0])     - (long) &s_place,  40,  40,  70, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'ê' , "P_NAMESAKE"    , "namesake"     , "greek pantheon sponsor"          , '°' , (long) &(s_place.j_namesake  [0]) - (long) &s_place,  10,  20,  40, LEN_HUND          },
+   { '÷' , "P_PRONOUNCE"   , "pronounce"    , "arapabet namesake guide"         , '°' , (long) &(s_place.j_pronounce [0]) - (long) &s_place,   0,   5,  30, LEN_TITLE         },
+   { 'î' , "P_HERITAGE"    , "heritage"     , "longer description of god"       , '°' , (long) &(s_place.j_heritage  [0]) - (long) &s_place,  40,  40,  70, LEN_HUND          },
+   { 'é' , "P_BRIEFLY"     , "briefly"      , "short description of god"        , '°' , (long) &(s_place.j_briefly   [0]) - (long) &s_place,   0,  20,  30, LEN_TITLE         },
+   { 'ð' , "P_IMAGERY"     , "imagery"      , "description of the god"          , '°' , (long) &(s_place.j_imagery   [0]) - (long) &s_place,  40,  40,  70, LEN_HUND          },
+   { 'ø' , "P_REASON"      , "reason"       , "reason patronage makes sense"    , '°' , (long) &(s_place.j_reason    [0]) - (long) &s_place,  40,  40,  70, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------oneline---------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'ö' , "P_ONELINE"     , "oneline"      , "reporting suppmary line"         , '°' , (long) &(s_place.j_oneline [0])    - (long) &s_place,  40,  50,  70, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'ö' , "P_ONELINE"     , "oneline"      , "reporting suppmary line"         , '°' , (long) &(s_place.j_oneline   [0]) - (long) &s_place,  40,  50,  70, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------location--------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'd' , "P_HOMEDIR"     , "homedir"      , "project source directory"        , '°' , (long) &(s_place.j_homedir [0])    - (long) &s_place,   1,   4,  70, LEN_HUND          },
-   { 'b' , "P_BASENAME"    , "progname"     , "run-time executable name"        , '°' , (long) &(s_place.j_progname [0])   - (long) &s_place,   1,   4,  20, LEN_TITLE         },
-   { 'f' , "P_FULLPATH"    , "fullpath"     , "installed location"              , '°' , (long) &(s_place.j_fullpath [0])   - (long) &s_place,  10,  20,  70, LEN_HUND          },
-   { 's' , "P_SUFFIX"      , "suffix"       , "data file suffix"                , '°' , (long) &(s_place.j_suffix [0])     - (long) &s_place,   0,   3,   6, LEN_LABEL         },
-   { 'c' , "P_CONTENT"     , "content"      , "data file content description"   , '°' , (long) &(s_place.j_content [0])    - (long) &s_place,   0,  15,  30, LEN_TITLE         },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'd' , "P_HOMEDIR"     , "homedir"      , "project source directory"        , '°' , (long) &(s_place.j_homedir   [0]) - (long) &s_place,   1,   4,  70, LEN_HUND          },
+   { 'b' , "P_BASENAME"    , "progname"     , "run-time executable name"        , '°' , (long) &(s_place.j_progname  [0]) - (long) &s_place,   1,   4,  20, LEN_TITLE         },
+   { 'f' , "P_FULLPATH"    , "fullpath"     , "installed location"              , '°' , (long) &(s_place.j_fullpath  [0]) - (long) &s_place,  10,  20,  70, LEN_HUND          },
+   { 's' , "P_SUFFIX"      , "suffix"       , "data file suffix"                , '°' , (long) &(s_place.j_suffix    [0]) - (long) &s_place,   0,   3,   6, LEN_LABEL         },
+   { 'c' , "P_CONTENT"     , "content"      , "data file content description"   , '°' , (long) &(s_place.j_content   [0]) - (long) &s_place,   0,  15,  30, LEN_TITLE         },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------chars-----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 's' , "P_SYSTEM"      , "system"       , "operating systems required"      , '°' , (long) &(s_place.j_systems [0])    - (long) &s_place,  40,  50,  70, LEN_HUND          },
-   { 'l' , "P_LANGUAGE"    , "language"     , "computer programming language"   , '°' , (long) &(s_place.j_language [0])   - (long) &s_place,  40,  50,  70, LEN_HUND          },
-   { 'c' , "P_COMPILER"    , "compiler"     , "specific compiler version"       , '°' , (long) &(s_place.j_compiler [0])   - (long) &s_place,   0,   3,  20, LEN_LABEL         },
-   { 'z' , "P_CODESIZE"    , "codesize"     , "general size note"               , '°' , (long) &(s_place.j_codesize [0])   - (long) &s_place,  10,  10,  40, LEN_DESC          },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 's' , "P_SYSTEM"      , "system"       , "operating systems required"      , '°' , (long) &(s_place.j_systems   [0]) - (long) &s_place,  40,  50,  70, LEN_HUND          },
+   { 'l' , "P_LANGUAGE"    , "language"     , "computer programming language"   , '°' , (long) &(s_place.j_language  [0]) - (long) &s_place,  40,  50,  70, LEN_HUND          },
+   { 'c' , "P_COMPILER"    , "compiler"     , "specific compiler version"       , '°' , (long) &(s_place.j_compiler  [0]) - (long) &s_place,   0,   3,  20, LEN_LABEL         },
+   { 'z' , "P_CODESIZE"    , "codesize"     , "general size note"               , '°' , (long) &(s_place.j_codesize  [0]) - (long) &s_place,  10,  10,  40, LEN_DESC          },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------depends---------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'D' , "P_DEPSTDC"     , "dep_stdc"     , "standard-c libraries"            , '°' , (long) &(s_place.j_dep_cstd [0])   - (long) &s_place,   0,   0,  70, LEN_HUND          },
-   { 'P' , "P_DEPPOSIX"    , "dep_posix"    , "posix-c libraries"               , '°' , (long) &(s_place.j_dep_posix [0])  - (long) &s_place,   0,   0,  70, LEN_HUND          },
-   { 'C' , "P_DEPCORE"     , "dep_core"     , "heatherly core libraries"        , '°' , (long) &(s_place.j_dep_core [0])   - (long) &s_place,   0,   0,  70, LEN_HUND          },
-   { 'V' , "P_DEPVIKEY"    , "dep_vikey"    , "heatherly vi-keys libraries"     , '°' , (long) &(s_place.j_dep_vikey [0])  - (long) &s_place,   0,   0,  70, LEN_HUND          },
-   { 'O' , "P_DEPOTHER"    , "dep_other"    , "all other libraries"             , '°' , (long) &(s_place.j_dep_other [0])  - (long) &s_place,   0,   0,  70, LEN_HUND          },
-   { 'G' , "P_DEPGRAPH"    , "dep_graph"    , "heatherly visual libraries"      , '°' , (long) &(s_place.j_dep_graph [0])  - (long) &s_place,   0,   0,  70, LEN_HUND          },
-   { 'S' , "P_DEPSOLO"     , "dep_solo"     , "heatherly solo/uver libraries"   , '°' , (long) &(s_place.j_dep_solo [0])   - (long) &s_place,   0,   0,  70, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'D' , "P_DEPSTDC"     , "dep_stdc"     , "standard-c libraries"            , '°' , (long) &(s_place.j_dep_cstd  [0]) - (long) &s_place,   0,   0,  70, LEN_HUND          },
+   { 'P' , "P_DEPPOSIX"    , "dep_posix"    , "posix-c libraries"               , '°' , (long) &(s_place.j_dep_posix [0]) - (long) &s_place,   0,   0,  70, LEN_HUND          },
+   { 'C' , "P_DEPCORE"     , "dep_core"     , "heatherly core libraries"        , '°' , (long) &(s_place.j_dep_core  [0]) - (long) &s_place,   0,   0,  70, LEN_HUND          },
+   { 'V' , "P_DEPVIKEY"    , "dep_vikey"    , "heatherly vi-keys libraries"     , '°' , (long) &(s_place.j_dep_vikey [0]) - (long) &s_place,   0,   0,  70, LEN_HUND          },
+   { 'O' , "P_DEPOTHER"    , "dep_other"    , "all other libraries"             , '°' , (long) &(s_place.j_dep_other [0]) - (long) &s_place,   0,   0,  70, LEN_HUND          },
+   { 'G' , "P_DEPGRAPH"    , "dep_graph"    , "heatherly visual libraries"      , '°' , (long) &(s_place.j_dep_graph [0]) - (long) &s_place,   0,   0,  70, LEN_HUND          },
+   { 'S' , "P_DEPSOLO"     , "dep_solo"     , "heatherly solo/uver libraries"   , '°' , (long) &(s_place.j_dep_solo  [0]) - (long) &s_place,   0,   0,  70, LEN_HUND          },
+   { 'A' , "P_DEPALIEN"    , "dep_alien"    , "third-party libraries"           , '°' , (long) &(s_place.j_dep_alien [0]) - (long) &s_place,   0,   0,  70, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------when------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'a' , "P_AUTHOR"      , "author"       , "primary programmer name"         , '°' , (long) &(s_place.j_author [0])     - (long) &s_place,   5,  10,  40, LEN_TITLE         },
-   { 'c' , "P_CREATED"     , "created"      , "data first created"              , '°' , (long) &(s_place.j_created [0])    - (long) &s_place,   4,   7,  20, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'a' , "P_AUTHOR"      , "author"       , "primary programmer name"         , '°' , (long) &(s_place.j_author    [0]) - (long) &s_place,   5,  10,  40, LEN_TITLE         },
+   { 'c' , "P_CREATED"     , "created"      , "data first created"              , '°' , (long) &(s_place.j_created   [0]) - (long) &s_place,   4,   7,  20, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------version---------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'x' , "P_VERMAJOR"    , "vermajor"     , "major version explanation"       , '°' , (long) &(s_place.j_vermajor [0])   - (long) &s_place,   4,  15,  70, LEN_HUND          },
-   { 'n' , "P_VERMINOR"    , "verminor"     , "minor version explanation"       , '°' , (long) &(s_place.j_verminor [0])   - (long) &s_place,   4,  15,  70, LEN_HUND          },
-   { 'v' , "P_VERNUM"      , "vernum"       , "specific vertion number"         , '°' , (long) &(s_place.j_vernum [0])     - (long) &s_place,   4,   4,   4, LEN_LABEL         },
-   { 't' , "P_VERTXT"      , "vertxt"       , "specific version description"    , '°' , (long) &(s_place.j_vertxt [0])     - (long) &s_place,  10,  20,  70, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'x' , "P_VERMAJOR"    , "vermajor"     , "major version explanation"       , '°' , (long) &(s_place.j_vermajor  [0]) - (long) &s_place,   4,  15,  70, LEN_HUND          },
+   { 'n' , "P_VERMINOR"    , "verminor"     , "minor version explanation"       , '°' , (long) &(s_place.j_verminor  [0]) - (long) &s_place,   4,  15,  70, LEN_HUND          },
+   { 'v' , "P_VERNUM"      , "vernum"       , "specific vertion number"         , '°' , (long) &(s_place.j_vernum    [0]) - (long) &s_place,   4,   4,   4, LEN_LABEL         },
+   { 't' , "P_VERTXT"      , "vertxt"       , "specific version description"    , '°' , (long) &(s_place.j_vertxt    [0]) - (long) &s_place,  10,  20,  70, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------warranty--------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'c' , "P_COPYRIGHT"   , "copyright"    , "identifying the owner"           , 'g' , (long) &(s_place.j_copyright [0])  - (long) &s_place,   1,   1,  70, LEN_LABEL         },
-   { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , 'g' , (long) &(s_place.j_license [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , 'g' , (long) &(s_place.j_copyleft [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , 'g' , (long) &(s_place.j_include [0])    - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , 'g' , (long) &(s_place.j_as_is [0])      - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   { 't' , "P_THEFT"       , "theft"        , "thoughts on cheating"            , 'g' , (long) &(s_place.j_theft [0])      - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'c' , "P_COPYRIGHT"   , "copyright"    , "identifying the owner"           , 'g' , (long) &(s_place.j_copyright [0]) - (long) &s_place,   1,   1,  70, LEN_LABEL         },
+   { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , 'g' , (long) &(s_place.j_license   [0]) - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , 'g' , (long) &(s_place.j_copyleft  [0]) - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , 'g' , (long) &(s_place.j_include   [0]) - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , 'g' , (long) &(s_place.j_as_is     [0]) - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   { 't' , "P_THEFT"       , "theft"        , "thoughts on cheating"            , 'g' , (long) &(s_place.j_theft     [0]) - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------extra-----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'p' , "P_PRIORITY"    , "priority"     , "programming priorities"          , 'p' , (long) &(s_place.j_priority [0])   - (long) &s_place,   1,   1,  70, LEN_LABEL         },
-   { 'p' , "P_PRINCIPLE"   , "principle"    , "call to action"                  , 'p' , (long) &(s_place.j_principal [0])  - (long) &s_place,   1,   1,  70, LEN_LABEL         },
-   { 'r' , "P_REMINDER"    , "reminder"     , "just so you know"                , 'p' , (long) &(s_place.j_reminder [0])   - (long) &s_place,   1,   1,  70, LEN_LABEL         },
-   { 'd' , "P_DISCLAIM"    , "disclaim"     , "programming disclaimer"          , 'p' , (long) &(s_place.j_disclaim [0])   - (long) &s_place,   1,   1, 250, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'p' , "P_PRIORITY"    , "priority"     , "programming priorities"          , 'p' , (long) &(s_place.j_priority  [0]) - (long) &s_place,   1,   1,  70, LEN_LABEL         },
+   { 'p' , "P_PRINCIPLE"   , "principle"    , "call to action"                  , 'p' , (long) &(s_place.j_principal [0]) - (long) &s_place,   1,   1,  70, LEN_LABEL         },
+   { 'r' , "P_REMINDER"    , "reminder"     , "just so you know"                , 'p' , (long) &(s_place.j_reminder  [0]) - (long) &s_place,   1,   1,  70, LEN_LABEL         },
+   { 'd' , "P_DISCLAIM"    , "disclaim"     , "programming disclaimer"          , 'p' , (long) &(s_place.j_disclaim  [0]) - (long) &s_place,   1,   1, 250, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------why-------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'B' , "P_BOTHER"      , "bother"       , "why do anything?"                , '-' , (long) &(s_place.j_bother [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'C' , "P_COVERS"      , "covers"       , "what's the overall niche?"       , '-' , (long) &(s_place.j_covers [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'S' , "P_SUBDISC"     , "sub-disc"     , "what are the niche sub-parts?"   , '-' , (long) &(s_place.j_subdisc [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'C' , "P_CURRENT"     , "current"      , "current state-of-play"           , '-' , (long) &(s_place.j_current [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'V' , "P_VALUE"       , "value"        , "benefit of getting this right"   , '-' , (long) &(s_place.j_value [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'F' , "P_FEAR"        , "fear"         , "are there overriding needs?"     , '-' , (long) &(s_place.j_fear [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'M' , "P_MISSING"     , "missing"      , "current state gets what wrong"   , '-' , (long) &(s_place.j_missing [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'K' , "P_KEEPING"     , "keeping"      , "current state gets what right"   , '-' , (long) &(s_place.j_keeping [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'P' , "P_PERK"        , "perk"         , "benefit of building custom"      , '-' , (long) &(s_place.j_perk [0])       - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'B' , "P_BOTHER"      , "bother"       , "why do anything?"                , '-' , (long) &(s_place.j_bother    [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'C' , "P_COVERS"      , "covers"       , "what's the overall niche?"       , '-' , (long) &(s_place.j_covers    [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'S' , "P_SUBDISC"     , "sub-disc"     , "what are the niche sub-parts?"   , '-' , (long) &(s_place.j_subdisc   [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'C' , "P_CURRENT"     , "current"      , "current state-of-play"           , '-' , (long) &(s_place.j_current   [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'V' , "P_VALUE"       , "value"        , "benefit of getting this right"   , '-' , (long) &(s_place.j_value     [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'F' , "P_FEAR"        , "fear"         , "are there overriding needs?"     , '-' , (long) &(s_place.j_fear      [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'M' , "P_MISSING"     , "missing"      , "current state gets what wrong"   , '-' , (long) &(s_place.j_missing   [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'K' , "P_KEEPING"     , "keeping"      , "current state gets what right"   , '-' , (long) &(s_place.j_keeping   [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'P' , "P_PERK"        , "perk"         , "benefit of building custom"      , '-' , (long) &(s_place.j_perk      [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------what------------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { 'S' , "P_SCOPE"       , "scope"        , "scope of this solution"          , '-' , (long) &(s_place.j_scope [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'A' , "P_ACCEPT"      , "accepted"     , "accepted objectives"             , '-' , (long) &(s_place.j_accept [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'R' , "P_REJECT"      , "rejected"     , "rejected objectives"             , '-' , (long) &(s_place.j_reject [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'A' , "P_ASSUME"      , "assume"       , "environmental assumptions"       , '-' , (long) &(s_place.j_assume [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'A' , "P_ALWAYS"      , "always"       , "universal objectives"            , '-' , (long) &(s_place.j_always [0])     - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { '*' , "P_SUMMARY"     , "summary"      , "project summary"                 , '-' , (long) &(s_place.j_summary [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'D' , "P_DANGERS"     , "dangers"      , "potential trouble with project"  , '-' , (long) &(s_place.j_dangers [0])    - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   { 'G' , "P_GREEK"       , "greek"        , "longer greek heritage"           , '-' , (long) &(s_place.j_greek [0])      - (long) &s_place,   1,   1, 500, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   { 'S' , "P_SCOPE"       , "scope"        , "scope of this solution"          , '-' , (long) &(s_place.j_scope     [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'A' , "P_ACCEPT"      , "accepted"     , "accepted objectives"             , '-' , (long) &(s_place.j_accept    [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'R' , "P_REJECT"      , "rejected"     , "rejected objectives"             , '-' , (long) &(s_place.j_reject    [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'A' , "P_ASSUME"      , "assume"       , "environmental assumptions"       , '-' , (long) &(s_place.j_assume    [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'A' , "P_ALWAYS"      , "always"       , "universal objectives"            , '-' , (long) &(s_place.j_always    [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { '*' , "P_SUMMARY"     , "summary"      , "project summary"                 , '-' , (long) &(s_place.j_summary   [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'D' , "P_DANGERS"     , "dangers"      , "potential trouble with project"  , '-' , (long) &(s_place.j_dangers   [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   { 'G' , "P_GREEK"       , "greek"        , "longer greek heritage"           , '-' , (long) &(s_place.j_greek     [0]) - (long) &s_place,   1,   1, 500, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------grade-----------label------------description--------------------------type---offset-----------------------------------------------min--low--hig-max----------------*/
-   { ' ' , ""              , "GRADE"        , "final rating on headers"         , '°' , -1                                                  ,   0,   0,   0, 0                 },
+   { ' ' , ""              , "GRADE"        , "final rating on headers"         , '°' , -1                                                 ,   0,   0,   0, 0                 },
    /*-------end-------------label------------description--------------------------type---offset-----------------------------------------------min--low-high-max----------------*/
-   {  0  , "end-of-list"   , ""             , ""                                , '·' , -1                                                  ,   0,   0,   0, 0                 },
+   {  0  , "end-of-list"   , ""             , ""                                , '·' , -1                                                 ,   0,   0,   0, 0                 },
 };
 
 /*>  GYGES                                                                             <* 
@@ -449,7 +450,7 @@ char
 HEADER__memory          (tPROJ *a_proj)
 {
    int         i           =    0;
-   if (a_proj == NULL)  return "((null))";
+   if (a_proj == NULL)  return -10;
    for (i = 0; i < LEN_HUND; ++i) {
       if (s_header [i].h_abbr == 0)               break;
       if (s_header [i].h_abbr == 1) {
@@ -984,7 +985,7 @@ HEADER_report           (tPROJ *a_proj)
    /*---(summary)------------------------*/
    DEBUG_INPT   yLOG_note    ("summary");
    yURG_msg (' ', "##   %2d headers ·  å%sæ", HEADER_count (), a_proj->j_header);
-   yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depend··au·ver··gpl····extr·why·······what·····!æ");
+   yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depends··au·ver··gpl····extr·why·······what·····!æ");
    DEBUG_INPT   yLOG_note    ("header");
    yURG_msg (' ', "##");
    yURG_msg (' ', x_sep);
