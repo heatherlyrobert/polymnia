@@ -33,6 +33,19 @@
 /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
 
 
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_OBJECTIVE   \
+   "polymnia_ySCORE.c is focused solely on enabling the ySCORE shared library to¦"    \
+   "gather, track, and report function-level analytical stats for each-and-every¦"    \
+   "function within a particular project and its related source files."
+
+/*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
+#define  P_CRITICALTY     "´ (low)      very useful, but not required to run"
+#define  P_COMPLEXITY     "´ (low)      just enables library"
+
+
+
 /*> struct {                                                                          <* 
  *>    char        match       [LEN_LABEL];                                           <* 
  *>    char        desc        [LEN_TERSE];                                           <* 

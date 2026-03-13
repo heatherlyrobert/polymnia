@@ -34,6 +34,18 @@
 
 
 
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_OBJECTIVE   \
+   "polymnia_header.c is focused solely on gathering and reporting informational¦"    \
+   "header data from source code which provides primarily narritive, but critical,¦"  \
+   "information on the nature, scope, objective, and implementation of the project"
+
+/*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
+#define  P_CRITICALTY     "´ (low)      useful, but not required to run"
+#define  P_COMPLEXITY     "´ (low)      primarily string data handling"
+
+
+
 static tPROJ   s_place;
 static tFILE   s_pfile;
 

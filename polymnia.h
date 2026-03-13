@@ -75,8 +75,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3e"
-#define     P_VERTXT    "projs/files/funcs unit-testing is updated, and basic htags working"
+#define     P_VERNUM    "1.3f"
+#define     P_VERTXT    "caught up with unit_data changes to reflect current reality"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"

@@ -34,6 +34,18 @@
 
 
 
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_OBJECTIVE   \
+   "polymnia_files.c is focused on creating, organizing, and maintaining one or¦"     \
+   "more source code files per project with a limited set of master data, but¦"       \
+   "acting as the main organizing point for code functions"
+
+/*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
+#define  P_CRITICALTY     "H (high)     all data must ultimately connect to a file"
+#define  P_COMPLEXITY     "m (moderate) important, but relatively simple data structure"
+
+
+
 static char s_print     [LEN_RECD] = "";
 
 

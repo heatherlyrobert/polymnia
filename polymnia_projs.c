@@ -34,6 +34,18 @@
 
 
 
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_OBJECTIVE   \
+   "polymnia_projs.c is focused on creating, organizing, and maintaining one or¦"     \
+   "more programming projects with a limited set of master data, as well as¦"         \
+   "acting as home base for header data, files, etc."
+
+/*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
+#define  P_CRITICALTY     "H (high)     all data must ultimately connect to a project"
+#define  P_COMPLEXITY     "m (moderate) important, but relatively simple data structure"
+
+
+
 tPROJ      *g_head      = NULL;
 tPROJ      *g_tail      = NULL;
 int         g_count     =    0;;
@@ -626,206 +638,6 @@ PROJS_here               (tPROJ **a_proj)
    }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-PROJS_git              (tPROJ *a_proj)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   char        x_cmd       [LEN_RECD]  = "";
-   FILE       *f           = NULL;
-   char        x_recd      [LEN_RECD]  = "";
-   int         l           =    0;
-   char        x_ch        =  '-';
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_proj"    , a_proj);
-   --rce;  if (a_proj == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("name"      , a_proj->j_name);
-   /*---(get data)------------------------------*/
-   sprintf (x_cmd, "git status -s --untracked-files=no > /tmp/polymnia_git.txt");
-   rc = system (x_cmd);
-   DEBUG_INPT   yLOG_value   ("git"       , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(pull data)-----------------------------*/
-   f = fopen ("/tmp/polymnia_git.txt", "rt");
-   DEBUG_INPT   yLOG_point   ("f"         , f);
-   --rce;  if (f == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(get data line)-------------------------*/
-   fgets  (x_recd, LEN_RECD, f);
-   fclose (f);
-   l = strlen (x_recd);
-   /*---(check for current)---------------------*/
-   DEBUG_INPT   yLOG_value   ("l"         , l);
-   if (l == 0) {
-      DEBUG_INPT   yLOG_note    ("git fully up to date");
-      a_proj->j_git = '·';
-      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
-   /*---(clean up)------------------------------*/
-   if (x_recd [l - 1] == '\n')  x_recd [--l] = '\0';
-   DEBUG_INPT   yLOG_info    ("x_recd"    , x_recd);
-   /*---(check for no git)----------------------*/
-   rc = strncmp (x_recd, "fatal: not a git repository", 27);
-   DEBUG_INPT   yLOG_value   ("fatal"     , rc);
-   if (rc == 0) {
-      a_proj->j_git = ' ';
-      DEBUG_SORT   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
-   /*---(not up to date)------------------------*/
-   a_proj->j_git = '¤';
-   /*---(complete)------------------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-PROJS_footprint        (tPROJ *a_proj)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   char        x_name      [LEN_TITLE] = "";
-   char        x_base      [LEN_LABEL] = "";
-   char        x_cmd       [LEN_RECD]  = "";
-   int         x_len       =    0;
-   FILE       *f           = NULL;
-   char        x_recd      [LEN_RECD]  = "";
-   char       *p           = NULL;
-   char       *r           = NULL;
-   int         rci         =    0;
-   tSTAT       st;
-   int         x_text, x_data, x_bss;
-   char        x_public    [LEN_TITLE] = "";
-   char        x_private   [LEN_TITLE] = "";
-   tFILE      *x_file      = NULL;
-   tFILE      *x_header    = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_proj"    , a_proj);
-   --rce;  if (a_proj == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("name"      , a_proj->j_name);
-   /*---(prepare name)--------------------------*/
-   ystrlcpy (x_base, a_proj->j_name, LEN_LABEL);
-   ystrlcpy (x_name, a_proj->j_name, LEN_TITLE);
-   if (x_name [0] == 'y' && strchr (YSTR_UPPER, x_name [1]) != NULL) {
-      sprintf (x_name, "lib%s.so.%c.%c.%c", a_proj->j_name, a_proj->j_vernum [0], a_proj->j_vernum [2], a_proj->j_vernum [3]);
-   }
-   x_len = strlen (x_name);
-   DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
-   /*---(save totals)--------------------*/
-   x_text = a_proj->COUNT_TEXT;
-   x_data = a_proj->COUNT_DATA;
-   x_bss  = a_proj->COUNT_BSS;
-   /*---(defaults)-----------------------*/
-   a_proj->COUNT_TEXT = 0;
-   a_proj->COUNT_DATA = 0;
-   a_proj->COUNT_BSS  = 0;
-   /*---(check for existance)------------*/
-   rci = lstat (x_name, &st);
-   DEBUG_FILE   yLOG_value   ("lstat"     , rci);
-   --rce; if (rci < 0) {
-      DEBUG_FILE   yLOG_note    ("file does not exist, can not read");
-      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(check for regular file)---------*/
-   --rce;  if (!S_ISREG (st.st_mode)) {
-      DEBUG_FILE   yLOG_note    ("not a regular file, rejected");
-      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(get data)------------------------------*/
-   sprintf (x_cmd, "size %s > /tmp/polymnia_footprint.txt", x_name);
-   rc = system (x_cmd);
-   DEBUG_INPT   yLOG_value   ("size"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(pull data)-----------------------------*/
-   f = fopen ("/tmp/polymnia_footprint.txt", "rt");
-   DEBUG_INPT   yLOG_point   ("f"         , f);
-   --rce;  if (f == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(get data line)-------------------------*/
-   fgets  (x_recd, LEN_RECD, f);
-   fgets  (x_recd, LEN_RECD, f);
-   /*---(parse)---------------------------------*/
-   p = strtok_r (x_recd, " ", &r);
-   --rce;  if (p == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   a_proj->COUNT_TEXT = atoi (p);
-   p = strtok_r (NULL  , " ", &r);
-   --rce;  if (p == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   a_proj->COUNT_DATA = atoi (p);
-   p = strtok_r (NULL  , " ", &r);
-   --rce;  if (p == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   a_proj->COUNT_BSS  = atoi (p);
-   /*---(close)---------------------------------*/
-   rc = fclose (f);
-   DEBUG_INPT   yLOG_point   ("close"     , rc);
-   /*---(destroy temp file)---------------------*/
-   sprintf (x_cmd, "rm -f /tmp/polymnia_footprint.txt  2> /dev/null");
-   rc = system (x_cmd);
-   DEBUG_INPT   yLOG_value   ("size"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(place extra)---------------------------*/
-   sprintf (x_public , "%s.h"     , x_base);
-   sprintf (x_private, "%s_priv.h", x_base);
-   x_file = a_proj->j_ihead;
-   while (x_file != NULL) {
-      if (strcmp (x_file->i_name, x_private) == 0) {
-         x_header = x_file;
-         break;
-      }
-      if (strcmp (x_file->i_name, x_public ) == 0) {
-         if (x_header == NULL)   x_header = x_file;
-      }
-      x_file = x_file->i_next;
-   }
-   DEBUG_INPT   yLOG_point   ("x_header"  , x_header);
-   --rce;  if (x_header == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   x_header->COUNT_TEXT = a_proj->COUNT_TEXT - x_text;
-   x_header->COUNT_DATA = a_proj->COUNT_DATA - x_data;
-   x_header->COUNT_BSS  = a_proj->COUNT_BSS  - x_bss;
-   /*---(complete)------------------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

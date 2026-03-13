@@ -981,7 +981,7 @@ poly_rptg_htags         (tPROJ *a_proj)
    DEBUG_PROG   yLOG_note    ("review all tags and code");
    x_file = a_proj->j_ihead;
    DEBUG_PROG   yLOG_point   ("x_file"    , x_file);
-   if (my.g_rptg == POLY_RPTG_HTAGS)    HEADER_report (a_proj);
+   /*> if (my.g_rptg == POLY_RPTG_HTAGS)    HEADER_report (a_proj);                   <*/
    while (x_file != NULL) {
       DEBUG_PROG   yLOG_info    ("file name" , x_file->i_name);
       printf ("%-29.29s   FILE\n", x_file->i_name);

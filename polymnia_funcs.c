@@ -34,6 +34,18 @@
 
 
 
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_OBJECTIVE   \
+   "polymnia_funcs.c is focused on creating, organizing, and maintaining one or¦"     \
+   "more code functions per source code file with an extensive set of data, and¦"     \
+   "acting as the primary organizing point for all analytical details"
+
+/*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
+#define  P_CRITICALTY     "H (high)     all data must ultimately connect to a function"
+#define  P_COMPLEXITY     "m (moderate) important, but relatively simple data structure"
+
+
+
 static char s_print     [LEN_RECD] = "";
 
 
