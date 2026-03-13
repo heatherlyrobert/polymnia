@@ -114,7 +114,7 @@ poly_action__gather     (tPROJ *a_proj)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(produce global files)-----------*/
-   rc  = FILES_gather        (a_proj);
+   rc  = FILES_gather        (a_proj, 'y');
    DEBUG_PROG   yLOG_value   ("review"     , rc);
    --rce;  if (rc < 0) {
       yURG_msg ('f', "could not review directory");

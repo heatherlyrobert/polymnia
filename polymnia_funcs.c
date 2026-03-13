@@ -468,7 +468,7 @@ FUNCS__unhook           (tFUNC *a_func)
 static void  o___EXISTANCE_______o () { return; }
 
 char
-FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, int a_line, tFUNC **r_func)
+FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, int a_line, tFUNC **r_new)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -501,14 +501,23 @@ FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, in
       return rce;
    }
    /*---(check return)-------------------*/
-   DEBUG_DATA   yLOG_point   ("r_func"    , r_func);
-   --rce;  if (r_func != NULL) {
-      DEBUG_DATA   yLOG_point   ("*r_func"   , *r_func);
-      if (*r_func != NULL) {
+   DEBUG_DATA   yLOG_point   ("r_new"     , r_new);
+   --rce;  if (r_new != NULL) {
+      DEBUG_DATA   yLOG_point   ("*r_new"    , *r_new);
+      if (*r_new != NULL) {
          DEBUG_DATA   yLOG_note    ("already set to a particular function");
          DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+   }
+   /*---(defense on duplicate)-----------*/
+   rc = FUNCS_in_file_by_name (a_file, a_name, &x_new);
+   DEBUG_DATA   yLOG_point   ("dup"       , x_new);
+   --rce;  if (x_new != NULL) {
+      DEBUG_DATA   yLOG_note    ("already exists, exiting");
+      if (r_new != NULL)  *r_new = x_new;
+      DEBUG_DATA   yLOG_exit    (__FUNCTION__);
+      return 0;
    }
    /*---(create function)----------------*/
    rc = FUNCS__new     (&x_new);
@@ -558,54 +567,54 @@ FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, in
    }
    DEBUG_DATA   yLOG_info    ("hint"      , x_new->c_hint);
    /*---(save)---------------------------*/
-   if (r_func != NULL)  *r_func = x_new;
+   if (r_new != NULL)  *r_new = x_new;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
+   return 1;
 }
 
 char
-FUNCS_remove            (tFUNC **b_func)
+FUNCS_remove            (tFUNC **b_old)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
    char        rc          =    0;
    /*---(beginning)----------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   DEBUG_DATA   yLOG_point   ("b_func"    , b_func);
-   --rce;  if (b_func == NULL) {
+   DEBUG_DATA   yLOG_point   ("b_old"     , b_old);
+   --rce;  if (b_old == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_point   ("*b_func"   , *b_func);
-   --rce;  if (*b_func == NULL) {
+   DEBUG_DATA   yLOG_point   ("*b_old"    , *b_old);
+   --rce;  if (*b_old == NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DATA   yLOG_note    ((*b_func)->c_name);
+   DEBUG_DATA   yLOG_note    ((*b_old)->c_name);
    /*---(purge ylib links)---------------*/
-   rc = poly_ylib_purge  (*b_func, '-');
+   rc = poly_ylib_purge  (*b_old, '-');
    DEBUG_DATA   yLOG_value   ("purge ylib", rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(out of linked list)-------------*/
-   rc = FUNCS__unhook    (*b_func);
+   rc = FUNCS__unhook    (*b_old);
    DEBUG_DATA   yLOG_value   ("unhook"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(btree)--------------------------*/
-   rc = ySORT_unhook (&((*b_func)->c_btree));
+   rc = ySORT_unhook (&((*b_old)->c_btree));
    DEBUG_DATA   yLOG_value   ("un-btree"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(free main)----------------------*/
-   rc = FUNCS__free  (b_func);
+   rc = FUNCS__free  (b_old);
    DEBUG_DATA   yLOG_value   ("free"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
@@ -613,7 +622,7 @@ FUNCS_remove            (tFUNC **b_func)
    }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
+   return 1;
 }
 
 
@@ -697,7 +706,7 @@ FUNCS_inside            (tFUNC *a_func)
    --rce;  if (a_func       == NULL)   return rce;
    /*---(filter)-------------------------*/
    DEBUG_DATA   yLOG_point   ("work"      , a_func->c_work);
-   --rce;  if (a_func->c_work == NULL)   return rce;
+   --rce;  if (a_func->c_work == NULL) return rce;
    DEBUG_DATA   yLOG_complex ("beg/end"   , "%3d, %3d", a_func->WORK_BEG, a_func->WORK_END);
    --rce;  if (a_func->WORK_BEG <  0)  return 0;
    --rce;  if (a_func->WORK_END >  0)  return 0;

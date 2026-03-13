@@ -949,6 +949,10 @@ poly_rptg_extern        (tEXTERN *a_extern)
    return 0;
 }
 
+char
+poly__rptg_htags_pre    (tFILE *a_file)
+{
+}
 
 char
 poly_rptg_htags         (tPROJ *a_proj)

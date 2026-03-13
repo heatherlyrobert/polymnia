@@ -366,6 +366,7 @@ PROG__args              (int a_argc, char *a_argv[])
       else if (strcmp  (a, "--help"         ) == 0)  PROG_usage   ();
       else if (strcmp  (a, "--loud"         ) == 0)  yURG_all_tmplive ();
       /*---(parts)-----------------------*/
+      else if (strcmp  (a, "--run_min"      ) == 0)  { my.g_run_proj = my.g_run_file = my.g_run_func = 'y';  my.g_run_head = my.g_run_code = my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
       else if (strcmp  (a, "--run_proj"     ) == 0)  { my.g_run_proj = 'y';  my.g_run_head = my.g_run_file = my.g_run_func = my.g_run_code = my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
       else if (strcmp  (a, "--run_head"     ) == 0)  { my.g_run_proj = my.g_run_head = 'y';  my.g_run_file = my.g_run_func = my.g_run_code = my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
       else if (strcmp  (a, "--run_file"     ) == 0)  { my.g_run_proj = my.g_run_head = my.g_run_file = 'y';  my.g_run_func = my.g_run_code = my.g_run_extr = my.g_run_ylib = my.g_run_unit = '-'; }
@@ -443,6 +444,12 @@ PROG__args              (int a_argc, char *a_argv[])
    }
    /*> printf ("FINAL  %c, %c, %c\n", my.g_mode, my.g_scope, my.g_rptg);              <*/
    yJOBS_final (my.run_uid);
+   /*---(report-out)---------------------*/
+   DEBUG_ARGS  yLOG_char   ("run_as"    , my.run_as);
+   DEBUG_ARGS  yLOG_info   ("yJOBS_iam" , yJOBS_iam  ());
+   DEBUG_ARGS  yLOG_char   ("run_mode"  , my.run_mode);
+   DEBUG_ARGS  yLOG_info   ("yJOBS_mode", yJOBS_mode ());
+   DEBUG_ARGS  yLOG_info   ("run_file"  , my.run_file);
    /*---(complete)-----------------------*/
    DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    return rc;

@@ -222,7 +222,7 @@ poly_yjobs_localrpt     (void)
    my.g_data  = POLY_DATA_HTAGS;
    my.g_scope = POLY_FULL;
    my.g_rptg  = POLY_RPTG_HTAGS;
-   poly_action_whoami ();
+   /*> poly_action_whoami ();                                                         <*/
    rc = poly_rptg_htags (my.g_proj);
    DEBUG_PROG    yLOG_value   ("htags"     , rc);
    /*---(complete)-----------------------*/
@@ -256,6 +256,7 @@ char
 poly_yjobs_callback     (cchar a_req, cchar *a_data)
 {
    /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG    yLOG_enter   (__FUNCTION__);
@@ -263,17 +264,45 @@ poly_yjobs_callback     (cchar a_req, cchar *a_data)
    DEBUG_PROG    yLOG_char    ("a_req"     , ychrvisible (a_req));
    DEBUG_PROG    yLOG_info    ("a_data"    , a_data);
    /*---(handle)-------------------------*/
-   switch (a_req) {
-   case YJOBS_READ     :  rc = poly_yjobs_read     ();          break;
-   case YJOBS_STATS    :  rc = poly_yjobs_stats    ();          break;
-   case YJOBS_WRITE    :  rc = poly_yjobs_write    ();          break;
-   case YJOBS_PULL     :  rc = poly_yjobs_pull     (a_data);    break;
-   case YJOBS_CLEAR    :  rc = poly_yjobs_clear    (a_data);    break;
-   case YJOBS_LOCALRPT :  rc = poly_yjobs_localrpt ();          break;
-   case YJOBS_REPORT   :  rc = poly_yjobs_report   (a_data);    break;
+   --rce;  switch (a_req) {
+   case YJOBS_READ     :
+      DEBUG_PROG    yLOG_note    ("YJOBS_READ");
+      /*> rc = poly_yjobs_read     ();                                                <*/
+      break;
+   case YJOBS_STATS    :
+      DEBUG_PROG    yLOG_note    ("YJOBS_STATS");
+      /*> rc = poly_yjobs_stats    ();                                                <*/
+      break;
+   case YJOBS_WRITE    :
+      DEBUG_PROG    yLOG_note    ("YJOBS_WRITE");
+      /*> rc = poly_yjobs_write    ();                                                <*/
+      break;
+   case YJOBS_PULL     :
+      DEBUG_PROG    yLOG_note    ("YJOBS_PULL");
+      /*> rc = poly_yjobs_pull     (a_data);                                          <*/
+      rc = PROJS_gather   (a_data, 'y');
+      break;
+   case YJOBS_CLEAR    :
+      DEBUG_PROG    yLOG_note    ("YJOBS_CLEAR");
+      /*> rc = poly_yjobs_clear    (a_data);                                          <*/
+      break;
+   case YJOBS_LOCALRPT :
+      DEBUG_PROG    yLOG_note    ("YJOBS_LOCALRPT");
+      rc = poly_yjobs_localrpt ();
+      break;
+   case YJOBS_REPORT   :
+      DEBUG_PROG    yLOG_note    ("YJOBS_REPORT");
+      /*> rc = poly_yjobs_report   (a_data);                                          <*/
+      break;
+   default             :
+      DEBUG_PROG    yLOG_note    ("UNKNOWN");
+      DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+      break;
    }
    /*---(trouble)------------------------*/
-   if (rc < 0) {
+   DEBUG_PROG    yLOG_value   ("rc"        , rc);
+   --rce;  if (rc < 0) {
       DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }

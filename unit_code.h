@@ -1,7 +1,3 @@
-/*============================[[ beg-of-code ]]===============================*/
-#ifndef UNIT_HEAD
-#define UNIT_HEAD yes
-
 
 
 /*===[[ unit_code.c ]]========================================================*/
@@ -15,4 +11,3 @@ char        PROG_pseudo_string      (char a_type, char a_string [LEN_FULL]);
 
 
 
-#endif

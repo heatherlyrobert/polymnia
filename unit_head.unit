@@ -33,6 +33,8 @@ PREP          include the prototype headers                                    
    global     create working variable              - - - - - - - - - - - - -   char    u_dir_ycalc    [LEN_HUND]  = "/tmp/yCALC.calculation_engine";
    global     create working variable              - - - - - - - - - - - - -   char    u_little       [LEN_HUND]  = "little";
    global     create working variable              - - - - - - - - - - - - -   char    u_dir_little   [LEN_HUND]  = "/tmp/little.small_sample_project";
+   global     create working variable              - - - - - - - - - - - - -   char    u_file_rptg    [LEN_RECD]  = "";                                                                                                                                                                                    
+   global     create working variable              - - - - - - - - - - - - -   char    u_func_rptg    [LEN_RECD]  = "";                                                                                                                                                                                    
 
 
 

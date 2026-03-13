@@ -837,8 +837,12 @@ PROJS_footprint        (tPROJ *a_proj)
 static void  o___YJOBS___________o () { return; }
 
 char
-PROJS_gather            (cchar *a_data)
-{
+PROJS_gather            (cchar *a_data, char c_recurse)
+{  /*---(design notes)-------------------*/
+   /*
+    *  c_recurse is a unit-testing helper-flag to stop at projs level
+    *
+    */
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
@@ -858,24 +862,6 @@ PROJS_gather            (cchar *a_data)
       return rce;
    }
    DEBUG_PROG    yLOG_info    ("x_name"    , x_name);
-   /*---(find target)--------------------*/
-   /*> PROJS_by_name      (x_name, &x_proj);                                          <* 
-    *> DEBUG_PROG   yLOG_point   ("x_proj"     , x_proj);                             <* 
-    *> --rce;  if (x_proj == NULL) {                                                  <* 
-    *>    yURG_err ('w', "project does not exist in the database, nothing to do");    <* 
-    *> } else {                                                                       <* 
-    *>    DEBUG_PROG   yLOG_point   ("->name"     , x_proj->j_name);                  <* 
-    *>    /+---(remove existing target)---------+/                                    <* 
-    *>    yURG_msg ('-', "remove current project");                                   <* 
-    *>    rc = PROJS_remove     (&x_proj);                                            <* 
-    *>    DEBUG_PROG   yLOG_value   ("proj_del"   , rc);                              <* 
-    *>    if (rc < 0) {                                                               <* 
-    *>       yURG_err ('f', "could not remove project from database");                <* 
-    *>       yURG_msg (' ', "");                                                      <* 
-    *>       DEBUG_PROG    yLOG_exitr   (__FUNCTION__, rce);                          <* 
-    *>       return rce;                                                              <* 
-    *>    }                                                                           <* 
-    *> }                                                                              <*/
    /*---(add project)--------------------*/
    rc = PROJS_add     (x_name, a_data, &x_proj);
    DEBUG_PROG   yLOG_value   ("add"        , rc);
@@ -891,6 +877,12 @@ PROJS_gather            (cchar *a_data)
    my.g_proj = x_proj;
    x_proj->j_written = my.runtime;
    /*---(CHECK PROJECT ONLY)-------------*/
+   DEBUG_PROG   yLOG_char    ("c_recurse"  , c_recurse);
+   if (c_recurse     != 'y') {
+      DEBUG_PROG    yLOG_note    ("did not select gather below project, so done");
+      DEBUG_PROG    yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
    DEBUG_PROG   yLOG_char    ("run_file"   , my.g_run_file);
    if (my.g_run_file != 'y') {
       DEBUG_PROG    yLOG_note    ("did not select gather below project, so done");
@@ -898,13 +890,17 @@ PROJS_gather            (cchar *a_data)
       return 0;
    }
    /*---(analyze project)----------------*/
-   rc  = FILES_gather        (x_proj);
+   rc  = FILES_gather        (x_proj, 'y');
    DEBUG_PROG   yLOG_value   ("review"     , rc);
    --rce;  if (rc < 0) {
       yURG_err ('f', "could not review directory");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(summary)------------------------*/
+   DEBUG_PROG   yLOG_value   ("projs"      , PROJS_count ());
+   DEBUG_PROG   yLOG_value   ("files"      , FILES_count ());
+   DEBUG_PROG   yLOG_value   ("funcs"      , FUNCS_count ());
    /*---(complete)-----------------------*/
    DEBUG_PROG    yLOG_exit    (__FUNCTION__);
    return 0;

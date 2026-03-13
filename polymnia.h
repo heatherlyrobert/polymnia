@@ -75,8 +75,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3d"
-#define     P_VERTXT    "projs/files unit-testing is updated with latest changes"
+#define     P_VERNUM    "1.3e"
+#define     P_VERTXT    "projs/files/funcs unit-testing is updated, and basic htags working"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -1128,7 +1128,7 @@ char        PROJS_here              (tPROJ **a_proj);
 char        PROJS_git               (tPROJ *a_proj);
 char        PROJS_footprint         (tPROJ *a_proj);
 /*········´ ´···············yjobs·´ ´·········································*/
-char        PROJS_gather            (cchar *a_data);
+char        PROJS_gather            (cchar *a_data, char c_recurse);
 /*········´ ´···········reporting·´ ´·········································*/
 char        PROJS_line              (tPROJ *a_proj, char a_style, char a_use, char a_pre, int a, char a_print);
 /*········´ ´············unittest·´ ´·········································*/
@@ -1173,9 +1173,9 @@ char        FILES_rando             (tFILE *a_file);
 char        FILES__hook             (tPROJ *a_proj, tFILE *a_file);
 char        FILES__unhook           (tFILE *a_file);
 /*········´ ´···········existance·´ ´·········································*/
-char        FILES__presort          (char a_pname [LEN_LABEL], char a_type, char a_fname [LEN_TITLE], char *r_one, char *r_two);
-char        FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **a_file);
-char        FILES_remove            (tFILE **a_old);
+char        FILES__presort          (char a_pname [LEN_LABEL], char a_type, char a_fname [LEN_TITLE], char *r_major, char *r_minor);
+char        FILES_add               (tPROJ *a_proj, char *a_name, char a_type, tFILE **r_file);
+char        FILES_remove            (tFILE **b_old);
 /*········´ ´··············search·´ ´·········································*/
 int         FILES_count             (void);
 char        FILES_by_name           (char a_name [LEN_TITLE], tFILE **r_file);
@@ -1186,7 +1186,7 @@ char        FILES_by_tree           (char a_name [LEN_TITLE], tFILE **r_file);
 int         FILES_in_proj_count     (tPROJ *a_proj);
 char        FILES_in_proj_by_name   (tPROJ *a_proj, char a_file [LEN_TITLE], tFILE **r_file);
 char        FILES_in_proj_by_index  (tPROJ *a_proj, int  a_index           , tFILE **r_file);
-char        FILES_in_proj_by_cursor (tPROJ *a_proj, char a_dir             , tFILE **r_file);
+char        FILES_in_proj_by_cursor (tPROJ *a_proj, char a_dir, tFILE **r_file, char r_file_rptg [LEN_RECD], char r_func_rptg [LEN_RECD]);
 /*········´ ´············exposure·´ ´·········································*/
 char*       FILES_in_proj_list      (tPROJ *a_proj);
 char*       FILES_entry             (tFILE *a_file);
@@ -1203,7 +1203,7 @@ char        FILES__single_char      (char a_name [LEN_TITLE], char *r_type, char
 char        FILES__multi_char       (char a_name [LEN_TITLE], char c_units, char *r_type);
 char        FILES__filter           (char a_name [LEN_TITLE], char c_units, char *r_type, char r_mans [LEN_LABEL]);
 char        FILES__sorting          (tPROJ *a_proj);
-char        FILES_gather            (tPROJ *a_proj);
+char        FILES_gather            (tPROJ *a_proj, char c_recurse);
 /*········´ ´···········reporting·´ ´·········································*/
 char        FILES_line              (tFILE *a_file, char a_style, char a_use, char a_pre, int a, int b, char a_print);
 /*········´ ´············unittest·´ ´·········································*/
@@ -1237,8 +1237,8 @@ char*       WORK__memory            (tWORK *a_work);
 char        FUNCS__hook             (tFILE *a_file, tFUNC *a_func);
 char        FUNCS__unhook           (tFUNC *a_func);
 /*········´ ´···········existance·´ ´·········································*/
-char        FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, int a_line, tFUNC **r_func);
-char        FUNCS_remove            (tFUNC **a_tag);
+char        FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, int a_line, tFUNC **r_new);
+char        FUNCS_remove            (tFUNC **b_old);
 /*········´ ´··············search·´ ´·········································*/
 int         FUNCS_count             (void);
 char        FUNCS_by_name           (uchar a_name [LEN_TITLE], tFUNC **a_func);
