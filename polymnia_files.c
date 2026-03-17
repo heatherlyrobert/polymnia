@@ -61,29 +61,37 @@ FILES__wipe        (tFILE *a_dst)
    if (a_dst == NULL)  return -1;
    DEBUG_DATA   yLOG_snote   ("wipe");
    /*---(master)------------*/
-   a_dst->i_type     = '-';
-   a_dst->i_name [0] = '\0';
-   a_dst->i_sort [0] = '\0';
+   a_dst->i_type        = '-';
+   a_dst->i_name        [0] = '\0';
+   a_dst->i_sort        [0] = '\0';
+   a_dst->i_header      [0] = '\0';
+   /*---(header entries)----*/
+   GPL_wipe (a_dst);
    /*---(stats)-------------*/
    poly_cats_counts_clear (a_dst->counts);
    /*---(gpl)---------------*/
-   a_dst->i_copyright [0] = '\0';
-   a_dst->i_license   [0] = '\0';
-   a_dst->i_copyleft  [0] = '\0';
-   a_dst->i_include   [0] = '\0';
-   a_dst->i_as_is     [0] = '\0';
-   a_dst->i_warning   [0] = '\0';
+   a_dst->i_copyright   [0] = '\0';
+   a_dst->i_license     [0] = '\0';
+   a_dst->i_copyleft    [0] = '\0';
+   a_dst->i_include     [0] = '\0';
+   a_dst->i_as_is       [0] = '\0';
+   a_dst->i_theft       [0] = '\0';
+   /*---(scope)-------------*/
+   a_dst->i_objective   [0] = '\0';
+   a_dst->i_criticality [0] = '\0';
+   a_dst->i_complexity  [0] = '\0';
+   a_dst->i_grade       [0] = '\0';
    /*---(tags)--------------*/
-   a_dst->i_proj     = NULL;
+   a_dst->i_proj        = NULL;
    /*---(tags)--------------*/
-   a_dst->i_prev     = NULL;
-   a_dst->i_next     = NULL;
+   a_dst->i_prev        = NULL;
+   a_dst->i_next        = NULL;
    /*---(tags)--------------*/
-   a_dst->i_chead    = NULL;
-   a_dst->i_ctail    = NULL;
-   a_dst->i_ccount   = 0;
+   a_dst->i_chead       = NULL;
+   a_dst->i_ctail       = NULL;
+   a_dst->i_ccount      = 0;
    /*---(tags)--------------*/
-   a_dst->i_btree    = NULL;
+   a_dst->i_btree       = NULL;
    /*---(tags)--------------*/
    return 1;
 }
@@ -98,6 +106,7 @@ FILES__memory           (tFILE *a_file)
    yENV_check_char   (a_file->i_type);
    yENV_check_str    (a_file->i_name);
    yENV_check_str    (a_file->i_sort);
+   yENV_check_str    (a_file->i_header);
    yENV_check_spacer ();
    /*---(gpl licensing)------------------*/
    yENV_check_str    (a_file->i_copyright);
@@ -105,7 +114,13 @@ FILES__memory           (tFILE *a_file)
    yENV_check_str    (a_file->i_copyleft);
    yENV_check_str    (a_file->i_include);
    yENV_check_str    (a_file->i_as_is);
-   yENV_check_str    (a_file->i_warning);
+   yENV_check_str    (a_file->i_theft);
+   yENV_check_spacer ();
+   /*---(scope)--------------------------*/
+   yENV_check_str    (a_file->i_objective);
+   yENV_check_str    (a_file->i_criticality);
+   yENV_check_str    (a_file->i_complexity);
+   yENV_check_str    (a_file->i_grade);
    yENV_check_spacer ();
    /*---(project)------------------------*/
    yENV_check_ptr    (a_file->i_proj);
@@ -132,14 +147,20 @@ FILES_rando             (tFILE *a_file)
    char        rce         =  -10;
    --rce;  if (a_file == NULL)  return rce;
    a_file->i_type   = 'Z';
-   strcpy (a_file->i_name, "name");
-   strcpy (a_file->i_sort, "sort");
-   strcpy (a_file->i_copyright, "copyright");
-   strcpy (a_file->i_license  , "license");
-   strcpy (a_file->i_copyleft , "copyleft");
-   strcpy (a_file->i_include  , "include");
-   strcpy (a_file->i_as_is    , "as_is");
-   strcpy (a_file->i_warning  , "warning");
+   strcpy (a_file->i_name       , "name");
+   strcpy (a_file->i_sort       , "sort");
+   strcpy (a_file->i_header     , "header");
+   GPL_rando (a_file);
+   strcpy (a_file->i_copyright  , "copyright");
+   strcpy (a_file->i_license    , "license");
+   strcpy (a_file->i_copyleft   , "copyleft");
+   strcpy (a_file->i_include    , "include");
+   strcpy (a_file->i_as_is      , "as_is");
+   strcpy (a_file->i_theft      , "theft");
+   strcpy (a_file->i_objective  , "objective");
+   strcpy (a_file->i_criticality, "criticality");
+   strcpy (a_file->i_complexity , "complexity");
+   strcpy (a_file->i_grade      , "grade");
    a_file->i_proj   = 0x01;
    a_file->i_prev   = 0x02;
    a_file->i_next   = 0x03;
@@ -1586,6 +1607,49 @@ FILES_in_proj_by_cursor (tPROJ *a_proj, char a_dir, tFILE **r_file, char r_file_
    if (r_func_rptg != NULL)  ystrlcpy (r_func_rptg, FUNCS_in_file_list (v), LEN_RECD);
    /*---(complete)-----------------------*/
    return 1;
+}
+
+char
+FILES_run_for_project   (tPROJ *a_proj, void *f_callback)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         rc          =    0;
+   char        rce         =  -10;
+   int         c           =    0;
+   tFILE      *x_file      = NULL;
+   char      (*x_callback) (tPROJ *a_proj, tFILE *a_file, char a_ftype);
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_proj"     , a_proj);
+   --rce;  if (a_proj == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   DEBUG_INPT   yLOG_info    ("a_proj"     , a_proj->j_name);
+   DEBUG_INPT   yLOG_point   ("f_callback" , f_callback);
+   --rce;  if (f_callback == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   x_callback = f_callback;
+   /*---(walk project)-------------------*/
+   rc = FILES_in_proj_by_cursor (a_proj, '[', &x_file, NULL, NULL);
+   DEBUG_OUTP   yLOG_point   ("file"      , x_file);
+   while (rc >= 0 && x_file != NULL) {
+      /*---(handle)----------------------*/
+      DEBUG_OUTP   yLOG_info    ("->name"    , x_file->i_name);
+      rc = x_callback (a_proj, x_file, x_file->i_type);
+      DEBUG_OUTP   yLOG_value   ("callback"  , rc);
+      /*---(next)------------------------*/
+      rc = FILES_in_proj_by_cursor (a_proj, '>', &x_file, NULL, NULL);
+      ++c;
+      /*---(done)------------------------*/
+   }
+   DEBUG_OUTP   yLOG_value   ("c"         , c);
+   /*---(complete)------------------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return c;
 }
 
 

@@ -75,8 +75,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3f"
-#define     P_VERTXT    "caught up with unit_data changes to reflect current reality"
+#define     P_VERNUM    "1.3g"
+#define     P_VERTXT    "header/gpl updating well now, mostly unit tested"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -225,7 +225,10 @@
   "they inspire creation, enthusiasm, and the creative impulses. polymnia¦"        \
   "is usually depicted wearing a veil and looking up to the heavens.¦"
 
-
+/*>                                                                                       <* 
+ *> char     /+-> ··· ··· ··· ··· ··· ··· ··· ··· --------------[ leaf·· [·-·-·]-+/   <* 
+ *>               123456789-123456789-123456789-123456789-12345                       <* 
+ *>                                                                                       <*/
 
 /*
  *  the headers have five parts
@@ -592,7 +595,7 @@ struct cPROJ {
    char        j_systems     [LEN_HUND];
    char        j_language    [LEN_HUND];
    char        j_compiler    [LEN_LABEL];
-   char        j_codesize    [LEN_DESC];
+   char        j_codesize    [LEN_HUND];
    /*---(depends)-----------*/
    char        j_dep_cstd    [LEN_HUND];
    char        j_dep_posix   [LEN_HUND];
@@ -643,6 +646,7 @@ struct cPROJ {
    char        j_greek       [LEN_LABEL];
    /*---(other)-------------*/
    char        j_manual      [LEN_LABEL];
+   char        j_grade       [LEN_HUND];
    char        j_git;
    /*---(new stats interface)-*/
    int         j_funcs;
@@ -669,13 +673,19 @@ struct cFILE {
    char        i_type;                      /* c=c-lang, h=header, u=unit/string */
    char        i_name        [LEN_TITLE];
    char        i_sort        [LEN_TITLE];
+   char        i_header      [LEN_LABEL];     /* flags on each header oneliner  */
    /*---(warranty)----------*/
    char        i_copyright   [LEN_LABEL];
    char        i_license     [LEN_LABEL];
    char        i_copyleft    [LEN_LABEL];
    char        i_include     [LEN_LABEL];
    char        i_as_is       [LEN_LABEL];
-   char        i_warning     [LEN_LABEL];
+   char        i_theft       [LEN_LABEL];
+   /*---(what)--------------*/
+   char        i_objective   [LEN_LABEL];
+   char        i_criticality [LEN_LABEL];
+   char        i_complexity  [LEN_LABEL];
+   char        i_grade       [LEN_HUND];
    /*---(new stats interface)-*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
    /*---(parent)------------*/
@@ -1144,19 +1154,36 @@ char        HEADER_wipe             (tPROJ *a_proj);
 char        HEADER_rando            (tPROJ *a_proj);
 char        HEADER__memory          (tPROJ *a_proj);
 /*········´ ´··············search·´ ´·········································*/
-short       HEADER__find            (char a_label [LEN_LABEL]);
-/*········´ ´·············reading·´ ´·········································*/
-char        HEADER__standards       (char a_label [LEN_LABEL], char a_data [LEN_RECD]);
-char        HEADER__single          (tPROJ *a_proj, cchar a_recd [LEN_RECD]);
-char        HEADER__encode          (char *a_header, char n, char a_abbr, char *a_text, char a_min, char a_low, char a_high, char a_max);
+short       HEADER_find             (char a_label [LEN_LABEL], uchar *r_abbr, char *r_where, char *r_type, long *r_offset, short *r_min, short *r_low, short *r_high, short *r_max, short *r_store);
+short       HEADER_find_simple      (char a_label [LEN_LABEL]);
+/*········´ ´··············shared·´ ´·········································*/
 char*       HEADER__macro_fix       (char a_recd [LEN_RECD]);
-char        HEADER_gather           (tFILE *a_file);
-char        HEADER_grading          (tPROJ *a_proj);
+char        HEADER__standards       (char a_label [LEN_LABEL], char a_data [LEN_RECD]);
+char        HEADER__single          (tPROJ *a_proj, tFILE *a_file, char a_ftype, char a_recd [LEN_RECD], char r_data [LEN_HALF]);
+uchar       HEADER__encode          (char *a_header, char n, char a_abbr, char *a_text, short a_min, short a_low, short a_high, short a_max, short a_store);
+char        HEADER__grading         (tPROJ *a_proj);
+/*········´ ´·············reading·´ ´·········································*/
+char        HEADER__from_file       (tPROJ *a_proj, tFILE *a_file, char a_ftype);
+char        HEADER_gather           (tPROJ *a_proj);
 /*········´ ´···········reporting·´ ´·········································*/
 char*       HEADER_line             (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL]);
 char        HEADER_report           (tPROJ *a_proj);
 char        HEADER_only             (char a_file [LEN_PATH]);
 char*       HEADER__show            (tPROJ *a_proj);
+/*········´ ´················DONE·´ ´·········································*/
+
+
+
+/*===[[ polymnia_gpl.c ]]=====================================================*/
+/*········´ ´·············support·´ ´·········································*/
+short       GPL_count               (void);
+char        GPL_wipe                (tFILE *a_file);
+char        GPL_rando               (tFILE *a_file);
+/*········´ ´··············search·´ ´·········································*/
+short       GPL_find                (char a_label [LEN_LABEL], uchar *r_abbr, char *r_where, char *r_type, long *r_offset, short *r_min, short *r_low, short *r_high, short *r_max, short *r_store);
+short       GPL_find_simple         (char a_label [LEN_LABEL]);
+char        GPL_grading             (tFILE *a_file);
+char        GPL_summarize           (tPROJ *a_proj, tFILE *a_file, char a_ftype);
 /*········´ ´················DONE·´ ´·········································*/
 
 
@@ -1187,6 +1214,7 @@ int         FILES_in_proj_count     (tPROJ *a_proj);
 char        FILES_in_proj_by_name   (tPROJ *a_proj, char a_file [LEN_TITLE], tFILE **r_file);
 char        FILES_in_proj_by_index  (tPROJ *a_proj, int  a_index           , tFILE **r_file);
 char        FILES_in_proj_by_cursor (tPROJ *a_proj, char a_dir, tFILE **r_file, char r_file_rptg [LEN_RECD], char r_func_rptg [LEN_RECD]);
+char        FILES_run_for_project   (tPROJ *a_proj, void *f_callback);
 /*········´ ´············exposure·´ ´·········································*/
 char*       FILES_in_proj_list      (tPROJ *a_proj);
 char*       FILES_entry             (tFILE *a_file);

@@ -36,12 +36,12 @@
 #define     MAX_VARS     1000
 typedef     struct     cVARS      tVARS;
 struct cVARS {
-   char        scope;                       /* (g)lobal, (f)ile               */
-   tFILE      *file;                        /* file pointer                   */
-   int         line;                        /* line is source file            */
-   char        len;                         /* variable name length           */
-   char        name        [LEN_TITLE];     /* variable name                  */
-   char        type;                        /* (v)var, (m)macro               */
+   char        v_scope;                     /* (g)lobal, (f)ile               */
+   tFILE      *v_file;                      /* file pointer                   */
+   int         v_line;                      /* line in source file            */
+   char        v_len;                       /* variable name length           */
+   char        v_name      [LEN_TITLE];     /* variable name                  */
+   char        v_type;                      /* (v)var, (m)macro               */
 };
 static tVARS        s_vars        [MAX_VARS];
 static int          s_nvar        = 0;
@@ -81,11 +81,11 @@ poly_vars__purge        (void)
    int         i           =    0;
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    for (i = 0; i < MAX_VARS; ++i) {
-      s_vars [i].file     = NULL;
-      s_vars [i].scope    = '-';
-      s_vars [i].len      = 0;
-      s_vars [i].name [0] = '\0';
-      s_vars [i].type     = '-';
+      s_vars [i].v_file     = NULL;
+      s_vars [i].v_scope    = '-';
+      s_vars [i].v_len      = 0;
+      s_vars [i].v_name [0] = '\0';
+      s_vars [i].v_type     = '-';
    }
    s_nvar    = 0;
    s_nglobal = 0;
@@ -131,11 +131,11 @@ poly_vars__confirm      (tFILE *a_file, char *a_name)
    x_len  = strlen (a_name);
    /*---(walk variables)-----------------*/
    for (i = 0; i < s_nvar; ++i) {
-      if (s_vars [i].len      != x_len)           continue;
-      if (s_vars [i].name [0] != a_name [0])      continue;
-      if (strcmp (s_vars [i].name, a_name) != 0)  continue;
-      if (s_vars [i].scope == 'g')                return 1;
-      if (s_vars [i].file  == a_file)             return 1;
+      if (s_vars [i].v_len      != x_len)           continue;
+      if (s_vars [i].v_name [0] != a_name [0])      continue;
+      if (strcmp (s_vars [i].v_name, a_name) != 0)  continue;
+      if (s_vars [i].v_scope == 'g')                return 1;
+      if (s_vars [i].v_file  == a_file)             return 1;
    }
    /*---(complete)-----------------------*/
    return 0;
@@ -162,16 +162,16 @@ poly_vars__push         (tFILE *a_file, int a_line, char *a_name, char a_type)
    rc = poly_vars__confirm (a_file, a_name);
    --rce;  if (rc != 0)  return rce;
    /*---(add entry)----------------------*/
-   if (x_type == 'h')   s_vars [s_nvar].scope = 'g';
-   else                 s_vars [s_nvar].scope = 'f';
-   s_vars [s_nvar].file = a_file;
-   s_vars [s_nvar].line = a_line;
-   s_vars [s_nvar].len  = x_len;
-   ystrlcpy (s_vars [s_nvar].name, a_name, LEN_TITLE);
-   if (a_type == 'm')   s_vars [s_nvar].type  = 'm';
-   else                 s_vars [s_nvar].type  = 'v';
+   if (x_type == 'h')   s_vars [s_nvar].v_scope = 'g';
+   else                 s_vars [s_nvar].v_scope = 'f';
+   s_vars [s_nvar].v_file = a_file;
+   s_vars [s_nvar].v_line = a_line;
+   s_vars [s_nvar].v_len  = x_len;
+   ystrlcpy (s_vars [s_nvar].v_name, a_name, LEN_TITLE);
+   if (a_type == 'm')   s_vars [s_nvar].v_type  = 'm';
+   else                 s_vars [s_nvar].v_type  = 'v';
    /*---(update counters)----------------*/
-   if (s_vars [s_nvar].scope == 'g')  ++s_nglobal;
+   if (s_vars [s_nvar].v_scope == 'g')  ++s_nglobal;
    ++s_nvar;
    /*---(complete)-----------------------*/
    return 0;
@@ -182,12 +182,12 @@ poly_vars__pop_file     (void)
 {
    int         i           =    0;
    for (i = 0; i < MAX_VARS; ++i) {
-      if (s_vars [i].scope != 'f')  continue;
-      s_vars [i].file     = NULL;
-      s_vars [i].scope    = '-';
-      s_vars [i].len      = 0;
-      s_vars [i].name [0] = '\0';
-      s_vars [i].type     = '-';
+      if (s_vars [i].v_scope != 'f')  continue;
+      s_vars [i].v_file     = NULL;
+      s_vars [i].v_scope    = '-';
+      s_vars [i].v_len      = 0;
+      s_vars [i].v_name [0] = '\0';
+      s_vars [i].v_type     = '-';
       --s_nvar;
    }
    return 0;
@@ -447,16 +447,16 @@ poly_vars__intern_tally (tFUNC *a_func, int n)
    /*---(locals)-----------+-----+-----+-*/
    char        s           [LEN_HUND]  = "";
    /*---(scope testing)------------------*/
-   DEBUG_INPT   yLOG_char    ("scope"     , s_vars [n].scope);
-   if (s_vars [n].scope == 'g') {
-      if (s_vars [n].type == 'v')  ++(a_func->WORK_GVARS);
+   DEBUG_INPT   yLOG_char    ("scope"     , s_vars [n].v_scope);
+   if (s_vars [n].v_scope == 'g') {
+      if (s_vars [n].v_type == 'v')  ++(a_func->WORK_GVARS);
       else                         ++(a_func->WORK_GUSE);
    } else {
-      if (s_vars [n].type == 'v')  ++(a_func->WORK_FVARS);
+      if (s_vars [n].v_type == 'v')  ++(a_func->WORK_FVARS);
       else                         ++(a_func->WORK_FUSE);
    }
    /*---(mask testing)-------------------*/
-   /*> sprintf (s, " %s ", s_vars [n].name);                                          <* 
+   /*> sprintf (s, " %s ", s_vars [n].v_name);                                          <* 
     *> if (strstr (s_extern, s) != NULL)  ++a_func->WORK_MMASK;                       <*/
    /*---(complete)-----------------------*/
    return 0;
@@ -509,17 +509,17 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
    /*---(walk variables)-----------------*/
    DEBUG_INPT   yLOG_value   ("s_nvar"    , s_nvar);
    for (i = 0; i < s_nvar; ++i) {
-      if (s_vars [i].scope == 'f' && s_vars [i].file != a_func->c_file)  continue;
-      DEBUG_INPT   yLOG_info    ("search"    , s_vars [i].name);
-      b = strstr (t, s_vars [i].name);
+      if (s_vars [i].v_scope == 'f' && s_vars [i].v_file != a_func->c_file)  continue;
+      DEBUG_INPT   yLOG_info    ("search"    , s_vars [i].v_name);
+      b = strstr (t, s_vars [i].v_name);
       DEBUG_INPT   yLOG_point   ("b"         , b);
       while (b != NULL && b < x_end) {
-         e = b + s_vars [i].len;
+         e = b + s_vars [i].v_len;
          if (b != t)  DEBUG_INPT   yLOG_char    ("b [-1]"    , b [-1]);
          if (b == t || strchr (s_bad, b [-1]) == NULL) {
             if (e != x_end)   DEBUG_INPT   yLOG_char    ("e [0]"     , e [0]);
             if (e == x_end || strchr (s_bad, e [0]) == NULL) {
-               sprintf (s, " %s ", s_vars [i].name);
+               sprintf (s, " %s ", s_vars [i].v_name);
                if (strstr (s_intern, s) == NULL) {
                   ystrlcat (s_intern, s, LEN_RECD);
                   ++s_nintern;
@@ -529,25 +529,25 @@ poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act)
                   poly_vars__intern_tally (a_func, i);
                   break;
                case CODE_VAR_V :
-                  printf ("%4d  %4d  %-20.20s  %3d  %3d  %3d    %-20.20s  %-20.20s  %4d  %c  %c", a_line, i, s_vars [i].name, b - t, e - t, s_vars [i].len, (s_vars [i].file)->i_name, s_vars [i].name, s_vars [i].line, s_vars [i].scope, s_vars [i].type);
+                  printf ("%4d  %4d  %-20.20s  %3d  %3d  %3d    %-20.20s  %-20.20s  %4d  %c  %c", a_line, i, s_vars [i].v_name, b - t, e - t, s_vars [i].v_len, (s_vars [i].v_file)->i_name, s_vars [i].v_name, s_vars [i].v_line, s_vars [i].v_scope, s_vars [i].v_type);
                   if (strstr (s_extern, s) != NULL)  printf ("  potenally masking external\n");
                   else                               printf ("\n");
                   ystrlcpy (s_sintern, s_intern, LEN_RECD);
                   break;
                case CODE_VAR_O :
                   ystrlcpy (s_sintern, s_intern, LEN_RECD);
-                  /*> sprintf (s, " %s ", s_vars [i].name);                                                                                              <* 
+                  /*> sprintf (s, " %s ", s_vars [i].v_name);                                                                                              <* 
                    *> printf ("current %s\n", s);                                                                                                        <* 
                    *> printf ("extern  (%-10p) %s\n", strstr (s_extern, s), s_extern);                                                                   <* 
                    *> printf ("intern  (%-10p) %s\n", strstr (s_intern, s), s_intern);                                                                   <* 
                    *> if (strstr (s_extern, s) == NULL && strstr (s_intern, s) == NULL) {                                                                <* 
-                   *>    printf ("%4d  %-20.20s  %3d  %3d  %3d    %s   orphan (not internal or external)\n", a_line, s_vars [i].name, b - t, i, n, s);   <* 
+                   *>    printf ("%4d  %-20.20s  %3d  %3d  %3d    %s   orphan (not internal or external)\n", a_line, s_vars [i].v_name, b - t, i, n, s);   <* 
                    *> }                                                                                                                                  <*/
                   break;
                }
             }
          }
-         b = strstr (e + 1, s_vars [i].name);
+         b = strstr (e + 1, s_vars [i].v_name);
          DEBUG_INPT   yLOG_point   ("b"         , b);
       }
    }
@@ -642,7 +642,7 @@ poly_vars_list      (void)
       for (i = 0; i < s_nvar; ++i) {
          if (i % 25 == 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  t\n");
          if (i %  5 == 0)  printf ("\n");
-         printf ("%4d  %-20.20s  %4d  %-20.20s  %c  %c\n", i, s_vars [i].file->i_name, s_vars [i].line, s_vars [i].name, s_vars [i].scope, s_vars [i].type);
+         printf ("%4d  %-20.20s  %4d  %-20.20s  %c  %c\n", i, s_vars [i].v_file->i_name, s_vars [i].v_line, s_vars [i].v_name, s_vars [i].v_scope, s_vars [i].v_type);
       }
       --i;
       if (i % 25 != 0)  printf ("\nline  ---name-------------  line  ---file-------------  s  t\n");
@@ -859,9 +859,9 @@ poly_vars__unit         (char *a_question, int i)
          snprintf (unit_answer, LEN_RECD, "VARS hide   (%2d) : []                       0v   0m   0f   0s", i);
    }
    else if (strcmp (a_question, "entry"     )     == 0) {
-      if (s_vars [i].file != NULL)  sprintf (t, "[%0.15s]", s_vars [i].file->i_name);
-      sprintf (s, "[%0.15s]", s_vars [i].name);
-      snprintf (unit_answer, LEN_RECD, "VARS entry  (%2d) : %-17.17s   %c %c   %2d%s", i, t, s_vars [i].scope, s_vars [i].type, strlen (s_vars [i].name), s);
+      if (s_vars [i].v_file != NULL)  sprintf (t, "[%0.15s]", s_vars [i].v_file->i_name);
+      sprintf (s, "[%0.15s]", s_vars [i].v_name);
+      snprintf (unit_answer, LEN_RECD, "VARS entry  (%2d) : %-17.17s   %c %c   %2d%s", i, t, s_vars [i].v_scope, s_vars [i].v_type, strlen (s_vars [i].v_name), s);
    }
    else if (strcmp (a_question, "func"      )     == 0) {
       FUNCS_by_index     (i, &u);
