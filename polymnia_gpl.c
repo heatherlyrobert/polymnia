@@ -7,7 +7,7 @@
 /*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
 
 #define  P_COPYRIGHT   \
-   "copyright (c) 2019 robert.s.heatherly"
+   "copyright (c) 2019 robert.s.heatherly at balsashrike at gmail dot com"
 
 #define  P_LICENSE     \
    "the only place you could have gotten this code is my github, my website, "   \
@@ -41,7 +41,7 @@
    "information on the scope, objective, and implementation of the file"
 
 /*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
-#define  P_CRITICALTY     "´ (low)      useful, but not required to run"
+#define  P_IMPORTANCE     "´ (low)      useful, but not required to run"
 #define  P_COMPLEXITY     "· (tiny)     primarily string data handling"
 
 
@@ -62,23 +62,23 @@ const struct {
    short       g_max;                      /* can not hold more that this      */
    short       g_store;                    /* size stored in data structure    */
 } static s_gpl [LEN_LABEL] = {
-   /*-------warranty--------label------------description-------------------------where--type---offset------------------------------------------------min--low--hig--max-store--------------*/
-   { 'c' , "P_COPYRIGHT"   , "copyright"    , "identifying the owner"           , 'B' , 'g' , (long) &(s_place.i_copyright   [0]) - (long) &s_place,   1,  50,  70, 100, LEN_LABEL         },
-   { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , 'B' , 'g' , (long) &(s_place.i_license     [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
-   { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , 'B' , 'g' , (long) &(s_place.i_copyleft    [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
-   { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , 'B' , 'g' , (long) &(s_place.i_include     [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
-   { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , 'B' , 'g' , (long) &(s_place.i_as_is       [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
-   { 't' , "P_THEFT"       , "theft"        , "thoughts on cheating"            , 'B' , 'g' , (long) &(s_place.i_theft       [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                   ,   0,   0,   0,   0, 0                 },
-   /*-------extra-----------label------------description-------------------------where--type---offset------------------------------------------------min--low--hig--max-store--------------*/
-   { 'o' , "P_OBJECTIVE"   , "objective"    , "file-specific objective"         , 'c' , 'f' , (long) &(s_place.i_objective   [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
-   { 'c' , "P_CRITICALITY" , "criticality"  , "how important is this code"      , 'c' , 'f' , (long) &(s_place.i_criticality [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
-   { 'c' , "P_COMPLEXITY"  , "complexity"   , "how hard to maintain"            , 'c' , 'f' , (long) &(s_place.i_complexity  [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                   ,   0,   0,   0,   0, 0                 },
-   /*-------grade-----------label------------description-------------------------where--type---offset------------------------------------------------min--low--hig--max-store--------------*/
-   { ' ' , ""              , "GRADE"        , "final rating on file header"     , '·' , '°' , -1                                                   ,   0,   0,   0,   0, 0                 },
-   /*-------end-------------label------------description-------------------------where--type---offset------------------------------------------------min--low--hig--max-store--------------*/
-   {  0  , "end-of-list"   , ""             , ""                                , '·' , '·' , -1                                                   ,   0,   0,   0,   0, 0                 },
+   /*-------warranty--------label------------description-------------------------where--type---offset-----------------------------------------------min--low--hig--max-store--------------*/
+   { 'c' , "P_COPYRIGHT"   , "copyright"    , "identifying the owner"           , 'B' , 'g' , (long) &(s_place.i_copyright  [0]) - (long) &s_place,   1,  50,  70, 100, LEN_LABEL         },
+   { 'l' , "P_LICENSE"     , "license"      , "code is gpl licensed"            , 'B' , 'g' , (long) &(s_place.i_license    [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
+   { 'c' , "P_COPYLEFT"    , "copyleft"     , "derivatives free and open"       , 'B' , 'g' , (long) &(s_place.i_copyleft   [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
+   { 'i' , "P_INCLUDE"     , "include"      , "derivatives must include text"   , 'B' , 'g' , (long) &(s_place.i_include    [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
+   { 'a' , "P_AS_IS"       , "as_is"        , "no one liable for any damages"   , 'B' , 'g' , (long) &(s_place.i_as_is      [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
+   { 't' , "P_THEFT"       , "theft"        , "thoughts on cheating"            , 'B' , 'g' , (long) &(s_place.i_theft      [0]) - (long) &s_place,   1,  50, 200, 300, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------extra-----------label------------description-------------------------where--type---offset-----------------------------------------------min--low--hig--max-store--------------*/
+   { 'o' , "P_OBJECTIVE"   , "objective"    , "file-specific objective"         , 'c' , 'f' , (long) &(s_place.i_objective  [0]) - (long) &s_place,   1,  50, 300, 500, LEN_LABEL         },
+   { 'c' , "P_IMPORTANCE"  , "importance"   , "how important is this code"      , 'c' , 'f' , (long) &(s_place.i_importance [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
+   { 'c' , "P_COMPLEXITY"  , "complexity"   , "how hard to maintain"            , 'c' , 'f' , (long) &(s_place.i_complexity [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------grade-----------label------------description-------------------------where--type---offset-----------------------------------------------min--low--hig--max-store--------------*/
+   { ' ' , ""              , "GRADE"        , "final rating on file header"     , '·' , '°' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------end-------------label------------description-------------------------where--type---offset-----------------------------------------------min--low--hig--max-store--------------*/
+   {  0  , "end-of-list"   , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
 };
 
 
@@ -226,6 +226,8 @@ GPL_grading             (tFILE *a_file)
    int         x_summ      =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   DEBUG_INPT   yLOG_info    ("ready"     , a_file->i_header);
    /*---(walk header)--------------------*/
    for (i = 0; i < LEN_LABEL; ++i) {
       /*---(base filter)-----------------*/
@@ -269,11 +271,13 @@ GPL_grading             (tFILE *a_file)
    else if (x_miss > 0)  { strcpy (t, "MISS");  a_file->i_header [x_summ] = '¢'; }
    else                  { strcpy (t, "PASS");  a_file->i_header [x_summ] = ' '; }
    snprintf  (a_file->i_grade, LEN_HUND, "%s (header audit) %3dp, %3df, %3dw, %3d-, %3d·", t, x_pass, x_fail, x_warn, x_miss, x_na);
-   DEBUG_INPT   yLOG_char    ("final"     , a_file->i_header [x_summ]);
+   DEBUG_INPT   yLOG_info    ("final"     , a_file->i_header);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 1;
 }
+
+static short s_stats [LEN_LABEL][LEN_SHORT];
 
 char
 GPL_summarize           (tPROJ *a_proj, tFILE *a_file, char a_ftype)
@@ -282,13 +286,30 @@ GPL_summarize           (tPROJ *a_proj, tFILE *a_file, char a_ftype)
    char        rce         =  -10;
    int         rc          =    0;
    int         x_len       =    0;
+   char        x_type      =  '·';
    uchar       x_abbr      =  '·';
    char        x_mark      =  '·';
-   char        x_type      =  '·';
-   char        x_head      =    0;
+   char        x_head      =  '·';
+   short       x_index     =    0;
    int         i           =    0;
+   int         j           =    0;
+   char        x_pos       =    0;
+   char        t           [LEN_HUND]  = "";
+   long        x_offset    =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(quick init)---------------------*/
+   if (a_ftype == 'è') {
+      DEBUG_INPT   yLOG_note    ("initializing data");
+      for (i = 0; i < LEN_LABEL; ++i) {
+         for (j = 0; j < LEN_SHORT; ++j) s_stats [i][j] = 0;
+      }
+      yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(prepare)------------------------*/
+   DEBUG_INPT   yLOG_info    ("ready"     , a_proj->j_header);
+   DEBUG_INPT   yLOG_info    ("ready"     , a_file->i_header);
    /*---(defense)------------------------*/
    DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
    --rce;  if (a_file == NULL) {
@@ -305,6 +326,7 @@ GPL_summarize           (tPROJ *a_proj, tFILE *a_file, char a_ftype)
    x_len = strlen (a_proj->j_name);
    DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
    if (strncmp (a_proj->j_name, a_file->i_name, x_len) != 0) {
+      DEBUG_INPT   yLOG_note    ("not a project file, skipping");
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
@@ -312,6 +334,7 @@ GPL_summarize           (tPROJ *a_proj, tFILE *a_file, char a_ftype)
    x_type = a_file->i_type;
    DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
    if (x_type == 0 || strchr ("ch", x_type) == NULL) {
+      DEBUG_INPT   yLOG_note    ("not a source/header file, skipping");
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
@@ -323,21 +346,118 @@ GPL_summarize           (tPROJ *a_proj, tFILE *a_file, char a_ftype)
       if (s_gpl [i].g_abbr == 1)                continue;
       if (s_gpl [i].g_offset < 0)               continue;
       /*---(prepare)---------------------*/
-      x_abbr = s_gpl [i].g_abbr;
-      x_mark = a_file->i_header [i];
-      x_head = HEADER_find_simple (s_gpl [i].g_label);
+      x_index = HEADER_find (s_gpl [i].g_label, NULL, NULL, NULL, &x_offset, NULL, NULL, NULL, NULL, NULL);
+      DEBUG_INPT   yLOG_value   ("x_index"   , x_index);
+      if (x_index < 0) {
+         DEBUG_INPT   yLOG_note    ("WARNING, index out-of-bounds, continue anyway");
+         continue;
+      }
+      x_abbr  = s_gpl [i].g_abbr;
+      x_mark  = a_file->i_header [i];
+      x_head  = a_proj->j_header [x_index];
+      DEBUG_INPT   yLOG_complex ("prep"      , "%c  %c  %3d  %c", x_abbr, x_mark, x_index, x_head);
       /*---(worst case)------------------*/
       if      (x_head == '°')  ;    /* already marked fail */
-      else if (x_mark == '°')  a_proj->j_header [x_head] = '°';
+      else if (x_mark == '°')  a_proj->j_header [x_index] = '°';
       /*---(first update)----------------*/
-      else if (x_head == '·')  a_proj->j_header [x_head] = x_mark;
+      else if (x_head == '·')  a_proj->j_header [x_index] = x_mark;
+
+      /*---(update numbers)--------------*/
+      switch (x_mark) {
+      case '!' :                                  x_pos = 0;  break;
+      case '·' :                                  x_pos = 1;  break;
+      case '-' :                                  x_pos = 2;  break;
+      case '?' : case '<' : case '>' : case '#' : x_pos = 3;  break;
+      case '°' :                                  x_pos = 4;  break;
+      }
+      ++(s_stats [i ][x_pos]);
+      ++(s_stats [19][x_pos]);
+      /*---(update grade)----------------*/
+      if      (s_stats [ i][4] > 0)  strcpy (t, "FAIL");
+      else if (s_stats [ i][3] > 0)  strcpy (t, "WARN");
+      else if (s_stats [ i][2] > 0)  strcpy (t, "MISS");
+      else                           strcpy (t, "PASS");
+      snprintf ((long) a_proj + x_offset, LEN_HUND, "%s (audit) %3dp, %3df, %3dw, %3d-, %3d·", t, s_stats [ i][0], s_stats [ i][4], s_stats [ i][3], s_stats [ i][2], s_stats [ i][1]);
+      DEBUG_INPT   yLOG_info    (s_gpl [i].g_label, (long) a_proj + x_offset);
       /*---(done)------------------------*/
+      DEBUG_INPT   yLOG_info    ("update"    , a_proj->j_header);
    }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 1;
 }
 
-
-
+char
+GPL_report              (tPROJ* a_proj, tFILE *a_file, char a_ftype)
+{
+   char        rce         =  -10;
+   int         i           =    0;
+   char        s           [LEN_HUND]  = "";
+   char        t           [LEN_HUND]  = "";
+   char       *x_sep       = "##   ··········  -  -  -  --  ··········´·········´·········´·········´·········´·········´·········´···········  --  ···name·····  - ··ptr ··min ··low ··hig ··max ··sto  ···description················";
+   char        x_pass, x_mark, x_grade;
+   char       *p           = NULL;
+   char        x_len       =    0;
+   char        x_type      =  '-';
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   DEBUG_INPT   yLOG_point   ("a_proj"    , a_proj);
+   --rce;  if (a_proj == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
+   /*---(quick-out)----------------------*/
+   DEBUG_INPT   yLOG_info    ("j_name"    , a_proj->j_name);
+   x_len = strlen (a_proj->j_name);
+   DEBUG_INPT   yLOG_value   ("x_len"     , x_len);
+   if (strncmp (a_proj->j_name, a_file->i_name, x_len) != 0) {
+      DEBUG_INPT   yLOG_note    ("not a project file, skipping");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(quick-out)----------------------*/
+   x_type = a_file->i_type;
+   DEBUG_INPT   yLOG_char    ("x_type"    , x_type);
+   if (x_type == 0 || strchr ("ch", x_type) == NULL) {
+      DEBUG_INPT   yLOG_note    ("not a source/header file, skipping");
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   yURG_msg (' ', "##");
+   yURG_msg (' ', "##===[[ %s", a_file->i_name);
+   yURG_msg (' ', "##");
+   yURG_msg (' ', x_sep);
+   yURG_msg (' ', "##");
+   /*---(walk header)--------------------*/
+   for (i = 0; i < LEN_LABEL; ++i) {
+      /*---(base filter)-----------------*/
+      if (s_gpl [i].g_abbr == 0)                break;
+      DEBUG_INPT   yLOG_complex ("line"      , "%2d (%4d) %s", i, s_gpl [i].g_abbr, s_gpl [i].g_label);
+      /*---(spacers)---------------------*/
+      if (s_gpl [i].g_abbr == 1) {
+         yURG_msg (' ', "##");
+         yURG_msg (' ', x_sep);
+         yURG_msg (' ', "##");
+         continue;
+      }
+      if (s_gpl [i].g_offset < 0)               continue;
+      /*---(evaluate)--------------------*/
+      x_pass = s_gpl [i].g_abbr;
+      x_mark = a_file->i_header [i];
+      if      (x_pass == x_mark)  x_grade = '´';
+      else if (x_mark == '·')     x_grade = '·';
+      else if (x_mark == '-')     x_grade = '-';
+      else if (x_mark == '<')     x_grade = '<';
+      else if (x_mark == '>')     x_grade = '>';
+      else                        x_grade = '°';
+      p = (long) a_file + s_gpl [i].g_offset;
+      sprintf (t, "%2d  å%sæ", strlen (p), p);
+      yURG_msg (' ', "##   %-10.10s  %c  %c  %c  %-86.86s  %2d  %-12.12s  %c %5d %4dn %4dl %4dh %4dx %4ds  %s", s_gpl [i].g_label, s_gpl [i].g_abbr, x_mark, x_grade, t, i, s_gpl [i].g_name, s_gpl [i].g_type, s_gpl [i].g_offset, s_gpl [i].g_min, s_gpl [i].g_low, s_gpl [i].g_high, s_gpl [i].g_max, s_gpl [i].g_store, s_gpl [i].g_desc);
+   }
+   return 0;
+}
 

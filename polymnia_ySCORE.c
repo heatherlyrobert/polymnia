@@ -41,7 +41,7 @@
    "function within a particular project and its related source files."
 
 /*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
-#define  P_CRITICALTY     "´ (low)      very useful, but not required to run"
+#define  P_IMPORTANCE     "´ (low)      very useful, but not required to run"
 #define  P_COMPLEXITY     "´ (low)      just enables library"
 
 

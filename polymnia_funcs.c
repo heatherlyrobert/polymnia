@@ -41,7 +41,7 @@
    "acting as the primary organizing point for all analytical details"
 
 /*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
-#define  P_CRITICALTY     "H (high)     all data must ultimately connect to a function"
+#define  P_IMPORTANCE     "H (high)     all data must ultimately connect to a function"
 #define  P_COMPLEXITY     "m (moderate) important, but relatively simple data structure"
 
 

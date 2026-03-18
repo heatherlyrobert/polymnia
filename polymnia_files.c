@@ -41,7 +41,7 @@
    "acting as the main organizing point for code functions"
 
 /*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
-#define  P_CRITICALTY     "H (high)     all data must ultimately connect to a file"
+#define  P_IMPORTANCE     "H (high)     all data must ultimately connect to a file"
 #define  P_COMPLEXITY     "m (moderate) important, but relatively simple data structure"
 
 
@@ -78,7 +78,7 @@ FILES__wipe        (tFILE *a_dst)
    a_dst->i_theft       [0] = '\0';
    /*---(scope)-------------*/
    a_dst->i_objective   [0] = '\0';
-   a_dst->i_criticality [0] = '\0';
+   a_dst->i_importance  [0] = '\0';
    a_dst->i_complexity  [0] = '\0';
    a_dst->i_grade       [0] = '\0';
    /*---(tags)--------------*/
@@ -118,7 +118,7 @@ FILES__memory           (tFILE *a_file)
    yENV_check_spacer ();
    /*---(scope)--------------------------*/
    yENV_check_str    (a_file->i_objective);
-   yENV_check_str    (a_file->i_criticality);
+   yENV_check_str    (a_file->i_importance);
    yENV_check_str    (a_file->i_complexity);
    yENV_check_str    (a_file->i_grade);
    yENV_check_spacer ();
@@ -158,7 +158,7 @@ FILES_rando             (tFILE *a_file)
    strcpy (a_file->i_as_is      , "as_is");
    strcpy (a_file->i_theft      , "theft");
    strcpy (a_file->i_objective  , "objective");
-   strcpy (a_file->i_criticality, "criticality");
+   strcpy (a_file->i_importance , "importance");
    strcpy (a_file->i_complexity , "complexity");
    strcpy (a_file->i_grade      , "grade");
    a_file->i_proj   = 0x01;

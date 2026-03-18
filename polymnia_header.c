@@ -40,7 +40,7 @@
 "information on the nature, scope, objective, and implementation of the project"
 
 /*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
-#define  P_CRITICALTY     "´ (low)      useful, but not required to run"
+#define  P_IMPORTANCE     "´ (low)      useful, but not required to run"
 #define  P_COMPLEXITY     "´ (low)      primarily string data handling"
 
 
@@ -64,98 +64,105 @@ const struct {
    short       h_max;
    short       h_store;
 } static s_header [LEN_HUND] = {
-   /*-------base------------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'N' , "´"             , "proj_name"    , "project name"                    , 'P' , '°' , (long) &(s_place.j_name      [0]) - (long) &s_place,   1,   4,  15,  30, LEN_TITLE         },
-   { 'D' , "´"             , "proj_dir"     , "project directory"               , 'P' , '°' , (long) &(s_place.j_dir       [0]) - (long) &s_place,   1,   4,  70, 100, LEN_HUND          },
+   /*-------base------------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'N' , "´"             , "proj_name"    , "project name"                    , 'P' , '°' , (long) &(s_place.j_name       [0]) - (long) &s_place,   1,   4,  15,  30, LEN_TITLE         },
+   { 'D' , "´"             , "proj_dir"     , "project directory"               , 'P' , '°' , (long) &(s_place.j_dir        [0]) - (long) &s_place,   1,   4,  70, 100, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------master----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'f' , "P_FOCUS"       , "focus"        , "functional focus"                , 'P' , '°' , (long) &(s_place.j_focus      [0]) - (long) &s_place,   5,  10,  30,  50, LEN_DESC          },
+   { 'n' , "P_NICHE"       , "niche"        , "niche within focus"              , 'P' , '°' , (long) &(s_place.j_niche      [0]) - (long) &s_place,   5,  10,  30,  50, LEN_DESC          },
+   { 's' , "P_SUBJECT"     , "subject"      , "short purpose statement"         , 'P' , '°' , (long) &(s_place.j_subject    [0]) - (long) &s_place,  10,  20,  30,  50, LEN_DESC          },
+   { 'p' , "P_PURPOSE"     , "purpose"      , "longer purpose statement"        , 'P' , '°' , (long) &(s_place.j_purpose    [0]) - (long) &s_place,  10,  30,  70, 100, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------greek-----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'ê' , "P_NAMESAKE"    , "namesake"     , "greek pantheon sponsor"          , 'P' , '°' , (long) &(s_place.j_namesake   [0]) - (long) &s_place,  10,  20,  40, 100, LEN_HUND          },
+   { '÷' , "P_PRONOUNCE"   , "pronounce"    , "arapabet namesake guide"         , 'P' , '°' , (long) &(s_place.j_pronounce  [0]) - (long) &s_place,   0,   5,  30,  30, LEN_TITLE         },
+   { 'î' , "P_HERITAGE"    , "heritage"     , "longer description of god"       , 'P' , '°' , (long) &(s_place.j_heritage   [0]) - (long) &s_place,  10,  30,  70, 100, LEN_HUND          },
+   { 'é' , "P_BRIEFLY"     , "briefly"      , "short description of god"        , 'P' , '°' , (long) &(s_place.j_briefly    [0]) - (long) &s_place,   0,  20,  30,  30, LEN_TITLE         },
+   { 'ð' , "P_IMAGERY"     , "imagery"      , "description of the god"          , 'P' , '°' , (long) &(s_place.j_imagery    [0]) - (long) &s_place,  10,  30,  70, 100, LEN_HUND          },
+   { 'ø' , "P_REASON"      , "reason"       , "reason patronage makes sense"    , 'P' , '°' , (long) &(s_place.j_reason     [0]) - (long) &s_place,  10,  30,  70, 100, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------oneline---------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'ö' , "P_ONELINE"     , "oneline"      , "reporting suppmary line"         , 'P' , '°' , (long) &(s_place.j_oneline    [0]) - (long) &s_place,  40,  50,  70, 100, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------location--------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'd' , "P_HOMEDIR"     , "homedir"      , "project source directory"        , 'P' , '°' , (long) &(s_place.j_homedir    [0]) - (long) &s_place,   1,   4,  70, 100, LEN_HUND          },
+   { 'b' , "P_BASENAME"    , "progname"     , "run-time executable name"        , 'P' , '°' , (long) &(s_place.j_progname   [0]) - (long) &s_place,   1,   4,  20,  30, LEN_TITLE         },
+   { 'f' , "P_FULLPATH"    , "fullpath"     , "installed location"              , 'P' , '°' , (long) &(s_place.j_fullpath   [0]) - (long) &s_place,  10,  20,  70, 100, LEN_HUND          },
+   { 's' , "P_SUFFIX"      , "suffix"       , "data file suffix"                , 'P' , '°' , (long) &(s_place.j_suffix     [0]) - (long) &s_place,   0,   3,   6,  20, LEN_LABEL         },
+   { 'c' , "P_CONTENT"     , "content"      , "data file content description"   , 'P' , '°' , (long) &(s_place.j_content    [0]) - (long) &s_place,   0,  15,  30,  30, LEN_TITLE         },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------chars-----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 's' , "P_SYSTEM"      , "system"       , "operating systems required"      , 'P' , '°' , (long) &(s_place.j_systems    [0]) - (long) &s_place,   1,  10,  70, 100, LEN_HUND          },
+   { 'l' , "P_LANGUAGE"    , "language"     , "computer programming language"   , 'P' , '°' , (long) &(s_place.j_language   [0]) - (long) &s_place,   1,  10,  70, 100, LEN_HUND          },
+   { 'c' , "P_COMPILER"    , "compiler"     , "specific compiler version"       , 'P' , '°' , (long) &(s_place.j_compiler   [0]) - (long) &s_place,   0,   3,  20,  20, LEN_LABEL         },
+   { 'z' , "P_CODESIZE"    , "codesize"     , "general size note"               , 'P' , '°' , (long) &(s_place.j_codesize   [0]) - (long) &s_place,  10,  10,  60, 100, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------depends---------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'D' , "P_DEPSTDC"     , "dep_stdc"     , "standard-c libraries"            , 'P' , '°' , (long) &(s_place.j_dep_cstd   [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'P' , "P_DEPPOSIX"    , "dep_posix"    , "posix-c libraries"               , 'P' , '°' , (long) &(s_place.j_dep_posix  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'X' , "P_DEPEXTEND"   , "dep_extend"   , "common extended libraries"       , 'P' , '°' , (long) &(s_place.j_dep_extend [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'S' , "P_DEPSECURE"   , "dep_secure"   , "linux/unix security related"     , 'P' , '°' , (long) &(s_place.j_dep_secure [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'C' , "P_DEPCORE"     , "dep_core"     , "heatherly core libraries"        , 'P' , '°' , (long) &(s_place.j_dep_core   [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'V' , "P_DEPVIKEY"    , "dep_vikey"    , "heatherly vi-keys libraries"     , 'P' , '°' , (long) &(s_place.j_dep_vikey  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'O' , "P_DEPOTHER"    , "dep_other"    , "all other libraries"             , 'P' , '°' , (long) &(s_place.j_dep_other  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'G' , "P_DEPGRAPH"    , "dep_graph"    , "heatherly visual libraries"      , 'P' , '°' , (long) &(s_place.j_dep_graph  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'S' , "P_DEPSOLO"     , "dep_solo"     , "heatherly solo/uver libraries"   , 'P' , '°' , (long) &(s_place.j_dep_solo   [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'A' , "P_DEPALIEN"    , "dep_alien"    , "third-party libraries"           , 'P' , '°' , (long) &(s_place.j_dep_alien  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
    {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------master----------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'f' , "P_FOCUS"       , "focus"        , "functional focus"                , 'P' , '°' , (long) &(s_place.j_focus     [0]) - (long) &s_place,   5,  10,  30,  50, LEN_DESC          },
-   { 'n' , "P_NICHE"       , "niche"        , "niche within focus"              , 'P' , '°' , (long) &(s_place.j_niche     [0]) - (long) &s_place,   5,  10,  30,  50, LEN_DESC          },
-   { 's' , "P_SUBJECT"     , "subject"      , "short purpose statement"         , 'P' , '°' , (long) &(s_place.j_subject   [0]) - (long) &s_place,  10,  20,  30,  50, LEN_DESC          },
-   { 'p' , "P_PURPOSE"     , "purpose"      , "longer purpose statement"        , 'P' , '°' , (long) &(s_place.j_purpose   [0]) - (long) &s_place,  10,  30,  70, 100, LEN_HUND          },
+   /*-------when------------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'a' , "P_AUTHOR"      , "author"       , "primary programmer name"         , 'P' , '°' , (long) &(s_place.j_author     [0]) - (long) &s_place,   5,  10,  30,  30, LEN_TITLE         },
+   { 'c' , "P_CREATED"     , "created"      , "data first created"              , 'P' , '°' , (long) &(s_place.j_created    [0]) - (long) &s_place,   4,   7,  20,  20, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------version---------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'x' , "P_VERMAJOR"    , "vermajor"     , "major version explanation"       , 'P' , '°' , (long) &(s_place.j_vermajor   [0]) - (long) &s_place,   4,  15,  70, 100, LEN_HUND          },
+   { 'n' , "P_VERMINOR"    , "verminor"     , "minor version explanation"       , 'P' , '°' , (long) &(s_place.j_verminor   [0]) - (long) &s_place,   4,  15,  70, 100, LEN_HUND          },
+   { 'v' , "P_VERNUM"      , "vernum"       , "specific vertion number"         , 'P' , '°' , (long) &(s_place.j_vernum     [0]) - (long) &s_place,   4,   4,   4,  20, LEN_LABEL         },
+   { 't' , "P_VERTXT"      , "vertxt"       , "specific version description"    , 'P' , '°' , (long) &(s_place.j_vertxt     [0]) - (long) &s_place,  10,  20,  70, 100, LEN_HUND          },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------warranty--------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'c' , "···"           , "copyright"    , "identifying the owner"           , 'P' , 'g' , (long) &(s_place.j_copyright  [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
+   { 'l' , "···"           , "license"      , "code is gpl licensed"            , 'P' , 'g' , (long) &(s_place.j_license    [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
+   { 'c' , "···"           , "copyleft"     , "derivatives free and open"       , 'P' , 'g' , (long) &(s_place.j_copyleft   [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
+   { 'i' , "···"           , "include"      , "derivatives must include text"   , 'P' , 'g' , (long) &(s_place.j_include    [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
+   { 'a' , "···"           , "as_is"        , "no one liable for any damages"   , 'P' , 'g' , (long) &(s_place.j_as_is      [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
+   { 't' , "···"           , "theft"        , "thoughts on cheating"            , 'P' , 'g' , (long) &(s_place.j_theft      [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
+   {  1  , "···"           , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------files-----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'o' , "···"           , "objective"    , "file-specific objective"         , 'c' , 'f' , (long) &(s_place.j_objective  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'c' , "···"           , "importance"   , "how important is this code"      , 'c' , 'f' , (long) &(s_place.j_importance [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'c' , "···"           , "complexity"   , "how hard to maintain"            , 'c' , 'f' , (long) &(s_place.j_complexity [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   {  1  , "···"           , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------extra-----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'p' , "P_PRIORITY"    , "priority"     , "programming priorities"          , 'P' , 'p' , (long) &(s_place.j_priority   [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
+   { 'p' , "P_PRINCIPLE"   , "principle"    , "call to action"                  , 'P' , 'p' , (long) &(s_place.j_principal  [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
+   { 'r' , "P_REMINDER"    , "reminder"     , "just so you know"                , 'P' , 'p' , (long) &(s_place.j_reminder   [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
+   { 'd' , "P_DISCLAIM"    , "disclaim"     , "programming disclaimer"          , 'P' , 'p' , (long) &(s_place.j_disclaim   [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
+   /*-------why-------------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'B' , "P_BOTHER"      , "bother"       , "why do anything?"                , 'P' , '-' , (long) &(s_place.j_bother     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'C' , "P_COVERS"      , "covers"       , "what's the overall niche?"       , 'P' , '-' , (long) &(s_place.j_covers     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'S' , "P_SUBDISC"     , "sub-disc"     , "what are the niche sub-parts?"   , 'P' , '-' , (long) &(s_place.j_subdisc    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'C' , "P_CURRENT"     , "current"      , "current state-of-play"           , 'P' , '-' , (long) &(s_place.j_current    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'V' , "P_VALUE"       , "value"        , "benefit of getting this right"   , 'P' , '-' , (long) &(s_place.j_value      [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'F' , "P_FEAR"        , "fear"         , "are there overriding needs?"     , 'P' , '-' , (long) &(s_place.j_fear       [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'M' , "P_MISSING"     , "missing"      , "current state gets what wrong"   , 'P' , '-' , (long) &(s_place.j_missing    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'K' , "P_KEEPING"     , "keeping"      , "current state gets what right"   , 'P' , '-' , (long) &(s_place.j_keeping    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'P' , "P_PERK"        , "perk"         , "benefit of building custom"      , 'P' , '-' , (long) &(s_place.j_perk       [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------greek-----------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'ê' , "P_NAMESAKE"    , "namesake"     , "greek pantheon sponsor"          , 'P' , '°' , (long) &(s_place.j_namesake  [0]) - (long) &s_place,  10,  20,  40, 100, LEN_HUND          },
-   { '÷' , "P_PRONOUNCE"   , "pronounce"    , "arapabet namesake guide"         , 'P' , '°' , (long) &(s_place.j_pronounce [0]) - (long) &s_place,   0,   5,  30,  30, LEN_TITLE         },
-   { 'î' , "P_HERITAGE"    , "heritage"     , "longer description of god"       , 'P' , '°' , (long) &(s_place.j_heritage  [0]) - (long) &s_place,  10,  30,  70, 100, LEN_HUND          },
-   { 'é' , "P_BRIEFLY"     , "briefly"      , "short description of god"        , 'P' , '°' , (long) &(s_place.j_briefly   [0]) - (long) &s_place,   0,  20,  30,  30, LEN_TITLE         },
-   { 'ð' , "P_IMAGERY"     , "imagery"      , "description of the god"          , 'P' , '°' , (long) &(s_place.j_imagery   [0]) - (long) &s_place,  10,  30,  70, 100, LEN_HUND          },
-   { 'ø' , "P_REASON"      , "reason"       , "reason patronage makes sense"    , 'P' , '°' , (long) &(s_place.j_reason    [0]) - (long) &s_place,  10,  30,  70, 100, LEN_HUND          },
+   /*-------what------------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { 'S' , "P_SCOPE"       , "scope"        , "scope of this solution"          , 'P' , '-' , (long) &(s_place.j_scope      [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'A' , "P_ACCEPT"      , "accepted"     , "accepted objectives"             , 'P' , '-' , (long) &(s_place.j_accept     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'R' , "P_REJECT"      , "rejected"     , "rejected objectives"             , 'P' , '-' , (long) &(s_place.j_reject     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'A' , "P_ASSUME"      , "assume"       , "environmental assumptions"       , 'P' , '-' , (long) &(s_place.j_assume     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'A' , "P_ALWAYS"      , "always"       , "universal objectives"            , 'P' , '-' , (long) &(s_place.j_always     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { '*' , "P_SUMMARY"     , "summary"      , "project summary"                 , 'P' , '-' , (long) &(s_place.j_summary    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'D' , "P_DANGERS"     , "dangers"      , "potential trouble with project"  , 'P' , '-' , (long) &(s_place.j_dangers    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
+   { 'G' , "P_GREEK"       , "greek"        , "longer greek heritage"           , 'P' , '-' , (long) &(s_place.j_greek      [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------oneline---------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'ö' , "P_ONELINE"     , "oneline"      , "reporting suppmary line"         , 'P' , '°' , (long) &(s_place.j_oneline   [0]) - (long) &s_place,  40,  50,  70, 100, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------location--------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'd' , "P_HOMEDIR"     , "homedir"      , "project source directory"        , 'P' , '°' , (long) &(s_place.j_homedir   [0]) - (long) &s_place,   1,   4,  70, 100, LEN_HUND          },
-   { 'b' , "P_BASENAME"    , "progname"     , "run-time executable name"        , 'P' , '°' , (long) &(s_place.j_progname  [0]) - (long) &s_place,   1,   4,  20,  30, LEN_TITLE         },
-   { 'f' , "P_FULLPATH"    , "fullpath"     , "installed location"              , 'P' , '°' , (long) &(s_place.j_fullpath  [0]) - (long) &s_place,  10,  20,  70, 100, LEN_HUND          },
-   { 's' , "P_SUFFIX"      , "suffix"       , "data file suffix"                , 'P' , '°' , (long) &(s_place.j_suffix    [0]) - (long) &s_place,   0,   3,   6,  20, LEN_LABEL         },
-   { 'c' , "P_CONTENT"     , "content"      , "data file content description"   , 'P' , '°' , (long) &(s_place.j_content   [0]) - (long) &s_place,   0,  15,  30,  30, LEN_TITLE         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------chars-----------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 's' , "P_SYSTEM"      , "system"       , "operating systems required"      , 'P' , '°' , (long) &(s_place.j_systems   [0]) - (long) &s_place,   1,  10,  70, 100, LEN_HUND          },
-   { 'l' , "P_LANGUAGE"    , "language"     , "computer programming language"   , 'P' , '°' , (long) &(s_place.j_language  [0]) - (long) &s_place,   1,  10,  70, 100, LEN_HUND          },
-   { 'c' , "P_COMPILER"    , "compiler"     , "specific compiler version"       , 'P' , '°' , (long) &(s_place.j_compiler  [0]) - (long) &s_place,   0,   3,  20,  20, LEN_LABEL         },
-   { 'z' , "P_CODESIZE"    , "codesize"     , "general size note"               , 'P' , '°' , (long) &(s_place.j_codesize  [0]) - (long) &s_place,  10,  10,  60, 100, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------depends---------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'D' , "P_DEPSTDC"     , "dep_stdc"     , "standard-c libraries"            , 'P' , '°' , (long) &(s_place.j_dep_cstd  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'P' , "P_DEPPOSIX"    , "dep_posix"    , "posix-c libraries"               , 'P' , '°' , (long) &(s_place.j_dep_posix [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'C' , "P_DEPCORE"     , "dep_core"     , "heatherly core libraries"        , 'P' , '°' , (long) &(s_place.j_dep_core  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'V' , "P_DEPVIKEY"    , "dep_vikey"    , "heatherly vi-keys libraries"     , 'P' , '°' , (long) &(s_place.j_dep_vikey [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'O' , "P_DEPOTHER"    , "dep_other"    , "all other libraries"             , 'P' , '°' , (long) &(s_place.j_dep_other [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'G' , "P_DEPGRAPH"    , "dep_graph"    , "heatherly visual libraries"      , 'P' , '°' , (long) &(s_place.j_dep_graph [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'S' , "P_DEPSOLO"     , "dep_solo"     , "heatherly solo/uver libraries"   , 'P' , '°' , (long) &(s_place.j_dep_solo  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'A' , "P_DEPALIEN"    , "dep_alien"    , "third-party libraries"           , 'P' , '°' , (long) &(s_place.j_dep_alien [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------when------------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'a' , "P_AUTHOR"      , "author"       , "primary programmer name"         , 'P' , '°' , (long) &(s_place.j_author    [0]) - (long) &s_place,   5,  10,  30,  30, LEN_TITLE         },
-   { 'c' , "P_CREATED"     , "created"      , "data first created"              , 'P' , '°' , (long) &(s_place.j_created   [0]) - (long) &s_place,   4,   7,  20,  20, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------version---------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'x' , "P_VERMAJOR"    , "vermajor"     , "major version explanation"       , 'P' , '°' , (long) &(s_place.j_vermajor  [0]) - (long) &s_place,   4,  15,  70, 100, LEN_HUND          },
-   { 'n' , "P_VERMINOR"    , "verminor"     , "minor version explanation"       , 'P' , '°' , (long) &(s_place.j_verminor  [0]) - (long) &s_place,   4,  15,  70, 100, LEN_HUND          },
-   { 'v' , "P_VERNUM"      , "vernum"       , "specific vertion number"         , 'P' , '°' , (long) &(s_place.j_vernum    [0]) - (long) &s_place,   4,   4,   4,  20, LEN_LABEL         },
-   { 't' , "P_VERTXT"      , "vertxt"       , "specific version description"    , 'P' , '°' , (long) &(s_place.j_vertxt    [0]) - (long) &s_place,  10,  20,  70, 100, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------warranty--------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'c' , "···"           , "copyright"    , "identifying the owner"           , 'P' , 'g' , (long) &(s_place.j_copyright [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
-   { 'l' , "···"           , "license"      , "code is gpl licensed"            , 'P' , 'g' , (long) &(s_place.j_license   [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
-   { 'c' , "···"           , "copyleft"     , "derivatives free and open"       , 'P' , 'g' , (long) &(s_place.j_copyleft  [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
-   { 'i' , "···"           , "include"      , "derivatives must include text"   , 'P' , 'g' , (long) &(s_place.j_include   [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
-   { 'a' , "···"           , "as_is"        , "no one liable for any damages"   , 'P' , 'g' , (long) &(s_place.j_as_is     [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
-   { 't' , "···"           , "theft"        , "thoughts on cheating"            , 'P' , 'g' , (long) &(s_place.j_theft     [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
-   {  1  , "···"           , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------extra-----------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'p' , "P_PRIORITY"    , "priority"     , "programming priorities"          , 'P' , 'p' , (long) &(s_place.j_priority  [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
-   { 'p' , "P_PRINCIPLE"   , "principle"    , "call to action"                  , 'P' , 'p' , (long) &(s_place.j_principal [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
-   { 'r' , "P_REMINDER"    , "reminder"     , "just so you know"                , 'P' , 'p' , (long) &(s_place.j_reminder  [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
-   { 'd' , "P_DISCLAIM"    , "disclaim"     , "programming disclaimer"          , 'P' , 'p' , (long) &(s_place.j_disclaim  [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------why-------------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'B' , "P_BOTHER"      , "bother"       , "why do anything?"                , 'P' , '-' , (long) &(s_place.j_bother    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'C' , "P_COVERS"      , "covers"       , "what's the overall niche?"       , 'P' , '-' , (long) &(s_place.j_covers    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'S' , "P_SUBDISC"     , "sub-disc"     , "what are the niche sub-parts?"   , 'P' , '-' , (long) &(s_place.j_subdisc   [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'C' , "P_CURRENT"     , "current"      , "current state-of-play"           , 'P' , '-' , (long) &(s_place.j_current   [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'V' , "P_VALUE"       , "value"        , "benefit of getting this right"   , 'P' , '-' , (long) &(s_place.j_value     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'F' , "P_FEAR"        , "fear"         , "are there overriding needs?"     , 'P' , '-' , (long) &(s_place.j_fear      [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'M' , "P_MISSING"     , "missing"      , "current state gets what wrong"   , 'P' , '-' , (long) &(s_place.j_missing   [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'K' , "P_KEEPING"     , "keeping"      , "current state gets what right"   , 'P' , '-' , (long) &(s_place.j_keeping   [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'P' , "P_PERK"        , "perk"         , "benefit of building custom"      , 'P' , '-' , (long) &(s_place.j_perk      [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------what------------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { 'S' , "P_SCOPE"       , "scope"        , "scope of this solution"          , 'P' , '-' , (long) &(s_place.j_scope     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'A' , "P_ACCEPT"      , "accepted"     , "accepted objectives"             , 'P' , '-' , (long) &(s_place.j_accept    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'R' , "P_REJECT"      , "rejected"     , "rejected objectives"             , 'P' , '-' , (long) &(s_place.j_reject    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'A' , "P_ASSUME"      , "assume"       , "environmental assumptions"       , 'P' , '-' , (long) &(s_place.j_assume    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'A' , "P_ALWAYS"      , "always"       , "universal objectives"            , 'P' , '-' , (long) &(s_place.j_always    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { '*' , "P_SUMMARY"     , "summary"      , "project summary"                 , 'P' , '-' , (long) &(s_place.j_summary   [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'D' , "P_DANGERS"     , "dangers"      , "potential trouble with project"  , 'P' , '-' , (long) &(s_place.j_dangers   [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   { 'G' , "P_GREEK"       , "greek"        , "longer greek heritage"           , 'P' , '-' , (long) &(s_place.j_greek     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
-   /*-------grade-----------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
-   { ' ' , "···"           , "GRADE"        , "final rating on headers"         , '·' , '-' , (long) &(s_place.j_grade     [0]) - (long) &s_place,   0,   0,   0,   0, LEN_HUND          },
-   /*-------end-------------label------------description-------------------------where--type--offset-----------------------------------------------min--low--hig--max-store--------------*/
+   /*-------grade-----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
+   { ' ' , "···"           , "GRADE"        , "final rating on headers"         , '·' , '-' , (long) &(s_place.j_grade      [0]) - (long) &s_place,   0,   0,   0,   0, LEN_HUND          },
+   /*-------end-------------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
    {  0  , "end-of-list"   , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
 };
 
@@ -863,11 +870,11 @@ HEADER__single          (tPROJ *a_proj, tFILE *a_file, char a_ftype, char a_recd
       DEBUG_INPT   yLOG_note    ("processing a non-standard type");
       switch (x_route) {
       case 'h' :
-         rc = HEADER__encode  (a_proj->j_header, n, x_abbr, p, x_min, x_low, x_high, x_max, x_store);
+         rc = HEADER__encode  (a_proj->j_header, n, x_abbr, x_data, x_min, x_low, x_high, x_max, x_store);
          DEBUG_INPT   yLOG_info    ("header"    , a_proj->j_header);
          break;
       case 'g' :
-         rc = HEADER__encode  (a_file->i_header, n, x_abbr, p, x_min, x_low, x_high, x_max, x_store);
+         rc = HEADER__encode  (a_file->i_header, n, x_abbr, x_data, x_min, x_low, x_high, x_max, x_store);
          DEBUG_INPT   yLOG_info    ("header"    , a_file->i_header);
          break;
       }
@@ -984,6 +991,11 @@ HEADER__from_file       (tPROJ *a_proj, tFILE *a_file, char a_ftype)
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_proj"    , a_proj);
+   --rce;  if (a_proj == NULL) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return  rce;
+   }
    DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
    --rce;  if (a_file == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -1084,6 +1096,7 @@ HEADER_gather           (tPROJ *a_proj)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         rc          =    0;
+   GPL_summarize (NULL, NULL, 'è');
    rc = FILES_run_for_project (a_proj, HEADER__from_file);
    rc = FILES_run_for_project (a_proj, GPL_summarize);
    if (rc > 0)  HEADER_grading (a_proj);
@@ -1147,6 +1160,7 @@ HEADER_line             (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL])
 char
 HEADER_report           (tPROJ *a_proj)
 {
+   char        rc          =    0;
    int         i           =    0;
    char        s           [LEN_HUND]  = "";
    char        t           [LEN_HUND]  = "";
@@ -1170,7 +1184,7 @@ HEADER_report           (tPROJ *a_proj)
    /*---(summary)------------------------*/
    DEBUG_INPT   yLOG_note    ("summary");
    yURG_msg (' ', "##   %2d headers ·  å%sæ", HEADER_count (), a_proj->j_header);
-   yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depends··au·ver··gpl····extr·why·······what·····!æ");
+   yURG_msg (' ', "##          legend å-- focu·greek··o·loca··tech·depends····au·ver··gpl····fil·extr·why·······what·····!æ");
    DEBUG_INPT   yLOG_note    ("header");
    yURG_msg (' ', "##");
    yURG_msg (' ', x_sep);
@@ -1233,12 +1247,13 @@ HEADER_report           (tPROJ *a_proj)
    }
    yURG_msg (' ', "##");
    yURG_msg (' ', x_sep);
+   rc = FILES_run_for_project (a_proj, GPL_report);
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 1;
 }
 
 char
-HEADER_only             (char a_file [LEN_PATH])
+HEADER_only             (void)
 {
    char        rce         =  -10;
    char        rc          =    0;
@@ -1249,49 +1264,23 @@ HEADER_only             (char a_file [LEN_PATH])
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
-   --rce;  if (a_file == NULL) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      exit (rce);
-   }
-   DEBUG_INPT   yLOG_info    ("a_file"    , a_file);
-   l = strlen (a_file);
-   DEBUG_INPT   yLOG_value   ("l"         , l);
-   --rce;  if (l < 3) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      exit (rce);
-   }
-   ystrlcpy (x_suffix, a_file + l - 2, LEN_TERSE);
-   DEBUG_INPT   yLOG_info    ("x_suffix"  , x_suffix);
-   --rce;  if (strcmp (x_suffix, ".h") != 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      exit (rce);
-   }
-   /*---(create fake project)------------*/
-   rc = PROJS_add     ("header_audit", "/tmp", &x_proj);
-   DEBUG_INPT   yLOG_value   ("proj add"  , rc);
+   rc = PROJS_here (&x_proj);
+   DEBUG_INPT   yLOG_value   ("here"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       exit (rce);
    }
    DEBUG_INPT   yLOG_point   ("x_proj"    , x_proj);
-   /*---(create file)--------------------*/
-   rc = FILES_add     (x_proj, a_file, 'h', &x_file);
-   DEBUG_INPT   yLOG_value   ("file add"  , rc);
+   /*---(analyze project)----------------*/
+   rc  = FILES_gather        (x_proj, '-');
+   DEBUG_PROG   yLOG_value   ("review"     , rc);
    --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      exit (rce);
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    /*---(read file)----------------------*/
    rc = HEADER_gather (x_proj);
    DEBUG_INPT   yLOG_value   ("read"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      exit (rce);
-   }
-   /*---(suppmarize)---------------------*/
-   rc = HEADER_grading (x_proj);
-   DEBUG_INPT   yLOG_value   ("summarize" , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       exit (rce);

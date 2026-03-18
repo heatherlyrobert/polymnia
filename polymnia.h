@@ -64,19 +64,22 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_DEPSTDC   "stdio,stdlib,string,math"
 #define     P_DEPPOSIX  "unistd,dirent,sys/stat"
+#define     P_DEPSECURE "´"
+#define     P_DEPEXTEND "´"
 #define     P_DEPCORE   "yLOG,yURG,ySTR,yENV"
 #define     P_DEPVIKEY  "´"
 #define     P_DEPGRAPH  "´"
 #define     P_DEPOTHER  "ySORT,yJOBS,ySCORE,yAUDIT,yREGEX"
 #define     P_DEPSOLO   "yDLST_solo,yEXEC_solo"
+#define     P_DEPALIEN  "´"
 /*········· ··········· ´·····························´········································*/
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2019-01"
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3g"
-#define     P_VERTXT    "header/gpl updating well now, mostly unit tested"
+#define     P_VERNUM    "1.3h"
+#define     P_VERTXT    "added header gpl summarization and gpl reporting"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -599,6 +602,8 @@ struct cPROJ {
    /*---(depends)-----------*/
    char        j_dep_cstd    [LEN_HUND];
    char        j_dep_posix   [LEN_HUND];
+   char        j_dep_extend  [LEN_HUND];
+   char        j_dep_secure  [LEN_HUND];
    char        j_dep_core    [LEN_HUND];
    char        j_dep_vikey   [LEN_HUND];
    char        j_dep_other   [LEN_HUND];
@@ -614,12 +619,16 @@ struct cPROJ {
    char        j_vernum      [LEN_LABEL];
    char        j_vertxt      [LEN_HUND];
    /*---(warranty)----------*/
-   char        j_copyright   [LEN_LABEL];
-   char        j_license     [LEN_LABEL];
-   char        j_copyleft    [LEN_LABEL];
-   char        j_include     [LEN_LABEL];
-   char        j_as_is       [LEN_LABEL];
-   char        j_theft       [LEN_LABEL];
+   char        j_copyright   [LEN_HUND];
+   char        j_license     [LEN_HUND];
+   char        j_copyleft    [LEN_HUND];
+   char        j_include     [LEN_HUND];
+   char        j_as_is       [LEN_HUND];
+   char        j_theft       [LEN_HUND];
+   /*---(files)-------------*/
+   char        j_objective   [LEN_HUND];
+   char        j_importance  [LEN_HUND];
+   char        j_complexity  [LEN_HUND];
    /*---(extra)-------------*/
    char        j_priority    [LEN_LABEL];
    char        j_principal   [LEN_LABEL];
@@ -683,7 +692,7 @@ struct cFILE {
    char        i_theft       [LEN_LABEL];
    /*---(what)--------------*/
    char        i_objective   [LEN_LABEL];
-   char        i_criticality [LEN_LABEL];
+   char        i_importance  [LEN_LABEL];
    char        i_complexity  [LEN_LABEL];
    char        i_grade       [LEN_HUND];
    /*---(new stats interface)-*/
@@ -1168,7 +1177,7 @@ char        HEADER_gather           (tPROJ *a_proj);
 /*········´ ´···········reporting·´ ´·········································*/
 char*       HEADER_line             (tPROJ *a_proj, char a_type, char a_label [LEN_LABEL]);
 char        HEADER_report           (tPROJ *a_proj);
-char        HEADER_only             (char a_file [LEN_PATH]);
+char        HEADER_only             (void);
 char*       HEADER__show            (tPROJ *a_proj);
 /*········´ ´················DONE·´ ´·········································*/
 
@@ -1184,6 +1193,7 @@ short       GPL_find                (char a_label [LEN_LABEL], uchar *r_abbr, ch
 short       GPL_find_simple         (char a_label [LEN_LABEL]);
 char        GPL_grading             (tFILE *a_file);
 char        GPL_summarize           (tPROJ *a_proj, tFILE *a_file, char a_ftype);
+char        GPL_report              (tPROJ* a_proj, tFILE *a_file, char a_ftype);
 /*········´ ´················DONE·´ ´·········································*/
 
 

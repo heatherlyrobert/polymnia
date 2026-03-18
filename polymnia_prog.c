@@ -375,7 +375,7 @@ PROG__args              (int a_argc, char *a_argv[])
       else if (strcmp  (a, "--run_extr"     ) == 0)  { my.g_run_proj = my.g_run_head = my.g_run_file = my.g_run_func = my.g_run_code = my.g_run_extr = 'y';  my.g_run_ylib = my.g_run_unit = '-'; }
       else if (strcmp  (a, "--run_ylib"     ) == 0)  { my.g_run_proj = my.g_run_head = my.g_run_file = my.g_run_func = my.g_run_code = my.g_run_extr = my.g_run_ylib = 'y';  my.g_run_unit = '-'; }
       else if (strcmp  (a, "--run_unit"     ) == 0)  { my.g_run_proj = my.g_run_file = my.g_run_unit = 'y'; }
-      /*> TWOARG  HEADER_only (b);                                            <*/
+      else if (strcmp  (a, "--header"       ) == 0)  { HEADER_only (); }
       /*---(complicated)-----------------*/
       /*> else if (strcmp (a, "--htags"     ) == 0) { my.g_mode  = POLY_BOTH;  my.g_data = POLY_DATA_HTAGS;  my.g_scope = POLY_FULL;  my.g_rptg = POLY_RPTG_HTAGS;   }   <*/
       else if (strcmp  (a, "--nounit"       ) == 0)   my.g_unit  = '-';
