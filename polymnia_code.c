@@ -281,7 +281,7 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
       return rce;
    }
    /*---(return)-------------------------*/
-   rc = poly_line_func   (a_prev, a_recd, a_func->c_name, &(a_func->STATS_SINGLE), &(a_func->STATS_SCOPE), &(a_func->STATS_RTYPE), a_func->c_rlong);
+   rc = LINE_function    (a_prev, a_recd, a_func->c_name, &(a_func->STATS_SINGLE), &(a_func->STATS_SCOPE), &(a_func->STATS_RTYPE), a_func->c_rlong);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -291,17 +291,17 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
       p  = strstr (a_prev, "/*");
       if (p != NULL) {
          x_len = p - a_prev;
-         rc = poly_line_purpose (a_prev + x_len, a_func->c_purpose, &(a_func->c_ready));
+         rc = LINE_purpose      (a_prev + x_len, a_func->c_purpose, &(a_func->c_ready));
          if (rc < 0) {
             DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
       }
    } else {
-      rc = poly_line_purpose ("/* */", a_func->c_purpose, &(a_func->c_ready));
+      rc = LINE_purpose      ("/* */", a_func->c_purpose, &(a_func->c_ready));
    }
    /*---(parameters)---------------------*/
-   rc = poly_line_params (a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));
+   rc = LINE_params      (a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), NULL, &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -460,31 +460,31 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    /*---(outside)---------------------*/
    if (x_inside != 1) {
       DEBUG_INPT   yLOG_note    ("outside all functions, but including headers and { } outside braces");
-      poly_line_all       (        0, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), NULL);
-      if (rc == 0)  rc = poly_line_empty     (x_full, 0, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), NULL);
-      if (rc == 0)  rc = poly_line_comment   (x_full, 0, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), NULL);
-      if (rc == 0)  rc = poly_line_debug     (x_full, 0, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL, NULL);
-      if (rc == 0)  rc = poly_line_unguard   (x_full, 0, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL);
+      LINE_count_all      (        0, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), NULL);
+      if (rc == 0)  rc = LINE_count_empty    (x_full, 0, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), NULL);
+      if (rc == 0)  rc = LINE_count_comment  (x_full, 0, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), NULL);
+      if (rc == 0)  rc = LINE_count_debug    (x_full, 0, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL, NULL);
+      if (rc == 0)  rc = LINE_count_unguard  (x_full, 0, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL);
       if (rc == 0) {
-         poly_line_code      (        0, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
-         poly_line_slocl     (x_full, 0, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
+         LINE_count_code     (        0, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
+         LINE_count_slocl    (x_full, 0, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
       }
    }
    /*---(inside)----------------------*/
    else {
       DEBUG_INPT   yLOG_note    ("inside function code");
-      poly_line_all       (        1, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), &(a_func->COUNT_LINES));
-      if (rc == 0)  rc = poly_line_empty     (x_full, 1, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), &(a_func->COUNT_EMPTY));
-      if (rc == 0)  rc = poly_line_comment   (x_full, 1, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), &(a_func->COUNT_DOCS ));
-      if (rc == 0)  rc = poly_line_debug     (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->WORK_DEXTRA), &(a_func->STATS_DMACRO));
-      if (rc == 0)  rc = poly_line_unguard   (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->STATS_DMACRO));
+      LINE_count_all      (        1, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), &(a_func->COUNT_LINES));
+      if (rc == 0)  rc = LINE_count_empty    (x_full, 1, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), &(a_func->COUNT_EMPTY));
+      if (rc == 0)  rc = LINE_count_comment  (x_full, 1, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), &(a_func->COUNT_DOCS ));
+      if (rc == 0)  rc = LINE_count_debug    (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->WORK_DEXTRA), &(a_func->STATS_DMACRO));
+      if (rc == 0)  rc = LINE_count_unguard  (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->STATS_DMACRO));
       if (rc == 0) {
-         poly_line_code      (        1, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
-         poly_line_slocl     (x_full, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
-         rc = poly_line_exit   (a_curr, 1, &(a_func->WORK_RETURN), &(a_func->WORK_RCE));
-         rc = poly_line_choice (a_curr, 1, &(a_func->WORK_CHOICE));
-         rc = poly_line_loop   (a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), &(a_func->WORK_LOOP));
-         rc = poly_line_indent (a_curr, 1, &(a_func->WORK_INDENT));
+         LINE_count_code     (        1, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
+         LINE_count_slocl    (x_full, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
+         rc = LINE_exit        (a_curr, 1, &(a_func->WORK_RETURN), &(a_func->WORK_RCE));
+         rc = LINE_choice      (a_curr, 1, &(a_func->WORK_CHOICE));
+         rc = LINE_loop        (a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), &(a_func->WORK_LOOP));
+         rc = LINE_indent      (a_curr, 1, &(a_func->WORK_INDENT));
       }
    }
    /*---(complete)-----------------------*/

@@ -863,15 +863,17 @@ FUNCS_in_file_by_cursor (tFILE *a_file, char a_dir, tFUNC **r_func)
 }
 
 char
-FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func)
+FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **r_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    tFUNC      *x_func      = NULL;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_senter  (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (r_func  != NULL)  *r_func = NULL;
    /*---(defense)------------------------*/
-   --rce;  if (a_func  == NULL) {
+   --rce;  if (r_func  == NULL) {
       DEBUG_PROG   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
@@ -895,11 +897,11 @@ FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func)
       }
       /*---(return positive)-------------*/
       DEBUG_PROG   yLOG_snote   ("match");
-      *a_func = x_func;
+      *r_func = x_func;
       DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
       return 0;
    }
-   *a_func = NULL;
+   *r_func = NULL;
    /*---(complete)-----------------------*/
    --rce;
    DEBUG_PROG   yLOG_snote   ("FAILED");
@@ -908,7 +910,7 @@ FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func)
 }
 
 char
-FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func)
+FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **r_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -918,14 +920,14 @@ FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func)
    /*---(defense)------------------------*/
    --rce;  if (a_proj   == NULL)   return rce;
    --rce;  if (a_hint   == NULL)   return rce;
-   --rce;  if (a_func   == NULL)   return rce;
+   --rce;  if (r_func   == NULL)   return rce;
    x_len = strlen (a_hint);
    --rce;  if (x_len    != 2)      return rce;
    --rce;  if (a_hint [0] < 'a' || a_hint [0] > 'z')   return rce;
    --rce;  if (a_hint [1] < 'A' || a_hint [1] > 'z')   return rce;
    --rce;  if (a_hint [1] > 'Z' && a_hint [1] < 'a')   return rce;
    /*---(prepare)------------------------*/
-   *a_func = NULL;
+   *r_func = NULL;
    /*---(walk files)---------------------*/
    x_file = a_proj->j_ihead;
    while (x_file != NULL) {
@@ -933,7 +935,7 @@ FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func)
       x_func = x_file->i_chead;
       while (x_func != NULL) {
          if (strcmp (x_func->c_hint, a_hint) == 0) {
-            *a_func = x_func;
+            *r_func = x_func;
             return 0;
          }
          x_func = x_func->c_next;

@@ -33,6 +33,18 @@
 /*===[[ GNU GENERAL PUBLIC LICENSE (GPL) ]]===================================*/
 
 
+
+/*´´·········1·········2·········3·········4·········5·········6·········7·········8  */
+#define  P_OBJECTIVE   \
+   "polymnia_line.c is focused solely on reviewing individual lines of code¦"         \
+   "from a c-source file and attibuting it to various analysis statistics based¦"     \
+   "on contents."
+
+/*-----  ----------------  ·········1·········2·········3·········4·········5·········*/
+#define  P_IMPORTANCE     "´ (low)      useful, but not required to run"
+#define  P_COMPLEXITY     "m (medium)   primarily string data handling"
+
+
 /*
  *
  *  always group base and mas macros
@@ -57,7 +69,7 @@
 static void  o___WHOLE___________o () { return; }
 
 char         /*-> increment all lines count -------------------[ leaf······ ]-*/ /*-ågcg´·5á14·á4··´636´1··´2·51·á·æ¬å2á·2··´88·á·······´···´····æ¬å>sd··´·······´····´112·æ-*/
-poly_line_all           (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
+LINE_count_all          (char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -65,45 +77,18 @@ poly_line_all           (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    /*---(update)-------------------------*/
    DEBUG_DATA   yLOG_snote   ("update counters");
-   if (r_cfull != NULL) {
-      ++(*r_cfull);
-      DEBUG_DATA   yLOG_sint    (*r_cfull);
-   }
-   if (r_cproj != NULL) {
-      ++(*r_cproj);
-      DEBUG_DATA   yLOG_sint    (*r_cproj);
-   }
-   if (r_cfile != NULL) {
-      ++(*r_cfile);
-      DEBUG_DATA   yLOG_sint    (*r_cfile);
-   }
-   if (a_inside == 1)  {
-      DEBUG_DATA   yLOG_snote   ("inside a function");
-      if (r_cfunc != NULL) {
-         ++(*r_cfunc);
-         DEBUG_DATA   yLOG_sint    (*r_cfunc);
-      }
-   }
+   if (b_cfull != NULL)    ++(*b_cfull);
+   if (b_cproj != NULL)    ++(*b_cproj);
+   if (b_cfile != NULL)    ++(*b_cfile);
+   /*---(function-level)-----------------*/
+   if (b_cfunc != NULL && a_inside == 1)  ++(*b_cfunc);
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
-/*
- * o                                                   w      c  F G X r  c                            n   w     D                                L          
- * n          p p           p      %           i   c r ´  m   a  c c c e  a D R  F G     v O m    o s  c o i y   a D D D    m    g     v          s        s 
- * e   s r p  a a      p    m p  t d %  L F G  n   h e e  e   l  a a a c  l f f  f f     i f y  i u y  u p n g   c s m m D  a    l     i o  V M F t  u s s t 
- * l   c t r  u r    p b  p u f  o e c  v v v  d l o t r  m   l  l l l u  l u u  u u c y k u s  n t s  r e d r   t t a a w  c  f o c y k t  m m m a  n c t r 
- * i   o y o  d a  p o o  n l u  t b o  a a a  e o i u r  o   ´  l l l r  ´ n n  n n s l e n t  p p t  s n o a   i y c t a  r  i b s l e h  a a a t  i r e i 
- * n   p p t  i m  i u t  u t n  a u d  r r r  n o c r o  r   b  e e e s  t c c  c c t i y c r  u u e  e g w p   v l r c r  o  l a t i y e  s s s i  t p p n 
- * e   e e o  t s  n t h  m i c  l g e  s s s  t p e n r  y   y  r r r e  o s s  s s d b s s y  t t m  s l s h   e e o h n  s  e l d b s r  k k k c  s s s g 
- * á  å---------------------complexity---------------------æ å-------------------integration------------------æ å----------------watch-points---------------æ
- * ·   g c g  ´ 6  2 4 ·  4 · ·  8 3 5  3 · ·  1 · 7 2 1  á   2  á 2 · ·  E B 3  á · 1 2 · · ·  ´ · ·  ´ · · ·   > s d · >  3  á · · · 4 3  ´ · · ·  1 1 7 ·
- *
- * åleaf      æ  å  62æ  åidenfity empty lines in codeæ
- */
 char         /*-> idenfity empty lines in code ----------------[ leaf······ ]-*/ /*-ågcg´·6á24·á4··´835´3··´1·721á·æ¬å2á·2··´EB3á··12···´···´····æ¬å>sd·>´3····43´····´117·æ-*/
-poly_line_empty         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
+LINE_count_empty        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -145,7 +130,7 @@ poly_line_empty         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
 }
 
 char         /*-> identify full comment lines in code ---------[ leaf       ]-*/ /*-ågcg´·6á24·á4··´A36´4··´1·G21á·æ¬å2á·2··´OCCá··A2···´···´····æ¬å>sd·>´······´····´11I·-*/
-poly_line_comment       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
+LINE_count_comment      (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -198,7 +183,7 @@ poly_line_comment       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
 }
 
 char
-poly_line_debug         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dextra, char *r_abbr)
+LINE_count_debug        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dextra, char *r_abbr)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -289,7 +274,7 @@ poly_line_debug         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
 }
 
 char
-poly_line_unguard       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dfree)
+LINE_count_unguard      (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dfree)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -340,7 +325,7 @@ poly_line_unguard       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
 }
 
 char
-poly_line_code          (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
+LINE_count_code         (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -361,7 +346,7 @@ poly_line_code          (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile
 }
 
 char
-poly_line_slocl         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
+LINE_count_slocl        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -407,7 +392,7 @@ poly_line_slocl         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, i
 static void  o___INCLUDE_________o () { return; }
 
 char
-poly_line_exit          (cchar a_recd [LEN_RECD], char a_inside, int *r_return, int *r_rce)
+LINE_exit               (char a_recd [LEN_RECD], char a_inside, int *r_return, int *r_rce)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -461,7 +446,7 @@ poly_line_exit          (cchar a_recd [LEN_RECD], char a_inside, int *r_return, 
 }
 
 char
-poly_line_choice        (cchar a_recd [LEN_RECD], char a_inside, int *r_choice)
+LINE_choice             (char a_recd [LEN_RECD], char a_inside, int *r_choice)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -520,7 +505,7 @@ poly_line_choice        (cchar a_recd [LEN_RECD], char a_inside, int *r_choice)
 }
 
 char
-poly_line_loop          (cchar a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, int *r_loop)
+LINE_loop               (char a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, int *r_loop)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -593,7 +578,7 @@ poly_line_loop          (cchar a_recd [LEN_RECD], char a_inside, int *r_sfull, i
 }
 
 char
-poly_line_indent        (cchar a_recd [LEN_RECD], char a_inside, int *r_indent)
+LINE_indent             (char a_recd [LEN_RECD], char a_inside, int *r_indent)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -675,7 +660,7 @@ static void  o___FUNCTION________o () { return; }
  *> }                                                                                 <*/
 
 char
-poly_line__purpose      (cchar a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_DESC], char *r_ready)
+LINE__purpose           (char a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_DESC], char *r_ready)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -719,7 +704,7 @@ poly_line__purpose      (cchar a_recd [LEN_RECD], int a_beg, char r_purpose [LEN
 }
 
 char         /*-> extract the function purpose -------[ ------ [ge.850.137.A4]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_line_purpose       (cchar a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready)
+LINE_purpose            (char a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -780,7 +765,7 @@ poly_line_purpose       (cchar a_recd [LEN_RECD], char r_purpose [LEN_DESC], cha
       return rce;
    }
    /*---(call)---------------------------*/
-   rc = poly_line__purpose  (a_recd, b, r_purpose, r_ready);
+   rc = LINE__purpose       (a_recd, b, r_purpose, r_ready);
    DEBUG_INPT   yLOG_sint    (rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
@@ -792,7 +777,7 @@ poly_line_purpose       (cchar a_recd [LEN_RECD], char r_purpose [LEN_DESC], cha
 }
 
 char         /*-> identify function scope/return type ---------[ leaf······ ]-*/ /*-ågcg´·7á34·á···´K27´8··´2·#14á·æ¬å1á·1··´#GTá··M7···´···´····æ¬å>si·>´······´····´11Q·æ-*/
-poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL])
+LINE_function           (char a_prev [LEN_RECD], char a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -863,11 +848,11 @@ poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char 
       x_scope = 's';
    }
    else if (strncmp (a_name + x_len - 6, "__unit" , 6) == 0   )  x_scope = 'u';
-   else if (strstr  (a_name            , "__unit_"   ) != NULL)  x_scope = 'u';
+   else if (strstr  (a_name            , "__unit"    ) != NULL)  x_scope = 'u';
    else if (strncmp (a_name + x_len - 6, "__fake" , 6) == 0   )  x_scope = 'u';
-   else if (strstr  (a_name            , "__fake_"   ) != NULL)  x_scope = 'u';
+   else if (strstr  (a_name            , "__fake"    ) != NULL)  x_scope = 'u';
    else if (strstr  (a_name            , "__"        ) != NULL)  x_scope = 'f';
-   else                                               x_scope = 'g';
+   else                                                          x_scope = 'g';
    DEBUG_INPT   yLOG_schar   (x_scope);
    /*---(classify return type)-----------*/
    x_len = strlen (x_return);
@@ -895,7 +880,7 @@ poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char 
 }
 
 char
-poly_line__params_cut   (char a_recd [LEN_RECD], char r_params [LEN_RECD], char *r_audit, int *r_count)
+LINE__params_cut        (char a_recd [LEN_RECD], char r_params [LEN_RECD], char *r_audit, char *r_count)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -1019,21 +1004,140 @@ poly_line__params_cut   (char a_recd [LEN_RECD], char r_params [LEN_RECD], char 
 }
 
 char
-poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_both, int *r_chg, int *r_pnum, int *r_pmulti, int *r_pfunc, int *r_pstruct)
+LINE__params_parse      (char a_param [LEN_RECD], char r_type [LEN_LABEL], char r_label [LEN_LABEL], char *r_point, char *r_func)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
-   char       *p           = NULL;
-   char       *x_end       = NULL;
-   char        x_param     [LEN_RECD]  = "";
-   char        x_type      =  '-';
-   int         x_len       =    0;
+   char        x_work      [LEN_RECD]  = "";
    int         i           =    0;
+   int         x_len       =    0;
+   char       *p           = NULL;
+   char        x_type      [LEN_LABEL] = "";
    char        x_label     [LEN_LABEL] = "";
-   char        x_num       =    0;
    char        x_point     =    0;
-   char        x_struct    =    0;
+   char        x_func      =  '-';
+   /*---(default)------------------------*/
+   if (r_type   != NULL)   strcpy (r_type  , "");
+   if (r_label  != NULL)   strcpy (r_label , "");
+   if (r_point  != NULL)   *r_point = 0;
+   if (r_func   != NULL)   *r_func  = '-';
+   /*---(defense)------------------------*/
+   --rce;  if (a_param  == NULL || a_param [0] == '\0')  return rce;
+   /*---(working copy)-------------------*/
+   ystrlcpy  (x_work, a_param    , LEN_RECD);
+   ystrltrim (x_work, ySTR_SINGLE, LEN_RECD);
+   /*---(function)-----------------------*/
+   p = strchr (x_work, '(');
+   if (p != NULL) {
+      ++x_point;
+      x_func = 'y';
+      p [0] = '\0';
+   }
+   /*---(suffix)-------------------------*/
+   p = strchr (x_work, '[');
+   while (p != NULL) {
+      ++x_point;
+      p [0] = '\0';
+      p = strchr (p + 1, '[');
+   }
+   /*---(clean-up)-----------------------*/
+   ystrltrim (x_work, ySTR_BOTH, LEN_RECD);
+   x_len = strlen (x_work);
+   /*---(label)--------------------------*/
+   for (i = x_len - 1; i > 0; --i) {
+      p = x_work + i;
+      switch (x_work [i]) {
+      case '*' :  ++x_point;
+      case ' ' :  p [0] = '\0';
+                  ystrlcpy (x_label, x_work + i + 1, LEN_LABEL);
+                  break;
+      default  :  continue;
+                  break;
+      }
+      break;
+   }
+   /*---(pointers)-----------------------*/
+   x_len = strlen (x_work);
+   for (i = x_len - 1; i > 0; --i) {
+      if (x_work [i] != '*')  break;
+      ++x_point;
+      x_work [i] = '\0';
+   }
+   /*---(clean-up)-----------------------*/
+   ystrltrim (x_work, ySTR_BOTH, LEN_RECD);
+   /*---(save-back)----------------------*/
+   if (r_type   != NULL)   ystrlcpy (r_type  , x_work , LEN_LABEL);
+   if (r_label  != NULL)   ystrlcpy (r_label , x_label, LEN_LABEL);
+   if (r_point  != NULL)   *r_point = x_point;
+   if (r_func   != NULL)   *r_func  = x_func;
+   /*---(complete)-----------------------*/
+   return 1;
+}
+
+char
+LINE__params_class      (char a_label [LEN_LABEL], char *r_class, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_other)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        x_class     =  '-';
+   /*---(default)------------------------*/
+   if (r_class  != NULL)   *r_class = '-';
+   /*---(defense)------------------------*/
+   --rce;  if (a_label == NULL || a_label [0] == '\0')  return rce;
+   --rce;  if (r_class == NULL)                         return rce;
+   /*---(decide)-------------------------*/
+   if      (strncmp (a_label, "a_"    , 2) == 0)  { x_class = 'a';  if (b_in    != NULL)  ++(*b_in);    }
+   else if (strncmp (a_label, "r_"    , 2) == 0)  { x_class = 'r';  if (b_out   != NULL)  ++(*b_out);   }
+   else if (strncmp (a_label, "b_"    , 2) == 0)  { x_class = 'b';  if (b_both  != NULL)  ++(*b_both);  }
+   else if (strncmp (a_label, "c_"    , 2) == 0)  { x_class = 'c';  if (b_conf  != NULL)  ++(*b_conf);  }
+   else if (strncmp (a_label, "e_"    , 2) == 0)  { x_class = 'e';  if (b_void  != NULL)  ++(*b_void);  }
+   else if (strncmp (a_label, "v_"    , 2) == 0)  { x_class = 'v';  if (b_void  != NULL)  ++(*b_void);  }
+   else                                                          {  if (b_other != NULL)  ++(*b_other); }
+   /*---(save-back)----------------------*/
+   if (r_class  != NULL)   *r_class = x_class;
+   /*---(complete)-----------------------*/
+   if (x_class == '-')  return 0;
+   return 1;
+}
+
+char
+LINE__params_point      (char a_type [LEN_LABEL], char a_point, char a_func, char a_class, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        x_numeric   =  '-';
+   char        x_struc     =  '-';
+   char        x_found     =  'y';
+   /*---(type)---------------------------*/
+   if      (strstr (a_type, "float"   ) != NULL)    x_numeric = 'y';
+   else if (strstr (a_type, "double"  ) != NULL)    x_numeric = 'y';
+   else if (strstr (a_type, "short"   ) != NULL)    x_numeric = 'y';
+   else if (strstr (a_type, "int"     ) != NULL)    x_numeric = 'y';
+   else if (strstr (a_type, "long"    ) != NULL)    x_numeric = 'y';
+   else if (strstr (a_type, "char"    ) != NULL)    ;
+   else if (strstr (a_type, "void"    ) != NULL)    ;
+   else                                              x_struc   = 'y';
+   /*---(combos)-------------------------*/
+   if      (a_class   == 'e' || a_func   == 'y')  { if (b_pfunc   != NULL)  ++(*b_pfunc);   }
+   else if (x_struc   == 'y' && a_point  >   0 )  { if (b_pstruc  != NULL)  ++(*b_pstruc);  }
+   else if (x_numeric == 'y' && a_point  ==  1 )  { if (b_pnum    != NULL)  ++(*b_pnum);    }
+   else if (a_point   >   1)                      { if (b_pmulti  != NULL)  ++(*b_pmulti);  }
+   else     x_found   = '-';
+   /*---(complete)-----------------------*/
+   if (x_found == '-')  return 0;
+   return 1;
+}
+
+char
+LINE__params_one        (char a_param [LEN_RECD], uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_type      [LEN_LABEL] = "";
+   char        x_label     [LEN_LABEL] = "";
+   char        x_point     =    0;
    char        x_func      =    0;
+   char        x_class     =  '-';
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -1042,76 +1146,34 @@ poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   ystrlcpy  (x_param, a_param    , LEN_RECD);
-   ystrltrim (x_param, ySTR_SINGLE, LEN_RECD);
-   /*---(suffix)-------------------------*/
-   x_end = strchr (x_param, '[');
-   if (x_end != NULL)  x_type = '[';
-   else {
-      x_end = strchr (x_param, '(');
-      if (x_end != NULL)  x_type = '(';
-   }
-   DEBUG_DATA   yLOG_schar   (x_type);
-   DEBUG_DATA   yLOG_spoint  (x_end);
-   if (x_end != NULL)  {
-      x_end [0] = '\0';
-      ystrltrim (x_param, ySTR_BOTH, LEN_RECD);
-   }
-   DEBUG_DATA   yLOG_snote   (x_param);
-   x_len = strlen (x_param);
-   DEBUG_DATA   yLOG_sint    (x_len);
-   /*---(label)--------------------------*/
-   for (i = x_len - 1; i > 0; --i) {
-      if (strchr ("* ", x_param [i]) != NULL) {
-         ystrlcpy (x_label, x_param + i + 1, LEN_LABEL);
-         x_param [i + 1] = '\0';
-         break;
-      }
-   }
-   DEBUG_DATA   yLOG_sint    (i);
-   --rce;  if (i == 0) {
-      DEBUG_INPT   yLOG_snote   ("no room for type");
-      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DATA   yLOG_snote   (x_label);
-   x_len = strlen (x_label);
-   DEBUG_DATA   yLOG_sint    (x_len);
-   --rce;  if (x_len < 1) {
+   /*---(parse)--------------------------*/
+   rc = LINE__params_parse (a_param, x_type, x_label, &x_point, &x_func);
+   DEBUG_DATA   yLOG_sint    (rc);
+   --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(direction)----------------------*/
-   if      (strncmp (x_label, "a_"    , 2) == 0 && r_in   != NULL)     ++(*r_in);
-   else if (strncmp (x_label, "r_"    , 2) == 0 && r_out  != NULL)     ++(*r_out);
-   else if (strncmp (x_label, "b_"    , 2) == 0 && r_both != NULL)     ++(*r_both);
-   else if (strncmp (x_label, "c_"    , 2) == 0 && r_chg  != NULL)     ++(*r_chg);
+   rc = LINE__params_class (x_label, &x_class, b_in, b_out, b_both, b_conf, b_void, NULL);
+   DEBUG_DATA   yLOG_sint    (rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(point)--------------------------*/
-   if      (strstr  (x_param, "***"      ) != NULL)  x_point = 3;
-   else if (strstr  (x_param, "**"       ) != NULL)  x_point = 2;
-   else if (strstr  (x_param, "*"        ) != NULL)  x_point = 1;
-   if      (x_type == '[')                           ++x_point;
-   /*---(num)----------------------------*/
-   if      (strstr (x_param, "float"   ) != NULL)    ++x_num;
-   else if (strstr (x_param, "double"  ) != NULL)    ++x_num;
-   else if (strstr (x_param, "short"   ) != NULL)    ++x_num;
-   else if (strstr (x_param, "int"     ) != NULL)    ++x_num;
-   else if (strstr (x_param, "long"    ) != NULL)    ++x_num;
-   else if (strstr (x_param, "char"    ) != NULL)    ;
-   else if (strstr (x_param, "void"    ) != NULL)    ;
-   else                                              ++x_struct;
-   /*---(combos)-------------------------*/
-   if      (x_type   == '(' && x_point  > 0 && r_pfunc   != NULL)   ++(*r_pfunc);
-   else if (x_num    >  0   && x_point == 1 && r_pnum    != NULL)   ++(*r_pnum);
-   else if (x_point  >  1   &&                 r_pmulti  != NULL)   ++(*r_pmulti);
-   if      (x_struct >  0   &&                 r_pstruct != NULL)   ++(*r_pstruct);
+   rc = LINE__params_point (x_type, x_point, x_func, x_class, b_pnum, b_pmulti, b_pfunc, b_pstruc);
+   DEBUG_DATA   yLOG_sint    (rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char         /*-> evaluate function parameter list ------------[ ´········· ]-*/ /*-ågcg´·Bá1A··á9··á·´D17´H··´11M22á·æ¬å1á·1··´C84á2·2····´···´····æ¬å>l!··´2···2··´····´114·æ-*/
-poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, int *r_in, int *r_out, int *r_both, int *r_chg, int *r_pnum, int *r_pmulti, int *r_pfunc, int *r_pstruct)
+LINE_params             (char a_recd [LEN_RECD], char *r_audit, uchar *r_count, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -1120,24 +1182,26 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
    char       *q           =  ",";
    char       *r           = NULL;
    char       x_params     [LEN_RECD];
-   char       x_one        [LEN_RECD];
-   int        x_co, x_in, x_ou, x_bo, x_ch, x_pn, x_pm, x_pf, x_ps;
+   char       x_co;
+   uchar      x_in, x_ou, x_bo, x_cf, x_vo, x_pn, x_pm, x_pf, x_ps;
    int        c            =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
-   if (r_audit  != NULL)  *r_audit  = '¢';
-   if (r_count  != NULL)  *r_count  =  -2;
-   if (r_in     != NULL)  *r_in     =   0;
-   if (r_out    != NULL)  *r_out    =   0;
-   if (r_both   != NULL)  *r_both   =   0;
-   if (r_chg    != NULL)  *r_chg    =   0;
-   if (r_pnum   != NULL)  *r_pnum   =   0;
-   if (r_pmulti != NULL)  *r_pmulti =   0;
-   if (r_pfunc  != NULL)  *r_pfunc  =   0;
-   x_co = x_in = x_ou = x_bo = x_ch = x_pn = x_pm = x_pf = x_ps = 0;
+   if (r_audit   != NULL)  *r_audit   = '¢';
+   if (r_count   != NULL)  *r_count   =  -2;
+   if (b_in      != NULL)  *b_in      =   0;
+   if (b_out     != NULL)  *b_out     =   0;
+   if (b_both    != NULL)  *b_both    =   0;
+   if (b_conf    != NULL)  *b_conf    =   0;
+   if (b_void    != NULL)  *b_void    =   0;
+   if (b_pnum    != NULL)  *b_pnum    =   0;
+   if (b_pmulti  != NULL)  *b_pmulti  =   0;
+   if (b_pfunc   != NULL)  *b_pfunc   =   0;
+   if (b_pstruc  != NULL)  *b_pstruc  =   0;
+   x_co = x_in = x_ou = x_bo = x_cf = x_vo = x_pn = x_pm = x_pf = x_ps = 0;
    /*---(prepare)------------------------*/
-   rc = poly_line__params_cut   (a_recd, x_params, r_audit, &x_co);
+   rc = LINE__params_cut        (a_recd, x_params, r_audit, &x_co);
    DEBUG_DATA   yLOG_value   ("cut"       , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -1153,7 +1217,7 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
    /*---(parse)--------------------------*/
    p = strtok_r (x_params, q, &r);
    while (p != NULL) {
-      rc = poly_line__params_one (p, &x_in, &x_ou, &x_bo, &x_ch, &x_pn, &x_pm, &x_pf, &x_ps);
+      rc = LINE__params_one      (p, &x_in, &x_ou, &x_bo, &x_cf, &x_vo, &x_pn, &x_pm, &x_pf, &x_ps);
       if (rc < 0)  break;
       ++c;
       p  = strtok_r (NULL, q, &r);
@@ -1166,14 +1230,15 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
    }
    /*---(save-back)----------------------*/
    if (r_count   != NULL)  *r_count   = x_co;
-   if (r_in      != NULL)  *r_in      = x_in;
-   if (r_out     != NULL)  *r_out     = x_ou;
-   if (r_both    != NULL)  *r_both    = x_bo;
-   if (r_chg     != NULL)  *r_chg     = x_ch;
-   if (r_pnum    != NULL)  *r_pnum    = x_pn;
-   if (r_pmulti  != NULL)  *r_pmulti  = x_pm;
-   if (r_pfunc   != NULL)  *r_pfunc   = x_pf;
-   if (r_pstruct != NULL)  *r_pstruct = x_ps;
+   if (b_in      != NULL)  *b_in      = x_in;
+   if (b_out     != NULL)  *b_out     = x_ou;
+   if (b_both    != NULL)  *b_both    = x_bo;
+   if (b_conf    != NULL)  *b_conf    = x_cf;
+   if (b_void    != NULL)  *b_void    = x_vo;
+   if (b_pnum    != NULL)  *b_pnum    = x_pn;
+   if (b_pmulti  != NULL)  *b_pmulti  = x_pm;
+   if (b_pfunc   != NULL)  *b_pfunc   = x_pf;
+   if (b_pstruc  != NULL)  *b_pstruc  = x_ps;
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1187,7 +1252,7 @@ poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, in
 static void  o___UNITTEST________o () { return; }
 
 char         /*-> force data onto function --------------------[ leaf······ ]-*/ /*-åucg´·4á3··1á···á1´2·A´1··´··111á·æ¬å·á····´···á·······´···´····æ¬å·····´3·3····´····´····æ-*/
-poly_debug__fake        (int a_return, int a_intern, int a_ylib, tFUNC *c_func)
+LINE__fake              (int a_return, int a_intern, int a_ylib, tFUNC *c_func)
 {
    char        rce         =  -10;
    --rce;  if (c_func == NULL)  return rce;
@@ -1198,7 +1263,7 @@ poly_debug__fake        (int a_return, int a_intern, int a_ylib, tFUNC *c_func)
 }
 
 char*        /*-> tbd --------------------------------[ light  [us.JC0.271.X1]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-poly_debug__unit        (char *a_question, int i)
+LINE__unit              (char *a_question, int i)
 {
    /*---(locals)-----------+-----------+-*/
    char        t           [LEN_RECD] = "[]";

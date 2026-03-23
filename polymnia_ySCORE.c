@@ -164,9 +164,9 @@ static const tySCORE_TB  s_polymnia_table [LEN_FULL] = {
    /*===[[ HAIR ]]=========== print======= description========================= style check valid============== legend====== ============ ============ ============ ============ ============ ============   */
    { "HRá "     , '>' ,  0  , "HAIR"                       , ""               , ' ' , ' ' , ""                , ""                                                                                            },
    /*--label----- def-- samp- print------- description------------------------- style check valid-------------- legend------ ------------ ------------ ------------ ------------ ------------ ------------   */
-   { "HCALL"    , '·' , 'f' , "hcall"    , "widest²scope²call²to²function"    , ' ' , ' ' , "-fg°"            , "-) none     f) file      g) global    °) extern"                                            },
-   { "HFUNC"    , '·' , '-' , "hfunc"    , "widest²scope²function²used"       , ' ' , ' ' , "-fg°"            , "-) none     f) file      g) global    °) extern"                                            },
-   { "HVAR"     , '·' , 'g' , "hvar"     , "widest²scope²variable²used"       , ' ' , ' ' , "-fmg°"           , "-) none     f) file      m) access    g) global    °) extern"                               },
+   { "HCALL"    , '·' , 'f' , "hcall"    , "widest²scope²call²to²function"    , ' ' , ' ' , "-fg°"            , "-) none     f) file      g) global    °) extern"                                             },
+   { "HFUNC"    , '·' , '-' , "hfunc"    , "widest²scope²function²used"       , ' ' , ' ' , "-fg°"            , "-) none     f) file      g) global    °) extern"                                             },
+   { "HVAR"     , '·' , 'g' , "hvar"     , "widest²scope²variable²used"       , ' ' , ' ' , "-fmg°"           , "-) none     f) file      m) access    g) global    °) extern"                                },
    { "   "      , ' ' ,  3  , ""         , ""                                 , ' ' , ' ' , ""                , ""                                                                                            },
 
    /*===[[ COMPLEXITY ]]===== print======= description========================= style check valid============== legend====== ============ ============ ============ ============ ============ ============   */
@@ -190,7 +190,7 @@ static const tySCORE_TB  s_polymnia_table [LEN_FULL] = {
    /*--label----- def-- samp- print------- description------------------------- style check valid-------------- legend------ ------------ ------------ ------------ ------------ ------------ ------------   */
    { "PNUM"     , '·' , '1' , "pnum"     , "params²as²numeric²pointers"       , ' ' , ' ' , "?0-9#"           , "?) WTF       0) none      1-3) low     4-6) mid     7-9) high    #) huge"                    },
    { "PMULTI"   , '·' , '2' , "pmulti"   , "params²as²multiple²pointers"      , ' ' , ' ' , "?0-9#"           , "?) WTF       0) none      1-3) low     4-6) mid     7-9) high    #) huge"                    },
-   { "PFUNC"    , '·' , '3' , "pfunc"    , "function²parameters²²²²(f)"       , ' ' , ' ' , "?0-9#"           , "?) WTF       0) none      1-3) low     4-6) mid     7-9) high    #) huge"                    },
+   { "PFUNC"    , '·' , '3' , "pfunc"    , "function²parameters²²²²(e)"       , ' ' , ' ' , "?0-9#"           , "?) WTF       0) none      1-3) low     4-6) mid     7-9) high    #) huge"                    },
    { "PSTRUC"   , '·' , '4' , "pstruc"   , "params²as²struct²pointers"        , ' ' , ' ' , "?0-9#"           , "?) WTF       0) none      1-3) low     4-6) mid     7-9) high    #) huge"                    },
    { "PVOID"    , '·' , '1' , "pvoid"    , "params²as²void²points²²(v)"       , ' ' , ' ' , "?0-9#"           , "?) WTF       0) none      1-3) low     4-6) mid     7-9) high    #) huge"                    },
    { " "        , '´' ,  1  , ""         , ""                                 , ' ' , ' ' , ""                , ""                                                                                            },

@@ -241,7 +241,7 @@ PROG_reset_everything   (void)
     *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
     *>    return rce;                                                                 <* 
     *> }                                                                              <*/
-   rc = poly_vars_init    ();
+   rc = VARS_init  ();
    DEBUG_PROG  yLOG_value   ("vars"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

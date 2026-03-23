@@ -78,8 +78,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3h"
-#define     P_VERTXT    "added header gpl summarization and gpl reporting"
+#define     P_VERNUM    "1.3i"
+#define     P_VERTXT    "fully updated and unit-tested polymnia_line.c"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -859,6 +859,27 @@ struct      cFUNC {
    /*---(done)--------------*/
 };
 
+
+
+typedef     struct     cVARS      tVARS;
+struct cVARS {
+   /*---(defined)-----------*/
+   char        v_scope;                     /* g)lobal, f)ile, l)ocal         */
+   tFILE      *v_file;                      /* file pointer                   */
+   int         v_line;                      /* line in source file            */
+   char        v_type;                      /* (v)var, (d)macro, m)member     */
+   char        v_struc     [LEN_TITLE];     /* structure, if applicable       */
+   char        v_name      [LEN_TITLE];     /* variable name                  */
+   /*---(uses)--------------*/
+   char        v_used;                      /* y/-                            */
+   short       v_times;                     /* count of references            */
+   /*---(sorting)-----------*/
+   tBTREE     *v_btree;
+   /*---(done)--------------*/
+};
+
+
+
 /*
  *  YLIB LEVEL
  *  -- all ylib data elements are prefixed with y_ with first letter
@@ -1018,6 +1039,7 @@ struct      cBTREE {
 #define     B_WORLD     'w'
 #define     B_ELIB      'l'
 #define     B_UNIT      'U'
+#define     B_VARS      'v'
 #define     B_ALL       "TftpewlU"
 #define     B_TEMP      'Z'
 
@@ -1258,7 +1280,7 @@ char        FILES_footprint        (tFILE *a_file);
 
 
 /*===[[ polymnia_funcs.c ]]===================================================*/
-/*········´ ´··············memory·´ ´·········································*/
+/*········´ ´·············support·´ ´·········································*/
 char        FUNCS__new              (tFUNC **r_new);
 char        FUNCS_force             (tFUNC **r_new);
 char        FUNCS__free             (tFUNC **b_old);
@@ -1290,9 +1312,9 @@ char        FUNCS_in_file_by_name   (tFILE *a_file, char a_name [LEN_TITLE], tFU
 char        FUNCS_in_file_by_index  (tFILE *a_file, int a_index, tFUNC **r_func);
 char        FUNCS_in_file_by_cursor (tFILE *a_file, char a_dir, tFUNC **r_func);
 /*········´ ´··············search·´ ´·········································*/
-char        FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **a_func);
+char        FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **r_func);
 /*········´ ´··············search·´ ´·········································*/
-char        FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **a_func);
+char        FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **r_func);
 /*········´ ´············exposure·´ ´·········································*/
 char*       FUNCS_in_file_list      (tFILE *a_file);
 char*       FUNCS_entry             (tFUNC *a_func);
@@ -1316,8 +1338,83 @@ char*       FUNCS__suffix           (tFUNC *a_func, char a_spec);
 char*       FUNCS_line              (tFUNC *a_func, char a_style, int a, int b, int c, char a_print);
 /*········´ ´············unittest·´ ´·········································*/
 char*       FUNCS__unit             (char *a_question, int i);
+/*········´ ´················DONE·´ ´·········································*/
 
 
+
+/*===[[ polymnia_line.c ]]====================================================*/
+/*········´ ´··············counts·´ ´·········································*/
+char        LINE_count_all          (char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc);
+char        LINE_count_empty        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+char        LINE_count_comment      (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+char        LINE_count_debug        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dextra, char *r_abbr);
+char        LINE_count_unguard      (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dfree);
+char        LINE_count_code         (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+char        LINE_count_slocl        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+/*········´ ´············reserved·´ ´·········································*/
+char        LINE_exit               (char a_recd [LEN_RECD], char a_inside, int *r_return, int *r_rce);
+char        LINE_choice             (char a_recd [LEN_RECD], char a_inside, int *r_choice);
+char        LINE_loop               (char a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, int *r_loop);
+char        LINE_indent             (char a_recd [LEN_RECD], char a_inside, int *r_indent);
+/*········´ ´············function·´ ´·········································*/
+char        LINE__purpose           (char a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_DESC], char *r_ready);
+char        LINE_purpose            (char a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready);
+char        LINE_function           (char a_prev [LEN_RECD], char a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL]);
+char        LINE__params_cut        (char a_recd [LEN_RECD], char r_params [LEN_RECD], char *r_audit, char *r_count);
+char        LINE__params_parse      (char a_param [LEN_RECD], char r_type [LEN_LABEL], char r_label [LEN_LABEL], char *r_point, char *r_func);
+char        LINE__params_class      (char a_label [LEN_LABEL], char *r_class, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_other);
+char        LINE__params_point      (char a_type [LEN_LABEL], char a_point, char a_func, char a_class, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
+char        LINE__params_one        (char a_param [LEN_RECD], uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
+char        LINE_params             (char a_recd [LEN_RECD], char *r_audit, uchar *r_count, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
+/*········´ ´············unittest·´ ´·········································*/
+char        LINE__fake              (int a_return, int a_intern, int a_ylib, tFUNC *c_func);
+char*       LINE__unit              (char *a_question, int i);
+/*········´ ´················DONE·´ ´·········································*/
+
+
+
+
+/*===[[ polymnia_vars.c ]]====================================================*/
+/*········´ ´·············support·´ ´·········································*/
+char        VARS__wipe              (tVARS *a_var);
+char*       VARS__memory            (tVARS *a_var);
+char        VARS__rando             (tVARS *a_var);
+/*········´ ´··············memory·´ ´·········································*/
+char        VARS__new               (tVARS **a_new);
+char        VARS__force             (tVARS **a_new);
+char        VARS__free              (tVARS **a_old);
+/*········´ ´·············program·´ ´·········································*/
+char        VARS_init               (void);
+char        VARS__purge             (char a_scope);
+char        VARS__purge_all         (void);
+char        VARS_wrap               (void);
+/*········´ ´···········existance·´ ´·········································*/
+char        VARS__add               (char a_scope, tFILE *a_file, int a_line, char a_type, char a_name [LEN_TITLE], tVARS **b_new);
+/*········´ ´··············search·´ ´·········································*/
+int         VARS_count              (void);
+char        VARS_by_name            (char a_name [LEN_TITLE], tVARS **r_var);
+char        VARS_by_index           (int  a_index           , tVARS **r_var);
+char        VARS_by_cursor          (char a_dir             , tVARS **r_var);
+char        VARS_by_tree            (char a_name [LEN_TITLE], tVARS **r_var);
+/*········´ ´············unittest·´ ´·········································*/
+char*       VARS__unit              (char *a_question, int i);
+/*········´ ´················DONE·´ ´·········································*/
+
+
+
+char        poly_vars__push         (tFILE *a_file, int a_line, char *a_name, char a_type);
+char        poly_vars__pop_file     (void);
+char        poly_vars_reset         (tFUNC *a_func);
+char        poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act);
+char        poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act);
+char        poly_vars_header        (char a_act);
+char        poly_vars__hiding       (tFUNC *a_func);
+char        poly_vars_summary       (tFUNC *a_func, char a_act);
+char        poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act);
+char        poly_vars_inventory     (tFILE *a_file);
+char        poly_vars_list          (void);
+char        poly_vars__unit_set     (tFUNC *a_func, char *a_extern, char *a_intern, char *a_macros, char *a_locals);
+/*········´ ´················DONE·´ ´·········································*/
 
 
 
@@ -1495,37 +1592,6 @@ char*       poly_ylib__unit         (char *a_question, char *a_name);
 
 
 
-/*---(line)-----------------*/
-char        poly_line_all           (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
-char        poly_line_empty         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
-char        poly_line_comment       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
-char        poly_line_debug         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dextra, char *r_abbr);
-char        poly_line_unguard       (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dfree);
-char        poly_line_code          (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
-char        poly_line_slocl         (cchar a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
-/*---(include)--------------*/
-char        poly_line_exit          (cchar a_recd [LEN_RECD], char a_inside, int *r_return, int *r_rce);
-char        poly_line_choice        (cchar a_recd [LEN_RECD], char a_inside, int *r_choice);
-char        poly_line_loop          (cchar a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, int *r_loop);
-char        poly_line_indent        (cchar a_recd [LEN_RECD], char a_inside, int *r_indent);
-/*---(function)-------------*/
-char        poly_line__purpose      (cchar a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_DESC], char *r_ready);
-char        poly_line_purpose       (cchar a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready);
-char        poly_line_func          (cchar a_prev [LEN_RECD], cchar a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL]);
-char        poly_line__params_cut   (char a_recd [LEN_RECD], char r_params [LEN_RECD], char *r_audit, int *r_count);
-char        poly_line__params_one   (char a_param [LEN_RECD], int *r_in, int *r_out, int *r_both, int *r_chg, int *r_pnum, int *r_pmulti, int *r_pfunc, int *r_pstruct);
-char        poly_line_params        (char a_recd [LEN_RECD], char *r_audit, int *r_count, int *r_in, int *r_out, int *r_both, int *r_chg, int *r_pnum, int *r_pmulti, int *r_pfunc, int *r_pstruct);
-/*---(old-stuff)------------*/
-/*> char        poly_debug__counts      (tFILE *a_file, tFUNC *a_func, char a_type);   <*/
-/*> char        poly_debug_line         (tFILE *a_file, tFUNC *a_func, char *a_recd);   <*/
-/*---(stats)----------------*/
-/*> char        poly_debug_cflow        (tFUNC *a_func, char a_type, char a_more);    <*/
-/*> char        poly_debug_function     (tFUNC *a_func);                              <*/
-/*---(unittest)-------------*/
-char        poly_debug__fake        (int a_return, int a_intern, int a_ylib, tFUNC *c_func);
-char*       poly_debug__unit        (char *a_question, int i);
-
-
 
 
 
@@ -1561,20 +1627,7 @@ char        poly_shared_parse_unit  (char *a_curr, char *a_verb, char *a_name);
 char*       poly_shared__unit       (char *a_question);
 
 
-char        poly_vars_init          (void);
-char        poly_vars__push         (tFILE *a_file, int a_line, char *a_name, char a_type);
-char        poly_vars__pop_file     (void);
-char        poly_vars_reset         (tFUNC *a_func);
-char        poly_vars__extern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act);
-char        poly_vars__intern_find  (tFUNC *a_func, int a_line, char *a_recd, char a_act);
-char        poly_vars_header        (char a_act);
-char        poly_vars__hiding       (tFUNC *a_func);
-char        poly_vars_summary       (tFUNC *a_func, char a_act);
-char        poly_vars_find          (tFUNC *a_func, int a_line, char *a_recd, char a_act);
-char        poly_vars_inventory     (tFILE *a_file);
-char        poly_vars_list          (void);
-char        poly_vars__unit_set     (tFUNC *a_func, char *a_extern, char *a_intern, char *a_macros, char *a_locals);
-char*       poly_vars__unit         (char *a_question, int i);
+
 
 
 

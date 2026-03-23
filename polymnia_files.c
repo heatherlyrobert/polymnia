@@ -1400,13 +1400,6 @@ FILES_gather            (tPROJ *a_proj, char c_recurse)
       return  rce;
    }
    DEBUG_INPT   yLOG_info    ("a_proj"     , a_proj->j_name);
-   /*---(prepare temp)-------------------*/
-   /*> rc = ySORT_purge     (B_TEMP );                                                <* 
-    *> DEBUG_SORT   yLOG_value   ("temp"       , rc);                                 <* 
-    *> --rce;  if (rc < 0) {                                                          <* 
-    *>    DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
-    *>    return rce;                                                                 <* 
-    *> }                                                                              <*/
    /*---(open dir)-----------------------*/
    x_dir = opendir(".");
    DEBUG_INPT   yLOG_point   ("x_dir"      , x_dir);
