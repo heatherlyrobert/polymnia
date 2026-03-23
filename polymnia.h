@@ -78,8 +78,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3i"
-#define     P_VERTXT    "fully updated and unit-tested polymnia_line.c"
+#define     P_VERNUM    "1.3j"
+#define     P_VERTXT    "added direct statistic updating to LINE_ functions, re-tested"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -1352,20 +1352,20 @@ char        LINE_count_unguard      (char a_recd [LEN_RECD], char a_inside, int 
 char        LINE_count_code         (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
 char        LINE_count_slocl        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
 /*········´ ´············reserved·´ ´·········································*/
-char        LINE_exit               (char a_recd [LEN_RECD], char a_inside, int *r_return, int *r_rce);
-char        LINE_choice             (char a_recd [LEN_RECD], char a_inside, int *r_choice);
-char        LINE_loop               (char a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, int *r_loop);
-char        LINE_indent             (char a_recd [LEN_RECD], char a_inside, int *r_indent);
+char        LINE_exit               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_return, char *r_rce);
+char        LINE_choice             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_choice);
+char        LINE_loop               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, char *r_loop);
+char        LINE_indent             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_indent);
 /*········´ ´············function·´ ´·········································*/
 char        LINE__purpose           (char a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_DESC], char *r_ready);
-char        LINE_purpose            (char a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready);
-char        LINE_function           (char a_prev [LEN_RECD], char a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL]);
+char        LINE_purpose            (tFUNC *a_func, char a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready);
+char        LINE_function           (tFUNC *a_func, char a_prev [LEN_RECD], char a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL]);
 char        LINE__params_cut        (char a_recd [LEN_RECD], char r_params [LEN_RECD], char *r_audit, char *r_count);
 char        LINE__params_parse      (char a_param [LEN_RECD], char r_type [LEN_LABEL], char r_label [LEN_LABEL], char *r_point, char *r_func);
 char        LINE__params_class      (char a_label [LEN_LABEL], char *r_class, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_other);
 char        LINE__params_point      (char a_type [LEN_LABEL], char a_point, char a_func, char a_class, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
 char        LINE__params_one        (char a_param [LEN_RECD], uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
-char        LINE_params             (char a_recd [LEN_RECD], char *r_audit, uchar *r_count, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
+char        LINE_params             (tFUNC *a_func, char a_recd [LEN_RECD], char *r_audit, uchar *r_count, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
 /*········´ ´············unittest·´ ´·········································*/
 char        LINE__fake              (int a_return, int a_intern, int a_ylib, tFUNC *c_func);
 char*       LINE__unit              (char *a_question, int i);
@@ -1595,11 +1595,7 @@ char*       poly_ylib__unit         (char *a_question, char *a_name);
 
 
 
-char        poly_code__unquote      (char *a_dst, char *a_src, int a_max);
-/*> char        poly_code__oneliners    (tFILE *a_file, char *a_recd);                <*/
-/*> char        poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd);   <*/
-/*> char        poly_code__indent       (tFUNC *a_func, char *a_recd);                <*/
-char        poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev);
+char        CODE_function           (tFUNC *a_func, char *a_recd, char *a_prev);
 char        poly_code_nextfunc      (tFILE *a_file, tFUNC **a_func);
 char        poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr, char *a_prev);
 char        poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr, char *a_prev);

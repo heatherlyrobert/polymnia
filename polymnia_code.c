@@ -40,54 +40,6 @@ static char  s_name [LEN_RECD] = "";  /* source file name */
 
 
 /*====================------------------------------------====================*/
-/*===----                         header processing                    ----===*/
-/*====================------------------------------------====================*/
-static void  o___HEADERS_________o () { return; }
-
-char
-poly_code__unquote      (char *a_dst, char *a_src, int a_max)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char       *x_beg       = NULL;
-   char       *x_end       = NULL;
-   int         x_len       =    0;
-   /*---(check destination)--------------*/
-   --rce;  if (a_dst == NULL) {
-      return rce;
-   }
-   /*---(check source)-------------------*/
-   --rce;  if (a_src == NULL) {
-      a_dst [0] = '\0';
-      return rce;
-   }
-   /*---(check empty)--------------------*/
-   x_len = strlen (a_src);
-   if (x_len == 0) {
-      a_dst [0] = '\0';
-      return 0;
-   }
-   /*---(set beginning)------------------*/
-   x_beg = a_src;
-   if (x_beg [0] == '"') {
-      ++x_beg;
-      --x_len;
-   }
-   ystrlcpy (a_dst, x_beg, a_max);
-   /*---(set ending)---------------------*/
-   x_end = a_dst + x_len - 1;
-   if (x_end [0] == '"') {
-      x_end [0] = '\0';
-      --x_len;
-   }
-   /*---(complete)-----------------------*/
-   return 0;
-}
-
-
-
-
-/*====================------------------------------------====================*/
 /*===----                       source file processing                 ----===*/
 /*====================------------------------------------====================*/
 static void  o___SOURCES_________o () { return; }
@@ -136,54 +88,54 @@ static void  o___SOURCES_________o () { return; }
  *>    return 0;                                                                      <* 
  *> }                                                                                 <*/
 
-char
-poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        x_inside    =   -1;
-   char        c           =    0;
-   /*---(header)-------------------------*/
-   DEBUG_DATA   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DATA   yLOG_point   ("a_func"    , a_func);
-   if (a_func == NULL) {
-      DEBUG_DATA   yLOG_note    ("function is null");
-   } else {
-      DEBUG_DATA   yLOG_point   ("->work"    , a_func->c_work);
-      if (a_func->c_work == NULL) {
-         DEBUG_DATA   yLOG_note   ("a_func->work null");
-      } else {
-         DEBUG_DATA   yLOG_value  ("WORK_BEG"  , a_func->WORK_BEG);
-         DEBUG_DATA   yLOG_value  ("WORK_END"  , a_func->WORK_END);
-      }
-   }
-   x_inside = FUNCS_inside     (a_func);
-   if (x_inside == 0)    DEBUG_DATA   yLOG_note   ("inside a function");
-   /*---(line counts)--------------------*/
-   ++my.COUNT_LINES;
-   ++a_file->i_proj->COUNT_LINES;
-   ++a_file->COUNT_LINES;
-   if (x_inside == 0) ++a_func->COUNT_LINES;
-   /*---(code counts)--------------------*/
-   ++my.COUNT_CODE;
-   ++a_file->i_proj->COUNT_CODE;
-   ++a_file->COUNT_CODE;
-   if (x_inside == 0) ++a_func->COUNT_CODE;
-   /*---(slocl counts)-------------------*/
-   if (a_recd [0] != '#') {
-      c = ystrldcnt (a_recd, ';', LEN_RECD);
-      DEBUG_DATA   yLOG_value   ("c"         , c);
-      if (c < 0)  c = 0;
-      DEBUG_DATA   yLOG_note   ("slocl");
-      my.COUNT_SLOCL += c;
-      a_file->COUNT_SLOCL += c;
-      a_file->i_proj->COUNT_SLOCL += c;
-      if (x_inside == 0) a_func->COUNT_SLOCL += c;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_DATA   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                              <* 
+ *> poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)              <* 
+ *> {                                                                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    char        x_inside    =   -1;                                                <* 
+ *>    char        c           =    0;                                                <* 
+ *>    /+---(header)-------------------------+/                                       <* 
+ *>    DEBUG_DATA   yLOG_enter   (__FUNCTION__);                                      <* 
+ *>    /+---(defense)------------------------+/                                       <* 
+ *>    DEBUG_DATA   yLOG_point   ("a_func"    , a_func);                              <* 
+ *>    if (a_func == NULL) {                                                          <* 
+ *>       DEBUG_DATA   yLOG_note    ("function is null");                             <* 
+ *>    } else {                                                                       <* 
+ *>       DEBUG_DATA   yLOG_point   ("->work"    , a_func->c_work);                   <* 
+ *>       if (a_func->c_work == NULL) {                                               <* 
+ *>          DEBUG_DATA   yLOG_note   ("a_func->work null");                          <* 
+ *>       } else {                                                                    <* 
+ *>          DEBUG_DATA   yLOG_value  ("WORK_BEG"  , a_func->WORK_BEG);               <* 
+ *>          DEBUG_DATA   yLOG_value  ("WORK_END"  , a_func->WORK_END);               <* 
+ *>       }                                                                           <* 
+ *>    }                                                                              <* 
+ *>    x_inside = FUNCS_inside     (a_func);                                          <* 
+ *>    if (x_inside == 0)    DEBUG_DATA   yLOG_note   ("inside a function");          <* 
+ *>    /+---(line counts)--------------------+/                                       <* 
+ *>    ++my.COUNT_LINES;                                                              <* 
+ *>    ++a_file->i_proj->COUNT_LINES;                                                 <* 
+ *>    ++a_file->COUNT_LINES;                                                         <* 
+ *>    if (x_inside == 0) ++a_func->COUNT_LINES;                                      <* 
+ *>    /+---(code counts)--------------------+/                                       <* 
+ *>    ++my.COUNT_CODE;                                                               <* 
+ *>    ++a_file->i_proj->COUNT_CODE;                                                  <* 
+ *>    ++a_file->COUNT_CODE;                                                          <* 
+ *>    if (x_inside == 0) ++a_func->COUNT_CODE;                                       <* 
+ *>    /+---(slocl counts)-------------------+/                                       <* 
+ *>    if (a_recd [0] != '#') {                                                       <* 
+ *>       c = ystrldcnt (a_recd, ';', LEN_RECD);                                      <* 
+ *>       DEBUG_DATA   yLOG_value   ("c"         , c);                                <* 
+ *>       if (c < 0)  c = 0;                                                          <* 
+ *>       DEBUG_DATA   yLOG_note   ("slocl");                                         <* 
+ *>       my.COUNT_SLOCL += c;                                                        <* 
+ *>       a_file->COUNT_SLOCL += c;                                                   <* 
+ *>       a_file->i_proj->COUNT_SLOCL += c;                                           <* 
+ *>       if (x_inside == 0) a_func->COUNT_SLOCL += c;                                <* 
+ *>    }                                                                              <* 
+ *>    /+---(complete)-----------------------+/                                       <* 
+ *>    DEBUG_DATA   yLOG_exit    (__FUNCTION__);                                      <* 
+ *>    return 0;                                                                      <* 
+ *> }                                                                                 <*/
 
 /*> char                                                                                      <* 
  *> poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)                      <* 
@@ -259,13 +211,17 @@ poly_code__counts       (tFILE *a_file, tFUNC *a_func, char *a_recd)
 static void  o___REVIEW__________o () { return; }
 
 char
-poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
+CODE_function           (tFUNC *a_func, char *a_recd, char *a_prev)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    char       *p           = NULL;
    int        x_len        =    0;
+   char       x_single     =  '-';
+   char       x_scope      =  '-';
+   char       x_rtype      =  '-';
+   char       x_rlong      [LEN_LABEL] = "";
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -281,7 +237,8 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
       return rce;
    }
    /*---(return)-------------------------*/
-   rc = LINE_function    (a_prev, a_recd, a_func->c_name, &(a_func->STATS_SINGLE), &(a_func->STATS_SCOPE), &(a_func->STATS_RTYPE), a_func->c_rlong);
+   /*> rc = LINE_function    (a_func, a_prev, a_recd, a_func->c_name, &(a_func->STATS_SINGLE), &(a_func->STATS_SCOPE), &(a_func->STATS_RTYPE), a_func->c_rlong);   <*/
+   rc = LINE_function    (a_func, a_prev, a_recd, a_func->c_name, NULL, NULL, NULL, NULL);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -291,17 +248,17 @@ poly_code_function      (tFUNC *a_func, char *a_recd, char *a_prev)
       p  = strstr (a_prev, "/*");
       if (p != NULL) {
          x_len = p - a_prev;
-         rc = LINE_purpose      (a_prev + x_len, a_func->c_purpose, &(a_func->c_ready));
+         rc = LINE_purpose      (a_func, a_prev + x_len, a_func->c_purpose, &(a_func->c_ready));
          if (rc < 0) {
             DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
       }
    } else {
-      rc = LINE_purpose      ("/* */", a_func->c_purpose, &(a_func->c_ready));
+      rc = LINE_purpose      (a_func, "/* */", a_func->c_purpose, &(a_func->c_ready));
    }
    /*---(parameters)---------------------*/
-   rc = LINE_params      (a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), NULL, &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));
+   rc = LINE_params      (a_func, a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), NULL, &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -403,7 +360,7 @@ poly_code__before       (tFILE *a_file, int a_line, tFUNC **a_func, char *a_curr
          ystrlcpy   (x_full, a_curr   , LEN_RECD);
          ystrltrim  (x_full, ySTR_BOTH, LEN_RECD);
          DEBUG_INPT   yLOG_info    ("x_full"    , x_full);
-         poly_code_function (*a_func, x_full, a_prev);
+         CODE_function (*a_func, x_full, a_prev);
       }
    }
    /*---(check single line)-----------*/
@@ -481,10 +438,14 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
       if (rc == 0) {
          LINE_count_code     (        1, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
          LINE_count_slocl    (x_full, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
-         rc = LINE_exit        (a_curr, 1, &(a_func->WORK_RETURN), &(a_func->WORK_RCE));
-         rc = LINE_choice      (a_curr, 1, &(a_func->WORK_CHOICE));
-         rc = LINE_loop        (a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), &(a_func->WORK_LOOP));
-         rc = LINE_indent      (a_curr, 1, &(a_func->WORK_INDENT));
+         /*> rc = LINE_exit        (a_func, a_curr, 1, &(a_func->WORK_RETURN), &(a_func->WORK_RCE));   <*/
+         rc = LINE_exit        (a_func, a_curr, 1, NULL, NULL);
+         /*> rc = LINE_choice      (a_func, a_curr, 1, &(a_func->WORK_CHOICE));       <*/
+         rc = LINE_choice      (a_func, a_curr, 1, NULL);
+         /*> rc = LINE_loop        (a_func, a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), &(a_func->WORK_LOOP));   <*/
+         rc = LINE_loop        (a_func, a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), NULL);
+         /*> rc = LINE_indent      (a_func, a_curr, 1, &(a_func->WORK_INDENT));       <*/
+         rc = LINE_indent      (a_func, a_curr, 1, NULL);
       }
    }
    /*---(complete)-----------------------*/

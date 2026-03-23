@@ -392,14 +392,25 @@ LINE_count_slocl        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, in
 static void  o___INCLUDE_________o () { return; }
 
 char
-LINE_exit               (char a_recd [LEN_RECD], char a_inside, int *r_return, int *r_rce)
+LINE_exit               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_return, char *r_rce)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    char        x_good      =  '-';
    char        x_recd      [LEN_RECD]  = "";
+   char        x_return    =    0;
+   char        x_rce       =    0;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (a_func != NULL) {
+      x_return = ySCORE_stats_value (my.s_yscore, "RETURN"  );
+      x_rce    = ySCORE_stats_value (my.s_yscore, "RCE"     );
+   } else {
+      if (r_return  != NULL)  x_return = *r_return;
+      if (r_rce     != NULL)  x_rce    = *r_rce;
+   }
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_spoint  (a_recd);
    --rce;  if (a_recd == NULL) {
@@ -419,41 +430,60 @@ LINE_exit               (char a_recd [LEN_RECD], char a_inside, int *r_return, i
    ystrlunquote (x_recd, LEN_RECD);      /* remove all quoted characters */
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(identify)-----------------------*/
-   if      (strncmp (x_recd, "return rce"  , 10) == 0    && r_rce    != NULL)  { ++(*r_rce   );  x_good = 'y'; }
-   else if (strstr  (x_recd, " return rce"     ) != NULL && r_rce    != NULL)  { ++(*r_rce   );  x_good = 'y'; }
-   else if (strstr  (x_recd, ";return rce"     ) != NULL && r_rce    != NULL)  { ++(*r_rce   );  x_good = 'y'; }
-   else if (strncmp (x_recd, "return -"    ,  8) == 0    && r_rce    != NULL)  { ++(*r_rce   );  x_good = 'y'; }
-   else if (strstr  (x_recd, " return -"       ) != NULL && r_rce    != NULL)  { ++(*r_rce   );  x_good = 'y'; }
-   else if (strstr  (x_recd, ";return -"       ) != NULL && r_rce    != NULL)  { ++(*r_rce   );  x_good = 'y'; }
-   else if (strncmp (x_recd, "return "     ,  7) == 0    && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
-   else if (strstr  (x_recd, " return "        ) != NULL && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
-   else if (strstr  (x_recd, ";return "        ) != NULL && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
-   else if (strncmp (x_recd, "return;"     ,  7) == 0    && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
-   else if (strstr  (x_recd, " return;"        ) != NULL && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
-   else if (strstr  (x_recd, ";return;"        ) != NULL && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
-   else if (strncmp (x_recd, "return ;"    ,  8) == 0    && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
-   else if (strstr  (x_recd, " return ;"       ) != NULL && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
-   else if (strstr  (x_recd, ";return ;"       ) != NULL && r_return != NULL)  { ++(*r_return);  x_good = 'y'; }
+   if      (strncmp (x_recd, "return rce"  , 10) == 0   )  { ++x_rce   ;  x_good = 'y'; }
+   else if (strstr  (x_recd, " return rce"     ) != NULL)  { ++x_rce   ;  x_good = 'y'; }
+   else if (strstr  (x_recd, ";return rce"     ) != NULL)  { ++x_rce   ;  x_good = 'y'; }
+   else if (strncmp (x_recd, "return -"    ,  8) == 0   )  { ++x_rce   ;  x_good = 'y'; }
+   else if (strstr  (x_recd, " return -"       ) != NULL)  { ++x_rce   ;  x_good = 'y'; }
+   else if (strstr  (x_recd, ";return -"       ) != NULL)  { ++x_rce   ;  x_good = 'y'; }
+   else if (strncmp (x_recd, "return "     ,  7) == 0   )  { ++x_return;  x_good = 'y'; }
+   else if (strstr  (x_recd, " return "        ) != NULL)  { ++x_return;  x_good = 'y'; }
+   else if (strstr  (x_recd, ";return "        ) != NULL)  { ++x_return;  x_good = 'y'; }
+   else if (strncmp (x_recd, "return;"     ,  7) == 0   )  { ++x_return;  x_good = 'y'; }
+   else if (strstr  (x_recd, " return;"        ) != NULL)  { ++x_return;  x_good = 'y'; }
+   else if (strstr  (x_recd, ";return;"        ) != NULL)  { ++x_return;  x_good = 'y'; }
+   else if (strncmp (x_recd, "return ;"    ,  8) == 0   )  { ++x_return;  x_good = 'y'; }
+   else if (strstr  (x_recd, " return ;"       ) != NULL)  { ++x_return;  x_good = 'y'; }
+   else if (strstr  (x_recd, ";return ;"       ) != NULL)  { ++x_return;  x_good = 'y'; }
    /*---(not found)----------------------*/
    DEBUG_DATA   yLOG_schar   (x_good);
    if (x_good != 'y') {
       DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
       return 0;
    }
+   /*---(into-function)------------------*/
+   if (a_func != NULL) {
+      DEBUG_INPT   yLOG_snote   ("save to func");
+      rc = ySCORE_stats_set (my.s_yscore, "RETURN"  , x_return);
+      DEBUG_INPT   yLOG_svalue  ("ret", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "RCE"     , x_rce);
+      DEBUG_INPT   yLOG_svalue  ("rce", rc);
+   }
+   /*---(save-back)----------------------*/
+   if (r_return  != NULL)  *r_return = x_return;
+   if (r_rce     != NULL)  *r_rce    = x_rce;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 1;
 }
 
 char
-LINE_choice             (char a_recd [LEN_RECD], char a_inside, int *r_choice)
+LINE_choice             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_choice)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    char        x_good      =  '-';
    char        x_recd      [LEN_RECD]  = "";
+   char        x_choice    =    0;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (a_func != NULL) {
+      x_choice = ySCORE_stats_value (my.s_yscore, "CHOICE"  );
+   } else {
+      if (r_choice  != NULL)  x_choice = *r_choice;
+   }
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_spoint  (a_recd);
    --rce;  if (a_recd == NULL) {
@@ -474,24 +504,24 @@ LINE_choice             (char a_recd [LEN_RECD], char a_inside, int *r_choice)
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(identify)-----------------------*/
    if (r_choice != NULL)  {
-      if      (strncmp (x_recd, "if "         ,  3) == 0   )  { ++(*r_choice);  x_good = 'y'; }
-      else if (strncmp (x_recd, "if("         ,  3) == 0   )  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, " if "            ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, ";if "            ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, " if("            ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, ";if("            ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strncmp (x_recd, "else "       ,  5) == 0   )  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, " else "          ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, ";else "          ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, "}else "          ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strncmp (x_recd, "else{"       ,  5) == 0   )  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, " else{"          ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, ";else{"          ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strncmp (x_recd, "}else{"      ,  6) == 0   )  { ++(*r_choice);  x_good = 'y'; }
-      else if (strstr  (x_recd, "}else{"          ) != NULL)  { ++(*r_choice);  x_good = 'y'; }
-      else if (strncmp (x_recd, "case "       ,  5) == 0   )  { ++(*r_choice);  x_good = 'y'; }
-      else if (strncmp (x_recd, "default "    ,  8) == 0   )  { ++(*r_choice);  x_good = 'y'; }
-      else if (strncmp (x_recd, "default:"    ,  8) == 0   )  { ++(*r_choice);  x_good = 'y'; }
+      if      (strncmp (x_recd, "if "         ,  3) == 0   )  { ++x_choice;  x_good = 'y'; }
+      else if (strncmp (x_recd, "if("         ,  3) == 0   )  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, " if "            ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, ";if "            ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, " if("            ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, ";if("            ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strncmp (x_recd, "else "       ,  5) == 0   )  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, " else "          ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, ";else "          ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, "}else "          ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strncmp (x_recd, "else{"       ,  5) == 0   )  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, " else{"          ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, ";else{"          ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strncmp (x_recd, "}else{"      ,  6) == 0   )  { ++x_choice;  x_good = 'y'; }
+      else if (strstr  (x_recd, "}else{"          ) != NULL)  { ++x_choice;  x_good = 'y'; }
+      else if (strncmp (x_recd, "case "       ,  5) == 0   )  { ++x_choice;  x_good = 'y'; }
+      else if (strncmp (x_recd, "default "    ,  8) == 0   )  { ++x_choice;  x_good = 'y'; }
+      else if (strncmp (x_recd, "default:"    ,  8) == 0   )  { ++x_choice;  x_good = 'y'; }
    }
    /*---(not found)----------------------*/
    DEBUG_DATA   yLOG_schar   (x_good);
@@ -499,20 +529,36 @@ LINE_choice             (char a_recd [LEN_RECD], char a_inside, int *r_choice)
       DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
       return 0;
    }
+   /*---(into-function)------------------*/
+   if (a_func != NULL) {
+      DEBUG_INPT   yLOG_snote   ("save to func");
+      rc = ySCORE_stats_set (my.s_yscore, "CHOICE"  , x_choice);
+      DEBUG_INPT   yLOG_svalue  ("ch" , rc);
+   }
+   /*---(save-back)----------------------*/
+   if (r_choice  != NULL)  *r_choice = x_choice;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 1;
 }
 
 char
-LINE_loop               (char a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, int *r_loop)
+LINE_loop               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, char *r_loop)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    char        x_recd      [LEN_RECD]  = "";
    char        x_good      =  '-';
+   char        x_loop      =    0;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
+   /*---(default)------------------------*/
+   if (a_func != NULL) {
+      x_loop   = ySCORE_stats_value (my.s_yscore, "LOOP"    );
+   } else {
+      if (r_loop    != NULL)  x_loop   = *r_loop;
+   }
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_spoint  (a_recd);
    --rce;  if (a_recd == NULL) {
@@ -533,24 +579,24 @@ LINE_loop               (char a_recd [LEN_RECD], char a_inside, int *r_sfull, in
    DEBUG_DATA   yLOG_snote   (x_recd);
    /*---(identify)-----------------------*/
    if (r_loop != NULL)  {
-      if      (strncmp (x_recd, "while "      ,  6) == 0   )  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strstr  (x_recd, " while "         ) != NULL)  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strstr  (x_recd, ";while "         ) != NULL)  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strstr  (x_recd, " while( "        ) != NULL)  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strncmp (x_recd, "while("      ,  6) == 0   )  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strstr  (x_recd, ";while( "        ) != NULL)  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strstr  (x_recd, " do "            ) != NULL)  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strncmp (x_recd, "do "         ,  3) == 0   )  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strstr  (x_recd, "}do "            ) != NULL)  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strstr  (x_recd, " do{"            ) != NULL)  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strncmp (x_recd, "do{"         ,  3) == 0   )  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strstr  (x_recd, "}do("            ) != NULL)  { ++(*r_loop  );  x_good = 'y'; }
-      else if (strncmp (x_recd, "for "        ,  4) == 0   )  { ++(*r_loop  );  x_good = 'Y'; }
-      else if (strstr  (x_recd, " for "           ) != NULL)  { ++(*r_loop  );  x_good = 'Y'; }
-      else if (strstr  (x_recd, ";for "           ) != NULL)  { ++(*r_loop  );  x_good = 'Y'; }
-      else if (strncmp (x_recd, "for("        ,  4) == 0   )  { ++(*r_loop  );  x_good = 'Y'; }
-      else if (strstr  (x_recd, " for("           ) != NULL)  { ++(*r_loop  );  x_good = 'Y'; }
-      else if (strstr  (x_recd, ";for("           ) != NULL)  { ++(*r_loop  );  x_good = 'Y'; }
+      if      (strncmp (x_recd, "while "      ,  6) == 0   )  { ++x_loop;  x_good = 'y'; }
+      else if (strstr  (x_recd, " while "         ) != NULL)  { ++x_loop;  x_good = 'y'; }
+      else if (strstr  (x_recd, ";while "         ) != NULL)  { ++x_loop;  x_good = 'y'; }
+      else if (strstr  (x_recd, " while( "        ) != NULL)  { ++x_loop;  x_good = 'y'; }
+      else if (strncmp (x_recd, "while("      ,  6) == 0   )  { ++x_loop;  x_good = 'y'; }
+      else if (strstr  (x_recd, ";while( "        ) != NULL)  { ++x_loop;  x_good = 'y'; }
+      else if (strstr  (x_recd, " do "            ) != NULL)  { ++x_loop;  x_good = 'y'; }
+      else if (strncmp (x_recd, "do "         ,  3) == 0   )  { ++x_loop;  x_good = 'y'; }
+      else if (strstr  (x_recd, "}do "            ) != NULL)  { ++x_loop;  x_good = 'y'; }
+      else if (strstr  (x_recd, " do{"            ) != NULL)  { ++x_loop;  x_good = 'y'; }
+      else if (strncmp (x_recd, "do{"         ,  3) == 0   )  { ++x_loop;  x_good = 'y'; }
+      else if (strstr  (x_recd, "}do("            ) != NULL)  { ++x_loop;  x_good = 'y'; }
+      else if (strncmp (x_recd, "for "        ,  4) == 0   )  { ++x_loop;  x_good = 'Y'; }
+      else if (strstr  (x_recd, " for "           ) != NULL)  { ++x_loop;  x_good = 'Y'; }
+      else if (strstr  (x_recd, ";for "           ) != NULL)  { ++x_loop;  x_good = 'Y'; }
+      else if (strncmp (x_recd, "for("        ,  4) == 0   )  { ++x_loop;  x_good = 'Y'; }
+      else if (strstr  (x_recd, " for("           ) != NULL)  { ++x_loop;  x_good = 'Y'; }
+      else if (strstr  (x_recd, ";for("           ) != NULL)  { ++x_loop;  x_good = 'Y'; }
    }
    /*---(not found)----------------------*/
    DEBUG_DATA   yLOG_schar   (x_good);
@@ -572,23 +618,37 @@ LINE_loop               (char a_recd [LEN_RECD], char a_inside, int *r_sfull, in
       if (r_sfile != NULL)  --(*r_sfile);
       if (r_sfunc != NULL)  --(*r_sfunc);
    }
+   /*---(into-function)------------------*/
+   if (a_func != NULL) {
+      DEBUG_INPT   yLOG_snote   ("save to func");
+      rc = ySCORE_stats_set (my.s_yscore, "LOOP"    , x_loop);
+      DEBUG_INPT   yLOG_svalue  ("lo" , rc);
+   }
+   /*---(save-back)----------------------*/
+   if (r_loop    != NULL)  *r_loop   = x_loop;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 1;
 }
 
 char
-LINE_indent             (char a_recd [LEN_RECD], char a_inside, int *r_indent)
+LINE_indent             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_indent)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    int         l           =    0;
    int         i           =    0;
    char        x_indent    =    0;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    /*---(default)------------------------*/
-   if (r_indent != NULL)  x_indent = *r_indent;
+   if (a_func != NULL) {
+      x_indent = ySCORE_stats_value (my.s_yscore, "INDENT"  );
+   } else {
+      if (r_indent != NULL)  x_indent = *r_indent;
+   }
+   /*---(default)------------------------*/
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_spoint  (a_recd);
    --rce;  if (a_recd == NULL) {
@@ -611,6 +671,12 @@ LINE_indent             (char a_recd [LEN_RECD], char a_inside, int *r_indent)
       break;
    }
    DEBUG_DATA   yLOG_sint    (x_indent);
+   /*---(into-function)------------------*/
+   if (a_func != NULL) {
+      DEBUG_INPT   yLOG_snote   ("save to func");
+      rc = ySCORE_stats_set (my.s_yscore, "INDENT"  , x_indent);
+      DEBUG_INPT   yLOG_svalue  ("in" , rc);
+   }
    /*---(save back)----------------------*/
    if (r_indent != NULL)  *r_indent = x_indent;
    /*---(complete)-----------------------*/
@@ -624,40 +690,6 @@ LINE_indent             (char a_recd [LEN_RECD], char a_inside, int *r_indent)
 /*===----                       function related                       ----===*/
 /*====================------------------------------------====================*/
 static void  o___FUNCTION________o () { return; }
-
-/*> char                                                                              <* 
- *> poly_func__purpose_copy (cchar a_recd [LEN_RECD], int a_beg)                      <* 
- *> {                                                                                 <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
- *>    char       t            [LEN_RECD];                                            <* 
- *>    int        i            =    0;                                                <* 
- *>    int        j            =    0;                                                <* 
- *>    int        x_len        =    0;                                                <* 
- *>    /+---(prepare)------------------------+/                                       <* 
- *>    ystrlcpy (t, a_recd + a_beg, LEN_RECD);                                         <* 
- *>    x_len = strlen (t);                                                            <* 
- *>    /+---(very end)-----------------------+/                                       <* 
- *>    for (i = 0; i < x_len; ++i)  {                                                 <* 
- *>       if (strchr ("*=()[]", t [i]) != NULL) {                                     <* 
- *>          t [i] = '\0';                                                            <* 
- *>          break;                                                                   <* 
- *>       }                                                                           <* 
- *>       if (t [i] == '-' && t [i + 1] == '-') {                                     <* 
- *>          t [i] = '\0';                                                            <* 
- *>          break;                                                                   <* 
- *>       }                                                                           <* 
- *>    }                                                                              <* 
- *>    /+---(search)-------------------------+/                                       <* 
- *>    for (j = i; j > 0; --j)  {                                                     <* 
- *>       if (strchr (" -=][", t [j]) == NULL)   break;                               <* 
- *>       t [j] = '\0';                                                               <* 
- *>    }                                                                              <* 
- *>    /+---(save)---------------------------+/                                       <* 
- *>    ystrlcpy (a_func->c_purpose, t, 41);                                              <* 
- *>    a_func->ready = 'y';                                                           <* 
- *>    /+---(complete)-----------------------+/                                       <* 
- *>    return 0;                                                                      <* 
- *> }                                                                                 <*/
 
 char
 LINE__purpose           (char a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_DESC], char *r_ready)
@@ -704,14 +736,14 @@ LINE__purpose           (char a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_
 }
 
 char         /*-> extract the function purpose -------[ ------ [ge.850.137.A4]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-LINE_purpose            (char a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready)
+LINE_purpose            (tFUNC *a_func, char a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   char        t           [LEN_RECD];
-   int         i           =    0;
    int         b           =   -1;
+   char        x_purpose   [LEN_DESC]  = "";
+   char        x_ready     =  'E';
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    /*---(default)------------------------*/
@@ -765,22 +797,32 @@ LINE_purpose            (char a_recd [LEN_RECD], char r_purpose [LEN_DESC], char
       return rce;
    }
    /*---(call)---------------------------*/
-   rc = LINE__purpose       (a_recd, b, r_purpose, r_ready);
+   rc = LINE__purpose       (a_recd, b, x_purpose, &x_ready);
    DEBUG_INPT   yLOG_sint    (rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
+   /*---(into-function)------------------*/
+   if (a_func != NULL) {
+      DEBUG_INPT   yLOG_snote   ("save to func");
+      ystrlcpy (a_func->c_purpose, x_purpose, LEN_DESC);
+      a_func->c_ready = x_ready;
+   }
+   /*---(save-back)----------------------*/
+   if (r_purpose != NULL)  ystrlcpy (r_purpose, x_purpose, LEN_DESC);
+   if (r_ready   != NULL)  *r_ready = x_ready;
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char         /*-> identify function scope/return type ---------[ leaf······ ]-*/ /*-ågcg´·7á34·á···´K27´8··´2·#14á·æ¬å1á·1··´#GTá··M7···´···´····æ¬å>si·>´······´····´11Q·æ-*/
-LINE_function           (char a_prev [LEN_RECD], char a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL])
+LINE_function           (tFUNC *a_func, char a_prev [LEN_RECD], char a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL])
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    char        x_single    =  '·';
    char        x_scope     =  '·';
    char        x_rtype     =  '·';
@@ -869,6 +911,17 @@ LINE_function           (char a_prev [LEN_RECD], char a_recd [LEN_RECD], char a_
    else if (strstr (x_return   , "*"      ) != NULL)  x_rtype = 'p';
    else                                               x_rtype = 'o';
    DEBUG_INPT   yLOG_schar   (x_rtype);
+   /*---(into-function)------------------*/
+   if (a_func != NULL) {
+      DEBUG_INPT   yLOG_snote   ("save to func");
+      rc = ySCORE_stats_set (my.s_yscore, "SINGLE"  , x_single);
+      DEBUG_INPT   yLOG_sint    (rc);
+      rc = ySCORE_stats_set (my.s_yscore, "SCOPE"   , x_scope);
+      DEBUG_INPT   yLOG_sint    (rc);
+      rc = ySCORE_stats_set (my.s_yscore, "RTYPE"   , x_rtype);
+      DEBUG_INPT   yLOG_sint    (rc);
+      ystrlcpy (a_func->c_rlong, x_return, LEN_LABEL);
+   }
    /*---(save-back)----------------------*/
    if (r_single != NULL)  *r_single = x_single;
    if (r_scope  != NULL)  *r_scope  = x_scope;
@@ -1173,7 +1226,7 @@ LINE__params_one        (char a_param [LEN_RECD], uchar *b_in, uchar *b_out, uch
 }
 
 char         /*-> evaluate function parameter list ------------[ ´········· ]-*/ /*-ågcg´·Bá1A··á9··á·´D17´H··´11M22á·æ¬å1á·1··´C84á2·2····´···´····æ¬å>l!··´2···2··´····´114·æ-*/
-LINE_params             (char a_recd [LEN_RECD], char *r_audit, uchar *r_count, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc)
+LINE_params             (tFUNC *a_func, char a_recd [LEN_RECD], char *r_audit, uchar *r_count, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -1182,6 +1235,7 @@ LINE_params             (char a_recd [LEN_RECD], char *r_audit, uchar *r_count, 
    char       *q           =  ",";
    char       *r           = NULL;
    char       x_params     [LEN_RECD];
+   char       x_au;
    char       x_co;
    uchar      x_in, x_ou, x_bo, x_cf, x_vo, x_pn, x_pm, x_pf, x_ps;
    int        c            =    0;
@@ -1201,7 +1255,7 @@ LINE_params             (char a_recd [LEN_RECD], char *r_audit, uchar *r_count, 
    if (b_pstruc  != NULL)  *b_pstruc  =   0;
    x_co = x_in = x_ou = x_bo = x_cf = x_vo = x_pn = x_pm = x_pf = x_ps = 0;
    /*---(prepare)------------------------*/
-   rc = LINE__params_cut        (a_recd, x_params, r_audit, &x_co);
+   rc = LINE__params_cut        (a_recd, x_params, &x_au, &x_co);
    DEBUG_DATA   yLOG_value   ("cut"       , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -1228,7 +1282,34 @@ LINE_params             (char a_recd [LEN_RECD], char *r_audit, uchar *r_count, 
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(into-function)------------------*/
+   if (a_func != NULL) {
+      DEBUG_INPT   yLOG_snote   ("save to func");
+      rc = ySCORE_stats_set (my.s_yscore, "PAUDIT"  , x_au);
+      DEBUG_INPT   yLOG_svalue  ("au", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PARAMS"  , x_co);
+      DEBUG_INPT   yLOG_svalue  ("co", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PIN"     , x_in);
+      DEBUG_INPT   yLOG_svalue  ("in", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "POUT"    , x_ou);
+      DEBUG_INPT   yLOG_svalue  ("ou", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PBOTH"   , x_bo);
+      DEBUG_INPT   yLOG_svalue  ("bo", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PCONF"   , x_cf);
+      DEBUG_INPT   yLOG_svalue  ("cf", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PNUM"    , x_pn);
+      DEBUG_INPT   yLOG_svalue  ("pn", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PMULTI"  , x_pm);
+      DEBUG_INPT   yLOG_svalue  ("pm", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PFUNC"   , x_pf);
+      DEBUG_INPT   yLOG_svalue  ("pf", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PSTRUC"  , x_ps);
+      DEBUG_INPT   yLOG_svalue  ("ps", rc);
+      rc = ySCORE_stats_set (my.s_yscore, "PVOID"   , x_vo);
+      DEBUG_INPT   yLOG_svalue  ("vo", rc);
+   }
    /*---(save-back)----------------------*/
+   if (r_audit   != NULL)  *r_audit   = x_au;
    if (r_count   != NULL)  *r_count   = x_co;
    if (b_in      != NULL)  *b_in      = x_in;
    if (b_out     != NULL)  *b_out     = x_ou;
