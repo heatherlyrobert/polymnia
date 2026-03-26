@@ -247,8 +247,14 @@ PROG_reset_everything   (void)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = poly_proto_init   ();
-   DEBUG_PROG  yLOG_value   ("proto"     , rc);
+   /*> rc = poly_proto_init   ();                                                     <* 
+    *> DEBUG_PROG  yLOG_value   ("proto"     , rc);                                   <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
+   rc = poly_yscore_init   ();
+   DEBUG_PROG  yLOG_value   ("yscore"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

@@ -137,72 +137,6 @@ static void  o___SOURCES_________o () { return; }
  *>    return 0;                                                                      <* 
  *> }                                                                                 <*/
 
-/*> char                                                                                      <* 
- *> poly_code__reserved     (tFILE *a_file, tFUNC *a_func, char *a_recd)                      <* 
- *> {                                                                                         <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                               <* 
- *>    char        rce         =  -10;                                                        <* 
- *>    char        x_inside    =   -1;                                                        <* 
- *>    /+---(header)-------------------------+/                                               <* 
- *>    DEBUG_INPT   yLOG_enter   (__FUNCTION__);                                              <* 
- *>    /+---(defense)------------------------+/                                               <* 
- *>    DEBUG_INPT   yLOG_point   ("a_file"    , a_file);                                      <* 
- *>    --rce;  if (a_file == NULL) {                                                          <* 
- *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                      <* 
- *>       return rce;                                                                         <* 
- *>    }                                                                                      <* 
- *>    DEBUG_INPT   yLOG_point   ("a_func"    , a_func);                                      <* 
- *>    DEBUG_INPT   yLOG_point   ("a_recd"    , a_recd);                                      <* 
- *>    --rce;  if (a_recd == NULL) {                                                          <* 
- *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                      <* 
- *>       return rce;                                                                         <* 
- *>    }                                                                                      <* 
- *>    DEBUG_INPT   yLOG_info    ("a_recd"    , a_recd);                                      <* 
- *>    /+---(register a code line)-----------+/                                               <* 
- *>    poly_code__counts (a_file, a_func, a_recd);                                            <* 
- *>    DEBUG_INPT   yLOG_note    ("after counts");                                            <* 
- *>    /+---(check inside)-------------------+/                                               <* 
- *>    x_inside = FUNCS_inside     (a_func);                                                  <* 
- *>    DEBUG_INPT   yLOG_value   ("x_inside"  , x_inside);                                    <* 
- *>    if (x_inside != 0) {                                                                   <* 
- *>       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                                      <* 
- *>       return rce;                                                                         <* 
- *>    }                                                                                      <* 
- *>    /+---(function level)-----------------+/                                               <* 
- *>    if (a_func != NULL) {                                                                  <* 
- *>       /+---(returns)---------------------+/                                               <* 
- *>       if      (strstr (a_recd, " return rce") != NULL)   poly_cats_logic (a_func, 'R');   <* 
- *>       else if (strstr (a_recd, " return -"  ) != NULL)   poly_cats_logic (a_func, 'R');   <* 
- *>       else if (strstr (a_recd, " return "   ) != NULL)   poly_cats_logic (a_func, 'r');   <* 
- *>       else if (strstr (a_recd, " return;"   ) != NULL)   poly_cats_logic (a_func, 'r');   <* 
- *>       /+---(choices)---------------------+/                                               <* 
- *>       if      (strstr (a_recd, " if "       ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       else if (strstr (a_recd, " if("       ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       else if (strstr (a_recd, " else "     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       else if (strstr (a_recd, "}else "     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       else if (strstr (a_recd, " else{"     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       else if (strstr (a_recd, "}else{"     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       if      (strstr (a_recd, " case "     ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       else if (strstr (a_recd, " default "  ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       else if (strstr (a_recd, " default:"  ) != NULL)   poly_cats_logic (a_func, 'c');   <* 
- *>       /+---(loops)-----------------------+/                                               <* 
- *>       if      (strstr (a_recd, " while "    ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
- *>       else if (strstr (a_recd, " while("    ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
- *>       if      (strstr (a_recd, " do "       ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
- *>       if      (strstr (a_recd, "}do "       ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
- *>       else if (strstr (a_recd, " do("       ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
- *>       else if (strstr (a_recd, "}do("       ) != NULL)   poly_cats_logic (a_func, 'l');   <* 
- *>       if      (strstr (a_recd, " for "      ) != NULL)   poly_cats_logic (a_func, 'L');   <* 
- *>       else if (strstr (a_recd, " for("      ) != NULL)   poly_cats_logic (a_func, 'L');   <* 
- *>       /+---(lcoal static)----------------+/                                               <* 
- *>       if      (strstr (a_recd, " static "   ) != NULL)   ++a_func->WORK_LSTATIC;          <* 
- *>       /+---(done)------------------------+/                                               <* 
- *>    }                                                                                      <* 
- *>    /+---(complete)-----------------------+/                                               <* 
- *>    DEBUG_INPT   yLOG_exit    (__FUNCTION__);                                              <* 
- *>    return 0;                                                                              <* 
- *> }                                                                                         <*/
-
 
 
 /*====================------------------------------------====================*/
@@ -248,17 +182,18 @@ CODE_function           (tFUNC *a_func, char *a_recd, char *a_prev)
       p  = strstr (a_prev, "/*");
       if (p != NULL) {
          x_len = p - a_prev;
-         rc = LINE_purpose      (a_func, a_prev + x_len, a_func->c_purpose, &(a_func->c_ready));
+         rc = LINE_purpose      (a_func, a_prev + x_len, NULL, a_func->c_purpose, &(a_func->c_ready));
          if (rc < 0) {
             DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
       }
    } else {
-      rc = LINE_purpose      (a_func, "/* */", a_func->c_purpose, &(a_func->c_ready));
+      rc = LINE_purpose      (a_func, "/* */", NULL, a_func->c_purpose, &(a_func->c_ready));
    }
    /*---(parameters)---------------------*/
-   rc = LINE_params      (a_func, a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), NULL, &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));
+   /*> rc = LINE_params      (a_func, a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), NULL, &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));   <*/
+   rc = LINE_params      (a_func, a_recd, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -383,6 +318,7 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    char        rc          =    0;
    char        x_full      [LEN_RECD]  = "";
    char        x_recd      [LEN_RECD]  = "";
+   tFUNC      *x_func      = NULL;
    char        x_inside    =    0;
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
@@ -414,40 +350,51 @@ poly_code__current      (tFILE *a_file, int a_line, tFUNC *a_func, char *a_curr,
    }
    x_inside = FUNCS_inside     (a_func);
    DEBUG_INPT   yLOG_value   ("x_inside"  , x_inside);
-   /*---(outside)---------------------*/
-   if (x_inside != 1) {
+   if (x_inside == 0) {
       DEBUG_INPT   yLOG_note    ("outside all functions, but including headers and { } outside braces");
-      LINE_count_all      (        0, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), NULL);
-      if (rc == 0)  rc = LINE_count_empty    (x_full, 0, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), NULL);
-      if (rc == 0)  rc = LINE_count_comment  (x_full, 0, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), NULL);
-      if (rc == 0)  rc = LINE_count_debug    (x_full, 0, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL, NULL);
-      if (rc == 0)  rc = LINE_count_unguard  (x_full, 0, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), NULL, NULL, NULL);
-      if (rc == 0) {
-         LINE_count_code     (        0, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
-         LINE_count_slocl    (x_full, 0, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
+      x_func = NULL;
+   } else {
+      DEBUG_INPT   yLOG_note    ("inside function code, but not outside braces");
+      x_func = a_func;
+   }
+   /*---(outside)---------------------*/
+   if (rc == 0)  rc = LINE_count_all      (x_func, x_inside, NULL, NULL, NULL, NULL);
+   if (rc == 0)  rc = LINE_count_empty    (x_func, x_full, x_inside, NULL, NULL, NULL, NULL);
+   if (rc == 0)  rc = LINE_count_comment  (x_func, x_full, x_inside, NULL, NULL, NULL, NULL);
+   if (rc == 0)  rc = LINE_count_debug    (x_func, x_full, x_inside, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+   if (rc == 0)  rc = LINE_count_unguard  (x_func, x_full, x_inside, NULL, NULL, NULL, NULL, NULL, NULL);
+   if (rc == 0) {
+      rc = LINE_count_code     (x_func, x_inside, NULL, NULL, NULL, NULL);
+      rc = LINE_count_slocl    (x_func, x_full, x_inside, NULL, NULL, NULL, NULL);
+      if (x_inside == 1) {
+         rc = LINE_exit        (x_func, a_curr, 1, NULL, NULL);
+         rc = LINE_choice      (x_func, a_curr, 1, NULL);
+         rc = LINE_loop        (x_func, a_curr, 1, NULL, NULL, NULL, NULL, NULL);
+         rc = LINE_indent      (x_func, a_curr, 1, NULL);
       }
    }
    /*---(inside)----------------------*/
-   else {
-      DEBUG_INPT   yLOG_note    ("inside function code");
-      LINE_count_all      (        1, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), &(a_func->COUNT_LINES));
-      if (rc == 0)  rc = LINE_count_empty    (x_full, 1, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), &(a_func->COUNT_EMPTY));
-      if (rc == 0)  rc = LINE_count_comment  (x_full, 1, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), &(a_func->COUNT_DOCS ));
-      if (rc == 0)  rc = LINE_count_debug    (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->WORK_DEXTRA), &(a_func->STATS_DMACRO));
-      if (rc == 0)  rc = LINE_count_unguard  (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->STATS_DMACRO));
-      if (rc == 0) {
-         LINE_count_code     (        1, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));
-         LINE_count_slocl    (x_full, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));
-         /*> rc = LINE_exit        (a_func, a_curr, 1, &(a_func->WORK_RETURN), &(a_func->WORK_RCE));   <*/
-         rc = LINE_exit        (a_func, a_curr, 1, NULL, NULL);
-         /*> rc = LINE_choice      (a_func, a_curr, 1, &(a_func->WORK_CHOICE));       <*/
-         rc = LINE_choice      (a_func, a_curr, 1, NULL);
-         /*> rc = LINE_loop        (a_func, a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), &(a_func->WORK_LOOP));   <*/
-         rc = LINE_loop        (a_func, a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), NULL);
-         /*> rc = LINE_indent      (a_func, a_curr, 1, &(a_func->WORK_INDENT));       <*/
-         rc = LINE_indent      (a_func, a_curr, 1, NULL);
-      }
-   }
+   /*> else {                                                                                                                                                                                                                                         <* 
+    *>    DEBUG_INPT   yLOG_note    ("inside function code");                                                                                                                                                                                         <* 
+    *>    LINE_count_all      (a_func,         1, &(my.COUNT_LINES), &(a_file->i_proj->COUNT_LINES), &(a_file->COUNT_LINES), &(a_func->COUNT_LINES));                                                                                                 <* 
+    *>    if (rc == 0)  rc = LINE_count_empty    (a_func, x_full, 1, &(my.COUNT_EMPTY), &(a_file->i_proj->COUNT_EMPTY), &(a_file->COUNT_EMPTY), &(a_func->COUNT_EMPTY));                                                                              <* 
+    *>    if (rc == 0)  rc = LINE_count_comment  (a_func, x_full, 1, &(my.COUNT_DOCS ), &(a_file->i_proj->COUNT_DOCS ), &(a_file->COUNT_DOCS ), &(a_func->COUNT_DOCS ));                                                                              <* 
+    *>    /+> if (rc == 0)  rc = LINE_count_debug    (x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->WORK_DEXTRA), &(a_func->STATS_DMACRO));   <+/   <* 
+    *>    if (rc == 0)  rc = LINE_count_debug    (a_func, x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), NULL, NULL, &(a_func->STATS_DMACRO));                                         <* 
+    *>    if (rc == 0)  rc = LINE_count_unguard  (a_func, x_full, 1, &(my.COUNT_DEBUG), &(a_file->i_proj->COUNT_DEBUG), &(a_file->COUNT_DEBUG), &(a_func->COUNT_DEBUG), &(a_func->WORK_DCOUNT), &(a_func->STATS_DMACRO));                             <* 
+    *>    if (rc == 0) {                                                                                                                                                                                                                              <* 
+    *>       LINE_count_code     (a_func,         1, &(my.COUNT_CODE ), &(a_file->i_proj->COUNT_CODE ), &(a_file->COUNT_CODE ), &(a_func->COUNT_CODE ));                                                                                              <* 
+    *>       LINE_count_slocl    (a_func, x_full, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL));                                                                                              <* 
+    *>       /+> rc = LINE_exit        (a_func, a_curr, 1, &(a_func->WORK_RETURN), &(a_func->WORK_RCE));   <+/                                                                                                                                        <* 
+    *>       rc = LINE_exit        (a_func, a_curr, 1, NULL, NULL);                                                                                                                                                                                   <* 
+    *>       /+> rc = LINE_choice      (a_func, a_curr, 1, &(a_func->WORK_CHOICE));       <+/                                                                                                                                                         <* 
+    *>       rc = LINE_choice      (a_func, a_curr, 1, NULL);                                                                                                                                                                                         <* 
+    *>       /+> rc = LINE_loop        (a_func, a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), &(a_func->WORK_LOOP));   <+/                                                            <* 
+    *>       rc = LINE_loop        (a_func, a_curr, 1, &(my.COUNT_SLOCL), &(a_file->i_proj->COUNT_SLOCL), &(a_file->COUNT_SLOCL), &(a_func->COUNT_SLOCL), NULL);                                                                                      <* 
+    *>       /+> rc = LINE_indent      (a_func, a_curr, 1, &(a_func->WORK_INDENT));       <+/                                                                                                                                                         <* 
+    *>       rc = LINE_indent      (a_func, a_curr, 1, NULL);                                                                                                                                                                                         <* 
+    *>    }                                                                                                                                                                                                                                           <* 
+    *> }                                                                                                                                                                                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;

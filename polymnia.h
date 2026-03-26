@@ -78,8 +78,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3j"
-#define     P_VERTXT    "added direct statistic updating to LINE_ functions, re-tested"
+#define     P_VERNUM    "1.3k"
+#define     P_VERTXT    "added header-style, purpose, and parameter parens monitoring"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -1344,28 +1344,28 @@ char*       FUNCS__unit             (char *a_question, int i);
 
 /*===[[ polymnia_line.c ]]====================================================*/
 /*········´ ´··············counts·´ ´·········································*/
-char        LINE_count_all          (char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc);
-char        LINE_count_empty        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
-char        LINE_count_comment      (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
-char        LINE_count_debug        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dextra, char *r_abbr);
-char        LINE_count_unguard      (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc, int *r_dcount, int *r_dfree);
-char        LINE_count_code         (char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
-char        LINE_count_slocl        (char a_recd [LEN_RECD], char a_inside, int *r_cfull, int *r_cproj, int *r_cfile, int *r_cfunc);
+char        LINE_count_all          (tFUNC *a_func, char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc);
+char        LINE_count_empty        (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc);
+char        LINE_count_comment      (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc);
+char        LINE_count_debug        (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc, char *b_dcount, char *b_dextra, char *b_dmacro);
+char        LINE_count_unguard      (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc, int *b_dcount, int *b_dfree);
+char        LINE_count_code         (tFUNC *a_func, char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc);
+char        LINE_count_slocl        (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *b_cfull, int *b_cproj, int *b_cfile, int *b_cfunc);
 /*········´ ´············reserved·´ ´·········································*/
-char        LINE_exit               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_return, char *r_rce);
-char        LINE_choice             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_choice);
-char        LINE_loop               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *r_sfull, int *r_sproj, int *r_sfile, int *r_sfunc, char *r_loop);
-char        LINE_indent             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *r_indent);
+char        LINE_exit               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *b_return, char *b_rce);
+char        LINE_choice             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *b_choice);
+char        LINE_loop               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, int *b_sfull, int *b_sproj, int *b_sfile, int *b_sfunc, char *b_loop);
+char        LINE_indent             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, char *b_indent);
 /*········´ ´············function·´ ´·········································*/
 char        LINE__purpose           (char a_recd [LEN_RECD], int a_beg, char r_purpose [LEN_DESC], char *r_ready);
-char        LINE_purpose            (tFUNC *a_func, char a_recd [LEN_RECD], char r_purpose [LEN_DESC], char *r_ready);
+char        LINE_purpose            (tFUNC *a_func, char a_recd [LEN_RECD], char *r_format, char r_purpose [LEN_DESC], char *r_ready);
 char        LINE_function           (tFUNC *a_func, char a_prev [LEN_RECD], char a_recd [LEN_RECD], char a_name [LEN_TITLE], char *r_single, char *r_scope, char *r_rtype, char r_rlong [LEN_LABEL]);
 char        LINE__params_cut        (char a_recd [LEN_RECD], char r_params [LEN_RECD], char *r_audit, char *r_count);
 char        LINE__params_parse      (char a_param [LEN_RECD], char r_type [LEN_LABEL], char r_label [LEN_LABEL], char *r_point, char *r_func);
-char        LINE__params_class      (char a_label [LEN_LABEL], char *r_class, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_other);
+char        LINE__params_class      (char a_label [LEN_LABEL], char *r_class, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_older);
 char        LINE__params_point      (char a_type [LEN_LABEL], char a_point, char a_func, char a_class, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
-char        LINE__params_one        (char a_param [LEN_RECD], uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
-char        LINE_params             (tFUNC *a_func, char a_recd [LEN_RECD], char *r_audit, uchar *r_count, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
+char        LINE__params_one        (char a_param [LEN_RECD], uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_older, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
+char        LINE_params             (tFUNC *a_func, char a_recd [LEN_RECD], char *r_audit, uchar *r_count, uchar *b_in, uchar *b_out, uchar *b_both, uchar *b_conf, uchar *b_void, uchar *b_older, uchar *b_pnum, uchar *b_pmulti, uchar *b_pfunc, uchar *b_pstruc);
 /*········´ ´············unittest·´ ´·········································*/
 char        LINE__fake              (int a_return, int a_intern, int a_ylib, tFUNC *c_func);
 char*       LINE__unit              (char *a_question, int i);
@@ -1671,6 +1671,7 @@ char        poly_yjobs_callback     (cchar a_req, cchar *a_data);
 
 char        poly_yscore_init       (void);
 char        poly_yscore_wrap       (void);
+char*       YSCORE_poly            (void);
 
 
 
