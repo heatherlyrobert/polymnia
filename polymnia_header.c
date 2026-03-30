@@ -109,7 +109,7 @@ const struct {
    { 'G' , "P_DEPGRAPH"    , "dep_graph"    , "heatherly visual libraries"      , 'P' , '°' , (long) &(s_place.j_dep_graph  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
    { 'S' , "P_DEPSOLO"     , "dep_solo"     , "heatherly solo/uver libraries"   , 'P' , '°' , (long) &(s_place.j_dep_solo   [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
    { 'A' , "P_DEPALIEN"    , "dep_alien"    , "third-party libraries"           , 'P' , '°' , (long) &(s_place.j_dep_alien  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
    /*-------when------------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
    { 'a' , "P_AUTHOR"      , "author"       , "primary programmer name"         , 'P' , '°' , (long) &(s_place.j_author     [0]) - (long) &s_place,   5,  10,  30,  30, LEN_TITLE         },
    { 'c' , "P_CREATED"     , "created"      , "data first created"              , 'P' , '°' , (long) &(s_place.j_created    [0]) - (long) &s_place,   4,   7,  20,  20, LEN_LABEL         },
@@ -129,9 +129,9 @@ const struct {
    { 't' , "···"           , "theft"        , "thoughts on cheating"            , 'P' , 'g' , (long) &(s_place.j_theft      [0]) - (long) &s_place,   1,   1, 200, 250, LEN_LABEL         },
    {  1  , "···"           , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
    /*-------files-----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
-   { 'o' , "···"           , "objective"    , "file-specific objective"         , 'c' , 'f' , (long) &(s_place.j_objective  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'c' , "···"           , "importance"   , "how important is this code"      , 'c' , 'f' , (long) &(s_place.j_importance [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
-   { 'c' , "···"           , "complexity"   , "how hard to maintain"            , 'c' , 'f' , (long) &(s_place.j_complexity [0]) - (long) &s_place,   0,   0,  70, 100, LEN_HUND          },
+   { 'o' , "···"           , "objective"    , "file-specific objective"         , 'c' , 'f' , (long) &(s_place.j_objective  [0]) - (long) &s_place,   0,   0,  70, 100, LEN_LABEL         },
+   { 'c' , "···"           , "importance"   , "how important is this code"      , 'c' , 'f' , (long) &(s_place.j_importance [0]) - (long) &s_place,   0,   0,  70, 100, LEN_LABEL         },
+   { 'c' , "···"           , "complexity"   , "how hard is it to maintain"      , 'c' , 'f' , (long) &(s_place.j_complexity [0]) - (long) &s_place,   0,   0,  70, 100, LEN_LABEL         },
    {  1  , "···"           , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
    /*-------extra-----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
    { 'p' , "P_PRIORITY"    , "priority"     , "programming priorities"          , 'P' , 'p' , (long) &(s_place.j_priority   [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
@@ -149,7 +149,7 @@ const struct {
    { 'M' , "P_MISSING"     , "missing"      , "current state gets what wrong"   , 'P' , '-' , (long) &(s_place.j_missing    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
    { 'K' , "P_KEEPING"     , "keeping"      , "current state gets what right"   , 'P' , '-' , (long) &(s_place.j_keeping    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
    { 'P' , "P_PERK"        , "perk"         , "benefit of building custom"      , 'P' , '-' , (long) &(s_place.j_perk       [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
    /*-------what------------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
    { 'S' , "P_SCOPE"       , "scope"        , "scope of this solution"          , 'P' , '-' , (long) &(s_place.j_scope      [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
    { 'A' , "P_ACCEPT"      , "accepted"     , "accepted objectives"             , 'P' , '-' , (long) &(s_place.j_accept     [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
@@ -159,11 +159,11 @@ const struct {
    { '*' , "P_SUMMARY"     , "summary"      , "project summary"                 , 'P' , '-' , (long) &(s_place.j_summary    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
    { 'D' , "P_DANGERS"     , "dangers"      , "potential trouble with project"  , 'P' , '-' , (long) &(s_place.j_dangers    [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
    { 'G' , "P_GREEK"       , "greek"        , "longer greek heritage"           , 'P' , '-' , (long) &(s_place.j_greek      [0]) - (long) &s_place,   1,   1, 300, 500, LEN_LABEL         },
-   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
+   {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
    /*-------grade-----------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
    { ' ' , "···"           , "GRADE"        , "final rating on headers"         , '·' , '-' , (long) &(s_place.j_grade      [0]) - (long) &s_place,   0,   0,   0,   0, LEN_HUND          },
    /*-------end-------------label------------description-------------------------where--type--offset------------------------------------------------min--low--hig--max-store--------------*/
-   {  0  , "end-of-list"   , ""             , ""                                , '·' , '·' , -1                                                 ,   0,   0,   0,   0, 0                 },
+   {  0  , "end-of-list"   , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
 };
 
 /*>  GYGES                                                                             <* 
@@ -957,7 +957,7 @@ HEADER_grading          (tPROJ *a_proj)
    else if (x_warn > 0)  { strcpy (t, "WARN");  a_proj->j_header [x_summ] = '¡'; }
    else if (x_miss > 0)  { strcpy (t, "MISS");  a_proj->j_header [x_summ] = '¢'; }
    else                  { strcpy (t, "PASS");  a_proj->j_header [x_summ] = ' '; }
-   snprintf  (a_proj->j_grade, LEN_HUND, "%s (header audit) %3dp, %3df, %3dw, %3d-, %3d·", t, x_pass, x_fail, x_warn, x_miss, x_na);
+   snprintf  (a_proj->j_grade, LEN_HUND, "%s (overall header audit) %3dp, %3df, %3dw, %3d-, %3d·", t, x_pass, x_fail, x_warn, x_miss, x_na);
    DEBUG_INPT   yLOG_char    ("final"     , a_proj->j_header [x_summ]);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
@@ -1173,12 +1173,6 @@ HEADER_report           (tPROJ *a_proj)
    char        x_warn      =    0;
    char        x_fail      =    0;
    int         l           =    0;
-   /*> yURG_msg (' ', "##/usr/local/bin/polymnia --htags\n");                         <*/
-   /*> yURG_msg (' ', "##");                                                          <*/
-   /*> yURG_msg (' ', "##   %s", P_ONELINE);                                          <*/
-   /*> yURG_msg (' ', "##   ver %4s, %s", P_VERNUM, P_VERTXT);                        <*/
-   /*> yURG_msg (' ', "##   htags reporting file for use with vim-ide");              <*/
-   /*> yURG_msg (' ', "##");                                                          <*/
    /*---(header)-------------------------*/
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(summary)------------------------*/
@@ -1213,19 +1207,19 @@ HEADER_report           (tPROJ *a_proj)
          if (x_fail > 0) {
             sprintf (s, "FAILURES = %2d", x_fail);
             strcat  (t, s);
-            if (a_proj->j_header [i] != (uchar) ' ')  a_proj->j_header [i] = '°';
+            if (a_proj->j_header [i] != ' ')  a_proj->j_header [i] = '°';
          }
          if (x_warn > 0) {
             if (strlen (t) > l)  strcat (t, "   ");
             sprintf (s, "warnings = %2d", x_warn);
             strcat  (t, s);
-            if (a_proj->j_header [i] != (uchar) ' ')  a_proj->j_header [i] = '¡';
+            if (a_proj->j_header [i] != ' ')  a_proj->j_header [i] = '¡';
          }
          if (x_miss > 0) {
             if (strlen (t) > l)  strcat (t, "   ");
             sprintf (s, "missing  = %2d", x_miss);
             strcat  (t, s);
-            if (a_proj->j_header [i] != (uchar) ' ')  a_proj->j_header [i] = '¢';
+            if (a_proj->j_header [i] != ' ')  a_proj->j_header [i] = '¢';
          }
          DEBUG_INPT   yLOG_char    ("final"     , a_proj->j_header [i]);
          if (x_miss + x_warn + x_fail == 0) {
@@ -1247,7 +1241,12 @@ HEADER_report           (tPROJ *a_proj)
    }
    yURG_msg (' ', "##");
    yURG_msg (' ', x_sep);
+   yURG_msg (' ', "##");
    rc = FILES_run_for_project (a_proj, GPL_report);
+   yURG_msg (' ', "##");
+   yURG_msg (' ', "## end-of-report.  fatto, completare, finito, morto, sepolta, y la signora grassa sta cantando ;)");
+   /*> yURG_msg (' ', "## end-of-report.  fatto (done), completare (complete), finito (finished), morto (dead), sepolta (burried), y la signora grassa sta cantando (and the fat lady has sung) ;)");   <*/
+   DEBUG_INPT   yLOG_value   ("run_proj"  , rc);
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 1;
 }
@@ -1255,6 +1254,7 @@ HEADER_report           (tPROJ *a_proj)
 char
 HEADER_only             (void)
 {
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    int         l           =    0;

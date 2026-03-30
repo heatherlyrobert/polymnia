@@ -65,23 +65,39 @@ PROJS__wipe        (tPROJ *a_dst)
 {
    if (a_dst == NULL)  return -1;
    /*---(overall)-----------*/
-   a_dst->j_name      [0] = '\0';
-   a_dst->j_dir       [0] = '\0';
-   a_dst->j_written       =    0;
+   /*> a_dst->j_name      [0] = '\0';                                                 <*/
+   /*> a_dst->j_dir       [0] = '\0';                                                 <*/
+   /*> a_dst->j_written       =    0;                                                 <*/
    /*---(header entries)----*/
    HEADER_wipe (a_dst);
-   /*---(manuals)-----------*/
+   /*---(other)-------------*/
    ystrlcpy (a_dst->j_manual, "········", LEN_LABEL);
-   a_dst->j_git       = '·';
+   a_dst->j_grade     [0] = '\0';
+   a_dst->j_git           =  '·';
    /*---(stats)-------------*/
-   a_dst->j_funcs     = 0;
+   a_dst->j_funcs         =    0;
    poly_cats_counts_clear (a_dst->counts);
+   /*---(counts)------------*/
+   a_dst->j_nfile         =    0;
+   a_dst->j_nfunc         =    0;
+   a_dst->j_nylib         =    0;
+   /*---(lines)-------------*/
+   a_dst->j_nlines        =    0;
+   a_dst->j_nempty        =    0;
+   a_dst->j_ndocs         =    0;
+   a_dst->j_ndebug        =    0;
+   a_dst->j_ncode         =    0;
+   a_dst->j_nslocl        =    0;
+   /*---(size)--------------*/
+   a_dst->j_text          =    0;
+   a_dst->j_data          =    0;
+   a_dst->j_bss           =    0;
    /*---(files)-------------*/
-   a_dst->j_ihead     = NULL;
-   a_dst->j_itail     = NULL;
-   a_dst->j_icount    = 0;
+   a_dst->j_ihead         = NULL;
+   a_dst->j_itail         = NULL;
+   a_dst->j_icount        =    0;
    /*---(btree)-------------*/
-   a_dst->j_btree     = NULL;
+   a_dst->j_btree         = NULL;
    /*---(tags)--------------*/
    return 1;
 }
@@ -91,22 +107,39 @@ PROJS_rando             (tPROJ *a_dst)
 {
    if (a_dst == NULL)  return -1;
    /*---(overall)-----------*/
-   strcpy (a_dst->j_name, "name");
-   strcpy (a_dst->j_dir , "directory");
+   strcpy (a_dst->j_name  , "name");
+   strcpy (a_dst->j_dir   , "directory");
+   strcpy (a_dst->j_header, "header");
    a_dst->j_written       = 123456789;
    /*---(header entries)----*/
    HEADER_rando (a_dst);
-   /*---(manuals)-----------*/
+   /*---(other)-------------*/
    ystrlcpy (a_dst->j_manual, "12345678", LEN_LABEL);
-   a_dst->j_git       = 'y';
+   strcpy (a_dst->j_grade , "grade");
+   a_dst->j_git           =  'y';
    /*---(stats)-------------*/
-   a_dst->j_funcs     = 6;
+   a_dst->j_funcs         =    1;
+   /*---(counts)------------*/
+   a_dst->j_nfile         =    3;
+   a_dst->j_nfunc         =    4;
+   a_dst->j_nylib         =    5;
+   /*---(lines)-------------*/
+   a_dst->j_nlines        =    6;
+   a_dst->j_nempty        =    7;
+   a_dst->j_ndocs         =    8;
+   a_dst->j_ndebug        =    9;
+   a_dst->j_ncode         =   10;
+   a_dst->j_nslocl        =   11;
+   /*---(size)--------------*/
+   a_dst->j_text          =   12;
+   a_dst->j_data          =   13;
+   a_dst->j_bss           =   14;
    /*---(files)-------------*/
-   a_dst->j_ihead     = 0x1;
-   a_dst->j_itail     = 0x2;
-   a_dst->j_icount    = 3;
+   a_dst->j_ihead         = 0x15;
+   a_dst->j_itail         = 0x16;
+   a_dst->j_icount        =   17;
    /*---(btree)-------------*/
-   a_dst->j_btree     = 0x4;
+   a_dst->j_btree         = 0x18;
    /*---(tags)--------------*/
    return 1;
 }
@@ -117,13 +150,33 @@ PROJS__memory           (tPROJ *a_proj)
    /*---(overall)------------------------*/
    yENV_check_beg    ();
    yENV_check_str    (a_proj->j_name);
+   yENV_check_str    (a_proj->j_dir);
    yENV_check_str    (a_proj->j_header);
+   yENV_check_num    (a_proj->j_written);
    yENV_check_spacer ();
    /*---(master)-------------------------*/
    HEADER__memory    (a_proj);
    yENV_check_spacer ();
    /*---(stats)--------------------------*/
    yENV_check_num    (a_proj->j_funcs);
+   yENV_check_spacer ();
+   /*---(counts)-------------------------*/
+   yENV_check_num    (a_proj->j_nfile);
+   yENV_check_num    (a_proj->j_nfunc);
+   yENV_check_num    (a_proj->j_nylib);
+   yENV_check_spacer ();
+   /*---(lines)--------------------------*/
+   yENV_check_num    (a_proj->j_nlines);
+   yENV_check_num    (a_proj->j_nempty);
+   yENV_check_num    (a_proj->j_ndocs);
+   yENV_check_num    (a_proj->j_ndebug);
+   yENV_check_num    (a_proj->j_ncode);
+   yENV_check_num    (a_proj->j_nslocl);
+   yENV_check_spacer ();
+   /*---(size)---------------------------*/
+   yENV_check_num    (a_proj->j_text);
+   yENV_check_num    (a_proj->j_data);
+   yENV_check_num    (a_proj->j_bss);
    yENV_check_spacer ();
    /*---(files)--------------------------*/
    yENV_check_ptr    (a_proj->j_ihead);

@@ -197,7 +197,7 @@ poly_tags_inventory     (tFILE *a_file)
       /*---(handle prototype)---------------*/
       else if (x_type == 'p') {
          DEBUG_INPT   yLOG_note    ("found a prototype");
-         rc = poly_proto_push (a_file, x_line, x_name);
+         /*> rc = poly_proto_push (a_file, x_line, x_name);                           <*/
       }
       /*---(name)------------------------*/
       else if (x_type == 'f') {

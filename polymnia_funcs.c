@@ -217,21 +217,30 @@ FUNCS__wipe             (tFUNC *a_func)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(master)-------------------------*/
    a_func->c_type        = '-';
-   a_func->c_name [0]    = '\0';
-   a_func->c_line        = -1;
-   a_func->c_hint [0]    = '\0';
+   a_func->c_name    [0] = '\0';
+   a_func->c_hint    [0] = '\0';
+   a_func->c_rlong   [0] = '\0';
    a_func->c_purpose [0] = '\0';
-   /*---(pointers)-----------------------*/
+   a_func->c_ready       = '-';
+   /*---(location)-----------------------*/
+   a_func->c_file        = NULL;
    a_func->c_line        =    0;
    a_func->c_beg         =    0;
    a_func->c_end         =    0;
-   a_func->c_ready       = '-';
-   /*---(characterization)---------------*/
+   /*---(statistics)---------------------*/
+   a_func->c_score   [0] = '\0';
    a_func->c_anatomy [0] = '\0';
-   a_func->c_match [0]   = '\0';
-   /*---(file)---------------------------*/
-   a_func->c_file        = NULL;
-   /*---(funcsions)----------------------*/
+   a_func->c_match   [0] = '\0';
+   /*---(counts)------------*/
+   a_func->c_nylib       =    0;
+   /*---(lines)-------------*/
+   a_func->c_nlines      =    0;
+   a_func->c_nempty      =    0;
+   a_func->c_ndocs       =    0;
+   a_func->c_ndebug      =    0;
+   a_func->c_ncode       =    0;
+   a_func->c_nslocl      =    0;
+   /*---(functions)----------------------*/
    a_func->c_prev        = NULL;
    a_func->c_next        = NULL;
    a_func->c_work        = NULL;
@@ -244,8 +253,6 @@ FUNCS__wipe             (tFUNC *a_func)
    /*---(clear counts/stats)-------------*/
    poly_cats_counts_clear (a_func->counts);
    poly_cats_stats_clear  (a_func->stats);
-   a_func->c_anatomy [0] = '\0';
-   a_func->c_match   [0] = '\0';
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -259,22 +266,32 @@ FUNCS__memory           (tFUNC *a_func)
    /*---(master)-------------------------*/
    yENV_check_char   (a_func->c_type);
    yENV_check_str    (a_func->c_name);
-   yENV_check_num    (a_func->c_line);
    yENV_check_str    (a_func->c_hint);
+   yENV_check_str    (a_func->c_rlong);
    yENV_check_str    (a_func->c_purpose);
+   yENV_check_char   (a_func->c_ready);
    yENV_check_spacer ();
-   /*---(position)-----------------------*/
+   /*---(location------------------------*/
+   yENV_check_ptr    (a_func->c_file);
    yENV_check_num    (a_func->c_line);
    yENV_check_num    (a_func->c_beg);
    yENV_check_num    (a_func->c_end);
-   yENV_check_char   (a_func->c_ready);
    yENV_check_spacer ();
-   /*---(characterization)---------------*/
+   /*---(statistics)---------------------*/
+   yENV_check_str    (a_func->c_score);
    yENV_check_str    (a_func->c_anatomy);
    yENV_check_str    (a_func->c_match);
    yENV_check_spacer ();
-   /*---(file)---------------------------*/
-   yENV_check_ptr    (a_func->c_file);
+   /*---(counts)-------------------------*/
+   yENV_check_num    (a_func->c_nylib);
+   yENV_check_spacer ();
+   /*---(lines)--------------------------*/
+   yENV_check_num    (a_func->c_nlines);
+   yENV_check_num    (a_func->c_nempty);
+   yENV_check_num    (a_func->c_ndocs);
+   yENV_check_num    (a_func->c_ndebug);
+   yENV_check_num    (a_func->c_ncode);
+   yENV_check_num    (a_func->c_nslocl);
    yENV_check_spacer ();
    /*---(functions)----------------------*/
    yENV_check_ptr    (a_func->c_prev);
@@ -304,16 +321,25 @@ FUNCS_rando             (tFUNC *a_func)
    strcpy (a_func->c_hint   , "hint");
    strcpy (a_func->c_rlong  , "rlong");
    strcpy (a_func->c_purpose, "purpose");
-   /*---(position)-----------------------*/
+   a_func->c_ready  = 'x';
+   /*---(location)-----------------------*/
+   a_func->c_file   = 0x04;
    a_func->c_line   = 0x01;
    a_func->c_beg    = 0x02;
    a_func->c_end    = 0x03;
-   a_func->c_ready  = 'x';
    /*---(characterization)---------------*/
+   strcpy (a_func->c_score  , "score");
    strcpy (a_func->c_anatomy, "anatomy");
    strcpy (a_func->c_match  , "match");
-   /*---(file)---------------------------*/
-   a_func->c_file   = 0x04;
+   /*---(counts)-------------------------*/
+   a_func->c_nylib         =    5;
+   /*---(lines)--------------------------*/
+   a_func->c_nlines        =    6;
+   a_func->c_nempty        =    7;
+   a_func->c_ndocs         =    8;
+   a_func->c_ndebug        =    9;
+   a_func->c_ncode         =   10;
+   a_func->c_nslocl        =   11;
    /*---(functions)----------------------*/
    a_func->c_prev   = 0x05;
    a_func->c_next   = 0x06;
@@ -523,9 +549,15 @@ FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, in
       }
    }
    /*---(defense on duplicate)-----------*/
-   rc = FUNCS_in_file_by_name (a_file, a_name, &x_new);
+   rc = FUNCS_in_file_by_name (a_file, a_name, &x_new, NULL, NULL, NULL);
+   DEBUG_DATA   yLOG_value   ("by_name"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DATA   yLOG_note    ("search failed");
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    DEBUG_DATA   yLOG_point   ("dup"       , x_new);
-   --rce;  if (x_new != NULL) {
+   if (rc < 0 || x_new != NULL) {
       DEBUG_DATA   yLOG_note    ("already exists, exiting");
       if (r_new != NULL)  *r_new = x_new;
       DEBUG_DATA   yLOG_exit    (__FUNCTION__);
@@ -750,116 +782,245 @@ FUNCS_in_file_count     (tFILE *a_file)
 }
 
 char
-FUNCS_in_file_by_name   (tFILE *a_file, char a_name [LEN_TITLE], tFUNC **r_func)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tFILE      *u           = NULL;
-   tFUNC      *v           = NULL;
-   /*---(default)------------------------*/
-   if (r_func != NULL)  *r_func = NULL;
-   /*---(defense)------------------------*/
-   --rce;  if (a_file == NULL)       return rce;
-   --rce;  if (a_name == NULL)       return rce;
-   --rce;  if (a_name [0] == '\0')   return rce;
-   /*---(reset)--------------------------*/
-   s_found = NULL;
-   /*---(prepare)------------------------*/
-   u = a_file;
-   v = u->i_chead;
-   --rce;  if (v == NULL)            return rce;
-   /*---(walk)---------------------------*/
-   while (v != NULL) {
-      if (strcmp (v->c_name, a_name) == 0) {
-         s_found = v;
-         if (r_func != NULL)  *r_func = v;
-         return 1;
-      }
-      v = v->c_next;
-   }
-   /*---(complete)-----------------------*/
-   return 0;
-}
-
-char
-FUNCS_in_file_by_index  (tFILE *a_file, int a_index, tFUNC **r_func)
+FUNCS__in_file          (tFILE *a_file, char a_type, char a_dir, char a_name [LEN_TITLE], int a_index, tFUNC **r_func, char d_func [LEN_RECD], char d_head [LEN_RECD], char d_ylib [LEN_RECD]) 
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    tFILE      *u           = NULL;
    tFUNC      *v           = NULL;
    int         c           =    0;
+   char        x_found     =  '-';
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
    if (r_func != NULL)  *r_func = NULL;
+   if (d_func != NULL)  strcpy (d_func, "");
+   if (d_head != NULL)  strcpy (d_head, "");
+   if (d_ylib != NULL)  strcpy (d_ylib, "");
    /*---(defense)------------------------*/
-   --rce;  if (a_file == NULL)       return rce;
-   --rce;  if (a_index <  0)         return rce;
-   /*---(reset)--------------------------*/
-   s_found = NULL;
-   /*---(prepare)------------------------*/
-   u = a_file;
-   v = u->i_chead;
-   --rce;  if (v == NULL)            return rce;
-   /*---(test-too-far)-------------------*/
-   c = u->i_ccount;
-   --rce;  if (a_index >= c)         return rce;
-   /*---(walk)---------------------------*/
-   c = 0;
-   while (v != NULL) {
-      if (c == a_index) {
-         s_found = v;
-         if (r_func != NULL)  *r_func = v;
-         return 1;
-      }
-      ++c;
-      v = v->c_next;
+   DEBUG_PROG   yLOG_point   ("a_file"    , a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
+   DEBUG_PROG   yLOG_info    ("->i_name"  , a_file->i_name);
+   DEBUG_PROG   yLOG_point   ("->i_chead" , a_file->i_chead);
+   if (a_file->i_chead == NULL) {
+      DEBUG_PROG   yLOG_note    ("no functions yet, so no duplicates possible");
+      DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_PROG   yLOG_char    ("a_type"    , a_type);
+   DEBUG_PROG   yLOG_point   ("a_name"    , a_name);
+   --rce;  if (a_type == 'n' && (a_name == NULL || a_name [0] == '\0')) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG   yLOG_value   ("a_index"   , a_index);
+   --rce;  if (a_type == 'i' && a_index <  0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(cursor)-------------------------*/
+   if (a_type == 'c') {
+      DEBUG_PROG   yLOG_note    ("processing cursor version (relative)");
+      /*---(reset)-----------------------*/
+      DEBUG_PROG   yLOG_point   ("s_found"   , s_found);
+      if (s_found != NULL && a_file != s_found->c_file)   s_found = NULL;
+      /*---(prepare)---------------------*/
+      u = a_file;
+      v = s_found;
+      /*---(cursor)----------------------*/
+      DEBUG_PROG   yLOG_char    ("a_dir"     , a_dir);
+      --rce;  switch (a_dir) {
+      case YDLST_HEAD  :
+         DEBUG_PROG   yLOG_note    ("handle head");
+         v = u->i_chead;
+         break;
+      case YDLST_NEXT  :
+         DEBUG_PROG   yLOG_note    ("handle next");
+         if (v != NULL)  v = v->c_next;
+         break;
+      case YDLST_CURR  :
+         DEBUG_PROG   yLOG_note    ("handle curr");
+         break;
+      case YDLST_PREV  :
+         DEBUG_PROG   yLOG_note    ("handle prev");
+         if (v != NULL)  v = v->c_prev;
+         break;
+      case YDLST_TAIL  :
+         DEBUG_PROG   yLOG_note    ("handle tail");
+         v = u->i_ctail;
+         break;
+      default          :
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      /*---(done)------------------------*/
+   }
+   /*---(name/index)---------------------*/
+   else {
+      DEBUG_PROG   yLOG_note    ("processing index/name version (looping)");
+      /*---(prepare)---------------------*/
+      u = a_file;
+      v = u->i_chead;
+      /*---(walk)------------------------*/
+      while (v != NULL) {
+         DEBUG_PROG   yLOG_complex ("loop"      , "%2d) %s", c, v->c_name);
+         /*---(filter)-------------------*/
+         if      (a_type == 'n' && strcmp (v->c_name, a_name) == 0) { x_found = 'y';  break; }
+         else if (a_type == 'i' && c == a_index)                    { x_found = 'y';  break; }
+         /*---(miss)---------------------*/
+         DEBUG_PROG   yLOG_note    ("FOUND");
+         ++c;
+         v = v->c_next;
+         /*---(done)---------------------*/
+      }
+      if (x_found != 'y') {
+         DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+   }
+   /*---(trouble)------------------------*/
+   DEBUG_PROG   yLOG_point   ("v"         , v);
+   --rce;  if (v == NULL) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(save-back)----------------------*/
+   DEBUG_PROG   yLOG_note    ("save back");
+   s_found = v;
+   if (r_func != NULL)  *r_func = v;
+   if (d_func != NULL)  ystrlcpy (d_func, FUNCS_entry  (v)      , LEN_RECD);
+   if (d_head != NULL)  ystrlcpy (d_head, FUNCS_header (v)      , LEN_RECD);
+   if (d_ylib != NULL)  ystrlcpy (d_ylib, ""                    , LEN_RECD);
    /*---(complete)-----------------------*/
-   return 0;
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 1;
+}
+
+
+char
+FUNCS_in_file_by_name   (tFILE *a_file, char a_name [LEN_TITLE], tFUNC **r_func, char d_func [LEN_RECD], char d_head [LEN_RECD], char d_ylib [LEN_RECD])
+{
+   return FUNCS__in_file (a_file, 'n', '-', a_name, -1, r_func, d_func, d_head, d_ylib);
+   /*> /+---(locals)-----------+-----+-----+-+/                                       <* 
+    *> char        rce         =  -10;                                                <* 
+    *> tFILE      *u           = NULL;                                                <* 
+    *> tFUNC      *v           = NULL;                                                <* 
+    *> /+---(default)------------------------+/                                       <* 
+    *> if (r_func != NULL)  *r_func = NULL;                                           <* 
+    *> /+---(defense)------------------------+/                                       <* 
+    *> --rce;  if (a_file == NULL)       return rce;                                  <* 
+    *> --rce;  if (a_name == NULL)       return rce;                                  <* 
+    *> --rce;  if (a_name [0] == '\0')   return rce;                                  <* 
+    *> /+---(reset)--------------------------+/                                       <* 
+    *> s_found = NULL;                                                                <* 
+    *> /+---(prepare)------------------------+/                                       <* 
+    *> u = a_file;                                                                    <* 
+    *> v = u->i_chead;                                                                <* 
+    *> --rce;  if (v == NULL)            return rce;                                  <* 
+    *> /+---(walk)---------------------------+/                                       <* 
+    *> while (v != NULL) {                                                            <* 
+    *>    if (strcmp (v->c_name, a_name) == 0) {                                      <* 
+    *>       s_found = v;                                                             <* 
+    *>       if (r_func != NULL)  *r_func = v;                                        <* 
+    *>       return 1;                                                                <* 
+    *>    }                                                                           <* 
+    *>    v = v->c_next;                                                              <* 
+    *> }                                                                              <* 
+    *> /+---(complete)-----------------------+/                                       <* 
+    *> return 0;                                                                      <*/
 }
 
 char
-FUNCS_in_file_by_cursor (tFILE *a_file, char a_dir, tFUNC **r_func)
+FUNCS_in_file_by_index  (tFILE *a_file, int a_index, tFUNC **r_func, char d_func [LEN_RECD], char d_head [LEN_RECD], char d_ylib [LEN_RECD])
 {
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   tFILE      *u           = NULL;
-   tFUNC      *v           = NULL;
-   /*---(default)------------------------*/
-   if (r_func != NULL)  *r_func = NULL;
-   /*---(defense)------------------------*/
-   --rce;  if (a_file == NULL)   return rce;
-   /*---(reset)--------------------------*/
-   if (s_found != NULL && a_file != s_found->c_file)   s_found = NULL;
-   /*---(prepare)------------------------*/
-   u = a_file;
-   v = s_found;
-   /*---(cursor)-------------------------*/
-   --rce;  switch (a_dir) {
-   case YDLST_HEAD  :
-      v = u->i_chead;
-      break;
-   case YDLST_NEXT  :
-      if (v != NULL)  v = v->c_next;
-      break;
-   case YDLST_CURR  :
-      break;
-   case YDLST_PREV  :
-      if (v != NULL)  v = v->c_prev;
-      break;
-   case YDLST_TAIL  :
-      v = u->i_ctail;
-      break;
-   default          :
-      return rce;
-   }
-   /*---(verify)-------------------------*/
-   --rce;  if (v == NULL) return rce;
-   s_found = v;
-   /*---(save-back)----------------------*/
-   if (r_func != NULL)  *r_func = v;
-   /*---(complete)-----------------------*/
-   return 1;
+   return FUNCS__in_file (a_file, 'i', '-', NULL, a_index, r_func, d_func, d_head, d_ylib);
+   /*> /+---(locals)-----------+-----+-----+-+/                                       <* 
+    *> char        rce         =  -10;                                                <* 
+    *> tFILE      *u           = NULL;                                                <* 
+    *> tFUNC      *v           = NULL;                                                <* 
+    *> int         c           =    0;                                                <* 
+    *> /+---(default)------------------------+/                                       <* 
+    *> if (r_func != NULL)  *r_func = NULL;                                           <* 
+    *> /+---(defense)------------------------+/                                       <* 
+    *> --rce;  if (a_file == NULL)       return rce;                                  <* 
+    *> --rce;  if (a_index <  0)         return rce;                                  <* 
+    *> /+---(reset)--------------------------+/                                       <* 
+    *> s_found = NULL;                                                                <* 
+    *> /+---(prepare)------------------------+/                                       <* 
+    *> u = a_file;                                                                    <* 
+    *> v = u->i_chead;                                                                <* 
+    *> --rce;  if (v == NULL)            return rce;                                  <* 
+    *> /+---(test-too-far)-------------------+/                                       <* 
+    *> c = u->i_ccount;                                                               <* 
+    *> --rce;  if (a_index >= c)         return rce;                                  <* 
+    *> /+---(walk)---------------------------+/                                       <* 
+    *> c = 0;                                                                         <* 
+    *> while (v != NULL) {                                                            <* 
+    *>    if (c == a_index) {                                                         <* 
+    *>       s_found = v;                                                             <* 
+    *>       if (r_func != NULL)  *r_func = v;                                        <* 
+    *>       return 1;                                                                <* 
+    *>    }                                                                           <* 
+    *>    ++c;                                                                        <* 
+    *>    v = v->c_next;                                                              <* 
+    *> }                                                                              <* 
+    *> /+---(complete)-----------------------+/                                       <* 
+    *> return 0;                                                                      <*/
+}
+
+char
+FUNCS_in_file_by_cursor (tFILE *a_file, char a_dir, tFUNC **r_func, char d_func [LEN_RECD], char d_head [LEN_RECD], char d_ylib [LEN_RECD])
+{
+   return FUNCS__in_file (a_file, 'c', a_dir, NULL, -1, r_func, d_func, d_head, d_ylib);
+   /*> /+---(locals)-----------+-----+-----+-+/                                       <* 
+    *> char        rce         =  -10;                                                <* 
+    *> tFILE      *u           = NULL;                                                <* 
+    *> tFUNC      *v           = NULL;                                                <* 
+    *> /+---(default)------------------------+/                                       <* 
+    *> if (r_func != NULL)  *r_func = NULL;                                           <* 
+    *> /+---(default)------------------------+/                                       <* 
+    *> if (r_func != NULL)  *r_func = NULL;                                           <* 
+    *> if (d_func != NULL)  strcpy (d_func, "");                                      <* 
+    *> if (d_head != NULL)  strcpy (d_head, "");                                      <* 
+    *> /+---(defense)------------------------+/                                       <* 
+    *> --rce;  if (a_file == NULL)   return rce;                                      <* 
+    *> /+---(reset)--------------------------+/                                       <* 
+    *> if (s_found != NULL && a_file != s_found->c_file)   s_found = NULL;            <* 
+    *> /+---(prepare)------------------------+/                                       <* 
+    *> u = a_file;                                                                    <* 
+    *> v = s_found;                                                                   <* 
+    *> /+---(cursor)-------------------------+/                                       <* 
+    *> --rce;  switch (a_dir) {                                                       <* 
+    *> case YDLST_HEAD  :                                                             <* 
+    *>    v = u->i_chead;                                                             <* 
+    *>    break;                                                                      <* 
+    *> case YDLST_NEXT  :                                                             <* 
+    *>    if (v != NULL)  v = v->c_next;                                              <* 
+    *>    break;                                                                      <* 
+    *> case YDLST_CURR  :                                                             <* 
+    *>    break;                                                                      <* 
+    *> case YDLST_PREV  :                                                             <* 
+    *>    if (v != NULL)  v = v->c_prev;                                              <* 
+    *>    break;                                                                      <* 
+    *> case YDLST_TAIL  :                                                             <* 
+    *>    v = u->i_ctail;                                                             <* 
+    *>    break;                                                                      <* 
+    *> default          :                                                             <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <* 
+    *> /+---(trouble)------------------------+/                                       <* 
+    *> --rce;  if (v == NULL) return rce;                                             <* 
+    *> /+---(save-back)----------------------+/                                       <* 
+    *> s_found = v;                                                                   <* 
+    *> if (r_func != NULL)  *r_func = v;                                              <* 
+    *> if (d_func != NULL)  ystrlcpy (d_func, FUNCS_entry (v)       , LEN_RECD);      <* 
+    *> if (d_head != NULL)  ystrlcpy (d_head, FILES_entry (v)       , LEN_RECD);      <* 
+    *> if (d_ylib != NULL)  ystrlcpy (d_head, ""                    , LEN_RECD);      <* 
+    *> /+---(complete)-----------------------+/                                       <* 
+    *> return 1;                                                                      <*/
 }
 
 char
@@ -907,6 +1068,40 @@ FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **r_func)
    DEBUG_PROG   yLOG_snote   ("FAILED");
    DEBUG_PROG   yLOG_sexitr  (__FUNCTION__, rce);
    return rce;
+}
+
+char
+FUNCS_in_proj_by_name   (tPROJ *a_proj, char a_name [LEN_TITLE], tFUNC **r_func)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         x_len       =    0;
+   tFILE      *x_file      = NULL;
+   tFUNC      *x_func      = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_proj   == NULL)   return rce;
+   --rce;  if (a_name   == NULL)   return rce;
+   --rce;  if (r_func   == NULL)   return rce;
+   x_len = strlen (a_name);
+   --rce;  if (x_len    <= 2)      return rce;
+   /*---(prepare)------------------------*/
+   *r_func = NULL;
+   /*---(walk files)---------------------*/
+   x_file = a_proj->j_ihead;
+   while (x_file != NULL) {
+      /*---(walk functions)--------------*/
+      x_func = x_file->i_chead;
+      while (x_func != NULL) {
+         if (strcmp (x_func->c_name, a_name) == 0) {
+            *r_func = x_func;
+            return 0;
+         }
+         x_func = x_func->c_next;
+      }
+      x_file = x_file->i_next;
+   }
+   /*---(complete)-----------------------*/
+   --rce;  return rce;
 }
 
 char
@@ -1232,6 +1427,23 @@ FUNCS_entry             (tFUNC *a_func)
          /* counts */  -1, -1, -1, u->COUNT_YLIBS, u->COUNT_LINES, u->COUNT_EMPTY, u->COUNT_DOCS, u->COUNT_DEBUG, u->COUNT_CODE, u->COUNT_SLOCL,
          /* files  */  c, x_fore, x_back, s, r,
          /* lines  */  -1, -1, -1, -1);
+   return unit_answer;
+}
+
+char*
+FUNCS_header            (tFUNC *a_func)
+{
+   tFUNC      *u           = NULL;
+   if (a_func == NULL) {
+      DATA__unit_prefix ("(n/a)", '-', "´", "´");
+      ystrlcat (unit_answer, ystrlpadquick  ("´", '<', '.', 130), LEN_RECD);
+      ystrlcat (unit_answer, "  Ï", LEN_RECD);
+      return unit_answer;
+   }
+   u = a_func;
+   DATA__unit_prefix (u->c_file->i_proj->j_name, u->c_file->i_type, u->c_file->i_name, u->c_name);
+   ystrlcat (unit_answer, ystrlpadquick  (u->c_score, '<', '.', 130), LEN_RECD);
+   ystrlcat (unit_answer, "  Ï", LEN_RECD);
    return unit_answer;
 }
 

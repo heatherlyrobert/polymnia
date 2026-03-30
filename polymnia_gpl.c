@@ -73,7 +73,7 @@ const struct {
    /*-------extra-----------label------------description-------------------------where--type---offset-----------------------------------------------min--low--hig--max-store--------------*/
    { 'o' , "P_OBJECTIVE"   , "objective"    , "file-specific objective"         , 'c' , 'f' , (long) &(s_place.i_objective  [0]) - (long) &s_place,   1,  50, 300, 500, LEN_LABEL         },
    { 'c' , "P_IMPORTANCE"  , "importance"   , "how important is this code"      , 'c' , 'f' , (long) &(s_place.i_importance [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
-   { 'c' , "P_COMPLEXITY"  , "complexity"   , "how hard to maintain"            , 'c' , 'f' , (long) &(s_place.i_complexity [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
+   { 'c' , "P_COMPLEXITY"  , "complexity"   , "how hard is it to maintain"      , 'c' , 'f' , (long) &(s_place.i_complexity [0]) - (long) &s_place,   1,   1,  70, 100, LEN_LABEL         },
    {  1  , ""              , ""             , ""                                , '·' , '·' , -1                                                  ,   0,   0,   0,   0, 0                 },
    /*-------grade-----------label------------description-------------------------where--type---offset-----------------------------------------------min--low--hig--max-store--------------*/
    { ' ' , ""              , "GRADE"        , "final rating on file header"     , '·' , '°' , -1                                                  ,   0,   0,   0,   0, 0                 },
@@ -270,7 +270,7 @@ GPL_grading             (tFILE *a_file)
    else if (x_warn > 0)  { strcpy (t, "WARN");  a_file->i_header [x_summ] = '¡'; }
    else if (x_miss > 0)  { strcpy (t, "MISS");  a_file->i_header [x_summ] = '¢'; }
    else                  { strcpy (t, "PASS");  a_file->i_header [x_summ] = ' '; }
-   snprintf  (a_file->i_grade, LEN_HUND, "%s (header audit) %3dp, %3df, %3dw, %3d-, %3d·", t, x_pass, x_fail, x_warn, x_miss, x_na);
+   snprintf  (a_file->i_grade, LEN_HUND, "%s (file header audit) %3dp, %3df, %3dw, %3d-, %3d·", t, x_pass, x_fail, x_warn, x_miss, x_na);
    DEBUG_INPT   yLOG_info    ("final"     , a_file->i_header);
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
@@ -399,14 +399,16 @@ GPL_report              (tPROJ* a_proj, tFILE *a_file, char a_ftype)
    char       *p           = NULL;
    char        x_len       =    0;
    char        x_type      =  '-';
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
-   --rce;  if (a_file == NULL) {
+   DEBUG_INPT   yLOG_point   ("a_proj"    , a_proj);
+   --rce;  if (a_proj == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
-   DEBUG_INPT   yLOG_point   ("a_proj"    , a_proj);
-   --rce;  if (a_proj == NULL) {
+   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
+   --rce;  if (a_file == NULL) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return  rce;
    }
@@ -427,8 +429,9 @@ GPL_report              (tPROJ* a_proj, tFILE *a_file, char a_ftype)
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    }
+   ystrlcat (t, ystrlpadquick  (a_file->i_name, '<', '.', 30), LEN_RECD);
    yURG_msg (' ', "##");
-   yURG_msg (' ', "##===[[ %s", a_file->i_name);
+   yURG_msg (' ', "##---[[ %s · å%sæ ]]---------------------------------------------------------------------------------------------------------------------------------------------##", t, a_file->i_header);
    yURG_msg (' ', "##");
    yURG_msg (' ', x_sep);
    yURG_msg (' ', "##");
@@ -458,6 +461,10 @@ GPL_report              (tPROJ* a_proj, tFILE *a_file, char a_ftype)
       sprintf (t, "%2d  å%sæ", strlen (p), p);
       yURG_msg (' ', "##   %-10.10s  %c  %c  %c  %-86.86s  %2d  %-12.12s  %c %5d %4dn %4dl %4dh %4dx %4ds  %s", s_gpl [i].g_label, s_gpl [i].g_abbr, x_mark, x_grade, t, i, s_gpl [i].g_name, s_gpl [i].g_type, s_gpl [i].g_offset, s_gpl [i].g_min, s_gpl [i].g_low, s_gpl [i].g_high, s_gpl [i].g_max, s_gpl [i].g_store, s_gpl [i].g_desc);
    }
+   yURG_msg (' ', "##   grade       ·  ·  ·  ··  å%sæ", a_file->i_grade);
+   yURG_msg (' ', "##");
+   /*---(complete)-----------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

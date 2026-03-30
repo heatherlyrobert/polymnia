@@ -78,8 +78,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3k"
-#define     P_VERTXT    "added header-style, purpose, and parameter parens monitoring"
+#define     P_VERNUM    "1.3l"
+#define     P_VERTXT    "very lovely clean-up of projs, files, funcs, and header w/unit testind"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -660,6 +660,21 @@ struct cPROJ {
    /*---(new stats interface)-*/
    int         j_funcs;
    int         counts      [MAX_COUNTS];    /* line counts                    */
+   /*---(counts)------------*/
+   int         j_nfile;
+   int         j_nfunc;
+   int         j_nylib;
+   /*---(lines)-------------*/
+   int         j_nlines;
+   int         j_nempty;
+   int         j_ndocs;
+   int         j_ndebug;
+   int         j_ncode;
+   int         j_nslocl;
+   /*---(size)--------------*/
+   int         j_text;
+   int         j_data;
+   int         j_bss;
    /*---(files)-------------*/
    tFILE      *j_ihead;                     /* file (i) list head             */
    tFILE      *j_itail;                     /* file (i) list tail             */
@@ -669,6 +684,23 @@ struct cPROJ {
    /*---(done)--------------*/
 };
 
+#define     COUNT_PROJS    counts [ 0]
+#define     COUNT_FILES    counts [ 1]
+#define     COUNT_FUNCS    counts [ 2]
+#define     COUNT_YLIBS    counts [ 3]
+#define     COUNT_LINES    counts [ 4]
+/*--- poly_debug__counts (), poly_units__classify () -----*/
+#define     COUNT_EMPTY    counts [ 5]
+/*--- poly_debug__counts (), poly_units__classify () -----*/
+#define     COUNT_DOCS     counts [ 6]
+/*--- poly_debug__counts (), poly_units__classify () -----*/
+#define     COUNT_DEBUG    counts [ 7]
+
+#define     COUNT_CODE     counts [ 8]
+#define     COUNT_SLOCL    counts [ 9]
+#define     COUNT_TEXT     counts [10]
+#define     COUNT_DATA     counts [11]
+#define     COUNT_BSS      counts [12]
 
 
 /*
@@ -697,6 +729,20 @@ struct cFILE {
    char        i_grade       [LEN_HUND];
    /*---(new stats interface)-*/
    int         counts      [MAX_COUNTS];    /* line counts                    */
+   /*---(counts)------------*/
+   int         i_nfunc;
+   int         i_nylib;
+   /*---(lines)-------------*/
+   int         i_nlines;
+   int         i_nempty;
+   int         i_ndocs;
+   int         i_ndebug;
+   int         i_ncode;
+   int         i_nslocl;
+   /*---(size)--------------*/
+   int         i_text;
+   int         i_data;
+   int         i_bss;
    /*---(parent)------------*/
    tPROJ      *i_proj;
    /*---(files)-------------*/
@@ -835,17 +881,27 @@ struct      cFUNC {
    char        c_hint        [LEN_SHORT];     /* two-char navigation hint       */
    char        c_rlong       [LEN_LABEL];     /* actual return string           */
    char        c_purpose     [LEN_DESC];      /* short description of purpose   */
+   char        c_ready;
+   /*---(location)-----------------------*/
+   tFILE      *c_file;
    int         c_line;                        /* function header                */
    int         c_beg;                         /* first code line                */
    int         c_end;                         /* last code line                 */
-   char        c_ready;
-   /*---(new stats interface)------------*/
-   int         counts      [MAX_COUNTS];    /* line counts                    */
-   char        stats       [MAX_STATS];     /* statistics                     */
+   /*---(statistics)---------------------*/
+   char        c_score       [LEN_FULL];
    char        c_anatomy     [LEN_TERSE];     /* function type                  */
    char        c_match       [LEN_LABEL];     /* function type match sting      */
-   /*---(parent)------------*/
-   tFILE      *c_file;
+   int         counts        [MAX_COUNTS];    /* line counts                    */
+   char        stats         [MAX_STATS];     /* statistics                     */
+   /*---(counts)------------*/
+   int         c_nylib;
+   /*---(lines)-------------*/
+   int         c_nlines;
+   int         c_nempty;
+   int         c_ndocs;
+   int         c_ndebug;
+   int         c_ncode;
+   int         c_nslocl;
    /*---(tags)--------------*/
    tFUNC      *c_prev;
    tFUNC      *c_next;
@@ -1299,25 +1355,27 @@ char        FUNCS__unhook           (tFUNC *a_func);
 /*········´ ´···········existance·´ ´·········································*/
 char        FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, int a_line, tFUNC **r_new);
 char        FUNCS_remove            (tFUNC **b_old);
-/*········´ ´··············search·´ ´·········································*/
+/*········´ ´·······global·search·´ ´·········································*/
 int         FUNCS_count             (void);
 char        FUNCS_by_name           (uchar a_name [LEN_TITLE], tFUNC **a_func);
 char        FUNCS_by_index          (int   a_index           , tFUNC **a_func);
 char        FUNCS_by_cursor         (char  a_dir             , tFUNC **a_func);
 char        FUNCS_by_tree           (uchar a_name [LEN_TITLE], tFUNC **a_func);
 char        FUNCS_by_regex          (uchar *a_regex, tFUNC **a_func);
-/*········´ ´··············search·´ ´·········································*/
+/*········´ ´····file-wide·search·´ ´·········································*/
 int         FUNCS_in_file_count     (tFILE *a_file);
-char        FUNCS_in_file_by_name   (tFILE *a_file, char a_name [LEN_TITLE], tFUNC **r_func);
-char        FUNCS_in_file_by_index  (tFILE *a_file, int a_index, tFUNC **r_func);
-char        FUNCS_in_file_by_cursor (tFILE *a_file, char a_dir, tFUNC **r_func);
-/*········´ ´··············search·´ ´·········································*/
-char        FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **r_func);
-/*········´ ´··············search·´ ´·········································*/
+char        FUNCS__in_file          (tFILE *a_file, char a_type, char a_dir, char a_name [LEN_TITLE], int a_index, tFUNC **r_func, char d_func [LEN_RECD], char d_head [LEN_RECD], char d_ylib [LEN_RECD]) ;
+char        FUNCS_in_file_by_name   (tFILE *a_file, char a_name [LEN_TITLE], tFUNC **r_func, char d_func [LEN_RECD], char d_head [LEN_RECD], char d_ylib [LEN_RECD]);
+char        FUNCS_in_file_by_index  (tFILE *a_file, int a_index, tFUNC **r_func, char d_func [LEN_RECD], char d_head [LEN_RECD], char d_ylib [LEN_RECD]);
+char        FUNCS_in_file_by_cursor (tFILE *a_file, char a_dir, tFUNC **r_func, char d_func [LEN_RECD], char d_head [LEN_RECD], char d_ylib [LEN_RECD]);
 char        FUNCS_by_file_line      (tFILE *a_file, int a_line, tFUNC **r_func);
+/*········´ ´····proj-wide·search·´ ´·········································*/
+char        FUNCS_in_proj_by_name   (tPROJ *a_proj, char a_name [LEN_TITLE], tFUNC **r_func);
+char        FUNCS_in_proj_by_hint   (tPROJ *a_proj, char a_hint [LEN_SHORT], tFUNC **r_func);
 /*········´ ´············exposure·´ ´·········································*/
 char*       FUNCS_in_file_list      (tFILE *a_file);
 char*       FUNCS_entry             (tFUNC *a_func);
+char*       FUNCS_header            (tFUNC *a_func);
 /*········´ ´·············program·´ ´·········································*/
 char        FUNCS_init              (void);
 char        FUNCS_purge             (tFILE *a_file, char a_update);
@@ -1500,13 +1558,16 @@ char*       poly_extern__unit       (char *a_question, int n);
 /*---(done)-----------------*/
 
 
+char        PROTO__handler          (tFILE *a_file, char a_name [LEN_TITLE], char a_type [LEN_TERSE], int a_line, char a_fname [LEN_TITLE]);
+char        PROTO__from_file        (tPROJ *a_proj, tFILE *a_file, char a_ftype);
+char        PROTO_gather            (tPROJ *a_proj);
 
-char        poly_proto__purge       (void);
-char        poly_proto_init         (void);
-char        poly_proto_push         (tFILE *a_file, int a_line, char *a_name);
-char        poly_proto_hook         (tFILE *a_file, tFUNC *a_func, char *a_name);
-char        poly_proto_list         (void);
-char*       poly_proto__unit        (char *a_question, int i);
+/*> char        poly_proto__purge       (void);                                       <*/
+/*> char        poly_proto_init         (void);                                       <*/
+/*> char        poly_proto_push         (tFILE *a_file, int a_line, char *a_name);    <*/
+/*> char        poly_proto_hook         (tFILE *a_file, tFUNC *a_func, char *a_name);   <*/
+/*> char        poly_proto_list         (void);                                       <*/
+/*> char*       poly_proto__unit        (char *a_question, int i);                    <*/
 
 
 
@@ -1537,6 +1598,7 @@ char        poly_db__open           (char a_mode, int *a_nproj, int *a_nfile, in
 char        poly_db__close          (void);
 char        poly_db_write           (void);
 char        poly_db_read            (void);
+char        DATA__unit_prefix       (char a_proj [LEN_LABEL], char a_ftype, char a_file [LEN_TITLE], char a_func [LEN_TITLE]);
 char        DATA__unit_format       (char a_proj [LEN_LABEL], char a_ftype, char a_file [LEN_TITLE], char a_func [LEN_TITLE], int a_projs, int a_files, int a_funcs, int a_ylibs, int a_lines, int a_empty, int a_docs, int a_debug, int a_code, int a_slocl, int a_count, int a_fore, int a_back, char a_head [LEN_TITLE], char a_tail [LEN_TITLE], int a_proto, int a_defn, int a_beg, int a_end);
 char*       DATA__unit_entry        (void);
 char*       poly_db__unit           (char *a_question);

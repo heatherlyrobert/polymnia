@@ -67,8 +67,6 @@ FILES__wipe        (tFILE *a_dst)
    a_dst->i_header      [0] = '\0';
    /*---(header entries)----*/
    GPL_wipe (a_dst);
-   /*---(stats)-------------*/
-   poly_cats_counts_clear (a_dst->counts);
    /*---(gpl)---------------*/
    a_dst->i_copyright   [0] = '\0';
    a_dst->i_license     [0] = '\0';
@@ -81,8 +79,24 @@ FILES__wipe        (tFILE *a_dst)
    a_dst->i_importance  [0] = '\0';
    a_dst->i_complexity  [0] = '\0';
    a_dst->i_grade       [0] = '\0';
+   /*---(stats)-------------*/
+   poly_cats_counts_clear (a_dst->counts);
+   /*---(counts)------------*/
+   a_dst->i_nfunc         =    0;
+   a_dst->i_nylib         =    0;
+   /*---(lines)-------------*/
+   a_dst->i_nlines        =    0;
+   a_dst->i_nempty        =    0;
+   a_dst->i_ndocs         =    0;
+   a_dst->i_ndebug        =    0;
+   a_dst->i_ncode         =    0;
+   a_dst->i_nslocl        =    0;
+   /*---(size)--------------*/
+   a_dst->i_text          =    0;
+   a_dst->i_data          =    0;
+   a_dst->i_bss           =    0;
    /*---(tags)--------------*/
-   a_dst->i_proj        = NULL;
+   a_dst->i_proj          = NULL;
    /*---(tags)--------------*/
    a_dst->i_prev        = NULL;
    a_dst->i_next        = NULL;
@@ -122,6 +136,23 @@ FILES__memory           (tFILE *a_file)
    yENV_check_str    (a_file->i_complexity);
    yENV_check_str    (a_file->i_grade);
    yENV_check_spacer ();
+   /*---(counts)-------------------------*/
+   yENV_check_num    (a_file->i_nfunc);
+   yENV_check_num    (a_file->i_nylib);
+   yENV_check_spacer ();
+   /*---(lines)--------------------------*/
+   yENV_check_num    (a_file->i_nlines);
+   yENV_check_num    (a_file->i_nempty);
+   yENV_check_num    (a_file->i_ndocs);
+   yENV_check_num    (a_file->i_ndebug);
+   yENV_check_num    (a_file->i_ncode);
+   yENV_check_num    (a_file->i_nslocl);
+   yENV_check_spacer ();
+   /*---(size)---------------------------*/
+   yENV_check_num    (a_file->i_text);
+   yENV_check_num    (a_file->i_data);
+   yENV_check_num    (a_file->i_bss);
+   yENV_check_spacer ();
    /*---(project)------------------------*/
    yENV_check_ptr    (a_file->i_proj);
    yENV_check_spacer ();
@@ -142,32 +173,54 @@ FILES__memory           (tFILE *a_file)
 }
 
 char
-FILES_rando             (tFILE *a_file)
+FILES_rando             (tFILE *a_dst)
 {
    char        rce         =  -10;
-   --rce;  if (a_file == NULL)  return rce;
-   a_file->i_type   = 'Z';
-   strcpy (a_file->i_name       , "name");
-   strcpy (a_file->i_sort       , "sort");
-   strcpy (a_file->i_header     , "header");
-   GPL_rando (a_file);
-   strcpy (a_file->i_copyright  , "copyright");
-   strcpy (a_file->i_license    , "license");
-   strcpy (a_file->i_copyleft   , "copyleft");
-   strcpy (a_file->i_include    , "include");
-   strcpy (a_file->i_as_is      , "as_is");
-   strcpy (a_file->i_theft      , "theft");
-   strcpy (a_file->i_objective  , "objective");
-   strcpy (a_file->i_importance , "importance");
-   strcpy (a_file->i_complexity , "complexity");
-   strcpy (a_file->i_grade      , "grade");
-   a_file->i_proj   = 0x01;
-   a_file->i_prev   = 0x02;
-   a_file->i_next   = 0x03;
-   a_file->i_chead  = 0x04;
-   a_file->i_ctail  = 0x05;
-   a_file->i_ccount = 6;
-   a_file->i_btree  = 0x07;
+   --rce;  if (a_dst == NULL)  return rce;
+   /*---(master)-------------------------*/
+   a_dst->i_type   = 'Z';
+   strcpy (a_dst->i_name       , "name");
+   strcpy (a_dst->i_sort       , "sort");
+   strcpy (a_dst->i_header     , "header");
+   /*---(warranty)-----------------------*/
+   GPL_rando (a_dst);
+   strcpy (a_dst->i_copyright  , "copyright");
+   strcpy (a_dst->i_license    , "license");
+   strcpy (a_dst->i_copyleft   , "copyleft");
+   strcpy (a_dst->i_include    , "include");
+   strcpy (a_dst->i_as_is      , "as_is");
+   strcpy (a_dst->i_theft      , "theft");
+   /*---(what)---------------------------*/
+   strcpy (a_dst->i_objective  , "objective");
+   strcpy (a_dst->i_importance , "importance");
+   strcpy (a_dst->i_complexity , "complexity");
+   strcpy (a_dst->i_grade      , "grade");
+   /*---(counts)-------------------------*/
+   a_dst->i_nfunc         =    4;
+   a_dst->i_nylib         =    5;
+   /*---(lines)--------------------------*/
+   a_dst->i_nlines        =    6;
+   a_dst->i_nempty        =    7;
+   a_dst->i_ndocs         =    8;
+   a_dst->i_ndebug        =    9;
+   a_dst->i_ncode         =   10;
+   a_dst->i_nslocl        =   11;
+   /*---(size)---------------------------*/
+   a_dst->i_text          =   12;
+   a_dst->i_data          =   13;
+   a_dst->i_bss           =   14;
+   /*---(project)------------------------*/
+   a_dst->i_proj   = 0x01;
+   /*---(file list)----------------------*/
+   a_dst->i_prev   = 0x02;
+   a_dst->i_next   = 0x03;
+   /*---(functions)----------------------*/
+   a_dst->i_chead  = 0x04;
+   a_dst->i_ctail  = 0x05;
+   a_dst->i_ccount = 6;
+   /*---(btree)--------------------------*/
+   a_dst->i_btree  = 0x07;
+   /*---(complete)-----------------------*/
    return 0;
 }
 
@@ -1727,120 +1780,6 @@ FILES_entry             (tFILE *a_file)
          /* files  */  c, x_fore, x_back, s, r,
          /* lines  */  -1, -1, -1, -1);
    return unit_answer;
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                   size and memory footprint                  ----===*/
-/*====================------------------------------------====================*/
-static void  o___FOOTPRINT_______o () { return; }
-
-char
-FILES_footprint        (tFILE *a_file)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   char        x_name      [LEN_TITLE] = "";
-   char        x_cmd       [LEN_RECD]  = "";
-   int         x_len       =    0;
-   FILE       *f           = NULL;
-   char        x_recd      [LEN_RECD]  = "";
-   char       *p           = NULL;
-   char       *r           = NULL;
-   int         rci         =    0;
-   tSTAT       st;
-   /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
-   --rce;  if (a_file == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_INPT   yLOG_info    ("name"      , a_file->i_name);
-   DEBUG_INPT   yLOG_char    ("type"      , a_file->i_type);
-   --rce;  if (a_file->i_type != 'c') {
-      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
-   /*---(prepare name)--------------------------*/
-   ystrlcpy (x_name, a_file->i_name, LEN_TITLE);
-   x_len = strlen (x_name);
-   x_name [--x_len] = 'o';
-   x_name [++x_len] = 's';
-   x_name [++x_len] = '\0';
-   DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
-   /*---(defaults)-----------------------*/
-   a_file->COUNT_TEXT = 0;
-   a_file->COUNT_DATA = 0;
-   a_file->COUNT_BSS  = 0;
-   /*---(check for existance)------------*/
-   rci = lstat (x_name, &st);
-   DEBUG_FILE   yLOG_value   ("lstat"     , rci);
-   --rce; if (rci < 0) {
-      DEBUG_FILE   yLOG_note    ("file does not exist, can not read");
-      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(check for regular file)---------*/
-   --rce;  if (!S_ISREG (st.st_mode)) {
-      DEBUG_FILE   yLOG_note    ("not a regular file, rejected");
-      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(get data)------------------------------*/
-   sprintf (x_cmd, "size %s > /tmp/polymnia_footprint.txt", x_name);
-   rc = system (x_cmd);
-   DEBUG_INPT   yLOG_value   ("size"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(pull data)-----------------------------*/
-   f = fopen ("/tmp/polymnia_footprint.txt", "rt");
-   DEBUG_INPT   yLOG_point   ("f"         , f);
-   --rce;  if (f == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(get data line)-------------------------*/
-   fgets  (x_recd, LEN_RECD, f);
-   fgets  (x_recd, LEN_RECD, f);
-   /*---(parse)---------------------------------*/
-   p = strtok_r (x_recd, " ", &r);
-   --rce;  if (p == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   a_file->i_proj->COUNT_TEXT += a_file->COUNT_TEXT = atoi (p);
-   p = strtok_r (NULL  , " ", &r);
-   --rce;  if (p == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   a_file->i_proj->COUNT_DATA += a_file->COUNT_DATA = atoi (p);
-   p = strtok_r (NULL  , " ", &r);
-   --rce;  if (p == NULL) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   a_file->i_proj->COUNT_BSS  += a_file->COUNT_BSS  = atoi (p);
-   /*---(close)---------------------------------*/
-   rc = fclose (f);
-   DEBUG_INPT   yLOG_point   ("close"     , rc);
-   /*---(destroy temp file)---------------------*/
-   sprintf (x_cmd, "rm -f /tmp/polymnia_footprint.txt  2> /dev/null");
-   rc = system (x_cmd);
-   DEBUG_INPT   yLOG_value   ("size"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)------------------------------*/
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
 }
 
 

@@ -752,6 +752,24 @@ poly_db_read          (void)
 static void  o___UNITTEST________o () { return; }
 
 char
+DATA__unit_prefix       (char a_proj [LEN_LABEL], char a_ftype, char a_file [LEN_TITLE], char a_func [LEN_TITLE])
+{
+   char        x_ftype     [LEN_SHORT] = "";
+   strcpy   (unit_answer, "");
+   sprintf (x_ftype, "%c", ychrvisible (a_ftype));
+   ystrlcat (unit_answer, ystrlpadquick  (a_proj, '<', '.', 20), LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+   ystrlcat (unit_answer, x_ftype, LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+   ystrlcat (unit_answer, ystrlpadquick  (a_file, '<', '.', 30), LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+   ystrlcat (unit_answer, ystrlpadquick  (a_func, '<', '.', 30), LEN_RECD);
+   ystrlcat (unit_answer, "  ", LEN_RECD);
+
+   return 0;
+}
+
+char
 DATA__unit_format       (char a_proj [LEN_LABEL], char a_ftype, char a_file [LEN_TITLE], char a_func [LEN_TITLE], int a_projs, int a_files, int a_funcs, int a_ylibs, int a_lines, int a_empty, int a_docs, int a_debug, int a_code, int a_slocl, int a_count, int a_fore, int a_back, char a_head [LEN_TITLE], char a_tail [LEN_TITLE], int a_proto, int a_defn, int a_beg, int a_end)
 {
    char        x_ftype     [LEN_SHORT] = "";

@@ -168,3 +168,111 @@ PROJS_footprint        (tPROJ *a_proj)
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+
+char
+FILES_footprint        (tFILE *a_file)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char        x_name      [LEN_TITLE] = "";
+   char        x_cmd       [LEN_RECD]  = "";
+   int         x_len       =    0;
+   FILE       *f           = NULL;
+   char        x_recd      [LEN_RECD]  = "";
+   char       *p           = NULL;
+   char       *r           = NULL;
+   int         rci         =    0;
+   tSTAT       st;
+   /*---(header)-------------------------*/
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_INPT   yLOG_point   ("a_file"    , a_file);
+   --rce;  if (a_file == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_INPT   yLOG_info    ("name"      , a_file->i_name);
+   DEBUG_INPT   yLOG_char    ("type"      , a_file->i_type);
+   --rce;  if (a_file->i_type != 'c') {
+      DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(prepare name)--------------------------*/
+   ystrlcpy (x_name, a_file->i_name, LEN_TITLE);
+   x_len = strlen (x_name);
+   x_name [--x_len] = 'o';
+   x_name [++x_len] = 's';
+   x_name [++x_len] = '\0';
+   DEBUG_INPT   yLOG_info    ("x_name"    , x_name);
+   /*---(defaults)-----------------------*/
+   a_file->COUNT_TEXT = 0;
+   a_file->COUNT_DATA = 0;
+   a_file->COUNT_BSS  = 0;
+   /*---(check for existance)------------*/
+   rci = lstat (x_name, &st);
+   DEBUG_FILE   yLOG_value   ("lstat"     , rci);
+   --rce; if (rci < 0) {
+      DEBUG_FILE   yLOG_note    ("file does not exist, can not read");
+      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(check for regular file)---------*/
+   --rce;  if (!S_ISREG (st.st_mode)) {
+      DEBUG_FILE   yLOG_note    ("not a regular file, rejected");
+      DEBUG_FILE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(get data)------------------------------*/
+   sprintf (x_cmd, "size %s > /tmp/polymnia_footprint.txt", x_name);
+   rc = system (x_cmd);
+   DEBUG_INPT   yLOG_value   ("size"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(pull data)-----------------------------*/
+   f = fopen ("/tmp/polymnia_footprint.txt", "rt");
+   DEBUG_INPT   yLOG_point   ("f"         , f);
+   --rce;  if (f == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get data line)-------------------------*/
+   fgets  (x_recd, LEN_RECD, f);
+   fgets  (x_recd, LEN_RECD, f);
+   /*---(parse)---------------------------------*/
+   p = strtok_r (x_recd, " ", &r);
+   --rce;  if (p == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   a_file->i_proj->COUNT_TEXT += a_file->COUNT_TEXT = atoi (p);
+   p = strtok_r (NULL  , " ", &r);
+   --rce;  if (p == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   a_file->i_proj->COUNT_DATA += a_file->COUNT_DATA = atoi (p);
+   p = strtok_r (NULL  , " ", &r);
+   --rce;  if (p == NULL) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   a_file->i_proj->COUNT_BSS  += a_file->COUNT_BSS  = atoi (p);
+   /*---(close)---------------------------------*/
+   rc = fclose (f);
+   DEBUG_INPT   yLOG_point   ("close"     , rc);
+   /*---(destroy temp file)---------------------*/
+   sprintf (x_cmd, "rm -f /tmp/polymnia_footprint.txt  2> /dev/null");
+   rc = system (x_cmd);
+   DEBUG_INPT   yLOG_value   ("size"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SORT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)------------------------------*/
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}

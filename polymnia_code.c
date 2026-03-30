@@ -153,9 +153,6 @@ CODE_function           (tFUNC *a_func, char *a_recd, char *a_prev)
    char       *p           = NULL;
    int        x_len        =    0;
    char       x_single     =  '-';
-   char       x_scope      =  '-';
-   char       x_rtype      =  '-';
-   char       x_rlong      [LEN_LABEL] = "";
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -171,14 +168,13 @@ CODE_function           (tFUNC *a_func, char *a_recd, char *a_prev)
       return rce;
    }
    /*---(return)-------------------------*/
-   /*> rc = LINE_function    (a_func, a_prev, a_recd, a_func->c_name, &(a_func->STATS_SINGLE), &(a_func->STATS_SCOPE), &(a_func->STATS_RTYPE), a_func->c_rlong);   <*/
-   rc = LINE_function    (a_func, a_prev, a_recd, a_func->c_name, NULL, NULL, NULL, NULL);
+   rc = LINE_function    (a_func, a_prev, a_recd, a_func->c_name, &x_single, NULL, NULL, NULL);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(purpose)------------------------*/
-   --rce;  if (a_func->STATS_SINGLE == '-') {
+   --rce;  if (x_single != 'y') {
       p  = strstr (a_prev, "/*");
       if (p != NULL) {
          x_len = p - a_prev;
@@ -189,21 +185,20 @@ CODE_function           (tFUNC *a_func, char *a_recd, char *a_prev)
          }
       }
    } else {
-      rc = LINE_purpose      (a_func, "/* */", NULL, a_func->c_purpose, &(a_func->c_ready));
+      rc = LINE_purpose      (a_func, "", NULL, a_func->c_purpose, &(a_func->c_ready));
    }
    /*---(parameters)---------------------*/
-   /*> rc = LINE_params      (a_func, a_recd, &(a_func->STATS_PAUDIT), &(a_func->WORK_PARAMS), &(a_func->WORK_PIN), &(a_func->WORK_POUT), &(a_func->WORK_PBOTH), &(a_func->WORK_PCHG), NULL, &(a_func->WORK_PNUM), &(a_func->WORK_PMULTI), &(a_func->WORK_PFUNC), &(a_func->WORK_PSTRUCT));   <*/
    rc = LINE_params      (a_func, a_recd, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(prototype)----------------------*/
-   rc = poly_proto_hook  (a_func->c_file, a_func, a_func->c_name);
-   --rce;  if (rc < 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> rc = poly_proto_hook  (a_func->c_file, a_func, a_func->c_name);                <* 
+    *> --rce;  if (rc < 0) {                                                          <* 
+    *>    DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_exit    (__FUNCTION__);
    return 0;
