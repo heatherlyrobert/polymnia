@@ -296,9 +296,9 @@ LINE_count_debug        (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, i
       x_cproj  = a_func->c_file->i_proj->COUNT_DEBUG;
       x_cfile  = a_func->c_file->COUNT_DEBUG;
       x_cfunc  = a_func->COUNT_DEBUG;
-      x_dcount = ySCORE_stats_value (my.s_yscore, "DACTIVE" );
-      x_dextra = ySCORE_stats_value (my.s_yscore, "DEXTRA"  );
-      x_dmacro = ySCORE_stats_value (my.s_yscore, "DMACRO"  );
+      x_dcount = ySCORE_stats_value (my.s_yscore, a_func->c_stats, "DACTIVE" );
+      x_dextra = ySCORE_stats_value (my.s_yscore, a_func->c_stats, "DEXTRA"  );
+      x_dmacro = ySCORE_stats_value (my.s_yscore, a_func->c_stats, "DMACRO"  );
       x_inside = 1;
    } else {
       if (b_cfull   != NULL)  x_cfull  = *b_cfull;
@@ -385,9 +385,9 @@ LINE_count_debug        (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, i
       a_func->c_file->i_proj->COUNT_DOCS  = x_cproj;
       a_func->c_file->COUNT_DOCS          = x_cfile;;
       a_func->COUNT_DOCS= x_cfunc;
-      ySCORE_stats_set (my.s_yscore, "DACTIVE" , x_dcount);
-      ySCORE_stats_set (my.s_yscore, "DEXTRA"  , x_dextra);
-      ySCORE_stats_set (my.s_yscore, "DMACRO"  , x_dmacro);
+      ySCORE_stats_set (my.s_yscore, a_func->c_stats, "DACTIVE" , x_dcount);
+      ySCORE_stats_set (my.s_yscore, a_func->c_stats, "DEXTRA"  , x_dextra);
+      ySCORE_stats_set (my.s_yscore, a_func->c_stats, "DMACRO"  , x_dmacro);
    }
    /*---(save-back)----------------------*/
    if (b_cfull   != NULL)  *b_cfull  = x_cfull;
@@ -534,8 +534,8 @@ LINE_exit               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, c
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
    if (a_func != NULL) {
-      x_return = ySCORE_stats_value (my.s_yscore, "RETURN"  );
-      x_rce    = ySCORE_stats_value (my.s_yscore, "RCE"     );
+      x_return = ySCORE_stats_value (my.s_yscore, a_func->c_stats, "RETURN"  );
+      x_rce    = ySCORE_stats_value (my.s_yscore, a_func->c_stats, "RCE"     );
    } else {
       if (b_return  != NULL)  x_return = *b_return;
       if (b_rce     != NULL)  x_rce    = *b_rce;
@@ -583,9 +583,9 @@ LINE_exit               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, c
    /*---(into-function)------------------*/
    if (a_func != NULL) {
       DEBUG_INPT   yLOG_note    ("save to func");
-      rc = ySCORE_stats_set (my.s_yscore, "RETURN"  , x_return);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "RETURN"  , x_return);
       DEBUG_INPT   yLOG_value   ("ret", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "RCE"     , x_rce);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "RCE"     , x_rce);
       DEBUG_INPT   yLOG_value   ("rce", rc);
    }
    /*---(save-back)----------------------*/
@@ -609,7 +609,7 @@ LINE_choice             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, c
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
    if (a_func != NULL) {
-      x_choice = ySCORE_stats_value (my.s_yscore, "CHOICE"  );
+      x_choice = ySCORE_stats_value (my.s_yscore, a_func->c_stats, "CHOICE"  );
    } else {
       if (b_choice  != NULL)  x_choice = *b_choice;
    }
@@ -661,7 +661,7 @@ LINE_choice             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, c
    /*---(into-function)------------------*/
    if (a_func != NULL) {
       DEBUG_INPT   yLOG_note    ("save to func");
-      rc = ySCORE_stats_set (my.s_yscore, "CHOICE"  , x_choice);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "CHOICE"  , x_choice);
       DEBUG_INPT   yLOG_value   ("ch" , rc);
    }
    /*---(save-back)----------------------*/
@@ -684,7 +684,7 @@ LINE_loop               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, i
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
    if (a_func != NULL) {
-      x_loop   = ySCORE_stats_value (my.s_yscore, "LOOP"    );
+      x_loop   = ySCORE_stats_value (my.s_yscore, a_func->c_stats, "LOOP"    );
    } else {
       if (b_loop    != NULL)  x_loop   = *b_loop;
    }
@@ -750,7 +750,7 @@ LINE_loop               (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, i
    /*---(into-function)------------------*/
    if (a_func != NULL) {
       DEBUG_INPT   yLOG_note    ("save to func");
-      rc = ySCORE_stats_set (my.s_yscore, "LOOP"    , x_loop);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "LOOP"    , x_loop);
       DEBUG_INPT   yLOG_value   ("lo" , rc);
    }
    /*---(save-back)----------------------*/
@@ -773,7 +773,7 @@ LINE_indent             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, c
    DEBUG_DATA   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
    if (a_func != NULL) {
-      x_indent = ySCORE_stats_value (my.s_yscore, "INDENT"  );
+      x_indent = ySCORE_stats_value (my.s_yscore, a_func->c_stats, "INDENT"  );
    } else {
       if (b_indent != NULL)  x_indent = *b_indent;
    }
@@ -802,7 +802,7 @@ LINE_indent             (tFUNC *a_func, char a_recd [LEN_RECD], char a_inside, c
    /*---(into-function)------------------*/
    if (a_func != NULL) {
       DEBUG_INPT   yLOG_note    ("save to func");
-      rc = ySCORE_stats_set (my.s_yscore, "INDENT"  , x_indent);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "INDENT"  , x_indent);
       DEBUG_INPT   yLOG_value   ("in" , rc);
    }
    /*---(save back)----------------------*/
@@ -967,9 +967,9 @@ LINE_purpose            (tFUNC *a_func, char a_recd [LEN_RECD], char *r_format, 
       DEBUG_INPT   yLOG_note    ("save to func");
       ystrlcpy (a_func->c_purpose, x_purpose, LEN_DESC);
       a_func->c_ready = x_style;
-      rc = ySCORE_stats_set  (my.s_yscore, "FORMAT"  , x_format);
+      rc = ySCORE_stats_set  (my.s_yscore, a_func->c_stats, "FORMAT"  , x_format);
       DEBUG_INPT   yLOG_value   ("FORMAT"    , rc);
-      rc = ySCORE_stats_set  (my.s_yscore, "PURPOS"  , x_style);
+      rc = ySCORE_stats_set  (my.s_yscore, a_func->c_stats, "PURPOS"  , x_style);
       DEBUG_INPT   yLOG_value   ("PORPOS"    , rc);
    }
    /*---(save-back)----------------------*/
@@ -1078,11 +1078,11 @@ LINE_function           (tFUNC *a_func, char a_prev [LEN_RECD], char a_recd [LEN
    /*---(into-function)------------------*/
    if (a_func != NULL) {
       DEBUG_INPT   yLOG_note    ("save to func");
-      rc = ySCORE_stats_set  (my.s_yscore, "SINGLE"  , x_single);
+      rc = ySCORE_stats_set  (my.s_yscore, a_func->c_stats, "SINGLE"  , x_single);
       DEBUG_INPT   yLOG_value   ("SINGLE"    , rc);
-      rc = ySCORE_stats_set  (my.s_yscore, "SCOPE"   , x_scope);
+      rc = ySCORE_stats_set  (my.s_yscore, a_func->c_stats, "SCOPE"   , x_scope);
       DEBUG_INPT   yLOG_value   ("SCOPE"     , rc);
-      rc = ySCORE_stats_set  (my.s_yscore, "RTYPE"   , x_rtype);
+      rc = ySCORE_stats_set  (my.s_yscore, a_func->c_stats, "RTYPE"   , x_rtype);
       DEBUG_INPT   yLOG_value   ("RTYPE"     , rc);
       ystrlcpy (a_func->c_rlong, x_return, LEN_LABEL);
    }
@@ -1424,33 +1424,37 @@ LINE_params             (tFUNC *a_func, char a_recd [LEN_RECD], char *r_audit, u
    x_co = x_in = x_ou = x_bo = x_cf = x_dg = x_ol = x_pn = x_pm = x_pf = x_ps = 0;
    /*---(into-function)------------------*/
    if (a_func != NULL) {
-      rc = ySCORE_stats_set (my.s_yscore, "PPAREN"  , x_au);
-      rc = ySCORE_stats_set (my.s_yscore, "PARAMS"  , x_co);
-      rc = ySCORE_stats_set (my.s_yscore, "PIN"     , x_in);
-      rc = ySCORE_stats_set (my.s_yscore, "POUT"    , x_ou);
-      rc = ySCORE_stats_set (my.s_yscore, "PBOTH"   , x_bo);
-      rc = ySCORE_stats_set (my.s_yscore, "PCONF"   , x_cf);
-      rc = ySCORE_stats_set (my.s_yscore, "PDIAC"   , x_dg);
-      rc = ySCORE_stats_set (my.s_yscore, "POLDER"  , x_ol);
-      rc = ySCORE_stats_set (my.s_yscore, "PNUM"    , x_pn);
-      rc = ySCORE_stats_set (my.s_yscore, "PMULTI"  , x_pm);
-      rc = ySCORE_stats_set (my.s_yscore, "PFUNC"   , x_pf);
-      rc = ySCORE_stats_set (my.s_yscore, "PSTRUC"  , x_ps);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PPAREN"  , x_au);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PARAMS"  , x_co);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PIN"     , x_in);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "POUT"    , x_ou);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PBOTH"   , x_bo);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PCONF"   , x_cf);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PDIAC"   , x_dg);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "POLDER"  , x_ol);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PNUM"    , x_pn);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PMULTI"  , x_pm);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PFUNC"   , x_pf);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PSTRUC"  , x_ps);
    }
    /*---(prepare)------------------------*/
    rc = LINE__params_cut        (a_recd, x_params, &x_au, &x_co);
    DEBUG_DATA   yLOG_value   ("cut"       , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    DEBUG_INPT   yLOG_value   ("x_au"      , x_au);
    DEBUG_INPT   yLOG_value   ("x_co"      , x_co);
    --rce;  switch (x_co) {
    case -2  :
-      rc = ySCORE_stats_set (my.s_yscore, "PPAREN"  , '?');
-      rc = ySCORE_stats_set (my.s_yscore, "PARAMS"  ,  0 );
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PPAREN"  , '?');
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PARAMS"  ,  0 );
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    case -1  :
-      rc = ySCORE_stats_set (my.s_yscore, "PPAREN"  , 'v');
-      rc = ySCORE_stats_set (my.s_yscore, "PARAMS"  ,  0 );
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PPAREN"  , 'v');
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PARAMS"  ,  0 );
       DEBUG_INPT   yLOG_exit    (__FUNCTION__);
       return 0;
    case  0  :
@@ -1475,29 +1479,29 @@ LINE_params             (tFUNC *a_func, char a_recd [LEN_RECD], char *r_audit, u
    /*---(into-function)------------------*/
    if (a_func != NULL) {
       DEBUG_INPT   yLOG_note    ("save to func");
-      rc = ySCORE_stats_set (my.s_yscore, "PPAREN"  , x_au);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PPAREN"  , x_au);
       DEBUG_INPT   yLOG_value   ("au", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PARAMS"  , x_co);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PARAMS"  , x_co);
       DEBUG_INPT   yLOG_value   ("co", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PIN"     , x_in);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PIN"     , x_in);
       DEBUG_INPT   yLOG_value   ("in", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "POUT"    , x_ou);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "POUT"    , x_ou);
       DEBUG_INPT   yLOG_value   ("ou", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PBOTH"   , x_bo);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PBOTH"   , x_bo);
       DEBUG_INPT   yLOG_value   ("bo", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PCONF"   , x_cf);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PCONF"   , x_cf);
       DEBUG_INPT   yLOG_value   ("cf", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PDIAG"   , x_dg);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PDIAG"   , x_dg);
       DEBUG_INPT   yLOG_value   ("vo", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "POLDER"  , x_ol);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "POLDER"  , x_ol);
       DEBUG_INPT   yLOG_value   ("ol", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PNUM"    , x_pn);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PNUM"    , x_pn);
       DEBUG_INPT   yLOG_value   ("pn", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PMULTI"  , x_pm);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PMULTI"  , x_pm);
       DEBUG_INPT   yLOG_value   ("pm", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PFUNC"   , x_pf);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PFUNC"   , x_pf);
       DEBUG_INPT   yLOG_value   ("pf", rc);
-      rc = ySCORE_stats_set (my.s_yscore, "PSTRUC"  , x_ps);
+      rc = ySCORE_stats_set (my.s_yscore, a_func->c_stats, "PSTRUC"  , x_ps);
       DEBUG_INPT   yLOG_value   ("ps", rc);
    }
    /*---(save-back)----------------------*/

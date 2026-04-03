@@ -78,8 +78,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "1.--, working excellent, keep improving"
 #define     P_VERMINOR  "1.3-, another hard run at updates"
-#define     P_VERNUM    "1.3l"
-#define     P_VERTXT    "very lovely clean-up of projs, files, funcs, and header w/unit testind"
+#define     P_VERNUM    "1.3m"
+#define     P_VERTXT    "added simplified proto tracking and unit-tested"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPLE "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -888,6 +888,7 @@ struct      cFUNC {
    int         c_beg;                         /* first code line                */
    int         c_end;                         /* last code line                 */
    /*---(statistics)---------------------*/
+   void       *c_stats;                       /* ySCORE stats structure (temp)  */
    char        c_score       [LEN_FULL];
    char        c_anatomy     [LEN_TERSE];     /* function type                  */
    char        c_match       [LEN_LABEL];     /* function type match sting      */
@@ -1733,7 +1734,7 @@ char        poly_yjobs_callback     (cchar a_req, cchar *a_data);
 
 char        poly_yscore_init       (void);
 char        poly_yscore_wrap       (void);
-char*       YSCORE_poly            (void);
+char*       YSCORE_poly            (tFUNC *a_func);
 
 
 

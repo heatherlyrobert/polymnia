@@ -181,7 +181,7 @@ static const tySCORE_TB  s_polymnia_table [LEN_FULL] = {
    { 'Ï' , "PURPOS"   , '·' , 'y' , "purpos"   , "function·purpose·narrative"       , '>' , ' ' , "²<y>#?"          , "²) none      <) short     y) exists    >) long      #) trouble   ?) badchar"                 },
    { 'Ï' , " "        , '´' ,  1  , ""         , ""                                 , ' ' , ' ' , ""                , ""                                                                                            },
    /*-vis---label----- def-- samp- print------- description------------------------- style check valid-------------- --legend------ ------------ ------------ ------------ ------------ ------------ ------------ --*/
-   { 'Ï' , "PROTO"    , '·' , 'g' , "proto"    , "function²prototype²location"      , '>' , ' ' , "PBvf²"           , "P) public    B) pub/priv  v) priv      f) file      ²) none"                                 },
+   { 'Ï' , "PROTO"    , '·' , 'g' , "proto"    , "function²prototype²location"      , '>' , ' ' , "3VF2Pvf²"        , "3) all       V) pub/priv  F) pub/file  2) prv/file  P) public    v) priv      f) file      ²) none"       },
    { 'Ï' , "PPAREN"   , '·' , 'y' , "pparen"   , "parenthesis·balanced"             , '>' , ' ' , "?<>=#yv"         , "?) danger    <) no-beg    >) no-end    =) not-bal   #) crazy     y) balance   v) void"       },
    { 'Ï' , "PARAMS"   , '·' , 'A' , "params"   , "number·of·parameters"             , '+' , ' ' , "²0-9#"           , "²) none      1-3) low     4-6) mid     7-9) high    #) huge"                                 },
    { 'Ï' , " "        , '´' ,  1  , ""         , ""                                 , ' ' , ' ' , ""                , ""                                                                                            },
@@ -332,8 +332,11 @@ char poly_yscore_init       (void) { return ySCORE_init  (s_polymnia_table, 'y',
 char poly_yscore_wrap       (void) { return ySCORE_wrap  (&(my.s_yscore)); }
 
 char*
-YSCORE_poly                 (void)
+YSCORE_poly                 (tFUNC *a_func)
 {
-   ySCORE_stats_to_table (my.s_yscore);
+   /*---(automatic)----------------------*/
+   ySCORE_stats_to_table (my.s_yscore, a_func->c_stats);
+   /*---(prototype)----------------------*/
+   /*---(complete)-----------------------*/
    return ySCORE_poly (my.s_yscore);
 }

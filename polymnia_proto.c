@@ -244,7 +244,9 @@ PROTO__handler          (tFILE *a_file, char a_name [LEN_TITLE], char a_type [LE
    }
    DEBUG_INPT   yLOG_info    ("c_name"    , x_func->c_name);
    /*---(update function)----------------*/
-   x_curr = ySCORE_stats_value (my.s_yscore, "PROTO"   );
+   x_curr = ySCORE_stats_value (my.s_yscore, x_func->c_stats, "PROTO"   );
+   if (x_curr == '\0')  x_curr = '²';
+   if (x_curr == '·')   x_curr = '²';
    DEBUG_INPT   yLOG_char    ("x_curr"    , x_curr);
    /*---(set target)---------------------*/
    if      (a_file->i_type == 'c') {
@@ -265,21 +267,40 @@ PROTO__handler          (tFILE *a_file, char a_name [LEN_TITLE], char a_type [LE
    }
    DEBUG_INPT   yLOG_char    ("x_targ"    , x_targ);
    /*---(identify new value)-------------*/
-   if      (x_curr == x_targ)  x_new = x_targ;
-   else if (x_curr == '·')     x_new = x_targ;
-   else if (x_curr == 'f')     x_new = x_targ;
-   else if (x_curr == 'f')     x_new = x_targ;
-   else if (x_curr == 'v') {
-      if      (x_targ == 'P')  x_new = 'B';
+   switch (x_curr) {
+   case '3' :
+      x_new = x_curr;
+      break;
+   case 'V' :
+      if      (x_targ == 'f')  x_new = '3';
       else                     x_new = x_curr;
-   }
-   else if (x_curr == 'P') {
-      if      (x_targ == 'v')  x_new = 'B';
+      break;
+   case 'F' :
+      if      (x_targ == 'v')  x_new = '3';
       else                     x_new = x_curr;
+      break;
+   case 'P' :
+      if      (x_targ == 'v')  x_new = 'V';
+      else if (x_targ == 'f')  x_new = 'F';
+      else                     x_new = x_curr;
+      break;
+   case 'v' :
+      if      (x_targ == 'P')  x_new = 'V';
+      else if (x_targ == 'f')  x_new = '2';
+      else                     x_new = x_curr;
+      break;
+   case 'f' :
+      if      (x_targ == 'P')  x_new = 'F';
+      else if (x_targ == 'v')  x_new = '2';
+      else                     x_new = x_curr;
+      break;
+   default  :
+      x_new = x_targ;
+      break;
    }
    DEBUG_INPT   yLOG_char    ("x_new"     , x_new);
    /*---(set-value)----------------------*/
-   rc = ySCORE_stats_set (my.s_yscore, "PROTO", x_new);
+   rc = ySCORE_stats_set (my.s_yscore, x_func->c_stats, "PROTO", x_new);
    DEBUG_INPT   yLOG_value   ("set"       , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
@@ -291,7 +312,7 @@ PROTO__handler          (tFILE *a_file, char a_name [LEN_TITLE], char a_type [LE
 }
 
 
-char PROTO__from_file        (tPROJ *a_proj, tFILE *a_file, char a_ftype) {  return FILES_ctags (a_file, 'f', PROTO__handler); }
+char PROTO__from_file        (tPROJ *a_proj, tFILE *a_file, char a_ftype) {  return FILES_ctags (a_file, 'p', PROTO__handler); }
 
 char PROTO_gather            (tPROJ *a_proj) { return FILES_run_for_project (a_proj, PROTO__from_file); }
 

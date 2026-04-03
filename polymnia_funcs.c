@@ -228,6 +228,7 @@ FUNCS__wipe             (tFUNC *a_func)
    a_func->c_beg         =    0;
    a_func->c_end         =    0;
    /*---(statistics)---------------------*/
+   a_func->c_stats       = NULL;
    a_func->c_score   [0] = '\0';
    a_func->c_anatomy [0] = '\0';
    a_func->c_match   [0] = '\0';
@@ -278,6 +279,7 @@ FUNCS__memory           (tFUNC *a_func)
    yENV_check_num    (a_func->c_end);
    yENV_check_spacer ();
    /*---(statistics)---------------------*/
+   yENV_check_ptr    (a_func->c_stats);
    yENV_check_str    (a_func->c_score);
    yENV_check_str    (a_func->c_anatomy);
    yENV_check_str    (a_func->c_match);
@@ -328,6 +330,7 @@ FUNCS_rando             (tFUNC *a_func)
    a_func->c_beg    = 0x02;
    a_func->c_end    = 0x03;
    /*---(characterization)---------------*/
+   a_func->c_stats         = 0xFF;
    strcpy (a_func->c_score  , "score");
    strcpy (a_func->c_anatomy, "anatomy");
    strcpy (a_func->c_match  , "match");
@@ -354,7 +357,7 @@ FUNCS_rando             (tFUNC *a_func)
    return 0;
 }
 
-char
+char           /* DEPRICATED SOON */
 WORK__wipe              (tWORK *a_work)
 {
    int         i           =    0;
@@ -371,7 +374,7 @@ WORK__wipe              (tWORK *a_work)
    return 1;
 }
 
-char*
+char*           /* DEPRICATED SOON */
 WORK__memory            (tWORK *a_work)
 {
    /*---(master)-------------------------*/
@@ -396,6 +399,7 @@ char FUNCS__new   (tFUNC **r_new) { return yENV_new  ("func", sizeof (tFUNC), r_
 char FUNCS_force  (tFUNC **r_new) { return yENV_new  ("func", sizeof (tFUNC), r_new, NULL, 'y', FUNCS__wipe); }
 char FUNCS__free  (tFUNC **b_old) { return yENV_free ("func", b_old, NULL); }
 
+/* DEPRICATED SOON */
 char WORK__new    (tWORK **r_new) { return yENV_new  ("work", sizeof (tWORK), r_new, NULL, '-', WORK__wipe); }
 char WORK_force   (tWORK **r_new) { return yENV_new  ("work", sizeof (tWORK), r_new, NULL, 'y', WORK__wipe); }
 char WORK__free   (tWORK **b_old) { return yENV_free ("work", b_old, NULL); }
@@ -570,7 +574,14 @@ FUNCS_add               (tFILE *a_file, char a_name [LEN_TITLE], char a_type, in
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(create working data)------------*/
+   /*---(create statistics)--------------*/
+   rc = ySCORE_stats_new (&(x_new->c_stats));
+   DEBUG_DATA   yLOG_point   ("->stats"   , x_new->c_stats);
+   --rce;  if (rc < 0 || x_new->c_stats == NULL) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(DEPRICATED SOON)----------------*/
    rc = WORK__new      (&(x_new->c_work));
    DEBUG_DATA   yLOG_point   ("->work"    , x_new->c_work);
    --rce;  if (rc < 0 || x_new->c_work == NULL) {
@@ -654,6 +665,13 @@ FUNCS_remove            (tFUNC **b_old)
    rc = ySORT_unhook (&((*b_old)->c_btree));
    DEBUG_DATA   yLOG_value   ("un-btree"  , rc);
    --rce;  if (rc < 0) {
+      DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(free statistics)----------------*/
+   rc = ySCORE_stats_free ((&(*b_old)->c_stats));
+   DEBUG_DATA   yLOG_point   ("->stats"   , (*b_old)->c_stats);
+   --rce;  if (rc < 0 || (*b_old)->c_stats != NULL) {
       DEBUG_DATA   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
